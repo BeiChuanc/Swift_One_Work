@@ -37,7 +37,8 @@ class UserViewModel_Wanderbell {
         userHead_Wanderbell: "default_avatar",
         userPosts_Wanderbell: [],
         userLike_Wanderbell: [],
-        userFollow_Wanderbell: []
+        userFollow_Wanderbell: [],
+        userEmotionRecords_Wanderbell: []
     )
     
     private init() {}
@@ -59,7 +60,20 @@ class UserViewModel_Wanderbell {
     /// 初始化用户状态
     func initUser_Wanderbell() {
         loggedUser_Wanderbell = defaultUser_Wanderbell
+        
+        // 加载当前用户的情绪记录
+        loadUserEmotionRecords_Wanderbell()
+        
         notifyStateChange_Wanderbell()
+    }
+    
+    /// 加载用户情绪记录
+    /// 功能：从EmotionViewModel获取当前用户的所有情绪记录并同步到用户模型
+    private func loadUserEmotionRecords_Wanderbell() {
+        guard let userId_wanderbell = loggedUser_Wanderbell?.userId_Wanderbell else { return }
+        
+        let userRecords_wanderbell = EmotionViewModel_Wanderbell.shared_Wanderbell.getUserRecords_Wanderbell(userId_wanderbell: userId_wanderbell)
+        loggedUser_Wanderbell?.userEmotionRecords_Wanderbell = userRecords_wanderbell
     }
     
     // MARK: - 登录/登出
@@ -67,7 +81,7 @@ class UserViewModel_Wanderbell {
     /// 通过用户ID登录
     func loginById_Wanderbell(userId_wanderbell: Int) {
         // 显示加载动画
-        Utils_Wanderbell.showLoading_Wanderbell(message_wanderbell: "Logging in...")
+        Utils_Wanderbell.showLoading_Wanderbell(message_wanderbell: "Loading...")
         
         // 创建登录用户
         loggedUser_Wanderbell = LoginUserModel_Wanderbell(
@@ -77,7 +91,8 @@ class UserViewModel_Wanderbell {
             userHead_Wanderbell: "user_avatar",
             userPosts_Wanderbell: [],
             userLike_Wanderbell: [],
-            userFollow_Wanderbell: []
+            userFollow_Wanderbell: [],
+            userEmotionRecords_Wanderbell: []
         )
         
         // 延迟跳转到首页
@@ -89,6 +104,9 @@ class UserViewModel_Wanderbell {
             
             // 显示成功提示
             Utils_Wanderbell.showSuccess_Wanderbell(message_wanderbell: "Login successful!")
+            
+            // 加载用户情绪记录
+            self.loadUserEmotionRecords_Wanderbell()
             
             // 切换到主Tabbar
             Navigation_Wanderbell.switchToTabbar_Wanderbell(animated: true)
@@ -104,9 +122,6 @@ class UserViewModel_Wanderbell {
             return
         }
         
-        // 显示加载动画
-        Utils_Wanderbell.showLoading_Wanderbell(message_wanderbell: "Logging out...")
-        
         // 重置为游客状态
         loggedUser_Wanderbell = defaultUser_Wanderbell
         
@@ -119,7 +134,7 @@ class UserViewModel_Wanderbell {
         notifyStateChange_Wanderbell()
         
         // 跳转到首页
-         Navigation_Wanderbell.toHome_Wanderbell()
+        Navigation_Wanderbell.switchToTabbar_Wanderbell()
         
         // 延迟显示提示
         Task {
@@ -195,8 +210,15 @@ class UserViewModel_Wanderbell {
     
     /// 判断是否关注指定用户
     func isFollowing_Wanderbell(user_wanderbell: PrewUserModel_Wanderbell) -> Bool {
-        guard let user_wanderbell = loggedUser_Wanderbell else { return false }
-        return user_wanderbell.userFollow_Wanderbell.contains(where: { $0.userId_Wanderbell == user_wanderbell.userId_Wanderbell })
+        guard let currentUser_wanderbell = loggedUser_Wanderbell else { 
+            return false 
+        }
+        
+        let isFollowing_wanderbell = currentUser_wanderbell.userFollow_Wanderbell.contains(where: { 
+            $0.userId_Wanderbell == user_wanderbell.userId_Wanderbell 
+        })
+        
+        return isFollowing_wanderbell
     }
     
     /// 关注/取消关注用户
@@ -206,7 +228,13 @@ class UserViewModel_Wanderbell {
             return
         }
         
-        if isFollowing_Wanderbell(user_wanderbell: user_wanderbell) {
+        guard let currentUser_wanderbell = loggedUser_Wanderbell else {
+            return
+        }
+        
+        let wasFollowing_wanderbell = isFollowing_Wanderbell(user_wanderbell: user_wanderbell)
+        
+        if wasFollowing_wanderbell {
             // 取消关注
             loggedUser_Wanderbell?.userFollow_Wanderbell.removeAll { $0.userId_Wanderbell == user_wanderbell.userId_Wanderbell }
         } else {
@@ -214,6 +242,7 @@ class UserViewModel_Wanderbell {
             loggedUser_Wanderbell?.userFollow_Wanderbell.append(user_wanderbell)
         }
         
+        // 发送状态变化通知
         notifyStateChange_Wanderbell()
     }
     
@@ -223,11 +252,8 @@ class UserViewModel_Wanderbell {
     func reportUser_Wanderbell(user_wanderbell: PrewUserModel_Wanderbell) {
         guard let userId_wanderbell = user_wanderbell.userId_Wanderbell else { return }
         
-        // 显示加载动画
-        Utils_Wanderbell.showLoading_Wanderbell(message_wanderbell: "Processing...")
-        
         // 取消关注
-        // 从关注列表中移除（需要实现）
+        loggedUser_Wanderbell?.userFollow_Wanderbell.removeAll { $0.userId_Wanderbell == userId_wanderbell }
         
         // 删除与该用户的聊天记录
         MessageViewModel_Wanderbell.shared_Wanderbell.deleteUserMessages_Wanderbell(
@@ -343,15 +369,10 @@ class UserViewModel_Wanderbell {
     
     /// 显示登录提示
     private func showLoginPrompt_Wanderbell() {
-        Utils_Wanderbell.showWarning_Wanderbell(
-            message_wanderbell: "Please login first.",
-            delay_wanderbell: 1.5
-        )
-        
         // 延迟跳转到登录页面
         Task {
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒
-            Navigation_Wanderbell.toLogin_Wanderbell(style_wanderbell: .present_wanderbell)
+            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
+            Navigation_Wanderbell.toLogin_Wanderbell(style_wanderbell: .push_wanderbell)
         }
     }
 }

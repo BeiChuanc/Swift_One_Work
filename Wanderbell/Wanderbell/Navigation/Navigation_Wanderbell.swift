@@ -11,6 +11,9 @@ enum NavigationStyle_Wanderbell {
     
     /// Present方式（模态展示）
     case present_wanderbell
+    
+    /// Replace方式（替换当前页面）
+    case replace_wanderbell
 }
 
 /// 页面导航管理器
@@ -53,6 +56,32 @@ class Navigation_Wanderbell: NSObject {
         fromVC?.dismiss(animated: animated, completion: completion)
     }
     
+    /// Replace方式替换当前页面
+    /// 功能：替换导航栈中的当前视图控制器
+    /// 参数：
+    /// - to: 目标视图控制器
+    /// - animated: 是否动画
+    /// - from: 来源视图控制器（默认为当前）
+    static func replace_Wanderbell(to viewController: UIViewController, animated: Bool = true, from: UIViewController? = nil) {
+        let fromVC = from ?? currentViewController_Wanderbell()
+        guard let navigationController_wanderbell = fromVC?.navigationController else {
+            print("⚠️ 警告：当前视图控制器没有导航控制器，无法替换")
+            return
+        }
+        
+        // 获取当前导航栈
+        var viewControllers_wanderbell = navigationController_wanderbell.viewControllers
+        
+        // 替换最后一个视图控制器
+        if !viewControllers_wanderbell.isEmpty {
+            viewControllers_wanderbell[viewControllers_wanderbell.count - 1] = viewController
+            navigationController_wanderbell.setViewControllers(viewControllers_wanderbell, animated: animated)
+        } else {
+            // 如果导航栈为空，直接push
+            navigationController_wanderbell.pushViewController(viewController, animated: animated)
+        }
+    }
+    
     // MARK: - 通用导航方法
     
     /// 根据导航方式跳转到指定页面
@@ -76,6 +105,10 @@ class Navigation_Wanderbell: NSObject {
                 viewController_wanderbell.modalPresentationStyle = .fullScreen
                 present_Wanderbell(viewController: viewController_wanderbell, animated: animated_wanderbell, completion: completion_wanderbell)
             }
+            
+        case .replace_wanderbell:
+            replace_Wanderbell(to: viewController_wanderbell, animated: animated_wanderbell)
+            completion_wanderbell?()
         }
     }
     
@@ -194,6 +227,25 @@ class Navigation_Wanderbell: NSObject {
         let discoverVC = Discover_Wanderbell()
         navigateToViewController_Wanderbell(
             viewController_wanderbell: discoverVC,
+            style_wanderbell: style_wanderbell,
+            wrapInNavigation_wanderbell: false,
+            animated_wanderbell: animated_wanderbell
+        )
+    }
+    
+    /// 跳转到帖子详情页
+    /// 参数：
+    /// - titleModel: 帖子模型
+    /// - style_wanderbell: 导航方式
+    /// - animated_wanderbell: 是否动画
+    static func toTitleDetail_Wanderbell(
+        titleModel_wanderbell: TitleModel_Wanderbell,
+        style_wanderbell: NavigationStyle_Wanderbell = .push_wanderbell,
+        animated_wanderbell: Bool = true
+    ) {
+        let titleDetailVC = TitleDetail_Wanderbell(titleModel_wanderbell: titleModel_wanderbell)
+        navigateToViewController_Wanderbell(
+            viewController_wanderbell: titleDetailVC,
             style_wanderbell: style_wanderbell,
             wrapInNavigation_wanderbell: false,
             animated_wanderbell: animated_wanderbell

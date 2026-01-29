@@ -28,7 +28,7 @@ extension UIAlertController {
     }
     
     /// 举报
-    static func report_Wanderbell(Id: Int, completeBlock: @escaping () -> Void) {
+    static func report_Wanderbell(with isUser: Bool = false, completeBlock: @escaping () -> Void) {
         var reportAlter_Wanderbell: UIAlertController!
         reportAlter_Wanderbell = UIAlertController(title: "More", message: nil, preferredStyle: .actionSheet)
         
@@ -39,7 +39,7 @@ extension UIAlertController {
         let report1_Wanderbell = UIAlertAction(title: NSLocalizedString("Report Sexually Explicit Material", comment: ""), style: .default,handler: reportCommon)
         let report2_Wanderbell = UIAlertAction(title: NSLocalizedString("Report spam", comment: ""), style: .default,handler: reportCommon)
         let report3_Wanderbell = UIAlertAction(title: NSLocalizedString("Report something else", comment: ""), style: .default,handler: reportCommon)
-        let report4_Wanderbell = UIAlertAction(title: NSLocalizedString("Block", comment: ""), style: .default,handler: reportCommon)
+        let report4_Wanderbell = UIAlertAction(title: NSLocalizedString(isUser ? "Block" : "Report", comment: ""), style: .default,handler: reportCommon)
         let cancel_Wanderbell = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: UIAlertAction.Style.cancel,handler: nil)
         reportAlter_Wanderbell.addAction(report1_Wanderbell)
         reportAlter_Wanderbell.addAction(report2_Wanderbell)

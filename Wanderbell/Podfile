@@ -13,6 +13,18 @@ target 'Wanderbell' do
   pod 'YPImagePicker'
   pod 'Kingfisher', '7.6.2'
   pod 'FSPagerView'
+  
+  # 日历组件 - 情绪日历
+  pod 'FSCalendar'
+  
+  # 瀑布流布局
+  pod 'CHTCollectionViewWaterfallLayout'
+  
+  # 骨架屏和动画
+  pod 'SkeletonView'
+  
+  # Lottie动画
+  pod 'lottie-ios'
 
 end
 post_install do |installer|

@@ -10,15 +10,32 @@ class Utils_Wanderbell: NSObject {
     // MARK: - HUD配置
     
     /// HUD全局配置
-    static func setupHUDConfig_Wanderbell(fontSize_wanderbell: CGFloat = 16) {
-        // 设置字体
-        ProgressHUD.fontStatus = UIFont.systemFont(ofSize: fontSize_wanderbell)
+    /// - Parameter fontSize_wanderbell: 字体大小，默认30
+    static func setupHUDConfig_Wanderbell(fontSize_wanderbell: CGFloat = 25) {
+        // 设置字体为圆体艺术字，提升视觉效果
+        if let roundedFont_wanderbell = UIFont(name: "AvenirNext-Medium", size: fontSize_wanderbell) {
+            ProgressHUD.fontStatus = roundedFont_wanderbell
+        } else if let roundedFont_wanderbell = UIFont(name: "Helvetica Neue", size: fontSize_wanderbell) {
+            // 备选艺术字体
+            ProgressHUD.fontStatus = roundedFont_wanderbell
+        } else {
+            // 最终备选方案：使用系统加粗字体
+            ProgressHUD.fontStatus = UIFont.systemFont(ofSize: fontSize_wanderbell, weight: .semibold)
+        }
+        
+        // 设置文字颜色（深色，确保清晰可见）
+        ProgressHUD.colorStatus = .label
         
         // 设置动画类型
         ProgressHUD.animationType = .circleStrokeSpin
         
-        // 设置媒体大小
-        ProgressHUD.mediaSize = 60
+        // 设置媒体大小（与字体大小成比例）
+        ProgressHUD.mediaSize = 40
+        
+        // 设置HUD背景和边距，让文字有更好的展示空间
+        ProgressHUD.colorBackground = .systemBackground.withAlphaComponent(0.95)
+        ProgressHUD.colorHUD = .systemGray6.withAlphaComponent(0.98)
+        ProgressHUD.marginSize = CGFloat(20)
     }
     
     // MARK: - 加载动画

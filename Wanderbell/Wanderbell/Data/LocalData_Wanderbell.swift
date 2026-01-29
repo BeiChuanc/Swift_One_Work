@@ -7,9 +7,13 @@ private struct DataConfig_Wanderbell {
     /// ID起始值
     static let userIdStart_Wanderbell = 10
     static let postIdStart_Wanderbell = 20
+    static let emotionRecordIdStart_Wanderbell = 100
     
     /// 喜欢帖子数量
     static let likePostCount_Wanderbell = 2
+    
+    /// 情绪记录数量
+    static let emotionRecordCount_Wanderbell = 20
 }
 
 /// 本地数据管理类
@@ -24,6 +28,9 @@ class LocalData_Wanderbell {
     /// 帖子列表
     var titleList_Wanderbell: [TitleModel_Wanderbell] = []
     
+    /// 情绪记录列表
+    var emotionRecordList_Wanderbell: [EmotionRecord_Wanderbell] = []
+    
     /// 数据生成器
     private lazy var generator_Wanderbell: DataGenerator_Wanderbell = {
         return DataGenerator_Wanderbell(dataLocal_wanderbell: self)
@@ -36,6 +43,7 @@ class LocalData_Wanderbell {
         generator_Wanderbell.initUsers_Wanderbell()
         generator_Wanderbell.initPosts_Wanderbell()
         generator_Wanderbell.setUserLikes_Wanderbell()
+        generator_Wanderbell.initEmotionRecords_Wanderbell()
     }
     
     /// 获取排除指定用户的帖子列表
@@ -55,41 +63,40 @@ class LocalData_Wanderbell {
 private struct DataSource_Wanderbell {
     
     /// 用户信息列表 (用户名, 简介, 头像URL, 相册URL)
-    static let usersInfo_Wanderbell: [(String, String, String, String)] = [
-        ("EmberSeeker", "Love exploring around bonfires", "user_head_1", "user_album_1"),
-        ("ForestWhisper", "Nature enthusiast and storyteller", "user_head_2", "user_album_2"),
-        ("FlameJumper", "Adventure seeker and fire dancer", "user_head_3", "user_album_3"),
-        ("AshesToArt", "Turning moments into memories", "user_head_4", "user_album_4"),
-        ("NightGlow", "Capturing the magic of firelight", "user_head_5", "user_album_5"),
+    static let usersInfo_Wanderbell: [(String, String, String)] = [
+        ("MindfulSoul", "Releasing emotions, finding inner peace", "head1"),
+        ("CalmBreeze", "Every feeling is valid and deserves space", "head2"),
+        ("HealingHeart", "Documenting my emotional journey one day at a time", "head3"),
+        ("SerenitySeeker", "Learning to embrace all my emotions", "head4"),
+        ("PeacefulVessel", "My safe space for emotional release", "head5"),
     ]
     
-    /// 帖子信息列表 (标题, 内容, 媒体URL)
+    /// 帖子信息列表 (标题, 内容, 媒体URL/系统图标)
     static let postsInfo_Wanderbell: [(String, String, String)] = [
-        ("Perfect Bonfire Night", "The bonfire crackles softly, wrapping every face in warm light; we pass around s'mores, and stories flow as freely as the laughter. This is the kind of night that stays with you long after the embers fade.", "post_media_1"),
-        ("Magical Firelight", "There's something magical about firelight—it turns ordinary moments into treasures. Sitting here, feeling the warmth on my hands and listening to friends chat, I realize happiness is just this simple.", "post_media_2"),
-        ("Dancing Flames", "The flames dance and flicker, casting gentle shadows on the grass. No loud noises, no rush—just the glow of fire, the breeze, and people who make the night feel like home.", "post_media_3"),
-        ("Warm Hearts", "As the night grows darker, the bonfire burns brighter. It's not just the fire that warms us, but the company, the shared smiles, and the quiet connection between every heart here.", "post_media_4"),
-        ("Glowing Memories", "Look at this glowing fire and the grinning faces around it—this is what good nights are made of! Tag the person you'd drag to sit with you by such a bonfire.", "post_media_5"),
-        ("Absolute Perfection", "Last night's bonfire was absolute perfection: great friends, crispy marshmallows, and a fire that burned steady till midnight. Who's got a bonfire story to top this?", "post_media_6"),
-        ("Fire Family", "I used to think bonfires were just about fire, but now I know it's about the people. This crew turned a simple fire into an unforgettable night.", "post_media_7"),
-        ("Fun Activities", "We spent hours around this bonfire: singing off-key, playing silly games, and even debating whether the fire is orange or red. What's your go-to bonfire activity?", "post_media_8"),
-        ("Stars and Fire", "Above us, the sky is dotted with stars; below us, the bonfire paints the night in warm hues. The universe feels so big, yet this little circle of fire and friends makes everything feel so close.", "post_media_9"),
-        ("Peaceful Embers", "Embers drift up like tiny fireflies, mixing with the stars in the dark. I sit here, quiet, and let the warmth seep into my bones—this is the peace I've been craving.", "post_media_10"),
+        ("Sunshine in My Heart", "Today was filled with pure joy! Everything felt lighter, and I couldn't stop smiling. Sometimes happiness finds you in the most unexpected moments.", "title1"),
+        ("Finding My Calm", "Spent the afternoon by the lake, just breathing and being present. The water was so still, and for the first time in weeks, so was my mind. Peace feels like coming home.", "title2"),
+        ("Heavy Heart Today", "Some days the sadness feels overwhelming. But I'm learning that it's okay to not be okay. Writing this helps me process and release what I'm holding inside.", "title3"),
+        ("Anxiety Waves", "My mind won't stop racing with what-ifs and worries. Recording this to remind myself: this feeling is temporary, and I've gotten through it before.", "title4"),
+        ("Fire Within", "Frustration and anger bubbling up today. Instead of holding it in, I'm letting it out here. Acknowledging these feelings so they don't consume me.", "title5"),
+        ("Pure Excitement", "Can't contain this energy! Everything feels possible right now. Life is full of opportunities and I'm ready to grab them all!", "title6"),
+        ("Exhausted but Healing", "So tired today, both physically and emotionally. But I'm proud of myself for showing up anyway. Rest is part of the journey.", "title7"),
+        ("Grateful Heart", "Taking a moment to appreciate the small things: morning coffee, a kind text, the sunset. Gratitude shifts everything.", "title8"),
+        ("Emotional Roller Coaster", "Today I felt everything at once—joy, sadness, hope, fear. And that's okay. I'm human, and my vessel holds space for all of it.", "title9"),
     ]
     
     /// 评论列表 (评论1, 评论2)
     static let comments_Wanderbell: [(String, String)] = [
-        ("This looks absolutely magical! Nothing beats a bonfire with good friends", "S'mores and stories by the fire—that's the perfect night right there!"),
-        ("You captured the essence of what makes bonfires special! Love this vibe", "The simplicity of firelight and friendship is truly magical. Beautiful moment!"),
-        ("Those dancing flames and peaceful vibes—I can feel the warmth through the screen!", "This is exactly what I needed to see today. Time to plan a bonfire night!"),
-        ("The connection between hearts around a fire is something special. Beautifully said!", "Love how you describe the warmth coming from both the fire and the company"),
-        ("Already know who I'd tag for this! Nothing beats bonfire nights with the right people", "First thing I'd share? Probably my terrible ghost stories! Who's with me?"),
-        ("Our bonfire story: We accidentally used green wood and it wouldn't stop smoking!", "Crispy marshmallows till midnight sounds perfect! Need to organize one soon"),
-        ("Your fire family sounds amazing! Count me in for round two", "It really is all about the people. The fire is just an excuse to gather!"),
-        ("Off-key singing is mandatory at our bonfires too! Also love the fire color debate", "My go-to activity: trying to roast the perfect marshmallow"),
-        ("The stars above and fire below—this is poetry in real life!", "That feeling of the universe being big yet feeling so close... perfectly captured!"),
-        ("The embers mixing with stars is such a beautiful image. Pure peace", "Sometimes we just need warmth seeping into our bones and quiet moments"),
+        ("I feel this so much! Your joy is contagious 🌟", "Smiling while reading this. Thank you for sharing your light!"),
+        ("This is exactly what I needed today. Finding calm is such a gift 🙏", "The lake sounds perfect. I need to find my peaceful spot too."),
+        ("Sending you a virtual hug. It takes courage to share this 💜", "Thank you for being vulnerable. You're not alone in this feeling."),
+        ("Anxiety is so real. Proud of you for acknowledging it!", "You've got this! One breath at a time, friend."),
+        ("Valid feelings! Sometimes we need to let that fire burn 🔥", "Acknowledging anger is healthy. Hope you find release soon."),
+        ("Your energy is infectious! Go chase those dreams! ✨", "YES! Ride this wave of excitement, you deserve it!"),
+        ("Rest is productive too. Be gentle with yourself 🌙", "Proud of you for recognizing what you need. Self-care matters."),
+        ("Gratitude is a superpower. Love this perspective 🌸", "The small things really are the big things. Beautiful reminder!"),
+        ("Life is messy and that's okay. Thanks for the realness 🌈", "Every emotion is part of your story. Keep being authentic!"),
     ]
+    
 }
 
 // MARK: - 随机数工具类
@@ -140,16 +147,17 @@ class DataGenerator_Wanderbell {
         dataLocal_wanderbell.userList_Wanderbell.removeAll()
         
         for (index_wanderbell, userInfo_wanderbell) in DataSource_Wanderbell.usersInfo_Wanderbell.enumerated() {
-            let (username_wanderbell, introduce_wanderbell, userHead_wanderbell, userAlbum_wanderbell) = userInfo_wanderbell
+            let (username_wanderbell, introduce_wanderbell, userHead_wanderbell) = userInfo_wanderbell
             
             let user_wanderbell = PrewUserModel_Wanderbell()
             user_wanderbell.userId_Wanderbell = index_wanderbell + DataConfig_Wanderbell.userIdStart_Wanderbell
             user_wanderbell.userName_Wanderbell = username_wanderbell
             user_wanderbell.userIntroduce_Wanderbell = introduce_wanderbell
             user_wanderbell.userHead_Wanderbell = userHead_wanderbell
-            user_wanderbell.userMedia_Wanderbell = [userAlbum_wanderbell]
+            user_wanderbell.userMedia_Wanderbell = []
             user_wanderbell.userLike_Wanderbell = []
-            
+            user_wanderbell.userFollowCount_Wanderbell = 15 + Int.random(in: 1...50)
+            user_wanderbell.userFollowers_Wanderbell = 20 + Int.random(in: 1...50)
             dataLocal_wanderbell.userList_Wanderbell.append(user_wanderbell)
         }
     }
@@ -239,6 +247,72 @@ class DataGenerator_Wanderbell {
             )
             
             dataLocal_wanderbell.userList_Wanderbell[i_wanderbell].userLike_Wanderbell = likePosts_wanderbell
+        }
+    }
+    
+    /// 初始化生成情绪记录数据（从帖子数据生成）
+    func initEmotionRecords_Wanderbell() {
+        guard let dataLocal_wanderbell = dataLocal_Wanderbell else { return }
+        dataLocal_wanderbell.emotionRecordList_Wanderbell.removeAll()
+        
+        let calendar_wanderbell = Calendar.current
+        let emotionTypes_wanderbell = EmotionType_Wanderbell.getAllBasicTypes_Wanderbell()
+        
+        // 从帖子数据生成情绪记录
+        for (index_wanderbell, postInfo_wanderbell) in DataSource_Wanderbell.postsInfo_Wanderbell.enumerated() {
+            let (_, content_wanderbell, _) = postInfo_wanderbell
+            
+            // 循环分配用户
+            let userIndex_wanderbell = index_wanderbell % dataLocal_wanderbell.userList_Wanderbell.count
+            guard userIndex_wanderbell < dataLocal_wanderbell.userList_Wanderbell.count else { continue }
+            let user_wanderbell = dataLocal_wanderbell.userList_Wanderbell[userIndex_wanderbell]
+            
+            // 循环分配情绪类型
+            let emotionType_wanderbell = emotionTypes_wanderbell[index_wanderbell % emotionTypes_wanderbell.count]
+            
+            // 从内容中提取标签
+            var tags_wanderbell: [String] = []
+            if content_wanderbell.contains("joy") || content_wanderbell.contains("happy") || content_wanderbell.contains("smile") {
+                tags_wanderbell.append("joy")
+            }
+            if content_wanderbell.contains("peace") || content_wanderbell.contains("calm") {
+                tags_wanderbell.append("peace")
+            }
+            if content_wanderbell.contains("anxiety") || content_wanderbell.contains("worry") {
+                tags_wanderbell.append("stress")
+            }
+            if content_wanderbell.contains("grateful") {
+                tags_wanderbell.append("gratitude")
+            }
+            if tags_wanderbell.isEmpty {
+                tags_wanderbell = ["reflection"]
+            }
+            
+            // 生成随机时间戳（最近30天内）
+            let daysAgo_wanderbell = RandomUtil_Wanderbell.nextInt_Wanderbell(min_wanderbell: 0, range_wanderbell: 30)
+            let timestamp_wanderbell = calendar_wanderbell.date(byAdding: .day, value: -daysAgo_wanderbell, to: Date()) ?? Date()
+            
+            // 随机添加时间偏移（0-23小时）
+            let hoursOffset_wanderbell = RandomUtil_Wanderbell.nextInt_Wanderbell(min_wanderbell: 0, range_wanderbell: 24)
+            let finalTimestamp_wanderbell = calendar_wanderbell.date(byAdding: .hour, value: hoursOffset_wanderbell, to: timestamp_wanderbell) ?? timestamp_wanderbell
+            
+            // 随机强度（1-5）
+            let intensity_wanderbell = RandomUtil_Wanderbell.nextInt_Wanderbell(min_wanderbell: 1, range_wanderbell: 5)
+            
+            // 创建情绪记录
+            let record_wanderbell = EmotionRecord_Wanderbell(
+                recordId_Wanderbell: index_wanderbell + DataConfig_Wanderbell.emotionRecordIdStart_Wanderbell,
+                userId_Wanderbell: user_wanderbell.userId_Wanderbell ?? 0,
+                emotionType_Wanderbell: emotionType_wanderbell,
+                customEmotion_Wanderbell: nil,
+                intensity_Wanderbell: intensity_wanderbell,
+                note_Wanderbell: content_wanderbell,
+                media_Wanderbell: [],
+                timestamp_Wanderbell: finalTimestamp_wanderbell,
+                tags_Wanderbell: tags_wanderbell
+            )
+            
+            dataLocal_wanderbell.emotionRecordList_Wanderbell.append(record_wanderbell)
         }
     }
 }

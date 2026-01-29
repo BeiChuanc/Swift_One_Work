@@ -59,6 +59,14 @@ class TitleViewModel_Wanderbell {
         return UserViewModel_Wanderbell.shared_Wanderbell.isLikedByCurrentUser_Wanderbell(post_wanderbell: post_wanderbell)
     }
     
+    /// 根据帖子ID获取帖子
+    /// 参数：
+    /// - postId_wanderbell: 帖子ID
+    /// 返回值：帖子模型，如果不存在返回nil
+    func getPostById_Wanderbell(postId_wanderbell: Int) -> TitleModel_Wanderbell? {
+        return posts_Wanderbell.first { $0.titleId_Wanderbell == postId_wanderbell }
+    }
+    
     // MARK: - 公共方法 - 发布帖子
     
     /// 发布帖子
@@ -171,6 +179,19 @@ class TitleViewModel_Wanderbell {
         notifyStateChange_Wanderbell()
     }
     
+    /// 添加评论到帖子
+    /// 参数：
+    /// - to: 目标帖子
+    /// - comment: 评论模型
+    func addComment_Wanderbell(to post_wanderbell: TitleModel_Wanderbell, comment: Comment_Wanderbell) {
+        // 找到对应的帖子并添加评论
+        if let index_wanderbell = posts_Wanderbell.firstIndex(where: { $0.titleId_Wanderbell == post_wanderbell.titleId_Wanderbell }) {
+            posts_Wanderbell[index_wanderbell].reviews_Wanderbell.append(comment)
+        }
+        
+        notifyStateChange_Wanderbell()
+    }
+    
     /// 删除评论
     func deleteComment_Wanderbell(
         post_wanderbell: TitleModel_Wanderbell,
@@ -239,16 +260,11 @@ class TitleViewModel_Wanderbell {
     }
     
     /// 显示登录提示
-    private func showLoginPrompt_Wanderbell() {
-        Utils_Wanderbell.showWarning_Wanderbell(
-            message_wanderbell: "Please login first.",
-            delay_wanderbell: 1.5
-        )
-        
+    private func showLoginPrompt_Wanderbell() {        
         // 延迟跳转到登录页面
         Task {
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒
-            Navigation_Wanderbell.toLogin_Wanderbell(style_wanderbell: .present_wanderbell)
+            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
+            Navigation_Wanderbell.toLogin_Wanderbell(style_wanderbell: .push_wanderbell)
         }
     }
 }
