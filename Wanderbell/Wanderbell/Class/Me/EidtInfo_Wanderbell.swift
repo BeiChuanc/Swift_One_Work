@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import SnapKit
-import YPImagePicker
 
 // MARK: 修改我的信息
 
@@ -263,31 +262,20 @@ class EditInfo_Wanderbell: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     
+    /// 更换头像
+    /// 功能：打开系统相册选择器，仅支持选择图片
+    /// 参数：无
+    /// 返回值：无
+    /// 异常场景：用户取消选择时不执行任何操作
     private func changeAvatar_Wanderbell() {
-        var config_wanderbell = YPImagePickerConfiguration()
-        config_wanderbell.library.maxNumberOfItems = 1
-        config_wanderbell.screens = [.library]
-        config_wanderbell.library.mediaType = .photo
-        config_wanderbell.showsPhotoFilters = false
-        config_wanderbell.shouldSaveNewPicturesToAlbum = false
-        
-        let picker_wanderbell = YPImagePicker(configuration: config_wanderbell)
-        
-        picker_wanderbell.didFinishPicking { [weak self] items, cancelled in
-            if !cancelled {
-                for item in items {
-                    switch item {
-                    case .photo(let photo):
-                        self?.handleAvatarSelected_Wanderbell(image: photo.image)
-                    default:
-                        break
-                    }
-                }
+        // 使用工具类选择图片
+        MediaPickerHelper_Wanderbell.pickImage_Wanderbell(from: self) { [weak self] image_wanderbell in
+            if let image_wanderbell = image_wanderbell {
+                self?.handleAvatarSelected_Wanderbell(image: image_wanderbell)
+            } else {
+                print("⚠️ 用户取消选择头像")
             }
-            picker_wanderbell.dismiss(animated: true)
         }
-        
-        present(picker_wanderbell, animated: true)
     }
     
     private func handleAvatarSelected_Wanderbell(image: UIImage) {

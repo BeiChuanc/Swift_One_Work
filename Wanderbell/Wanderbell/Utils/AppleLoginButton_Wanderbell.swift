@@ -225,8 +225,9 @@ extension AppleLoginManager_Wanderbell: ASAuthorizationControllerDelegate {
     nonisolated func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: any Error) {
         Task { @MainActor in
             if let authError_wanderbell = error as? ASAuthorizationError {
-                var errorMessage_wanderbell = ""
                 
+                var errorMessage_wanderbell = ""
+
                 switch authError_wanderbell.code {
                 case .unknown:
                     errorMessage_wanderbell = "Unknown error"
@@ -250,11 +251,19 @@ extension AppleLoginManager_Wanderbell: ASAuthorizationControllerDelegate {
                     errorMessage_wanderbell = "Matched excluded credential"
                     print("❌ 该凭证属于被排除的范围")
                 case .credentialImport:
+                    errorMessage_wanderbell = "Credential import"
                     print("❌ 凭证导入")
                 case .credentialExport:
+                    errorMessage_wanderbell = "Credential export"
                     print("❌ 凭证导出")
+                case .preferSignInWithApple:
+                    errorMessage_wanderbell = "Prefer sign in with Apple"
+                    print("❌ 偏好使用Apple登录")
+                case .deviceNotConfiguredForPasskeyCreation:
+                    errorMessage_wanderbell = "Device not configured for Passkey creation"
+                    print("❌ 设备未配置用于创建Passkey")
                 @unknown default:
-                    errorMessage_wanderbell = "Other error"
+                    errorMessage_wanderbell = "Unknown error"
                     print("❌ 授权其他原因")
                 }
                 

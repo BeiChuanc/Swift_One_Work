@@ -1,5 +1,4 @@
 # Uncomment the next line to define a global platform for your project
-# platform :ios, '9.0'
 
 target 'Wanderbell' do
   # Comment the next line if you don't want to use dynamic frameworks
@@ -10,27 +9,18 @@ target 'Wanderbell' do
   pod 'ProgressHUD'
   pod 'IQKeyboardManager'
   pod 'AppsFlyerFramework', '6.14.4'
-  pod 'YPImagePicker'
   pod 'Kingfisher', '7.6.2'
   pod 'FSPagerView'
-  
-  # 日历组件 - 情绪日历
   pod 'FSCalendar'
-  
-  # 瀑布流布局
   pod 'CHTCollectionViewWaterfallLayout'
-  
-  # 骨架屏和动画
   pod 'SkeletonView'
-  
-  # Lottie动画
   pod 'lottie-ios'
 
 end
 post_install do |installer|
     installer.pods_project.targets.each do |target|
         target.build_configurations.each do |config|
-            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
         end
     end
 end

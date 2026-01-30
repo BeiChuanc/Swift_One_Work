@@ -67,7 +67,7 @@ class UserViewModel_Base_one {
     /// 通过用户ID登录
     func loginById_Base_one(userId_base_one: Int) {
         // 显示加载动画
-        Utils_Base_one.showLoading_Base_one(message_base_one: "Logging in...")
+        Utils_Base_one.showLoading_Base_one(message_Base_one: "Logging in...")
         
         // 创建登录用户
         loggedUser_Base_one = LoginUserModel_Base_one(
@@ -88,7 +88,7 @@ class UserViewModel_Base_one {
             Utils_Base_one.dismissLoading_Base_one()
             
             // 显示成功提示
-            Utils_Base_one.showSuccess_Base_one(message_base_one: "Login successful!")
+            Utils_Base_one.showSuccess_Base_one(message_Base_one: "Login successful!")
             
             // 切换到主Tabbar
             Navigation_Base_one.switchToTabbar_Base_one(animated: true)
@@ -105,7 +105,7 @@ class UserViewModel_Base_one {
         }
         
         // 显示加载动画
-        Utils_Base_one.showLoading_Base_one(message_base_one: "Logging out...")
+        Utils_Base_one.showLoading_Base_one(message_Base_one: "Logging out...")
         
         // 重置为游客状态
         loggedUser_Base_one = defaultUser_Base_one
@@ -130,11 +130,11 @@ class UserViewModel_Base_one {
             
             if logoutType_base_one == .delete_base_one {
                 Utils_Base_one.showInfo_Base_one(
-                    message_base_one: "The account will be deleted after 24 hours. If you log in within 24 hours, it will be considered a logout failure.",
-                    delay_base_one: 3.0
+                    message_Base_one: "The account will be deleted after 24 hours. If you log in within 24 hours, it will be considered a logout failure.",
+                    delay_Base_one: 3.0
                 )
             } else {
-                Utils_Base_one.showSuccess_Base_one(message_base_one: "Logout successful")
+                Utils_Base_one.showSuccess_Base_one(message_Base_one: "Logout successful")
             }
         }
     }
@@ -146,7 +146,7 @@ class UserViewModel_Base_one {
         guard let user_base_one = loggedUser_Base_one else { return }
         user_base_one.userHead_Base_one = headUrl_base_one
         loggedUser_Base_one = user_base_one
-        Utils_Base_one.showSuccess_Base_one(message_base_one: "Avatar updated successfully")
+        Utils_Base_one.showSuccess_Base_one(message_Base_one: "Avatar updated successfully")
         notifyStateChange_Base_one()
     }
     
@@ -155,13 +155,13 @@ class UserViewModel_Base_one {
         guard let user_base_one = loggedUser_Base_one else { return }
         user_base_one.userName_Base_one = userName_base_one
         loggedUser_Base_one = user_base_one
-        Utils_Base_one.showSuccess_Base_one(message_base_one: "Name updated successfully")
+        Utils_Base_one.showSuccess_Base_one(message_Base_one: "Name updated successfully")
         notifyStateChange_Base_one()
     }
     
     /// 上传用户封面
     func uploadCover_Base_one(coverUrl_base_one: String) {
-        Utils_Base_one.showSuccess_Base_one(message_base_one: "Cover updated successfully")
+        Utils_Base_one.showSuccess_Base_one(message_Base_one: "Cover updated successfully")
         notifyStateChange_Base_one()
     }
     
@@ -178,15 +178,15 @@ class UserViewModel_Base_one {
     func checkIn_Base_one() {
         if hasCheckedInToday_Base_one() {
             Utils_Base_one.showWarning_Base_one(
-                message_base_one: "You have already checked in today."
+                message_Base_one: "You have already checked in today."
             )
             return
         }
         
         // 更新打卡信息（需要在LoginUserModel中添加extra字段）
         Utils_Base_one.showSuccess_Base_one(
-            message_base_one: "Check-in successful!",
-            image_base_one: UIImage(systemName: "checkmark.seal.fill")
+            message_Base_one: "Check-in successful!",
+            image_Base_one: UIImage(systemName: "checkmark.seal.fill")
         )
         notifyStateChange_Base_one()
     }
@@ -224,7 +224,7 @@ class UserViewModel_Base_one {
         guard let userId_base_one = user_base_one.userId_Base_one else { return }
         
         // 显示加载动画
-        Utils_Base_one.showLoading_Base_one(message_base_one: "Processing...")
+        Utils_Base_one.showLoading_Base_one(message_Base_one: "Processing...")
         
         // 取消关注
         // 从关注列表中移除（需要实现）
@@ -247,8 +247,8 @@ class UserViewModel_Base_one {
             try? await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
             Utils_Base_one.dismissLoading_Base_one()
             Utils_Base_one.showSuccess_Base_one(
-                message_base_one: "This user will no longer appear.",
-                delay_base_one: 2.0
+                message_Base_one: "This user will no longer appear.",
+                delay_Base_one: 2.0
             )
         }
         
@@ -344,8 +344,8 @@ class UserViewModel_Base_one {
     /// 显示登录提示
     private func showLoginPrompt_Base_one() {
         Utils_Base_one.showWarning_Base_one(
-            message_base_one: "Please login first.",
-            delay_base_one: 1.5
+            message_Base_one: "Please login first.",
+            delay_Base_one: 1.5
         )
         
         // 延迟跳转到登录页面

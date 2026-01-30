@@ -96,8 +96,8 @@ class TitleViewModel_Base_one {
         UserViewModel_Base_one.shared_Base_one.addPostToCurrentUser_Base_one(post_base_one: newPost_base_one)
         
         Utils_Base_one.showSuccess_Base_one(
-            message_base_one: "Published successfully.",
-            image_base_one: UIImage(systemName: "checkmark.circle.fill")
+            message_Base_one: "Published successfully.",
+            image_Base_one: UIImage(systemName: "checkmark.circle.fill")
         )
         notifyStateChange_Base_one()
     }
@@ -120,9 +120,9 @@ class TitleViewModel_Base_one {
             : "This post will no longer appear."
         
         Utils_Base_one.showSuccess_Base_one(
-            message_base_one: message_base_one,
-            image_base_one: UIImage(systemName: "trash.fill"),
-            delay_base_one: 1.5
+            message_Base_one: message_base_one,
+            image_Base_one: UIImage(systemName: "trash.fill"),
+            delay_Base_one: 1.5
         )
         
         notifyStateChange_Base_one()
@@ -164,8 +164,8 @@ class TitleViewModel_Base_one {
         }
         
         Utils_Base_one.showSuccess_Base_one(
-            message_base_one: "Comment posted",
-            image_base_one: UIImage(systemName: "bubble.left.fill")
+            message_Base_one: "Comment posted",
+            image_Base_one: UIImage(systemName: "bubble.left.fill")
         )
         
         notifyStateChange_Base_one()
@@ -189,8 +189,8 @@ class TitleViewModel_Base_one {
             : "This comment will no longer appear."
         
         Utils_Base_one.showSuccess_Base_one(
-            message_base_one: message_base_one,
-            delay_base_one: 1.5
+            message_Base_one: message_base_one,
+            delay_Base_one: 1.5
         )
         
         notifyStateChange_Base_one()
@@ -241,8 +241,8 @@ class TitleViewModel_Base_one {
     /// 显示登录提示
     private func showLoginPrompt_Base_one() {
         Utils_Base_one.showWarning_Base_one(
-            message_base_one: "Please login first.",
-            delay_base_one: 1.5
+            message_Base_one: "Please login first.",
+            delay_Base_one: 1.5
         )
         
         // 延迟跳转到登录页面

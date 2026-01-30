@@ -149,6 +149,8 @@ class DataGenerator_Base_one {
             user_base_one.userHead_Base_one = userHead_base_one
             user_base_one.userMedia_Base_one = [userAlbum_base_one]
             user_base_one.userLike_Base_one = []
+            user_base_one.userFollow_Base_one = 15 + Int.random(in: 1...50)
+            user_base_one.userFans_Base_one = 20 + Int.random(in: 1...50)
             
             dataLocal_base_one.userList_Base_one.append(user_base_one)
         }

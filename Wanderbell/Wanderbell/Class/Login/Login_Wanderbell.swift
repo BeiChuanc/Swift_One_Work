@@ -650,9 +650,7 @@ class Login_Wanderbell: UIViewController {
                 print("❌ Apple登录失败：\(errorMessage_wanderbell)")
                 
                 // 如果不是取消操作，显示错误提示
-                if errorMessage_wanderbell != "Authorization canceled" {
-                    Utils_Wanderbell.showError_Wanderbell(message_wanderbell: "Apple Sign In Failed")
-                }
+                if errorMessage_wanderbell != "Authorization canceled" {}
             }
         )
     }

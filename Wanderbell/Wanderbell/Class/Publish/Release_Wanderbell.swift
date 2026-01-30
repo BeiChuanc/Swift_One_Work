@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import SnapKit
-import YPImagePicker
 import AVFoundation
 
 // MARK: 发布页面
@@ -745,34 +744,25 @@ class Release_Wanderbell: UIViewController {
     
     // MARK: - 媒体选择
     
+    /// 显示媒体选择器
+    /// 功能：打开系统相册选择器，支持图片和视频
+    /// 参数：无
+    /// 返回值：无
+    /// 异常场景：用户取消选择时不执行任何操作
     private func showMediaPicker_Wanderbell() {
-        var config_wanderbell = YPImagePickerConfiguration()
-        config_wanderbell.library.maxNumberOfItems = 1
-        config_wanderbell.screens = [.library] // 只从相册选择
-        config_wanderbell.library.mediaType = .photoAndVideo
-        config_wanderbell.video.compression = AVAssetExportPresetMediumQuality
-        config_wanderbell.showsPhotoFilters = false
-        config_wanderbell.shouldSaveNewPicturesToAlbum = false
-        config_wanderbell.hidesStatusBar = false
-        config_wanderbell.hidesBottomBar = false
-        
-        let picker_wanderbell = YPImagePicker(configuration: config_wanderbell)
-        
-        picker_wanderbell.didFinishPicking { [weak self] items, cancelled in
-            if !cancelled {
-                for item in items {
-                    switch item {
-                    case .photo(let photo):
-                        self?.handleSelectedPhoto_Wanderbell(photo: photo.image)
-                    case .video(let video):
-                        self?.handleSelectedVideo_Wanderbell(url: video.url)
-                    }
-                }
+        // 使用工具类选择媒体
+        MediaPickerHelper_Wanderbell.pickMedia_Wanderbell(from: self) { [weak self] result_wanderbell in
+            switch result_wanderbell {
+            case .photo_Wanderbell(let image_wanderbell):
+                self?.handleSelectedPhoto_Wanderbell(photo: image_wanderbell)
+                
+            case .video_Wanderbell(let url_wanderbell):
+                self?.handleSelectedVideo_Wanderbell(url: url_wanderbell)
+                
+            case .cancelled_Wanderbell:
+                print("⚠️ 用户取消选择媒体")
             }
-            picker_wanderbell.dismiss(animated: true)
         }
-        
-        present(picker_wanderbell, animated: true)
     }
     
     private func handleSelectedPhoto_Wanderbell(photo: UIImage) {

@@ -22,7 +22,13 @@ class PrewUserModel_Base_one: NSObject, Codable {
     
     /// 用户喜欢帖子列表
     var userLike_Base_one: [TitleModel_Base_one] = []
-    
+
+    /// 用户关注数
+    var userFollow_Base_one: Int?
+
+    /// 用户粉丝数
+    var userFans_Base_one: Int?
+
     /// 初始化
     override init() {
         super.init()
@@ -34,13 +40,17 @@ class PrewUserModel_Base_one: NSObject, Codable {
          userIntroduce_Base_one: String? = nil,
          userHead_Base_one: String? = nil,
          userMedia_Base_one: [String]? = nil,
-         userLike_Base_one: [TitleModel_Base_one] = []) {
+         userLike_Base_one: [TitleModel_Base_one] = [],
+         userFollow_Base_one: Int? = nil,
+         userFans_Base_one: Int? = nil) {
         self.userId_Base_one = userId_Base_one
         self.userName_Base_one = userName_Base_one
         self.userIntroduce_Base_one = userIntroduce_Base_one
         self.userHead_Base_one = userHead_Base_one
         self.userMedia_Base_one = userMedia_Base_one
         self.userLike_Base_one = userLike_Base_one
+        self.userFollow_Base_one = userFollow_Base_one
+        self.userFans_Base_one = userFans_Base_one
         super.init()
     }
 }

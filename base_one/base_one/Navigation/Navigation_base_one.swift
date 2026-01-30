@@ -11,6 +11,9 @@ enum NavigationStyle_Base_one {
     
     /// Present方式（模态展示）
     case present_base_one
+
+    /// Replace方式（替换当前视图控制器）
+    case replace_base_one
 }
 
 /// 页面导航管理器
@@ -53,63 +56,118 @@ class Navigation_Base_one: NSObject {
         fromVC?.dismiss(animated: animated, completion: completion)
     }
     
+    /// Replace方式替换当前页面
+    static func replace_Base_one(to viewController: UIViewController, animated: Bool = true, from: UIViewController? = nil) {
+        let fromVC = from ?? currentViewController_Base_one()
+        guard let navigationController_base_one = fromVC?.navigationController else {
+            print("⚠️ 警告：当前视图控制器没有导航控制器，无法替换")
+            return
+        }
+        
+        // 获取当前导航栈
+        var viewControllers_base_one = navigationController_base_one.viewControllers
+        
+        // 替换最后一个视图控制器
+        if !viewControllers_base_one.isEmpty {
+            viewControllers_base_one[viewControllers_base_one.count - 1] = viewController
+            navigationController_base_one.setViewControllers(viewControllers_base_one, animated: animated)
+        } else {
+            // 如果导航栈为空，直接push
+            navigationController_base_one.pushViewController(viewController, animated: animated)
+        }
+    }
+    
     // MARK: - 通用导航方法
     
     /// 根据导航方式跳转到指定页面
     static func navigateToViewController_Base_one(
         viewController_base_one: UIViewController,
         style_base_one: NavigationStyle_Base_one,
-        wrapInNavigation_base_one: Bool = true,
+        wrapInNavigation_base_one: Bool? = nil,
         animated_base_one: Bool = true,
         completion_base_one: (() -> Void)? = nil
     ) {
+        // 智能判断是否需要包装导航控制器：present 模式默认包装，其他模式默认不包装
+        let shouldWrapInNavigation_base_one = wrapInNavigation_base_one ?? (style_base_one == .present_base_one)
+        
         switch style_base_one {
         case .push_base_one:
             push_Base_one(to: viewController_base_one, animated: animated_base_one)
+            completion_base_one?()
             
         case .present_base_one:
-            if wrapInNavigation_base_one {
-                let nav_base_one = UINavigationController(rootViewController: viewController_base_one)
-                nav_base_one.modalPresentationStyle = .fullScreen
-                present_Base_one(viewController: nav_base_one, animated: animated_base_one, completion: completion_base_one)
-            } else {
-                viewController_base_one.modalPresentationStyle = .fullScreen
-                present_Base_one(viewController: viewController_base_one, animated: animated_base_one, completion: completion_base_one)
-            }
+            let targetVC_base_one = shouldWrapInNavigation_base_one 
+                ? createNavigationController_Base_one(rootViewController: viewController_base_one)
+                : viewController_base_one
+            
+            targetVC_base_one.modalPresentationStyle = .fullScreen
+            present_Base_one(viewController: targetVC_base_one, animated: animated_base_one, completion: completion_base_one)
+            
+        case .replace_base_one:
+            replace_Base_one(to: viewController_base_one, animated: animated_base_one)
+            completion_base_one?()
         }
     }
     
+    /// 创建导航控制器
+    private static func createNavigationController_Base_one(rootViewController: UIViewController) -> UINavigationController {
+        let nav_base_one = UINavigationController(rootViewController: rootViewController)
+        nav_base_one.modalPresentationStyle = .fullScreen
+        return nav_base_one
+    }
+    
+    /// 通用的页面跳转方法（简化版）
+    private static func navigate_Base_one(
+        to viewController_base_one: UIViewController,
+        style_base_one: NavigationStyle_Base_one,
+        animated_base_one: Bool = true,
+        completion_base_one: (() -> Void)? = nil
+    ) {
+        navigateToViewController_Base_one(
+            viewController_base_one: viewController_base_one,
+            style_base_one: style_base_one,
+            wrapInNavigation_base_one: nil, // 使用智能判断
+            animated_base_one: animated_base_one,
+            completion_base_one: completion_base_one
+        )
+    }
+    
     // MARK: - 主导航
-    static func setRootToTabbar_Base_one(window: UIWindow?) {
+    
+    /// 验证 Window 是否有效
+    private static func validateWindow_Base_one(_ window: UIWindow?) -> UIWindow? {
         guard let window = window else {
             print("❌ 错误：Window为空，无法设置根视图控制器")
-            return
+            return nil
         }
+        return window
+    }
+    
+    /// 设置根视图控制器到 Tabbar
+    static func setRootToTabbar_Base_one(window: UIWindow?) {
+        guard let validWindow_base_one = validateWindow_Base_one(window) else { return }
         
-        let tabbar = TabBar_Base_one()
-        let nav = UINavigationController(rootViewController: tabbar)
-        nav.navigationBar.isHidden = true
+        let tabbar_base_one = TabBar_Base_one()
+        let nav_base_one = UINavigationController(rootViewController: tabbar_base_one)
+        nav_base_one.navigationBar.isHidden = true
         
-        window.rootViewController = nav
-        window.makeKeyAndVisible()
+        validWindow_base_one.rootViewController = nav_base_one
+        validWindow_base_one.makeKeyAndVisible()
     }
     
     /// 设置根视图控制器（通用方法）
     static func setRootViewController_Base_one(viewController: UIViewController, window: UIWindow?, animated: Bool = false) {
-        guard let window = window else {
-            print("❌ 错误：Window为空，无法设置根视图控制器")
-            return
-        }
+        guard let validWindow_base_one = validateWindow_Base_one(window) else { return }
         
         if animated {
             // 添加过渡动画
-            UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: {
-                window.rootViewController = viewController
+            UIView.transition(with: validWindow_base_one, duration: 0.3, options: .transitionCrossDissolve, animations: {
+                validWindow_base_one.rootViewController = viewController
             }, completion: nil)
         } else {
-            window.rootViewController = viewController
+            validWindow_base_one.rootViewController = viewController
         }
-        window.makeKeyAndVisible()
+        validWindow_base_one.makeKeyAndVisible()
     }
     
     /// 获取AppDelegate中的Window
@@ -142,11 +200,9 @@ class Navigation_Base_one: NSObject {
         animated_base_one: Bool = true,
         completion_base_one: (() -> Void)? = nil
     ) {
-        let loginVC = Login_Base_one()
-        navigateToViewController_Base_one(
-            viewController_base_one: loginVC,
+        navigate_Base_one(
+            to: Login_Base_one(),
             style_base_one: style_base_one,
-            wrapInNavigation_base_one: true,
             animated_base_one: animated_base_one,
             completion_base_one: completion_base_one
         )
@@ -158,11 +214,9 @@ class Navigation_Base_one: NSObject {
         animated_base_one: Bool = true,
         completion_base_one: (() -> Void)? = nil
     ) {
-        let registerVC = Register_Base_one()
-        navigateToViewController_Base_one(
-            viewController_base_one: registerVC,
+        navigate_Base_one(
+            to: Register_Base_one(),
             style_base_one: style_base_one,
-            wrapInNavigation_base_one: true,
             animated_base_one: animated_base_one,
             completion_base_one: completion_base_one
         )
@@ -175,13 +229,7 @@ class Navigation_Base_one: NSObject {
         style_base_one: NavigationStyle_Base_one = .push_base_one,
         animated_base_one: Bool = true
     ) {
-        let homeVC = Home_Base_one()
-        navigateToViewController_Base_one(
-            viewController_base_one: homeVC,
-            style_base_one: style_base_one,
-            wrapInNavigation_base_one: false,
-            animated_base_one: animated_base_one
-        )
+        navigate_Base_one(to: Home_Base_one(), style_base_one: style_base_one, animated_base_one: animated_base_one)
     }
     
     // MARK: - 发现页相关
@@ -191,13 +239,18 @@ class Navigation_Base_one: NSObject {
         style_base_one: NavigationStyle_Base_one = .push_base_one,
         animated_base_one: Bool = true
     ) {
-        let discoverVC = Discover_Base_one()
-        navigateToViewController_Base_one(
-            viewController_base_one: discoverVC,
-            style_base_one: style_base_one,
-            wrapInNavigation_base_one: false,
-            animated_base_one: animated_base_one
-        )
+        navigate_Base_one(to: Discover_Base_one(), style_base_one: style_base_one, animated_base_one: animated_base_one)
+    }
+    
+    /// 跳转到帖子详情页
+    static func toTitleDetail_Base_one(
+        titleModel_base_one: TitleModel_Base_one,
+        style_base_one: NavigationStyle_Base_one = .push_base_one,
+        animated_base_one: Bool = true
+    ) {
+        let detailVC_base_one = Detail_Base_one()
+        detailVC_base_one.titleModel_Base_one = titleModel_base_one
+        navigate_Base_one(to: detailVC_base_one, style_base_one: style_base_one, animated_base_one: animated_base_one)
     }
     
     // MARK: - 发布相关
@@ -208,11 +261,9 @@ class Navigation_Base_one: NSObject {
         animated_base_one: Bool = true,
         completion_base_one: (() -> Void)? = nil
     ) {
-        let releaseVC = Release_Base_one()
-        navigateToViewController_Base_one(
-            viewController_base_one: releaseVC,
+        navigate_Base_one(
+            to: Release_Base_one(),
             style_base_one: style_base_one,
-            wrapInNavigation_base_one: true,
             animated_base_one: animated_base_one,
             completion_base_one: completion_base_one
         )
@@ -225,13 +276,7 @@ class Navigation_Base_one: NSObject {
         style_base_one: NavigationStyle_Base_one = .push_base_one,
         animated_base_one: Bool = true
     ) {
-        let messageListVC = MessageList_Base_one()
-        navigateToViewController_Base_one(
-            viewController_base_one: messageListVC,
-            style_base_one: style_base_one,
-            wrapInNavigation_base_one: false,
-            animated_base_one: animated_base_one
-        )
+        navigate_Base_one(to: MessageList_Base_one(), style_base_one: style_base_one, animated_base_one: animated_base_one)
     }
     
     /// 跳转到用户消息聊天页（带用户模型）
@@ -241,12 +286,11 @@ class Navigation_Base_one: NSObject {
         animated_base_one: Bool = true,
         completion_base_one: (() -> Void)? = nil
     ) {
-        let messageUserVC = MessageUser_Base_one()
-        messageUserVC.userModel_Base_one = userModel_base_one
-        navigateToViewController_Base_one(
-            viewController_base_one: messageUserVC,
+        let messageUserVC_base_one = MessageUser_Base_one()
+        messageUserVC_base_one.userModel_Base_one = userModel_base_one
+        navigate_Base_one(
+            to: messageUserVC_base_one,
             style_base_one: style_base_one,
-            wrapInNavigation_base_one: (style_base_one == .present_base_one),
             animated_base_one: animated_base_one,
             completion_base_one: completion_base_one
         )
@@ -259,13 +303,7 @@ class Navigation_Base_one: NSObject {
         style_base_one: NavigationStyle_Base_one = .push_base_one,
         animated_base_one: Bool = true
     ) {
-        let meVC = Me_Base_one()
-        navigateToViewController_Base_one(
-            viewController_base_one: meVC,
-            style_base_one: style_base_one,
-            wrapInNavigation_base_one: false,
-            animated_base_one: animated_base_one
-        )
+        navigate_Base_one(to: Me_Base_one(), style_base_one: style_base_one, animated_base_one: animated_base_one)
     }
     
     /// 跳转到个人中心（带登录用户模型）
@@ -274,14 +312,9 @@ class Navigation_Base_one: NSObject {
         style_base_one: NavigationStyle_Base_one = .push_base_one,
         animated_base_one: Bool = true
     ) {
-        let meVC = Me_Base_one()
-        meVC.meModel_Base_one = userModel_base_one
-        navigateToViewController_Base_one(
-            viewController_base_one: meVC,
-            style_base_one: style_base_one,
-            wrapInNavigation_base_one: false,
-            animated_base_one: animated_base_one
-        )
+        let meVC_base_one = Me_Base_one()
+        meVC_base_one.meModel_Base_one = userModel_base_one
+        navigate_Base_one(to: meVC_base_one, style_base_one: style_base_one, animated_base_one: animated_base_one)
     }
     
     /// 跳转到用户信息页（带用户模型）
@@ -291,12 +324,11 @@ class Navigation_Base_one: NSObject {
         animated_base_one: Bool = true,
         completion_base_one: (() -> Void)? = nil
     ) {
-        let userInfoVC = UserInfo_Base_one()
-        userInfoVC.userModel_Base_one = userModel_base_one
-        navigateToViewController_Base_one(
-            viewController_base_one: userInfoVC,
+        let userInfoVC_base_one = UserInfo_Base_one()
+        userInfoVC_base_one.userModel_Base_one = userModel_base_one
+        navigate_Base_one(
+            to: userInfoVC_base_one,
             style_base_one: style_base_one,
-            wrapInNavigation_base_one: (style_base_one == .present_base_one),
             animated_base_one: animated_base_one,
             completion_base_one: completion_base_one
         )
@@ -307,13 +339,7 @@ class Navigation_Base_one: NSObject {
         style_base_one: NavigationStyle_Base_one = .push_base_one,
         animated_base_one: Bool = true
     ) {
-        let editInfoVC = EditInfo_Base_one()
-        navigateToViewController_Base_one(
-            viewController_base_one: editInfoVC,
-            style_base_one: style_base_one,
-            wrapInNavigation_base_one: false,
-            animated_base_one: animated_base_one
-        )
+        navigate_Base_one(to: EditInfo_Base_one(), style_base_one: style_base_one, animated_base_one: animated_base_one)
     }
     
     /// 跳转到设置页
@@ -321,19 +347,13 @@ class Navigation_Base_one: NSObject {
         style_base_one: NavigationStyle_Base_one = .push_base_one,
         animated_base_one: Bool = true
     ) {
-        let settingVC = Setting_Base_one()
-        navigateToViewController_Base_one(
-            viewController_base_one: settingVC,
-            style_base_one: style_base_one,
-            wrapInNavigation_base_one: false,
-            animated_base_one: animated_base_one
-        )
+        navigate_Base_one(to: Setting_Base_one(), style_base_one: style_base_one, animated_base_one: animated_base_one)
     }
     
-    // MARK: - 通用导航方法
+    // MARK: - 枚举导航方法
     
-    /// 根据导航类型枚举跳转（不带模型参数）
-    static func navigate_Base_one(
+    /// 根据导航类型枚举跳转
+    static func navigateByType_Base_one(
         to type_base_one: NavigationType_Base_one,
         style_base_one: NavigationStyle_Base_one = .push_base_one,
         animated_base_one: Bool = true
@@ -358,34 +378,6 @@ class Navigation_Base_one: NSObject {
         case .register:
             toRegister_Base_one(style_base_one: style_base_one, animated_base_one: animated_base_one)
         }
-    }
-    
-    // MARK: - 便捷组合方法
-    
-    /// 从用户信息页快速跳转到与该用户的聊天页
-    static func chatWithUser_Base_one(
-        userModel_base_one: PrewUserModel_Base_one,
-        style_base_one: NavigationStyle_Base_one = .push_base_one,
-        animated_base_one: Bool = true
-    ) {
-        toMessageUser_Base_one(
-            with: userModel_base_one,
-            style_base_one: style_base_one,
-            animated_base_one: animated_base_one
-        )
-    }
-    
-    /// 查看其他用户的个人主页
-    static func viewUserProfile_Base_one(
-        userModel_base_one: PrewUserModel_Base_one,
-        style_base_one: NavigationStyle_Base_one = .push_base_one,
-        animated_base_one: Bool = true
-    ) {
-        toUserInfo_Base_one(
-            with: userModel_base_one,
-            style_base_one: style_base_one,
-            animated_base_one: animated_base_one
-        )
     }
 }
 

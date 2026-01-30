@@ -28,7 +28,7 @@ extension UIAlertController {
     }
     
     /// 举报
-    static func report_Base_one(Id: Int, completeBlock: @escaping () -> Void) {
+    static func report_Base_one(with isUser: Bool = false, completeBlock: @escaping () -> Void) {
         var reportAlter_Base_one: UIAlertController!
         reportAlter_Base_one = UIAlertController(title: "More", message: nil, preferredStyle: .actionSheet)
         
@@ -39,7 +39,7 @@ extension UIAlertController {
         let report1_Base_one = UIAlertAction(title: NSLocalizedString("Report Sexually Explicit Material", comment: ""), style: .default,handler: reportCommon)
         let report2_Base_one = UIAlertAction(title: NSLocalizedString("Report spam", comment: ""), style: .default,handler: reportCommon)
         let report3_Base_one = UIAlertAction(title: NSLocalizedString("Report something else", comment: ""), style: .default,handler: reportCommon)
-        let report4_Base_one = UIAlertAction(title: NSLocalizedString("Block", comment: ""), style: .default,handler: reportCommon)
+        let report4_Base_one = UIAlertAction(title: NSLocalizedString(isUser ? "Block" : "Report", comment: ""), style: .default,handler: reportCommon)
         let cancel_Base_one = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: UIAlertAction.Style.cancel,handler: nil)
         reportAlter_Base_one.addAction(report1_Base_one)
         reportAlter_Base_one.addAction(report2_Base_one)
@@ -48,14 +48,5 @@ extension UIAlertController {
         reportAlter_Base_one.addAction(cancel_Base_one)
         reportAlter_Base_one.modalPresentationStyle = .overFullScreen
         UIViewController.currentViewController_Base_one()?.present(reportAlter_Base_one, animated: true, completion: nil)
-    }
-    
-    /// 全局提示
-    static func globalTips_Base_one(tips_Base_one: String) {
-        var tipsAlter_Base_one: UIAlertController!
-        tipsAlter_Base_one = UIAlertController(title: nil, message: tips_Base_one, preferredStyle: .alert)
-        let onAction_Base_one = UIAlertAction(title: "OK", style: .default, handler: nil)
-        tipsAlter_Base_one.addAction(onAction_Base_one)
-        UIViewController.currentViewController_Base_one()?.present(tipsAlter_Base_one, animated: true, completion: nil)
     }
 }

@@ -12,7 +12,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         IQKeyboardManager.shared().shouldResignOnTouchOutside = true
         
         // 配置HUD全局样式
-        Utils_Base_one.setupHUDConfig_Base_one(fontSize_base_one: 16)
+        Utils_Base_one.setupHUDConfig_Base_one(fontSize_Base_one: 16)
         
         // 初始化本地数据
         LocalData_Base_one.shared_Base_one.initData_Base_one()
