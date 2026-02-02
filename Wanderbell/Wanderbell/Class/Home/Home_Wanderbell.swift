@@ -25,7 +25,7 @@ class Home_Wanderbell: UIViewController {
     /// 页面标题
     private lazy var pageTitleView_Wanderbell: PageHeaderView_Wanderbell = {
         return PageHeaderView_Wanderbell(
-            title_wanderbell: "Vessel",
+            title_wanderbell: "Wanderbell",
             subtitle_wanderbell: "Your emotional journey dashboard",
             iconName_wanderbell: "heart.text.square.fill",
             iconColor_wanderbell: ColorConfig_Wanderbell.primaryGradientStart_Wanderbell

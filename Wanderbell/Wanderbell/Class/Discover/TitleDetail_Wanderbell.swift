@@ -406,6 +406,12 @@ class TitleDetail_Wanderbell: UIViewController {
         backButton_wanderbell.tintColor = ColorConfig_Wanderbell.primaryGradientStart_Wanderbell
         navigationItem.leftBarButtonItem = backButton_wanderbell
         
+        // 礼物按钮
+        let giftButton_wanderbell = UIButton(type: .custom)
+        giftButton_wanderbell.setImage(UIImage(named: "gift_btn"), for: .normal)
+        giftButton_wanderbell.addTarget(self, action: #selector(giftButtonTapped_Wanderbell), for: .touchUpInside)
+        giftButton_wanderbell.frame = CGRect(x: 0, y: 0, width: 32, height: 32)
+        
         // 右上角举报按钮
         let reportButton_wanderbell = ReportDeleteHelper_Wanderbell.createPostReportButton_Wanderbell(
             post_wanderbell: titleModel_Wanderbell,
@@ -417,7 +423,13 @@ class TitleDetail_Wanderbell: UIViewController {
             self?.navigationController?.popViewController(animated: true)
         }
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: reportButton_wanderbell)
+        // 将礼物按钮和举报按钮组合在一起
+        let rightStackView_wanderbell = UIStackView(arrangedSubviews: [giftButton_wanderbell, reportButton_wanderbell])
+        rightStackView_wanderbell.axis = .horizontal
+        rightStackView_wanderbell.spacing = 12
+        rightStackView_wanderbell.alignment = .center
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: rightStackView_wanderbell)
     }
     
     private func setupActions_Wanderbell() {
@@ -568,6 +580,39 @@ class TitleDetail_Wanderbell: UIViewController {
     /// 返回按钮点击
     @objc private func backTapped_Wanderbell() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    /// 礼物按钮点击
+    @objc private func giftButtonTapped_Wanderbell() {
+        let giftVC_wanderbell = Gift_Wanderbell()
+        giftVC_wanderbell.modalPresentationStyle = .pageSheet
+        
+        // 配置模态样式
+        if let sheet_wanderbell = giftVC_wanderbell.sheetPresentationController {
+            // 创建自定义高度（屏幕高度的65%）
+            let customDetent_wanderbell = UISheetPresentationController.Detent.custom { context in
+                return context.maximumDetentValue * 0.65
+            }
+            
+            // 只支持自定义高度，不允许拖动到全屏
+            sheet_wanderbell.detents = [customDetent_wanderbell]
+            // 显示顶部抓取指示器
+            sheet_wanderbell.prefersGrabberVisible = true
+            // 设置圆角
+            sheet_wanderbell.preferredCornerRadius = 30
+            // 禁止向上滚动时自动展开
+            sheet_wanderbell.prefersScrollingExpandsWhenScrolledToEdge = false
+            // 允许边缘拖动
+            sheet_wanderbell.prefersEdgeAttachedInCompactHeight = true
+            // 设置较宽的显示宽度
+            sheet_wanderbell.widthFollowsPreferredContentSizeWhenEdgeAttached = true
+        }
+        
+        present(giftVC_wanderbell, animated: true, completion: nil)
+        
+        // 触觉反馈
+        let generator_wanderbell = UIImpactFeedbackGenerator(style: .light)
+        generator_wanderbell.impactOccurred()
     }
     
     /// 点赞按钮点击

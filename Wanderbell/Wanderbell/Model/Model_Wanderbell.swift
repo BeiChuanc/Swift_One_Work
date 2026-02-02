@@ -214,7 +214,6 @@ class Comment_Wanderbell: NSObject, Codable {
 // MARK: 情绪相关数据模型
 
 /// 情绪类型枚举
-/// 功能：定义7种基础情绪类型和自定义情绪类型，每种情绪都有对应的颜色和图标
 enum EmotionType_Wanderbell: String, Codable {
     case happy_wanderbell = "Happy"
     case calm_wanderbell = "Calm"
@@ -226,8 +225,6 @@ enum EmotionType_Wanderbell: String, Codable {
     case custom_wanderbell = "Custom"
     
     /// 获取情绪颜色
-    /// 功能：返回每种情绪对应的主题颜色
-    /// 返回值：UIColor - 情绪颜色
     func getColor_Wanderbell() -> UIColor {
         switch self {
         case .happy_wanderbell: return UIColor(hexstring_Wanderbell: "#F6E05E")  // 阳光黄
@@ -242,8 +239,6 @@ enum EmotionType_Wanderbell: String, Codable {
     }
     
     /// 获取情绪图标（SF Symbols）
-    /// 功能：返回每种情绪对应的系统图标名称
-    /// 返回值：String - SF Symbols图标名称
     func getIcon_Wanderbell() -> String {
         switch self {
         case .happy_wanderbell: return "sun.max.fill"
@@ -258,7 +253,6 @@ enum EmotionType_Wanderbell: String, Codable {
     }
     
     /// 获取所有基础情绪类型（不包含自定义）
-    /// 返回值：[EmotionType_Wanderbell] - 所有基础情绪类型数组
     static func getAllBasicTypes_Wanderbell() -> [EmotionType_Wanderbell] {
         return [.happy_wanderbell, .calm_wanderbell, .sad_wanderbell, 
                 .anxious_wanderbell, .angry_wanderbell, .excited_wanderbell, .tired_wanderbell]
@@ -266,8 +260,6 @@ enum EmotionType_Wanderbell: String, Codable {
 }
 
 /// 情绪记录模型
-/// 功能：存储用户的情绪记录信息，包括情绪类型、强度、笔记、媒体等
-/// 核心属性：情绪类型、强度（1-5）、笔记、时间戳、标签
 class EmotionRecord_Wanderbell: NSObject, Codable {
     
     /// 记录ID
@@ -298,16 +290,6 @@ class EmotionRecord_Wanderbell: NSObject, Codable {
     var tags_Wanderbell: [String]
     
     /// 初始化方法
-    /// 参数：
-    /// - recordId_Wanderbell: 记录ID
-    /// - userId_Wanderbell: 用户ID
-    /// - emotionType_Wanderbell: 情绪类型
-    /// - customEmotion_Wanderbell: 自定义情绪名称（可选）
-    /// - intensity_Wanderbell: 强度（1-5）
-    /// - note_Wanderbell: 笔记内容
-    /// - media_Wanderbell: 媒体文件数组
-    /// - timestamp_Wanderbell: 时间戳
-    /// - tags_Wanderbell: 标签数组
     init(recordId_Wanderbell: Int, 
          userId_Wanderbell: Int, 
          emotionType_Wanderbell: EmotionType_Wanderbell, 
@@ -330,12 +312,47 @@ class EmotionRecord_Wanderbell: NSObject, Codable {
     }
     
     /// 获取情绪显示名称
-    /// 功能：如果是自定义情绪则返回自定义名称，否则返回情绪类型的原始值
-    /// 返回值：String - 情绪显示名称
     func getEmotionDisplayName_Wanderbell() -> String {
         if emotionType_Wanderbell == .custom_wanderbell, let customName_wanderbell = customEmotion_Wanderbell {
             return customName_wanderbell
         }
         return emotionType_Wanderbell.rawValue
+    }
+}
+
+/// 商店模型
+class StoreModel_Wanderbell: NSObject {
+    
+    /// ID编号
+    var id_Wanderbell: Int?
+    
+    /// 商品ID
+    var goodsId_Wanderbell: String?
+    
+    /// 商品名字
+    var goodsName_Wanderbell: String?
+    
+    /// 商品价格
+    var goodsPrice_Wanderbell: String?
+    
+    /// 是否顶部商品
+    var goodIsTop_Wanderbell: Bool?
+    
+    /// 是否特殊商品
+    var goodIsSpecial_Wanderbell: Bool?
+    
+    init(id_Wanderbell: Int? = nil,
+         goodsId_Wanderbell: String? = nil,
+         goodsName_Wanderbell: String? = nil,
+         goodsPrice_Wanderbell: String? = nil,
+         goodIsTop_Wanderbell: Bool? = false,
+         goodIsLimit_Wanderbell: Bool? = false) {
+        self.id_Wanderbell = id_Wanderbell
+        self.goodsId_Wanderbell = goodsId_Wanderbell
+        self.goodsName_Wanderbell = goodsName_Wanderbell
+        self.goodsPrice_Wanderbell = goodsPrice_Wanderbell
+        self.goodIsTop_Wanderbell = goodIsTop_Wanderbell
+        self.goodIsSpecial_Wanderbell = goodIsLimit_Wanderbell
+        super.init()
     }
 }

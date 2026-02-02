@@ -15,6 +15,7 @@ target 'Wanderbell' do
   pod 'CHTCollectionViewWaterfallLayout'
   pod 'SkeletonView'
   pod 'lottie-ios'
+  pod 'RMStore'
 
 end
 post_install do |installer|
