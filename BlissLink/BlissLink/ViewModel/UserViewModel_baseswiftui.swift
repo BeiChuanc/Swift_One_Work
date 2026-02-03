@@ -63,14 +63,12 @@ class UserViewModel_baseswiftui: ObservableObject {
     
     /// 通过用户ID登录
     func loginById_baseswiftui(userId_baseswiftui: Int) {
-        // 显示加载动画
-        Utils_baseswiftui.showLoading_baseswiftui(message_baseswiftui: "Logging in...")
         
         // 创建登录用户
         loggedUser_baseswiftui = LoginUserModel_baseswiftui(
             userId_baseswiftui: userId_baseswiftui,
             userPwd_baseswiftui: nil,
-            userName_baseswiftui: "User", // 可以从本地数据或服务器获取
+            userName_baseswiftui: "BlissLinker", // 可以从本地数据或服务器获取
             userHead_baseswiftui: "user_avatar",
             userPosts_baseswiftui: [],
             userLike_baseswiftui: [],
@@ -82,10 +80,7 @@ class UserViewModel_baseswiftui: ObservableObject {
         
         // 延迟跳转到首页
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 1_200_000_000) // 1.2秒
-            
-            // 关闭加载动画
-            Utils_baseswiftui.dismissLoading_baseswiftui()
+            try? await Task.sleep(nanoseconds: 500_000_000) // 1.2秒
             
             // 显示成功提示
             Utils_baseswiftui.showSuccess_baseswiftui(message_baseswiftui: "Login successful!")
@@ -102,9 +97,6 @@ class UserViewModel_baseswiftui: ObservableObject {
             return
         }
         
-        // 显示加载动画
-        Utils_baseswiftui.showLoading_baseswiftui(message_baseswiftui: "Logging out...")
-        
         // 重置为游客状态
         loggedUser_baseswiftui = defaultUser_baseswiftui
         
@@ -119,10 +111,7 @@ class UserViewModel_baseswiftui: ObservableObject {
         
         // 延迟显示提示
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 1_200_000_000)
-            
-            // 关闭加载动画
-            Utils_baseswiftui.dismissLoading_baseswiftui()
+            try? await Task.sleep(nanoseconds: 500_000_000)
             
             if logoutType_baseswiftui == .delete_baseswiftui {
                 Utils_baseswiftui.showInfo_baseswiftui(
@@ -151,6 +140,14 @@ class UserViewModel_baseswiftui: ObservableObject {
         // 手动触发更新，因为修改了嵌套属性
         objectWillChange.send()
         Utils_baseswiftui.showSuccess_baseswiftui(message_baseswiftui: "Name updated successfully")
+    }
+    
+    /// 更新用户简介
+    func updateIntroduce_blisslink(introduce_blisslink: String) {
+        loggedUser_baseswiftui?.userIntroduce_blisslink = introduce_blisslink
+        // 手动触发更新，因为修改了嵌套属性
+        objectWillChange.send()
+        Utils_baseswiftui.showSuccess_baseswiftui(message_baseswiftui: "Bio updated successfully")
     }
     
     /// 上传用户封面
@@ -215,9 +212,6 @@ class UserViewModel_baseswiftui: ObservableObject {
     func reportUser_baseswiftui(user_baseswiftui: PrewUserModel_baseswiftui) {
         guard let userId_baseswiftui = user_baseswiftui.userId_baseswiftui else { return }
         
-        // 显示加载动画
-        Utils_baseswiftui.showLoading_baseswiftui(message_baseswiftui: "Processing...")
-        
         // 取消关注
         // 从关注列表中移除（需要实现）
         
@@ -237,7 +231,6 @@ class UserViewModel_baseswiftui: ObservableObject {
         // 延迟显示成功提示
         Task { @MainActor in
             try? await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
-            Utils_baseswiftui.dismissLoading_baseswiftui()
             Utils_baseswiftui.showSuccess_baseswiftui(
                 message_baseswiftui: "This user will no longer appear.",
                 delay_baseswiftui: 2.0
@@ -362,11 +355,26 @@ class UserViewModel_baseswiftui: ObservableObject {
         return loggedUser_baseswiftui?.memoryStickers_blisslink ?? []
     }
     
+    /// 删除纪念贴纸
+    /// - Parameter sticker_blisslink: 要删除的贴纸对象
+    func deleteMemorySticker_blisslink(sticker_blisslink: MemorySticker_blisslink) {
+        loggedUser_baseswiftui?.memoryStickers_blisslink.removeAll { $0.stickerId_blisslink == sticker_blisslink.stickerId_blisslink }
+        
+        // 手动触发更新
+        objectWillChange.send()
+        
+        Utils_baseswiftui.showSuccess_baseswiftui(
+            message_baseswiftui: "Memory deleted!",
+            image_baseswiftui: UIImage(systemName: "trash.fill"),
+            delay_baseswiftui: 1.5
+        )
+    }
+    
     /// 解锁徽章
     /// - Parameter badge_blisslink: 徽章对象
     func unlockBadge_blisslink(badge_blisslink: MeditationBadge_blisslink) {
         if !badge_blisslink.isUnlocked_blisslink {
-            var unlockedBadge_blisslink = badge_blisslink
+            let unlockedBadge_blisslink = badge_blisslink
             unlockedBadge_blisslink.isUnlocked_blisslink = true
             unlockedBadge_blisslink.unlockDate_blisslink = Date()
             
@@ -393,14 +401,9 @@ class UserViewModel_baseswiftui: ObservableObject {
     
     /// 显示登录提示
     private func showLoginPrompt_baseswiftui() {
-        Utils_baseswiftui.showWarning_baseswiftui(
-            message_baseswiftui: "Please login first.",
-            delay_baseswiftui: 1.5
-        )
-        
         // 延迟跳转到登录页面
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒
+            try? await Task.sleep(nanoseconds: 500_000_000) // 1.5秒
             Router_baseswiftui.shared_baseswiftui.toLogin_baseswiftui()
         }
     }

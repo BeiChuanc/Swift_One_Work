@@ -30,24 +30,26 @@ class PracticeViewModel_blisslink: ObservableObject {
     // MARK: - 初始化方法
     
     /// 初始化练习数据
+    /// 核心作用：从用户模型中加载练习统计数据，新用户所有数据为0
     func initPracticeData_blisslink() {
-        // 初始化当前用户的统计数据
-        let currentUserId_blisslink = UserViewModel_baseswiftui.shared_baseswiftui.getCurrentUser_baseswiftui().userId_baseswiftui ?? 0
+        // 获取当前用户
+        let currentUser_blisslink = UserViewModel_baseswiftui.shared_baseswiftui.getCurrentUser_baseswiftui()
+        let currentUserId_blisslink = currentUser_blisslink.userId_baseswiftui ?? 0
         
-        // 模拟一些练习统计数据
+        // 从用户模型中读取练习统计数据（新用户默认为0）
         practiceStats_blisslink = PracticeStatsModel_blisslink(
             userId_blisslink: currentUserId_blisslink,
-            totalDuration_blisslink: 420, // 7小时
-            streakDays_blisslink: 5,
-            weeklySessionCount_blisslink: 8,
-            monthlySessionCount_blisslink: 24,
-            weeklyDuration_blisslink: 180, // 3小时
+            totalDuration_blisslink: currentUser_blisslink.totalPracticeDuration_blisslink,
+            streakDays_blisslink: currentUser_blisslink.streakDays_blisslink,
+            weeklySessionCount_blisslink: currentUser_blisslink.weeklySessionCount_blisslink,
+            monthlySessionCount_blisslink: currentUser_blisslink.monthlySessionCount_blisslink,
+            weeklyDuration_blisslink: 0, // 每次登录重新计算
             favoriteCourseType_blisslink: nil,
-            totalCompletedCourses_blisslink: 15,
-            lastPracticeDate_blisslink: Date()
+            totalCompletedCourses_blisslink: currentUser_blisslink.totalCompletedCourses_blisslink,
+            lastPracticeDate_blisslink: nil
         )
         
-        print("✅ 练习数据初始化完成")
+        print("✅ 练习数据初始化完成 - 总时长: \(currentUser_blisslink.totalPracticeDuration_blisslink) 分钟")
     }
     
     // MARK: - 练习记录管理
@@ -125,6 +127,7 @@ class PracticeViewModel_blisslink: ObservableObject {
     // MARK: - 统计数据计算
     
     /// 更新练习统计数据
+    /// 核心作用：更新统计数据并同步到用户模型中持久化保存
     /// - Parameter session_blisslink: 新的练习记录
     private func updatePracticeStats_blisslink(session_blisslink: PracticeSessionModel_blisslink) {
         guard var stats_blisslink = practiceStats_blisslink else { return }
@@ -154,8 +157,27 @@ class PracticeViewModel_blisslink: ObservableObject {
         
         practiceStats_blisslink = stats_blisslink
         
+        // 同步到用户模型中（持久化保存）
+        syncStatsToUserModel_blisslink(stats_blisslink: stats_blisslink)
+        
         // 手动触发更新
         objectWillChange.send()
+    }
+    
+    /// 同步统计数据到用户模型
+    /// 核心作用：将练习统计数据保存到当前用户模型中，实现数据持久化
+    /// - Parameter stats_blisslink: 练习统计数据
+    private func syncStatsToUserModel_blisslink(stats_blisslink: PracticeStatsModel_blisslink) {
+        let currentUser_blisslink = UserViewModel_baseswiftui.shared_baseswiftui.getCurrentUser_baseswiftui()
+        
+        // 更新用户模型中的练习统计字段
+        currentUser_blisslink.totalPracticeDuration_blisslink = stats_blisslink.totalDuration_blisslink
+        currentUser_blisslink.streakDays_blisslink = stats_blisslink.streakDays_blisslink
+        currentUser_blisslink.weeklySessionCount_blisslink = stats_blisslink.weeklySessionCount_blisslink
+        currentUser_blisslink.monthlySessionCount_blisslink = stats_blisslink.monthlySessionCount_blisslink
+        currentUser_blisslink.totalCompletedCourses_blisslink = stats_blisslink.totalCompletedCourses_blisslink
+        
+        print("💾 练习统计已同步到用户模型")
     }
     
     /// 计算连续打卡天数
@@ -225,5 +247,31 @@ class PracticeViewModel_blisslink: ObservableObject {
     /// - Returns: 统计数据模型
     func getPracticeStats_blisslink() -> PracticeStatsModel_blisslink? {
         return practiceStats_blisslink
+    }
+    
+    /// 添加练习记录（从计时器页面调用）
+    /// - Parameter duration_blisslink: 练习时长（分钟）
+    func addPracticeSession_blisslink(duration_blisslink: Int) {
+        let currentUserId_blisslink = UserViewModel_baseswiftui.shared_baseswiftui.getCurrentUser_baseswiftui().userId_baseswiftui ?? 0
+        let sessionId_blisslink = practiceSessions_blisslink.count + 1
+        
+        let session_blisslink = PracticeSessionModel_blisslink(
+            sessionId_blisslink: sessionId_blisslink,
+            userId_blisslink: currentUserId_blisslink,
+            courseId_blisslink: 0,
+            startTime_blisslink: Date(),
+            endTime_blisslink: Date(),
+            duration_blisslink: duration_blisslink,
+            isCompleted_blisslink: true,
+            moodRating_blisslink: nil
+        )
+        
+        // 保存练习记录
+        practiceSessions_blisslink.append(session_blisslink)
+        
+        // 更新统计数据
+        updatePracticeStats_blisslink(session_blisslink: session_blisslink)
+        
+        print("✅ 练习记录已保存：\(duration_blisslink) 分钟")
     }
 }

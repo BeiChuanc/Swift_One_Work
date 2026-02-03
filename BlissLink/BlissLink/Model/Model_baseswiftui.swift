@@ -45,12 +45,6 @@ class PrewUserModel_baseswiftui: NSObject, Codable {
     /// 瑜伽垫背景设置（用于串门功能）
     var yogaMatBackground_blisslink: YogaMatBackground_blisslink?
     
-    /// 总练习时长（用于串门展示）
-    var totalPracticeDuration_blisslink: Int?
-    
-    /// 获得的徽章数量
-    var badgeCount_blisslink: Int?
-    
     /// 初始化方法
     override init() {
         super.init()
@@ -65,9 +59,7 @@ class PrewUserModel_baseswiftui: NSObject, Codable {
          userLike_baseswiftui: [TitleModel_baseswiftui] = [],
          userFollow_baseswiftui: Int? = nil,
          userFans_baseswiftui: Int? = nil,
-         yogaMatBackground_blisslink: YogaMatBackground_blisslink? = nil,
-         totalPracticeDuration_blisslink: Int? = nil,
-         badgeCount_blisslink: Int? = nil) {
+         yogaMatBackground_blisslink: YogaMatBackground_blisslink? = nil) {
         self.userId_baseswiftui = userId_baseswiftui
         self.userName_baseswiftui = userName_baseswiftui
         self.userIntroduce_baseswiftui = userIntroduce_baseswiftui
@@ -77,8 +69,6 @@ class PrewUserModel_baseswiftui: NSObject, Codable {
         self.userFollow_baseswiftui = userFollow_baseswiftui
         self.userFans_baseswiftui = userFans_baseswiftui
         self.yogaMatBackground_blisslink = yogaMatBackground_blisslink
-        self.totalPracticeDuration_blisslink = totalPracticeDuration_blisslink
-        self.badgeCount_blisslink = badgeCount_blisslink
         super.init()
     }
 }
@@ -116,12 +106,6 @@ class TitleModel_baseswiftui: NSObject, Codable, Identifiable {
     /// 帖子类型（扩展字段）
     var postType_blisslink: PostType_blisslink?
     
-    /// 关联的课程ID（如果是练习成果分享）
-    var relatedCourseId_blisslink: Int?
-    
-    /// 练习时长（如果是练习成果，单位：分钟）
-    var practiceDuration_blisslink: Int?
-    
     /// 初始化方法
     init(titleId_baseswiftui: Int,
          titleUserId_baseswiftui: Int,
@@ -131,9 +115,7 @@ class TitleModel_baseswiftui: NSObject, Codable, Identifiable {
          titleContent_baseswiftui: String,
          reviews_baseswiftui: [Comment_baseswiftui],
          likes_baseswiftui: Int,
-         postType_blisslink: PostType_blisslink? = nil,
-         relatedCourseId_blisslink: Int? = nil,
-         practiceDuration_blisslink: Int? = nil) {
+         postType_blisslink: PostType_blisslink? = nil) {
         self.titleId_baseswiftui = titleId_baseswiftui
         self.titleUserId_baseswiftui = titleUserId_baseswiftui
         self.titleUserName_baseswiftui = titleUserName_baseswiftui
@@ -143,8 +125,6 @@ class TitleModel_baseswiftui: NSObject, Codable, Identifiable {
         self.reviews_baseswiftui = reviews_baseswiftui
         self.likes_baseswiftui = likes_baseswiftui
         self.postType_blisslink = postType_blisslink
-        self.relatedCourseId_blisslink = relatedCourseId_blisslink
-        self.practiceDuration_blisslink = practiceDuration_blisslink
         super.init()
     }
 }
@@ -167,6 +147,9 @@ class LoginUserModel_baseswiftui: NSObject, Codable, Identifiable {
     /// 用户头像
     var userHead_baseswiftui: String?
     
+    /// 用户简介
+    var userIntroduce_blisslink: String?
+    
     /// 用户发布帖子列表
     var userPosts_baseswiftui: [TitleModel_baseswiftui]
     
@@ -185,27 +168,54 @@ class LoginUserModel_baseswiftui: NSObject, Codable, Identifiable {
     /// 纪念贴纸列表
     var memoryStickers_blisslink: [MemorySticker_blisslink]
     
+    /// 总练习时长（分钟）
+    var totalPracticeDuration_blisslink: Int
+    
+    /// 连续打卡天数
+    var streakDays_blisslink: Int
+    
+    /// 本周练习次数
+    var weeklySessionCount_blisslink: Int
+    
+    /// 本月练习次数
+    var monthlySessionCount_blisslink: Int
+    
+    /// 总完成课程数
+    var totalCompletedCourses_blisslink: Int
+    
     /// 初始化方法
     init(userId_baseswiftui: Int? = nil,
          userPwd_baseswiftui: String? = nil,
          userName_baseswiftui: String? = nil,
          userHead_baseswiftui: String? = nil,
+         userIntroduce_blisslink: String? = nil,
          userPosts_baseswiftui: [TitleModel_baseswiftui],
          userLike_baseswiftui: [TitleModel_baseswiftui],
          userFollow_baseswiftui: [PrewUserModel_baseswiftui],
          yogaMatBackground_blisslink: YogaMatBackground_blisslink = .forestZen_blisslink,
          badges_blisslink: [MeditationBadge_blisslink] = [],
-         memoryStickers_blisslink: [MemorySticker_blisslink] = []) {
+         memoryStickers_blisslink: [MemorySticker_blisslink] = [],
+         totalPracticeDuration_blisslink: Int = 0,
+         streakDays_blisslink: Int = 0,
+         weeklySessionCount_blisslink: Int = 0,
+         monthlySessionCount_blisslink: Int = 0,
+         totalCompletedCourses_blisslink: Int = 0) {
         self.userId_baseswiftui = userId_baseswiftui
         self.userPwd_baseswiftui = userPwd_baseswiftui
         self.userName_baseswiftui = userName_baseswiftui
         self.userHead_baseswiftui = userHead_baseswiftui
+        self.userIntroduce_blisslink = userIntroduce_blisslink
         self.userPosts_baseswiftui = userPosts_baseswiftui
         self.userLike_baseswiftui = userLike_baseswiftui
         self.userFollow_baseswiftui = userFollow_baseswiftui
         self.yogaMatBackground_blisslink = yogaMatBackground_blisslink
         self.badges_blisslink = badges_blisslink
         self.memoryStickers_blisslink = memoryStickers_blisslink
+        self.totalPracticeDuration_blisslink = totalPracticeDuration_blisslink
+        self.streakDays_blisslink = streakDays_blisslink
+        self.weeklySessionCount_blisslink = weeklySessionCount_blisslink
+        self.monthlySessionCount_blisslink = monthlySessionCount_blisslink
+        self.totalCompletedCourses_blisslink = totalCompletedCourses_blisslink
         super.init()
     }
 }

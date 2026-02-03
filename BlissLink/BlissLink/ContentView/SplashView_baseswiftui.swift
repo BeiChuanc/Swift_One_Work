@@ -8,7 +8,7 @@ struct SplashView_baseswiftui: View {
     // MARK: - 配置
     
     /// 闪屏图片名称（在 Assets 中）
-    private let imageName_baseswiftui = "splash"
+    private let imageName_baseswiftui = "launch"
     
     /// 闪屏持续时间（秒）
     private let duration_baseswiftui: Double = 1.5

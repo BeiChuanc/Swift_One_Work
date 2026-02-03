@@ -39,17 +39,28 @@ struct MediaDisplayView_baseswiftui: View {
     
     var body: some View {
         Group {
-            if let path = mediaPath_baseswiftui, !path.isEmpty {
-                mediaContent_baseswiftui(path: path)
+            if isClickable_baseswiftui {
+                // 可点击模式：添加点击手势
+                mediaContentWrapper_baseswiftui
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        onTapped_baseswiftui?()
+                    }
             } else {
-                placeholderView_baseswiftui
+                // 不可点击模式：不添加手势，让事件传递给父视图
+                mediaContentWrapper_baseswiftui
             }
         }
         .cornerRadius(cornerRadius_baseswiftui)
-        .onTapGesture {
-            if isClickable_baseswiftui {
-                onTapped_baseswiftui?()
-            }
+    }
+    
+    /// 媒体内容包装器
+    @ViewBuilder
+    private var mediaContentWrapper_baseswiftui: some View {
+        if let path = mediaPath_baseswiftui, !path.isEmpty {
+            mediaContent_baseswiftui(path: path)
+        } else {
+            placeholderView_baseswiftui
         }
     }
     
@@ -130,13 +141,97 @@ struct MediaDisplayView_baseswiftui: View {
     /// 本地图片视图
     @ViewBuilder
     private func localImageView_baseswiftui(imageName: String) -> some View {
+        // 1. 先尝试从 Assets 加载
         if let image = UIImage(named: imageName) {
             Image(uiImage: image)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .overlay(videoPlayIcon_baseswiftui)
-        } else {
+        } 
+        // 2. 如果是视频，尝试从 Bundle 中的视频文件生成缩略图
+        else if isVideo_baseswiftui, let thumbnail = loadVideoThumbnail_baseswiftui(videoName: imageName) {
+            Image(uiImage: thumbnail)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .overlay(videoPlayIcon_baseswiftui)
+        }
+        // 3. 尝试从文档目录加载
+        else if let image = loadImageFromDocuments_baseswiftui(imageName: imageName) {
+            Image(uiImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .overlay(videoPlayIcon_baseswiftui)
+        }
+        // 4. 显示占位符
+        else {
             placeholderView_baseswiftui
+        }
+    }
+    
+    /// 从文档目录加载图片
+    /// - Parameter imageName: 图片名称（可能带或不带扩展名）
+    /// - Returns: UIImage 或 nil
+    private func loadImageFromDocuments_baseswiftui(imageName: String) -> UIImage? {
+        let fileManager = FileManager.default
+        guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return nil
+        }
+        
+        // 尝试带 .jpg 扩展名
+        var fileURL = documentsDirectory.appendingPathComponent("\(imageName).jpg")
+        if let image = UIImage(contentsOfFile: fileURL.path) {
+            print("✅ 从文档目录加载图片：\(imageName).jpg")
+            return image
+        }
+        
+        // 尝试不带扩展名（文件名本身可能已包含扩展名）
+        fileURL = documentsDirectory.appendingPathComponent(imageName)
+        if let image = UIImage(contentsOfFile: fileURL.path) {
+            print("✅ 从文档目录加载图片：\(imageName)")
+            return image
+        }
+        
+        print("⚠️ 无法从文档目录加载图片：\(imageName)")
+        return nil
+    }
+    
+    /// 从Bundle中的视频文件生成缩略图
+    /// 核心作用：为项目中的视频资源（如media_one.mp4）生成预览缩略图
+    /// - Parameter videoName: 视频文件名（不带扩展名或带.mp4扩展名）
+    /// - Returns: UIImage 或 nil
+    private func loadVideoThumbnail_baseswiftui(videoName: String) -> UIImage? {
+        // 1. 处理文件名，确保有.mp4扩展名
+        let fileName_blisslink: String
+        if videoName.hasSuffix(".mp4") {
+            fileName_blisslink = videoName
+        } else {
+            fileName_blisslink = "\(videoName).mp4"
+        }
+        
+        // 2. 从主Bundle中查找视频文件
+        guard let videoPath_blisslink = Bundle.main.path(forResource: fileName_blisslink.replacingOccurrences(of: ".mp4", with: ""), ofType: "mp4") else {
+            print("⚠️ 无法在Bundle中找到视频文件：\(fileName_blisslink)")
+            return nil
+        }
+        
+        let videoURL_blisslink = URL(fileURLWithPath: videoPath_blisslink)
+        
+        // 3. 使用AVAssetImageGenerator生成缩略图
+        let asset_blisslink = AVAsset(url: videoURL_blisslink)
+        let imageGenerator_blisslink = AVAssetImageGenerator(asset: asset_blisslink)
+        imageGenerator_blisslink.appliesPreferredTrackTransform = true  // 保持视频方向
+        
+        // 设置生成缩略图的时间点（视频开始后1秒）
+        let time_blisslink = CMTime(seconds: 1.0, preferredTimescale: 600)
+        
+        do {
+            let cgImage_blisslink = try imageGenerator_blisslink.copyCGImage(at: time_blisslink, actualTime: nil)
+            let thumbnail_blisslink = UIImage(cgImage: cgImage_blisslink)
+            print("✅ 成功从Bundle视频生成缩略图：\(fileName_blisslink)")
+            return thumbnail_blisslink
+        } catch {
+            print("❌ 生成视频缩略图失败：\(error.localizedDescription)")
+            return nil
         }
     }
     

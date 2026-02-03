@@ -170,8 +170,9 @@ class TitleViewModel_baseswiftui: ObservableObject {
     ) {
         // 找到对应的帖子并删除评论
         if let index_baseswiftui = posts_baseswiftui.firstIndex(where: { $0.titleId_baseswiftui == post_baseswiftui.titleId_baseswiftui }) {
-            posts_baseswiftui[index_baseswiftui].reviews_baseswiftui.removeAll { comment_baseswiftui in
-                comment_baseswiftui.commentId_baseswiftui == comment_baseswiftui.commentId_baseswiftui
+            // 修复：使用不同的参数名避免变量遮蔽
+            posts_baseswiftui[index_baseswiftui].reviews_baseswiftui.removeAll { iteratingComment_baseswiftui in
+                iteratingComment_baseswiftui.commentId_baseswiftui == comment_baseswiftui.commentId_baseswiftui
             }
             // 手动触发更新，因为修改了嵌套属性
             objectWillChange.send()
@@ -225,14 +226,9 @@ class TitleViewModel_baseswiftui: ObservableObject {
     
     /// 显示登录提示
     private func showLoginPrompt_baseswiftui() {
-        Utils_baseswiftui.showWarning_baseswiftui(
-            message_baseswiftui: "Please login first.",
-            delay_baseswiftui: 1.5
-        )
-        
         // 延迟跳转到登录页面
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒
+            try? await Task.sleep(nanoseconds: 500_000_000) // 1.5秒
             Router_baseswiftui.shared_baseswiftui.toLogin_baseswiftui()
         }
     }

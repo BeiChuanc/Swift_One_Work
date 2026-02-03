@@ -57,28 +57,6 @@ class LocalData_baseswiftui: ObservableObject {
     func getAvailableCommenters_baseswiftui(postAuthorUserId_baseswiftui: Int) -> [PrewUserModel_baseswiftui] {
         return userList_baseswiftui.filter { $0.userId_baseswiftui != postAuthorUserId_baseswiftui }
     }
-    
-    /// 获取预设的媒体图片列表
-    /// - Returns: 媒体图片名称数组
-    func getMediaImages_blisslink() -> [String] {
-        return [
-            "post_media_1",
-            "post_media_2",
-            "post_media_3",
-            "post_media_4",
-            "post_media_5",
-            "post_media_6",
-            "post_media_7",
-            "post_media_8",
-            "post_media_9",
-            "post_media_10",
-            "user_album_1",
-            "user_album_2",
-            "user_album_3",
-            "user_album_4",
-            "user_album_5"
-        ]
-    }
 }
 
 // MARK: - 静态数据源
@@ -88,25 +66,25 @@ private struct DataSource_baseswiftui {
     
     /// 用户信息列表 (用户名, 简介, 头像URL, 相册URL)
     static let usersInfo_baseswiftui: [(String, String, String, String)] = [
-        ("TechExplorer", "Passionate about technology and innovation", "user_head_1", "user_album_1"),
-        ("CreativeMinds", "Designer and creative thinker", "user_head_2", "user_album_2"),
-        ("CodeMaster", "Full-stack developer and problem solver", "user_head_3", "user_album_3"),
-        ("DigitalNomad", "Traveling the world while working remotely", "user_head_4", "user_album_4"),
-        ("UXWizard", "Crafting seamless user experiences", "user_head_5", "user_album_5"),
+        ("TechExplorer", "Passionate about technology and innovation", "head1", "head1"),
+        ("CreativeMinds", "Designer and creative thinker", "head2", "head1"),
+        ("CodeMaster", "Full-stack developer and problem solver", "head3", "head1"),
+        ("DigitalNomad", "Traveling the world while working remotely", "head4", "head1"),
+        ("UXWizard", "Crafting seamless user experiences", "head5", "head1"),
     ]
     
     /// 帖子信息列表 (标题, 内容, 媒体URL)
     static let postsInfo_baseswiftui: [(String, String, String)] = [
-        ("Amazing Discovery", "Just discovered this incredible new feature that's going to change everything. The attention to detail is remarkable, and the user experience is seamless. Can't wait to share more about this with everyone!", "post_media_1"),
-        ("Beautiful Design", "There's something special about clean, minimal design. It's not just about looks—it's about creating an experience that feels natural and effortless. This project captures that perfectly.", "post_media_2"),
-        ("Innovation at Work", "Watching innovation unfold in real-time is fascinating. The way technology seamlessly integrates into our daily lives never ceases to amaze me. Here's to the future!", "post_media_3"),
-        ("Creative Process", "Behind every great project is a creative process filled with iterations, late nights, and breakthrough moments. This journey has been incredible so far.", "post_media_4"),
-        ("Team Collaboration", "Look at what we built together! Collaboration brings out the best in everyone. When different perspectives come together, magic happens.", "post_media_5"),
-        ("Perfect Execution", "Weeks of planning and hard work have led to this moment. Every detail was carefully considered, and the result speaks for itself. So proud of this achievement!", "post_media_6"),
-        ("Learning Journey", "I used to think success was about knowing everything, but now I realize it's about being willing to learn. This experience taught me so much.", "post_media_7"),
-        ("Fun Activities", "We spent today exploring new ideas, testing concepts, and pushing boundaries. What's your favorite way to stay creative and inspired?", "post_media_8"),
-        ("Inspiration Everywhere", "Above us, infinite possibilities; around us, endless inspiration. The world is full of ideas waiting to be discovered and brought to life.", "post_media_9"),
-        ("Peaceful Progress", "Sometimes the best work happens in quiet moments. Taking time to reflect, iterate, and improve leads to meaningful progress.", "post_media_10"),
+        ("Amazing Discovery", "Just discovered this incredible new feature that's going to change everything. The attention to detail is remarkable, and the user experience is seamless. Can't wait to share more about this with everyone!", "title1"),
+        ("Beautiful Design", "There's something special about clean, minimal design. It's not just about looks—it's about creating an experience that feels natural and effortless. This project captures that perfectly.", "title2"),
+        ("Innovation at Work", "Watching innovation unfold in real-time is fascinating. The way technology seamlessly integrates into our daily lives never ceases to amaze me. Here's to the future!", "title3"),
+        ("Creative Process", "Behind every great project is a creative process filled with iterations, late nights, and breakthrough moments. This journey has been incredible so far.", "title4"),
+        ("Team Collaboration", "Look at what we built together! Collaboration brings out the best in everyone. When different perspectives come together, magic happens.", "title5"),
+        ("Perfect Execution", "Weeks of planning and hard work have led to this moment. Every detail was carefully considered, and the result speaks for itself. So proud of this achievement!", "title6"),
+        ("Learning Journey", "I used to think success was about knowing everything, but now I realize it's about being willing to learn. This experience taught me so much.", "title7"),
+        ("Fun Activities", "We spent today exploring new ideas, testing concepts, and pushing boundaries. What's your favorite way to stay creative and inspired?", "title8"),
+        ("Inspiration Everywhere", "Above us, infinite possibilities; around us, endless inspiration. The world is full of ideas waiting to be discovered and brought to life.", "title9"),
+        ("Peaceful Progress", "Sometimes the best work happens in quiet moments. Taking time to reflect, iterate, and improve leads to meaningful progress.", "title10"),
     ]
     
     /// 评论列表 (评论1, 评论2)
@@ -125,14 +103,12 @@ private struct DataSource_baseswiftui {
     
     /// 徽章信息列表 (名称, 描述, 图标, 解锁条件, 颜色)
     static let badgesInfo_blisslink: [(String, String, String, String, [String])] = [
-        ("First Step", "Complete your first meditation session", "star.fill", "Complete 1 practice", ["F2994A", "F2C94C"]),
-        ("Week Warrior", "Practice for 7 consecutive days", "flame.fill", "7 day streak", ["FF6B6B", "FFE66D"]),
-        ("Zen Master", "Complete 21-day meditation journey", "sparkles", "Finish 21-day challenge", ["667EEA", "764BA2"]),
-        ("Morning Person", "Complete 10 morning sessions", "sunrise.fill", "10 morning practices", ["FA709A", "FEE140"]),
-        ("Night Owl", "Complete 10 evening sessions", "moon.stars.fill", "10 evening practices", ["2B5876", "4E4376"]),
-        ("Breathing Expert", "Master all breathing techniques", "lungs.fill", "Complete all breathing courses", ["56CCF2", "2F80ED"]),
-        ("Yoga Enthusiast", "Practice yoga for 30 hours total", "figure.yoga", "30 hours of yoga", ["43E97B", "38F9D7"]),
-        ("Mindful Soul", "Meditate for 20 hours total", "brain.head.profile", "20 hours of meditation", ["C471F5", "FA71CD"]),
+        ("First Post", "Share your first yoga journey", "doc.text.fill", "Publish your first post", ["667EEA", "764BA2"]),
+        ("Like Explorer", "Spread positivity in the community", "heart.fill", "Give 3 posts a like", ["FF6B6B", "FFE66D"]),
+        ("Practice Beginner", "Build your practice foundation", "figure.yoga", "Practice for 10 hours total", ["43E97B", "38F9D7"]),
+        ("Active Sharer", "Inspire others with your journey", "sparkles", "Publish 5 posts", ["F2994A", "F2C94C"]),
+        ("Community Supporter", "Show love to the community", "star.fill", "Give 10 posts a like", ["FA709A", "FEE140"]),
+        ("Dedicated Practitioner", "Commit to your practice", "flame.fill", "Practice for 20 hours total", ["56CCF2", "2F80ED"]),
     ]
     
     /// 好友动态信息列表 (好友名称, 动态类型, 动态内容)
@@ -218,10 +194,6 @@ class DataGenerator_baseswiftui {
             
             // 设置瑜伽垫背景
             user_baseswiftui.yogaMatBackground_blisslink = backgrounds_blisslink[index_baseswiftui % backgrounds_blisslink.count]
-            
-            // 设置练习时长和徽章数量
-            user_baseswiftui.totalPracticeDuration_blisslink = RandomUtil_baseswiftui.nextInt_baseswiftui(min_baseswiftui: 300, range_baseswiftui: 1200)
-            user_baseswiftui.badgeCount_blisslink = RandomUtil_baseswiftui.nextInt_baseswiftui(min_baseswiftui: 2, range_baseswiftui: 6)
             
             dataLocal_baseswiftui.userList_baseswiftui.append(user_baseswiftui)
         }

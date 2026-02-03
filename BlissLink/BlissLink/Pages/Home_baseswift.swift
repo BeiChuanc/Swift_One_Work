@@ -22,6 +22,8 @@ struct Home_baseswift: View {
     @State private var showBadgeDetail_blisslink: Bool = false
     @State private var selectedBadge_blisslink: MeditationBadge_blisslink?
     @State private var showAddMemory_blisslink: Bool = false
+    @State private var showMemoryDetail_blisslink: Bool = false
+    @State private var selectedMemory_blisslink: MemorySticker_blisslink?
     
     // MARK: - 视图主体
     
@@ -44,12 +46,9 @@ struct Home_baseswift: View {
                     
                     // 好友瑜伽垫动态
                     friendActivitiesSection_blisslink
-                    
-                    // 底部间距
-                    Spacer()
-                        .frame(height: 100.h_baseswiftui)
                 }
                 .padding(.top, 60.h_baseswiftui)
+                .padding(.bottom, 100.h_baseswiftui)
             }
             
             // 背景选择器（Sheet）
@@ -104,6 +103,16 @@ struct Home_baseswift: View {
                         )
                     }
             }
+            
+            // 纪念贴纸放大查看
+            if showMemoryDetail_blisslink, let memory_blisslink = selectedMemory_blisslink {
+                MemoryDetailView_blisslink(
+                    sticker_blisslink: memory_blisslink,
+                    isShowing_blisslink: $showMemoryDetail_blisslink
+                )
+                .ignoresSafeArea()
+                .transition(.scale.combined(with: .opacity))
+            }
         }
         .onAppear {
             initializeData_blisslink()
@@ -137,7 +146,7 @@ struct Home_baseswift: View {
                     .font(.system(size: 20.sp_baseswiftui, weight: .bold))
                     .foregroundColor(currentBackground_blisslink.textColor_blisslink)
                 
-                Text("My Yoga Mat")
+                Text(userVM_baseswiftui.getCurrentUser_baseswiftui().userName_baseswiftui ?? "Guest")
                     .font(.system(size: 14.sp_baseswiftui, weight: .medium))
                     .foregroundColor(currentBackground_blisslink.secondaryTextColor_blisslink)
             }
@@ -189,7 +198,10 @@ struct Home_baseswift: View {
                             height: geometry_blisslink.size.width * 1.3
                         ),
                         onTap_blisslink: {
-                            print("📸 查看纪念：\(sticker_blisslink.title_blisslink)")
+                            handleMemoryTap_blisslink(sticker_blisslink)
+                        },
+                        onDelete_blisslink: {
+                            handleDeleteMemory_blisslink(sticker_blisslink)
                         }
                     )
                 }
@@ -220,61 +232,52 @@ struct Home_baseswift: View {
     
     private var coreStatsCard_blisslink: some View {
         VStack(spacing: 16.h_baseswiftui) {
-            // 标题
+            // 标题和跳转按钮
             HStack {
                 Text("My Progress")
                     .font(.system(size: 20.sp_baseswiftui, weight: .bold))
                     .foregroundColor(currentBackground_blisslink.textColor_blisslink)
                 
                 Spacer()
+                
+                // 跳转到计时页面按钮
+                Button(action: {
+                    handleTimerTap_blisslink()
+                }) {
+                    HStack(spacing: 6.w_baseswiftui) {
+                        Image(systemName: "timer")
+                            .font(.system(size: 14.sp_baseswiftui, weight: .semibold))
+                        
+                        Text("Start")
+                            .font(.system(size: 14.sp_baseswiftui, weight: .bold))
+                    }
+                    .foregroundColor(currentBackground_blisslink.textColor_blisslink)
+                    .padding(.horizontal, 16.w_baseswiftui)
+                    .padding(.vertical, 8.h_baseswiftui)
+                    .background(
+                        Capsule()
+                            .fill(Color.white.opacity(0.3))
+                    )
+                }
             }
             .padding(.horizontal, 20.w_baseswiftui)
             .slideIn_blisslink(from: .bottom, delay_blisslink: 0.4)
             
-            // 数据卡片
-            if let stats_blisslink = practiceVM_blisslink.getPracticeStats_blisslink() {
-                VStack(spacing: 16.h_baseswiftui) {
-                    // 累计练习时长
-                    dataRow_blisslink(
-                        icon_blisslink: "clock.fill",
-                        title_blisslink: "Total Practice",
-                        value_blisslink: "\(stats_blisslink.totalDuration_blisslink) min",
-                        gradient_blisslink: [Color(hex: "F2994A"), Color(hex: "F2C94C")]
-                    )
-                    .slideIn_blisslink(from: .bottom, delay_blisslink: 0.5)
-                    
-                    Divider()
-                        .background(Color.white.opacity(0.3))
-                    
-                    // 连续打卡天数
-                    dataRow_blisslink(
-                        icon_blisslink: "flame.fill",
-                        title_blisslink: "Streak Days",
-                        value_blisslink: "\(stats_blisslink.streakDays_blisslink) days",
-                        gradient_blisslink: [Color(hex: "FF6B6B"), Color(hex: "FFE66D")]
-                    )
-                    .slideIn_blisslink(from: .bottom, delay_blisslink: 0.6)
-                    
-                    Divider()
-                        .background(Color.white.opacity(0.3))
-                    
-                    // 本周练习次数
-                    dataRow_blisslink(
-                        icon_blisslink: "checkmark.circle.fill",
-                        title_blisslink: "This Week",
-                        value_blisslink: "\(stats_blisslink.weeklySessionCount_blisslink) sessions",
-                        gradient_blisslink: [Color(hex: "56CCF2"), Color(hex: "2F80ED")]
-                    )
-                    .slideIn_blisslink(from: .bottom, delay_blisslink: 0.7)
-                }
-                .padding(20.w_baseswiftui)
-                .background(
-                    RoundedRectangle(cornerRadius: 20.w_baseswiftui)
-                        .fill(Color.white.opacity(0.25))
-                        .blur(radius: 20)
-                )
-                .padding(.horizontal, 20.w_baseswiftui)
-            }
+            // 数据卡片 - 累计练习时长
+            dataRow_blisslink(
+                icon_blisslink: "clock.fill",
+                title_blisslink: "Total Practice",
+                value_blisslink: "\(totalPracticeDuration_blisslink) min",
+                gradient_blisslink: [Color(hex: "F2994A"), Color(hex: "F2C94C")]
+            )
+            .padding(20.w_baseswiftui)
+            .background(
+                RoundedRectangle(cornerRadius: 20.w_baseswiftui)
+                    .fill(Color.white.opacity(0.25))
+                    .blur(radius: 20)
+            )
+            .padding(.horizontal, 20.w_baseswiftui)
+            .slideIn_blisslink(from: .bottom, delay_blisslink: 0.5)
             
             // 获得的徽章
             badgesSection_blisslink
@@ -365,14 +368,6 @@ struct Home_baseswift: View {
                     .foregroundColor(currentBackground_blisslink.textColor_blisslink)
                 
                 Spacer()
-                
-                Button(action: {
-                    // 查看所有好友
-                }) {
-                    Text("See All")
-                        .font(.system(size: 14.sp_baseswiftui, weight: .semibold))
-                        .foregroundColor(currentBackground_blisslink.secondaryTextColor_blisslink)
-                }
             }
             .padding(.horizontal, 20.w_baseswiftui)
             .slideIn_blisslink(from: .bottom, delay_blisslink: 1.1)
@@ -419,6 +414,15 @@ struct Home_baseswift: View {
         return localData_baseswiftui.badgeList_blisslink.filter { $0.isUnlocked_blisslink }.count
     }
     
+    /// 总练习时长（未登录为0，登录后显示真实数据）
+    private var totalPracticeDuration_blisslink: Int {
+        if userVM_baseswiftui.isLoggedIn_baseswiftui {
+            return practiceVM_blisslink.getPracticeStats_blisslink()?.totalDuration_blisslink ?? 0
+        } else {
+            return 0
+        }
+    }
+    
     // MARK: - 事件处理
     
     /// 初始化数据
@@ -436,11 +440,6 @@ struct Home_baseswift: View {
         if let friend_blisslink = localData_baseswiftui.userList_baseswiftui.first(where: { $0.userId_baseswiftui == activity_blisslink.friendUserId_blisslink }) {
             // 跳转到好友信息页（串门）
             router_baseswiftui.toUserInfo_baseswiftui(user_baseswiftui: friend_blisslink)
-            
-            Utils_baseswiftui.showSuccess_baseswiftui(
-                message_baseswiftui: "Visiting \(activity_blisslink.friendName_blisslink)'s mat",
-                image_baseswiftui: UIImage(systemName: "figure.walk")
-            )
         }
         
         print("🚪 串门到：\(activity_blisslink.friendName_blisslink)")
@@ -456,5 +455,218 @@ struct Home_baseswift: View {
         showAddMemory_blisslink = true
         
         print("📸 打开添加纪念贴纸")
+    }
+    
+    /// 处理计时器点击
+    private func handleTimerTap_blisslink() {
+        // 触觉反馈
+        let generator_blisslink = UIImpactFeedbackGenerator(style: .medium)
+        generator_blisslink.impactOccurred()
+        
+        // 跳转到计时页面
+        router_baseswiftui.navigate_baseswiftui(to: .practiceTimer_blisslink)
+        
+        print("⏱️ 打开计时页面")
+    }
+    
+    /// 处理纪念贴纸点击（放大查看）
+    private func handleMemoryTap_blisslink(_ sticker_blisslink: MemorySticker_blisslink) {
+        // 触觉反馈
+        let generator_blisslink = UIImpactFeedbackGenerator(style: .light)
+        generator_blisslink.impactOccurred()
+        
+        // 设置选中的纪念贴纸并显示放大视图
+        selectedMemory_blisslink = sticker_blisslink
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+            showMemoryDetail_blisslink = true
+        }
+        
+        print("📸 查看纪念：\(sticker_blisslink.title_blisslink)")
+    }
+    
+    /// 处理删除纪念贴
+    private func handleDeleteMemory_blisslink(_ sticker_blisslink: MemorySticker_blisslink) {
+        // 触觉反馈
+        let generator_blisslink = UINotificationFeedbackGenerator()
+        generator_blisslink.notificationOccurred(.success)
+        
+        // 从用户数据中移除
+        userVM_baseswiftui.deleteMemorySticker_blisslink(sticker_blisslink: sticker_blisslink)
+        
+        print("🗑️ 删除纪念贴：\(sticker_blisslink.title_blisslink)")
+    }
+}
+
+// MARK: - 纪念贴纸放大查看组件
+
+/// 纪念贴纸放大查看视图
+/// 核心作用：全屏展示纪念贴纸的照片和详细信息
+/// 设计思路：沉浸式查看体验，支持缩放和关闭
+struct MemoryDetailView_blisslink: View {
+    
+    // MARK: - 属性
+    
+    /// 贴纸数据
+    let sticker_blisslink: MemorySticker_blisslink
+    
+    /// 是否显示
+    @Binding var isShowing_blisslink: Bool
+    
+    /// 缩放比例
+    @State private var scale_blisslink: CGFloat = 1.0
+    @State private var lastScale_blisslink: CGFloat = 1.0
+    
+    /// 偏移量
+    @State private var offset_blisslink: CGSize = .zero
+    @State private var lastOffset_blisslink: CGSize = .zero
+    
+    /// 加载的图片
+    @State private var loadedImage_blisslink: UIImage?
+    
+    // MARK: - 视图主体
+    
+    var body: some View {
+        ZStack {
+            // 背景（半透明黑色）
+            Color.black.opacity(0.95)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    handleClose_blisslink()
+                }
+            
+            // 图片展示
+            if let image_blisslink = loadedImage_blisslink {
+                Image(uiImage: image_blisslink)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .scaleEffect(scale_blisslink)
+                    .offset(offset_blisslink)
+                    .gesture(
+                        MagnificationGesture()
+                            .onChanged { value_blisslink in
+                                scale_blisslink = lastScale_blisslink * value_blisslink
+                            }
+                            .onEnded { _ in
+                                // 限制缩放范围
+                                if scale_blisslink < 1.0 {
+                                    withAnimation(.spring()) {
+                                        scale_blisslink = 1.0
+                                    }
+                                } else if scale_blisslink > 5.0 {
+                                    scale_blisslink = 5.0
+                                }
+                                lastScale_blisslink = scale_blisslink
+                            }
+                    )
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value_blisslink in
+                                offset_blisslink = CGSize(
+                                    width: lastOffset_blisslink.width + value_blisslink.translation.width,
+                                    height: lastOffset_blisslink.height + value_blisslink.translation.height
+                                )
+                            }
+                            .onEnded { _ in
+                                lastOffset_blisslink = offset_blisslink
+                            }
+                    )
+                    .onTapGesture(count: 2) {
+                        // 双击重置缩放
+                        withAnimation(.spring()) {
+                            scale_blisslink = 1.0
+                            lastScale_blisslink = 1.0
+                            offset_blisslink = .zero
+                            lastOffset_blisslink = .zero
+                        }
+                    }
+            } else {
+                // 加载中占位符
+                ProgressView()
+                    .scaleEffect(1.5)
+                    .tint(.white)
+            }
+            
+            // 顶部信息栏
+            VStack {
+                HStack {
+                    // 标题和日期
+                    VStack(alignment: .leading, spacing: 4.h_baseswiftui) {
+                        Text(sticker_blisslink.title_blisslink)
+                            .font(.system(size: 18.sp_baseswiftui, weight: .bold))
+                            .foregroundColor(.white)
+                        
+                        Text(formatDate_blisslink(sticker_blisslink.memoryDate_blisslink))
+                            .font(.system(size: 14.sp_baseswiftui, weight: .medium))
+                            .foregroundColor(.white.opacity(0.8))
+                    }
+                    
+                    Spacer()
+                    
+                    // 关闭按钮
+                    Button(action: {
+                        handleClose_blisslink()
+                    }) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.black.opacity(0.6))
+                                .frame(width: 44.w_baseswiftui, height: 44.h_baseswiftui)
+                            
+                            Image(systemName: "xmark")
+                                .font(.system(size: 18.sp_baseswiftui, weight: .semibold))
+                                .foregroundColor(.white)
+                        }
+                    }
+                }
+                .padding(.horizontal, 20.w_baseswiftui)
+                .padding(.top, 50.h_baseswiftui)
+                
+                Spacer()
+            }
+        }
+        .onAppear {
+            loadImage_blisslink()
+        }
+    }
+    
+    // MARK: - 辅助方法
+    
+    /// 加载图片
+    private func loadImage_blisslink() {
+        // 先尝试从 Assets 加载
+        if let image_blisslink = UIImage(named: sticker_blisslink.photoUrl_blisslink) {
+            loadedImage_blisslink = image_blisslink
+            return
+        }
+        
+        // 如果 Assets 中没有，尝试从文档目录加载
+        let fileManager_blisslink = FileManager.default
+        guard let documentsDirectory_blisslink = fileManager_blisslink.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return
+        }
+        
+        let fileURL_blisslink = documentsDirectory_blisslink.appendingPathComponent("\(sticker_blisslink.photoUrl_blisslink).jpg")
+        
+        if let image_blisslink = UIImage(contentsOfFile: fileURL_blisslink.path) {
+            loadedImage_blisslink = image_blisslink
+        }
+    }
+    
+    /// 格式化日期
+    private func formatDate_blisslink(_ date: Date) -> String {
+        let formatter_blisslink = DateFormatter()
+        formatter_blisslink.dateFormat = "MMMM d, yyyy"
+        return formatter_blisslink.string(from: date)
+    }
+    
+    /// 处理关闭
+    private func handleClose_blisslink() {
+        // 触觉反馈
+        let generator_blisslink = UIImpactFeedbackGenerator(style: .light)
+        generator_blisslink.impactOccurred()
+        
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+            isShowing_blisslink = false
+        }
     }
 }

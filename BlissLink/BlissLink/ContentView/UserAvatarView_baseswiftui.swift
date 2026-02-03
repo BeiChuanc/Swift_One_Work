@@ -29,17 +29,19 @@ struct UserAvatarView_baseswiftui: View {
     var onTapped_baseswiftui: (() -> Void)?
     
     var body: some View {
-        Button(action: { if isClickable_baseswiftui { onTapped_baseswiftui?() } }) {
-            avatarContent_baseswiftui
-                .frame(width: size_baseswiftui, height: size_baseswiftui)
-                .clipShape(Circle())
-                .overlay(
-                    showBorder_baseswiftui ?
-                    Circle().stroke(borderColor_baseswiftui, lineWidth: borderWidth_baseswiftui) : nil
-                )
-        }
-        .disabled(!isClickable_baseswiftui)
-        .buttonStyle(.plain)
+        avatarContent_baseswiftui
+            .frame(width: size_baseswiftui, height: size_baseswiftui)
+            .clipShape(Circle())
+            .overlay(
+                showBorder_baseswiftui ?
+                Circle().stroke(borderColor_baseswiftui, lineWidth: borderWidth_baseswiftui) : nil
+            )
+            .contentShape(Circle())  // 定义点击区域为圆形
+            .onTapGesture {
+                if isClickable_baseswiftui {
+                    onTapped_baseswiftui?()
+                }
+            }
     }
     
     @ViewBuilder
@@ -48,7 +50,8 @@ struct UserAvatarView_baseswiftui: View {
             MediaDisplayView_baseswiftui(
                 mediaPath_baseswiftui: path,
                 isVideo_baseswiftui: false,
-                cornerRadius_baseswiftui: size_baseswiftui / 2
+                cornerRadius_baseswiftui: size_baseswiftui / 2,
+                isClickable_baseswiftui: false  // ← 关键：禁用 MediaDisplayView 的点击
             )
         } else {
             defaultAvatar_baseswiftui

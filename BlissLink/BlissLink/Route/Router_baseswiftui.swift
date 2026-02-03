@@ -34,7 +34,13 @@ enum Route_baseswiftui: Hashable, Identifiable {
     case aiChat_baseswiftui
     
     // 媒体
-    case mediaPlayer_baseswiftui(mediaUrl_baseswiftui: String)
+    case mediaPlayer_baseswiftui(mediaUrl_baseswiftui: String, isVideo_baseswiftui: Bool)
+    
+    // 练习
+    case practiceTimer_blisslink
+    
+    // 视频通话
+    case videoChat_blisslink(user_blisslink: PrewUserModel_baseswiftui)
     
     var id: String {
         switch self {
@@ -52,7 +58,9 @@ enum Route_baseswiftui: Hashable, Identifiable {
         case .userChat_baseswiftui(let user): return "userChat_\(user.userId_baseswiftui ?? 0)"
         case .groupChat_baseswiftui(let groupId): return "groupChat_\(groupId)"
         case .aiChat_baseswiftui: return "aiChat"
-        case .mediaPlayer_baseswiftui(let mediaUrl): return "mediaPlayer_\(mediaUrl.hashValue)"
+        case .mediaPlayer_baseswiftui(let mediaUrl, let isVideo): return "mediaPlayer_\(mediaUrl.hashValue)_\(isVideo)"
+        case .practiceTimer_blisslink: return "practiceTimer"
+        case .videoChat_blisslink(let user): return "videoChat_\(user.userId_baseswiftui ?? 0)"
         }
     }
     
@@ -176,8 +184,12 @@ class Router_baseswiftui: ObservableObject {
         navigate_baseswiftui(to: .aiChat_baseswiftui)
     }
     
-    func toMediaPlayer_baseswiftui(mediaUrl_baseswiftui: String) {
-        presentFullScreen_baseswiftui(route_baseswiftui: .mediaPlayer_baseswiftui(mediaUrl_baseswiftui: mediaUrl_baseswiftui))
+    func toMediaPlayer_baseswiftui(mediaUrl_baseswiftui: String, isVideo_baseswiftui: Bool) {
+        presentFullScreen_baseswiftui(route_baseswiftui: .mediaPlayer_baseswiftui(mediaUrl_baseswiftui: mediaUrl_baseswiftui, isVideo_baseswiftui: isVideo_baseswiftui))
+    }
+    
+    func toVideoChat_blisslink(user_blisslink: PrewUserModel_baseswiftui) {
+        presentFullScreen_baseswiftui(route_baseswiftui: .videoChat_blisslink(user_blisslink: user_blisslink))
     }
     
     // MARK: - 视图构建器
@@ -212,9 +224,13 @@ class Router_baseswiftui: ObservableObject {
         case .groupChat_baseswiftui(let groupId):
             MessageUser_baseswift(groupId_baseswiftui: groupId)
         case .aiChat_baseswiftui:
-            MessageUser_baseswift(isAIChat_baseswiftui: true)
-        case .mediaPlayer_baseswiftui(let mediaUrl):
-            MediaPlayer_baseswift(mediaUrl_baseswiftui: mediaUrl)
+            MessageUser_baseswift()
+        case .mediaPlayer_baseswiftui(let mediaUrl, let isVideo):
+            MediaPlayer_baseswift(mediaUrl_baseswiftui: mediaUrl, isVideo_baseswiftui: isVideo)
+        case .practiceTimer_blisslink:
+            PracticeTimer_blisslink()
+        case .videoChat_blisslink(let user):
+            VideoChat_blisslink(user_blisslink: user)
         }
     }
 }
