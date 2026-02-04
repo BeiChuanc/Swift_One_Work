@@ -29,8 +29,8 @@ struct AddMemorySheet_blisslink: View {
     
     // MARK: - ViewModels
     
-    @ObservedObject var userVM_baseswiftui = UserViewModel_baseswiftui.shared_baseswiftui
-    @ObservedObject var localData_baseswiftui = LocalData_baseswiftui.shared_baseswiftui
+    @ObservedObject var userVM_blisslink = UserViewModel_blisslink.shared_blisslink
+    @ObservedObject var localData_blisslink = LocalData_blisslink.shared_blisslink
     
     // MARK: - 视图主体
     
@@ -42,14 +42,14 @@ struct AddMemorySheet_blisslink: View {
                     handleCancel_blisslink()
                 }) {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 24.sp_baseswiftui))
+                        .font(.system(size: 24.sp_blisslink))
                         .foregroundColor(.secondary)
                 }
                 
                 Spacer()
                 
                 Text("Add Memory")
-                    .font(.system(size: 20.sp_baseswiftui, weight: .bold))
+                    .font(.system(size: 20.sp_blisslink, weight: .bold))
                     .foregroundColor(.primary)
                 
                 Spacer()
@@ -58,33 +58,33 @@ struct AddMemorySheet_blisslink: View {
                     handleAddMemory_blisslink()
                 }) {
                     Text("Add")
-                        .font(.system(size: 16.sp_baseswiftui, weight: .bold))
+                        .font(.system(size: 16.sp_blisslink, weight: .bold))
                         .foregroundColor(isValid_blisslink ? Color(hex: "667EEA") : .gray)
                 }
                 .disabled(!isValid_blisslink)
             }
-            .padding(.horizontal, 20.w_baseswiftui)
-            .padding(.top, 20.h_baseswiftui)
-            .padding(.bottom, 16.h_baseswiftui)
+            .padding(.horizontal, 20.w_blisslink)
+            .padding(.top, 20.h_blisslink)
+            .padding(.bottom, 16.h_blisslink)
             .background(Color.white)
             
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 24.h_baseswiftui) {
+                VStack(spacing: 24.h_blisslink) {
                     // 图片预览区域
                     imagePreviewSection_blisslink
-                        .padding(.top, 20.h_baseswiftui)
+                        .padding(.top, 20.h_blisslink)
                     
                     // 文字输入区域
                     textInputSection_blisslink
                     
                     // 提示信息
                     Text("Your memory will be placed on your yoga mat as a sticker")
-                        .font(.system(size: 13.sp_baseswiftui))
+                        .font(.system(size: 13.sp_blisslink))
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40.w_baseswiftui)
+                        .padding(.horizontal, 40.w_blisslink)
                 }
-                .padding(.bottom, 40.h_baseswiftui)
+                .padding(.bottom, 40.h_blisslink)
             }
             .background(Color(hex: "F7FAFC"))
         }
@@ -95,13 +95,13 @@ struct AddMemorySheet_blisslink: View {
     // MARK: - 图片预览区域
     
     private var imagePreviewSection_blisslink: some View {
-        VStack(spacing: 12.h_baseswiftui) {
+        VStack(spacing: 12.h_blisslink) {
             ZStack(alignment: .topTrailing) {
                 // 点击区域 - 选择相册图片
                 PhotosPicker(selection: $selectedImage_blisslink, matching: .images) {
                     ZStack {
                         // 背景渐变
-                        RoundedRectangle(cornerRadius: 16.w_baseswiftui)
+                        RoundedRectangle(cornerRadius: 16.w_blisslink)
                             .fill(
                                 LinearGradient(
                                     gradient: Gradient(colors: [
@@ -112,21 +112,21 @@ struct AddMemorySheet_blisslink: View {
                                     endPoint: .bottomTrailing
                                 )
                             )
-                            .frame(height: 200.h_baseswiftui)
+                            .frame(height: 200.h_blisslink)
                         
                         if let image_blisslink = selectedUIImage_blisslink {
                             // 显示选中的图片
                             Image(uiImage: image_blisslink)
                                 .resizable()
                                 .scaledToFill()
-                                .frame(height: 200.h_baseswiftui)
+                                .frame(height: 200.h_blisslink)
                                 .clipped()
-                                .cornerRadius(16.w_baseswiftui)
+                                .cornerRadius(16.w_blisslink)
                         } else {
                             // 默认占位符
-                            VStack(spacing: 12.h_baseswiftui) {
+                            VStack(spacing: 12.h_blisslink) {
                                 Image(systemName: "photo.fill.on.rectangle.fill")
-                                    .font(.system(size: 60.sp_baseswiftui))
+                                    .font(.system(size: 60.sp_blisslink))
                                     .foregroundStyle(
                                         LinearGradient(
                                             gradient: Gradient(colors: [Color(hex: "667EEA"), Color(hex: "764BA2")]),
@@ -136,7 +136,7 @@ struct AddMemorySheet_blisslink: View {
                                     )
                                 
                                 Text("Tap to select a photo")
-                                    .font(.system(size: 14.sp_baseswiftui, weight: .medium))
+                                    .font(.system(size: 14.sp_blisslink, weight: .medium))
                                     .foregroundColor(.secondary)
                             }
                         }
@@ -154,17 +154,17 @@ struct AddMemorySheet_blisslink: View {
                         ZStack {
                             Circle()
                                 .fill(Color.black.opacity(0.7))
-                                .frame(width: 32.w_baseswiftui, height: 32.h_baseswiftui)
+                                .frame(width: 32.w_blisslink, height: 32.h_blisslink)
                             
                             Image(systemName: "xmark")
-                                .font(.system(size: 14.sp_baseswiftui, weight: .semibold))
+                                .font(.system(size: 14.sp_blisslink, weight: .semibold))
                                 .foregroundColor(.white)
                         }
                     }
-                    .padding([.top, .trailing], 28.w_baseswiftui)
+                    .padding([.top, .trailing], 28.w_blisslink)
                 }
             }
-            .padding(.horizontal, 20.w_baseswiftui)
+            .padding(.horizontal, 20.w_blisslink)
         }
     }
     
@@ -185,23 +185,23 @@ struct AddMemorySheet_blisslink: View {
             let generator_blisslink = UIImpactFeedbackGenerator(style: .light)
             generator_blisslink.impactOccurred()
         }) {
-            VStack(spacing: 8.h_baseswiftui) {
+            VStack(spacing: 8.h_blisslink) {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 12.w_baseswiftui)
+                    RoundedRectangle(cornerRadius: 12.w_blisslink)
                         .fill(Color.white)
-                        .frame(width: 80.w_baseswiftui, height: 80.h_baseswiftui)
+                        .frame(width: 80.w_blisslink, height: 80.h_blisslink)
                     
                     if let image_blisslink = UIImage(named: imageName_blisslink) {
                         Image(uiImage: image_blisslink)
                             .resizable()
                             .scaledToFill()
-                            .frame(width: 80.w_baseswiftui, height: 80.h_baseswiftui)
+                            .frame(width: 80.w_blisslink, height: 80.h_blisslink)
                             .clipped()
-                            .cornerRadius(12.w_baseswiftui)
+                            .cornerRadius(12.w_blisslink)
                     }
                 }
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12.w_baseswiftui)
+                    RoundedRectangle(cornerRadius: 12.w_blisslink)
                         .strokeBorder(
                             selectedPhotoName_blisslink == imageName_blisslink ?
                             LinearGradient(
@@ -214,17 +214,17 @@ struct AddMemorySheet_blisslink: View {
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             ),
-                            lineWidth: 3.w_baseswiftui
+                            lineWidth: 3.w_blisslink
                         )
                 )
                 .scaleEffect(selectedPhotoName_blisslink == imageName_blisslink ? 1.08 : 1.0)
                 .animation(.spring(response: 0.4, dampingFraction: 0.75, blendDuration: 0), value: selectedPhotoName_blisslink)
                 
                 Text(extractImageName_blisslink(imageName_blisslink))
-                    .font(.system(size: 11.sp_baseswiftui, weight: selectedPhotoName_blisslink == imageName_blisslink ? .bold : .medium))
+                    .font(.system(size: 11.sp_blisslink, weight: selectedPhotoName_blisslink == imageName_blisslink ? .bold : .medium))
                     .foregroundColor(selectedPhotoName_blisslink == imageName_blisslink ? .primary : .secondary)
                     .lineLimit(1)
-                    .frame(width: 80.w_baseswiftui)
+                    .frame(width: 80.w_blisslink)
             }
         }
     }
@@ -237,19 +237,19 @@ struct AddMemorySheet_blisslink: View {
     // MARK: - 文字输入区域
     
     private var textInputSection_blisslink: some View {
-        VStack(alignment: .leading, spacing: 12.h_baseswiftui) {
+        VStack(alignment: .leading, spacing: 12.h_blisslink) {
             Text("Memory Title")
-                .font(.system(size: 16.sp_baseswiftui, weight: .semibold))
+                .font(.system(size: 16.sp_blisslink, weight: .semibold))
                 .foregroundColor(.primary)
-                .padding(.horizontal, 20.w_baseswiftui)
+                .padding(.horizontal, 20.w_blisslink)
             
-            VStack(alignment: .trailing, spacing: 8.h_baseswiftui) {
+            VStack(alignment: .trailing, spacing: 8.h_blisslink) {
                 // 文字输入框
                 TextField("E.g., First outdoor meditation", text: $memoryText_blisslink)
-                    .font(.system(size: 15.sp_baseswiftui))
-                    .padding(16.w_baseswiftui)
+                    .font(.system(size: 15.sp_blisslink))
+                    .padding(16.w_blisslink)
                     .background(
-                        RoundedRectangle(cornerRadius: 12.w_baseswiftui)
+                        RoundedRectangle(cornerRadius: 12.w_blisslink)
                             .fill(Color.white)
                     )
                     .onChange(of: memoryText_blisslink) { oldValue_blisslink, newValue_blisslink in
@@ -261,10 +261,10 @@ struct AddMemorySheet_blisslink: View {
                 
                 // 字数统计
                 Text("\(memoryText_blisslink.count)/30")
-                    .font(.system(size: 12.sp_baseswiftui))
+                    .font(.system(size: 12.sp_blisslink))
                     .foregroundColor(memoryText_blisslink.count >= 30 ? .red : .secondary)
             }
-            .padding(.horizontal, 20.w_baseswiftui)
+            .padding(.horizontal, 20.w_blisslink)
         }
     }
     
@@ -383,7 +383,7 @@ struct AddMemorySheet_blisslink: View {
         let position_blisslink = calculateNonOverlappingPosition_blisslink()
         
         // 创建新贴纸
-        let currentUserId_blisslink = userVM_baseswiftui.getCurrentUser_baseswiftui().userId_baseswiftui ?? 0
+        let currentUserId_blisslink = userVM_blisslink.getCurrentUser_blisslink().userId_blisslink ?? 0
         let stickerId_blisslink = existingStickers_blisslink.count + 1
         
         let newSticker_blisslink = MemorySticker_blisslink(

@@ -20,7 +20,7 @@ struct FriendActivityCard_blisslink: View {
     @State private var isPressed_blisslink: Bool = false
     
     /// 本地数据（响应式）
-    @ObservedObject var localData_baseswiftui = LocalData_baseswiftui.shared_baseswiftui
+    @ObservedObject var localData_blisslink = LocalData_blisslink.shared_blisslink
     
     // MARK: - 视图主体
     
@@ -28,38 +28,38 @@ struct FriendActivityCard_blisslink: View {
         Button(action: {
             handleTap_blisslink()
         }) {
-            HStack(spacing: 12.w_baseswiftui) {
+            HStack(spacing: 12.w_blisslink) {
                 // 好友头像（使用 UserAvatarView 组件）
-                UserAvatarView_baseswiftui(
-                    userId_baseswiftui: activity_blisslink.friendUserId_blisslink,
-                    avatarPath_baseswiftui: getFriendAvatarPath_blisslink(),
-                    userName_baseswiftui: activity_blisslink.friendName_blisslink,
-                    size_baseswiftui: 50.w_baseswiftui,
-                    isClickable_baseswiftui: false
+                UserAvatarView_blisslink(
+                    userId_blisslink: activity_blisslink.friendUserId_blisslink,
+                    avatarPath_blisslink: getFriendAvatarPath_blisslink(),
+                    userName_blisslink: activity_blisslink.friendName_blisslink,
+                    size_blisslink: 50.w_blisslink,
+                    isClickable_blisslink: false
                 )
                 
                 // 动态内容
-                VStack(alignment: .leading, spacing: 4.h_baseswiftui) {
+                VStack(alignment: .leading, spacing: 4.h_blisslink) {
                     // 好友名称
                     Text(activity_blisslink.friendName_blisslink)
-                        .font(.system(size: 14.sp_baseswiftui, weight: .bold))
+                        .font(.system(size: 14.sp_blisslink, weight: .bold))
                         .foregroundColor(.primary)
                     
                     // 动态描述
-                    HStack(spacing: 6.w_baseswiftui) {
+                    HStack(spacing: 6.w_blisslink) {
                         Image(systemName: activity_blisslink.activityType_blisslink.iconName_blisslink)
-                            .font(.system(size: 12.sp_baseswiftui))
+                            .font(.system(size: 12.sp_blisslink))
                             .foregroundColor(activityColor_blisslink)
                         
                         Text(activity_blisslink.activityContent_blisslink)
-                            .font(.system(size: 13.sp_baseswiftui))
+                            .font(.system(size: 13.sp_blisslink))
                             .foregroundColor(.secondary)
                             .lineLimit(1)
                     }
                     
                     // 时间
                     Text(timeAgo_blisslink)
-                        .font(.system(size: 11.sp_baseswiftui))
+                        .font(.system(size: 11.sp_blisslink))
                         .foregroundColor(.secondary.opacity(0.8))
                 }
                 
@@ -67,12 +67,12 @@ struct FriendActivityCard_blisslink: View {
                 
                 // 串门图标
                 Image(systemName: "arrow.right.circle.fill")
-                    .font(.system(size: 22.sp_baseswiftui))
+                    .font(.system(size: 22.sp_blisslink))
                     .foregroundColor(Color(hex: "667EEA"))
             }
-            .padding(14.w_baseswiftui)
+            .padding(14.w_blisslink)
             .background(
-                RoundedRectangle(cornerRadius: 14.w_baseswiftui)
+                RoundedRectangle(cornerRadius: 14.w_blisslink)
                     .fill(Color.white)
                     .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
             )
@@ -89,10 +89,10 @@ struct FriendActivityCard_blisslink: View {
     /// - Returns: 头像路径或nil
     private func getFriendAvatarPath_blisslink() -> String? {
         // 从本地数据中查找好友信息
-        if let friend_blisslink = localData_baseswiftui.userList_baseswiftui.first(where: { 
-            $0.userId_baseswiftui == activity_blisslink.friendUserId_blisslink 
+        if let friend_blisslink = localData_blisslink.userList_blisslink.first(where: { 
+            $0.userId_blisslink == activity_blisslink.friendUserId_blisslink 
         }) {
-            return friend_blisslink.userHead_baseswiftui
+            return friend_blisslink.userHead_blisslink
         }
         
         // 如果未找到，返回activity中的头像字段（可能是系统图标）

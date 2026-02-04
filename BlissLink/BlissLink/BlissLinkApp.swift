@@ -4,9 +4,9 @@ import SwiftUI
 struct BlissLinkApp: App {
     var body: some Scene {
         WindowGroup {
-            SplashView_baseswiftui()
-                .hudOverlay_baseswiftui()
-                .toastOverlay_baseswiftui()
+            SplashView_blisslink()
+                .hudOverlay_blisslink()
+                .toastOverlay_blisslink()
         }
     }
 }

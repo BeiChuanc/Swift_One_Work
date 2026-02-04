@@ -11,8 +11,8 @@ struct PracticeTimer_blisslink: View {
     // MARK: - ViewModels
     
     @ObservedObject var practiceVM_blisslink = PracticeViewModel_blisslink.shared_blisslink
-    @ObservedObject var userVM_baseswiftui = UserViewModel_baseswiftui.shared_baseswiftui
-    @ObservedObject var router_baseswiftui = Router_baseswiftui.shared_baseswiftui
+    @ObservedObject var userVM_blisslink = UserViewModel_blisslink.shared_blisslink
+    @ObservedObject var router_blisslink = Router_blisslink.shared_blisslink
     
     // MARK: - 状态
     
@@ -39,14 +39,14 @@ struct PracticeTimer_blisslink: View {
                 // 装饰圆圈
                 Circle()
                     .fill(Color.white.opacity(0.1))
-                    .frame(width: 300.w_baseswiftui, height: 300.h_baseswiftui)
-                    .offset(x: -150.w_baseswiftui, y: -200.h_baseswiftui)
+                    .frame(width: 300.w_blisslink, height: 300.h_blisslink)
+                    .offset(x: -150.w_blisslink, y: -200.h_blisslink)
                     .blur(radius: 50)
                 
                 Circle()
                     .fill(Color.white.opacity(0.08))
-                    .frame(width: 350.w_baseswiftui, height: 350.h_baseswiftui)
-                    .offset(x: 170.w_baseswiftui, y: 400.h_baseswiftui)
+                    .frame(width: 350.w_blisslink, height: 350.h_blisslink)
+                    .offset(x: 170.w_blisslink, y: 400.h_blisslink)
                     .blur(radius: 60)
             }
             .ignoresSafeArea()
@@ -65,7 +65,7 @@ struct PracticeTimer_blisslink: View {
                 
                 // 控制按钮
                 controlButtons_blisslink
-                    .padding(.bottom, 80.h_baseswiftui)
+                    .padding(.bottom, 80.h_blisslink)
             }
         }
         .navigationBarHidden(true)
@@ -85,10 +85,10 @@ struct PracticeTimer_blisslink: View {
                 ZStack {
                     Circle()
                         .fill(Color.white.opacity(0.25))
-                        .frame(width: 36.w_baseswiftui, height: 36.h_baseswiftui)
+                        .frame(width: 36.w_blisslink, height: 36.h_blisslink)
                     
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 16.sp_baseswiftui, weight: .semibold))
+                        .font(.system(size: 16.sp_blisslink, weight: .semibold))
                         .foregroundColor(.white)
                 }
             }
@@ -97,38 +97,38 @@ struct PracticeTimer_blisslink: View {
             
             // 标题
             Text("Practice Timer")
-                .font(.system(size: 18.sp_baseswiftui, weight: .bold))
+                .font(.system(size: 18.sp_blisslink, weight: .bold))
                 .foregroundColor(.white)
             
             Spacer()
             
             // 占位
             Color.clear
-                .frame(width: 36.w_baseswiftui, height: 36.h_baseswiftui)
+                .frame(width: 36.w_blisslink, height: 36.h_blisslink)
         }
-        .padding(.horizontal, 20.w_baseswiftui)
-        .padding(.top, 10.h_baseswiftui)
-        .padding(.bottom, 12.h_baseswiftui)
+        .padding(.horizontal, 20.w_blisslink)
+        .padding(.top, 10.h_blisslink)
+        .padding(.bottom, 12.h_blisslink)
     }
     
     // MARK: - 计时器显示
     
     private var timerDisplay_blisslink: some View {
-        VStack(spacing: 30.h_baseswiftui) {
+        VStack(spacing: 30.h_blisslink) {
             // 图标
             ZStack {
                 Circle()
                     .fill(Color.white.opacity(0.2))
-                    .frame(width: 120.w_baseswiftui, height: 120.h_baseswiftui)
+                    .frame(width: 120.w_blisslink, height: 120.h_blisslink)
                     .blur(radius: 20)
                 
                 Circle()
                     .fill(Color.white)
-                    .frame(width: 100.w_baseswiftui, height: 100.h_baseswiftui)
+                    .frame(width: 100.w_blisslink, height: 100.h_blisslink)
                     .shadow(color: Color.black.opacity(0.2), radius: 20, x: 0, y: 10)
                 
                 Image(systemName: isRunning_blisslink ? "figure.yoga" : "timer")
-                    .font(.system(size: 50.sp_baseswiftui, weight: .semibold))
+                    .font(.system(size: 50.sp_blisslink, weight: .semibold))
                     .foregroundStyle(
                         LinearGradient(
                             gradient: Gradient(colors: [Color(hex: "667EEA"), Color(hex: "764BA2")]),
@@ -141,14 +141,14 @@ struct PracticeTimer_blisslink: View {
             
             // 时间显示
             Text(formattedTime_blisslink)
-                .font(.system(size: 64.sp_baseswiftui, weight: .bold))
+                .font(.system(size: 64.sp_blisslink, weight: .bold))
                 .foregroundColor(.white)
                 .monospacedDigit()
                 .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
             
             // 状态文字
             Text(isRunning_blisslink ? "Keep going!" : "Ready to practice")
-                .font(.system(size: 18.sp_baseswiftui, weight: .semibold))
+                .font(.system(size: 18.sp_blisslink, weight: .semibold))
                 .foregroundColor(.white.opacity(0.9))
         }
     }
@@ -156,7 +156,7 @@ struct PracticeTimer_blisslink: View {
     // MARK: - 控制按钮
     
     private var controlButtons_blisslink: some View {
-        HStack(spacing: 20.w_baseswiftui) {
+        HStack(spacing: 20.w_blisslink) {
             // 重置按钮
             if elapsedTime_blisslink > 0 {
                 Button(action: {
@@ -165,10 +165,10 @@ struct PracticeTimer_blisslink: View {
                     ZStack {
                         Circle()
                             .fill(Color.white.opacity(0.25))
-                            .frame(width: 60.w_baseswiftui, height: 60.h_baseswiftui)
+                            .frame(width: 60.w_blisslink, height: 60.h_blisslink)
                         
                         Image(systemName: "arrow.counterclockwise")
-                            .font(.system(size: 24.sp_baseswiftui, weight: .semibold))
+                            .font(.system(size: 24.sp_blisslink, weight: .semibold))
                             .foregroundColor(.white)
                     }
                 }
@@ -182,11 +182,11 @@ struct PracticeTimer_blisslink: View {
                 ZStack {
                     Circle()
                         .fill(Color.white)
-                        .frame(width: 80.w_baseswiftui, height: 80.h_baseswiftui)
+                        .frame(width: 80.w_blisslink, height: 80.h_blisslink)
                         .shadow(color: Color.black.opacity(0.3), radius: 15, x: 0, y: 8)
                     
                     Image(systemName: isRunning_blisslink ? "pause.fill" : "play.fill")
-                        .font(.system(size: 32.sp_baseswiftui, weight: .bold))
+                        .font(.system(size: 32.sp_blisslink, weight: .bold))
                         .foregroundStyle(
                             LinearGradient(
                                 gradient: Gradient(colors: [Color(hex: "667EEA"), Color(hex: "764BA2")]),
@@ -194,7 +194,7 @@ struct PracticeTimer_blisslink: View {
                                 endPoint: .bottomTrailing
                             )
                         )
-                        .offset(x: isRunning_blisslink ? 0 : 3.w_baseswiftui)
+                        .offset(x: isRunning_blisslink ? 0 : 3.w_blisslink)
                 }
             }
             .buttonStyle(PlainButtonStyle())
@@ -209,10 +209,10 @@ struct PracticeTimer_blisslink: View {
                     ZStack {
                         Circle()
                             .fill(Color.white.opacity(0.25))
-                            .frame(width: 60.w_baseswiftui, height: 60.h_baseswiftui)
+                            .frame(width: 60.w_blisslink, height: 60.h_blisslink)
                         
                         Image(systemName: "checkmark")
-                            .font(.system(size: 24.sp_baseswiftui, weight: .bold))
+                            .font(.system(size: 24.sp_blisslink, weight: .bold))
                             .foregroundColor(.white)
                     }
                 }
@@ -238,14 +238,14 @@ struct PracticeTimer_blisslink: View {
     private func handleBack_blisslink() {
         if isRunning_blisslink {
             // 如果正在计时，提示用户
-            Utils_baseswiftui.showWarning_baseswiftui(
-                message_baseswiftui: "Please pause or finish your practice first.",
-                delay_baseswiftui: 2.0
+            Utils_blisslink.showWarning_blisslink(
+                message_blisslink: "Please pause or finish your practice first.",
+                delay_blisslink: 2.0
             )
             return
         }
         
-        router_baseswiftui.pop_baseswiftui()
+        router_blisslink.pop_blisslink()
     }
     
     /// 处理开始/暂停
@@ -292,11 +292,11 @@ struct PracticeTimer_blisslink: View {
     /// 处理完成
     private func handleFinish_blisslink() {
         // 检查是否登录
-        if !userVM_baseswiftui.isLoggedIn_baseswiftui {
+        if !userVM_blisslink.isLoggedIn_blisslink {
             // 延迟跳转到登录页面
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 500_000_000) // 1.5秒
-                Router_baseswiftui.shared_baseswiftui.toLogin_baseswiftui()
+                Router_blisslink.shared_blisslink.toLogin_blisslink()
             }
             return
         }
@@ -313,21 +313,21 @@ struct PracticeTimer_blisslink: View {
         if minutes_blisslink > 0 {
             practiceVM_blisslink.addPracticeSession_blisslink(duration_blisslink: minutes_blisslink)
             
-            Utils_baseswiftui.showSuccess_baseswiftui(
-                message_baseswiftui: "Practice saved! +\(minutes_blisslink) min",
-                image_baseswiftui: UIImage(systemName: "checkmark.circle.fill"),
-                delay_baseswiftui: 2.0
+            Utils_blisslink.showSuccess_blisslink(
+                message_blisslink: "Practice saved! +\(minutes_blisslink) min",
+                image_blisslink: UIImage(systemName: "checkmark.circle.fill"),
+                delay_blisslink: 2.0
             )
             
             // 延迟返回
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 1_500_000_000)
-                router_baseswiftui.pop_baseswiftui()
+                router_blisslink.pop_blisslink()
             }
         } else {
-            Utils_baseswiftui.showWarning_baseswiftui(
-                message_baseswiftui: "Practice too short!",
-                delay_baseswiftui: 1.5
+            Utils_blisslink.showWarning_blisslink(
+                message_blisslink: "Practice too short!",
+                delay_blisslink: 1.5
             )
         }
     }

@@ -33,8 +33,8 @@ class PracticeViewModel_blisslink: ObservableObject {
     /// 核心作用：从用户模型中加载练习统计数据，新用户所有数据为0
     func initPracticeData_blisslink() {
         // 获取当前用户
-        let currentUser_blisslink = UserViewModel_baseswiftui.shared_baseswiftui.getCurrentUser_baseswiftui()
-        let currentUserId_blisslink = currentUser_blisslink.userId_baseswiftui ?? 0
+        let currentUser_blisslink = UserViewModel_blisslink.shared_blisslink.getCurrentUser_blisslink()
+        let currentUserId_blisslink = currentUser_blisslink.userId_blisslink ?? 0
         
         // 从用户模型中读取练习统计数据（新用户默认为0）
         practiceStats_blisslink = PracticeStatsModel_blisslink(
@@ -58,12 +58,12 @@ class PracticeViewModel_blisslink: ObservableObject {
     /// - Parameter duration_blisslink: 练习时长（分钟）
     func startPractice_blisslink(duration_blisslink: Int) {
         // 检查是否已登录
-        guard UserViewModel_baseswiftui.shared_baseswiftui.isLoggedIn_baseswiftui else {
-            Utils_baseswiftui.showWarning_baseswiftui(message_baseswiftui: "Please login first")
+        guard UserViewModel_blisslink.shared_blisslink.isLoggedIn_blisslink else {
+            Utils_blisslink.showWarning_blisslink(message_blisslink: "Please login first")
             return
         }
         
-        let currentUserId_blisslink = UserViewModel_baseswiftui.shared_baseswiftui.getCurrentUser_baseswiftui().userId_baseswiftui ?? 0
+        let currentUserId_blisslink = UserViewModel_blisslink.shared_blisslink.getCurrentUser_blisslink().userId_blisslink ?? 0
         let sessionId_blisslink = practiceSessions_blisslink.count + 1
         
         let session_blisslink = PracticeSessionModel_blisslink(
@@ -105,10 +105,10 @@ class PracticeViewModel_blisslink: ObservableObject {
         
         // 显示完成提示
         if isCompleted_blisslink {
-            Utils_baseswiftui.showSuccess_baseswiftui(
-                message_baseswiftui: "Practice completed! Great job!",
-                image_baseswiftui: UIImage(systemName: "checkmark.seal.fill"),
-                delay_baseswiftui: 2.0
+            Utils_blisslink.showSuccess_blisslink(
+                message_blisslink: "Practice completed! Great job!",
+                image_blisslink: UIImage(systemName: "checkmark.seal.fill"),
+                delay_blisslink: 2.0
             )
         }
         
@@ -119,7 +119,7 @@ class PracticeViewModel_blisslink: ObservableObject {
     /// - Parameter userId_blisslink: 用户ID（可选，默认当前用户）
     /// - Returns: 练习记录列表
     func getPracticeHistory_blisslink(userId_blisslink: Int? = nil) -> [PracticeSessionModel_blisslink] {
-        let targetUserId_blisslink = userId_blisslink ?? (UserViewModel_baseswiftui.shared_baseswiftui.getCurrentUser_baseswiftui().userId_baseswiftui ?? 0)
+        let targetUserId_blisslink = userId_blisslink ?? (UserViewModel_blisslink.shared_blisslink.getCurrentUser_blisslink().userId_blisslink ?? 0)
         return practiceSessions_blisslink.filter { $0.userId_blisslink == targetUserId_blisslink }
             .sorted { $0.startTime_blisslink > $1.startTime_blisslink }
     }
@@ -168,7 +168,7 @@ class PracticeViewModel_blisslink: ObservableObject {
     /// 核心作用：将练习统计数据保存到当前用户模型中，实现数据持久化
     /// - Parameter stats_blisslink: 练习统计数据
     private func syncStatsToUserModel_blisslink(stats_blisslink: PracticeStatsModel_blisslink) {
-        let currentUser_blisslink = UserViewModel_baseswiftui.shared_baseswiftui.getCurrentUser_baseswiftui()
+        let currentUser_blisslink = UserViewModel_blisslink.shared_blisslink.getCurrentUser_blisslink()
         
         // 更新用户模型中的练习统计字段
         currentUser_blisslink.totalPracticeDuration_blisslink = stats_blisslink.totalDuration_blisslink
@@ -252,7 +252,7 @@ class PracticeViewModel_blisslink: ObservableObject {
     /// 添加练习记录（从计时器页面调用）
     /// - Parameter duration_blisslink: 练习时长（分钟）
     func addPracticeSession_blisslink(duration_blisslink: Int) {
-        let currentUserId_blisslink = UserViewModel_baseswiftui.shared_baseswiftui.getCurrentUser_baseswiftui().userId_baseswiftui ?? 0
+        let currentUserId_blisslink = UserViewModel_blisslink.shared_blisslink.getCurrentUser_blisslink().userId_blisslink ?? 0
         let sessionId_blisslink = practiceSessions_blisslink.count + 1
         
         let session_blisslink = PracticeSessionModel_blisslink(

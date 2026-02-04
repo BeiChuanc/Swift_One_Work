@@ -26,7 +26,7 @@ struct BackgroundSelector_blisslink: View {
             // 顶部标题栏
             HStack {
                 Text("Choose Your Mat")
-                    .font(.system(size: 20.sp_baseswiftui, weight: .bold))
+                    .font(.system(size: 20.sp_blisslink, weight: .bold))
                     .foregroundColor(.primary)
                 
                 Spacer()
@@ -37,23 +37,23 @@ struct BackgroundSelector_blisslink: View {
                     }
                 }) {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 24.sp_baseswiftui))
+                        .font(.system(size: 24.sp_blisslink))
                         .foregroundColor(.secondary)
                 }
             }
-            .padding(.horizontal, 20.w_baseswiftui)
-            .padding(.top, 20.h_baseswiftui)
-            .padding(.bottom, 16.h_baseswiftui)
+            .padding(.horizontal, 20.w_blisslink)
+            .padding(.top, 20.h_blisslink)
+            .padding(.bottom, 16.h_blisslink)
             
             // 背景预览
             backgroundPreview_blisslink
-                .frame(height: 200.h_baseswiftui)
-                .padding(.horizontal, 20.w_baseswiftui)
-                .padding(.bottom, 20.h_baseswiftui)
+                .frame(height: 200.h_blisslink)
+                .padding(.horizontal, 20.w_blisslink)
+                .padding(.bottom, 20.h_blisslink)
             
             // 背景选项列表
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16.w_baseswiftui) {
+                HStack(spacing: 16.w_blisslink) {
                     ForEach(Array(YogaMatBackground_blisslink.allCases.enumerated()), id: \.element) { index_blisslink, background_blisslink in
                         backgroundOption_blisslink(background_blisslink, isSelected_blisslink: selectedBackground_blisslink == background_blisslink)
                             .onTapGesture {
@@ -61,12 +61,12 @@ struct BackgroundSelector_blisslink: View {
                             }
                     }
                 }
-                .padding(.horizontal, 20.w_baseswiftui)
+                .padding(.horizontal, 20.w_blisslink)
             }
-            .padding(.bottom, 125.h_baseswiftui)
+            .padding(.bottom, 125.h_blisslink)
         }
         .background(Color.white)
-        .cornerRadius(20.w_baseswiftui, corners_blisslink: [.topLeft, .topRight])
+        .cornerRadius(20.w_blisslink, corners_blisslink: [.topLeft, .topRight])
         .shadow(color: Color.black.opacity(0.1), radius: 20, x: 0, y: -5)
     }
     
@@ -80,27 +80,27 @@ struct BackgroundSelector_blisslink: View {
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
-            .cornerRadius(16.w_baseswiftui)
+            .cornerRadius(16.w_blisslink)
             
             // 图标
             Image(systemName: selectedBackground_blisslink.iconName_blisslink)
-                .font(.system(size: 60.sp_baseswiftui, weight: .medium))
+                .font(.system(size: 60.sp_blisslink, weight: .medium))
                 .foregroundColor(.white.opacity(0.3))
             
             // 名称
             VStack {
                 Spacer()
                 Text(selectedBackground_blisslink.rawValue)
-                    .font(.system(size: 18.sp_baseswiftui, weight: .bold))
+                    .font(.system(size: 18.sp_blisslink, weight: .bold))
                     .foregroundColor(.white)
-                    .padding(.horizontal, 20.w_baseswiftui)
-                    .padding(.vertical, 12.h_baseswiftui)
+                    .padding(.horizontal, 20.w_blisslink)
+                    .padding(.vertical, 12.h_blisslink)
                     .background(
                         Capsule()
                             .fill(Color.white.opacity(0.2))
                             .blur(radius: 10)
                     )
-                    .padding(.bottom, 20.h_baseswiftui)
+                    .padding(.bottom, 20.h_blisslink)
             }
         }
     }
@@ -108,7 +108,7 @@ struct BackgroundSelector_blisslink: View {
     // MARK: - 背景选项
     
     private func backgroundOption_blisslink(_ background_blisslink: YogaMatBackground_blisslink, isSelected_blisslink: Bool) -> some View {
-        VStack(spacing: 8.h_baseswiftui) {
+        VStack(spacing: 8.h_blisslink) {
             
             // 缩略图
             ZStack {
@@ -117,15 +117,15 @@ struct BackgroundSelector_blisslink: View {
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
-                .frame(width: 80.w_baseswiftui, height: 80.h_baseswiftui)
-                .cornerRadius(12.w_baseswiftui)
+                .frame(width: 80.w_blisslink, height: 80.h_blisslink)
+                .cornerRadius(12.w_blisslink)
                 
                 Image(systemName: background_blisslink.iconName_blisslink)
-                    .font(.system(size: 30.sp_baseswiftui))
+                    .font(.system(size: 30.sp_blisslink))
                     .foregroundColor(.white.opacity(0.6))
             }
             .overlay(
-                RoundedRectangle(cornerRadius: 12.w_baseswiftui)
+                RoundedRectangle(cornerRadius: 12.w_blisslink)
                     .strokeBorder(
                         isSelected_blisslink ?
                         LinearGradient(
@@ -138,20 +138,20 @@ struct BackgroundSelector_blisslink: View {
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
-                        lineWidth: 3.w_baseswiftui
+                        lineWidth: 3.w_blisslink
                     )
             )
             .scaleEffect(isSelected_blisslink ? 1.08 : 1.0)
             .animation(.spring(response: 0.4, dampingFraction: 0.75, blendDuration: 0), value: isSelected_blisslink)
-            .padding(.top, 10.h_baseswiftui)
+            .padding(.top, 10.h_blisslink)
             
             // 名称
             Text(background_blisslink.rawValue)
-                .font(.system(size: 11.sp_baseswiftui, weight: isSelected_blisslink ? .bold : .medium))
+                .font(.system(size: 11.sp_blisslink, weight: isSelected_blisslink ? .bold : .medium))
                 .foregroundColor(isSelected_blisslink ? .primary : .secondary)
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
-                .frame(width: 80.w_baseswiftui)
+                .frame(width: 80.w_blisslink)
         }
     }
     
@@ -167,9 +167,9 @@ struct BackgroundSelector_blisslink: View {
             selectedBackground_blisslink = background_blisslink
         }
         
-        Utils_baseswiftui.showSuccess_baseswiftui(
-            message_baseswiftui: "Mat theme changed!",
-            image_baseswiftui: UIImage(systemName: "checkmark.circle.fill")
+        Utils_blisslink.showSuccess_blisslink(
+            message_blisslink: "Mat theme changed!",
+            image_blisslink: UIImage(systemName: "checkmark.circle.fill")
         )
     }
 }

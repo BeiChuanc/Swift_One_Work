@@ -24,7 +24,7 @@ class ReportHelper_blisslink {
     ///   - user_blisslink: 要拉黑的用户模型
     ///   - completion_blisslink: 拉黑完成回调
     static func blockUser_blisslink(
-        user_blisslink: PrewUserModel_baseswiftui,
+        user_blisslink: PrewUserModel_blisslink,
         completion_blisslink: (() -> Void)? = nil
     ) {
         // 执行拉黑用户逻辑
@@ -39,7 +39,7 @@ class ReportHelper_blisslink {
     ///   - post_blisslink: 被举报的帖子模型
     ///   - completion_blisslink: 举报完成回调
     static func reportPost_blisslink(
-        post_blisslink: TitleModel_baseswiftui,
+        post_blisslink: TitleModel_blisslink,
         completion_blisslink: (() -> Void)? = nil
     ) {
         // 执行举报帖子逻辑，操作完成后调用回调
@@ -55,8 +55,8 @@ class ReportHelper_blisslink {
     ///   - post_blisslink: 评论所属的帖子
     ///   - completion_blisslink: 举报完成回调
     static func reportComment_blisslink(
-        comment_blisslink: Comment_baseswiftui,
-        post_blisslink: TitleModel_baseswiftui,
+        comment_blisslink: Comment_blisslink,
+        post_blisslink: TitleModel_blisslink,
         completion_blisslink: (() -> Void)? = nil
     ) {
         performReportComment_blisslink(
@@ -73,7 +73,7 @@ class ReportHelper_blisslink {
     ///   - post_blisslink: 要删除的帖子模型
     ///   - completion_blisslink: 删除完成回调
     static func deletePost_blisslink(
-        post_blisslink: TitleModel_baseswiftui,
+        post_blisslink: TitleModel_blisslink,
         completion_blisslink: (() -> Void)? = nil
     ) {
         // 执行删除帖子逻辑，操作完成后调用回调
@@ -89,8 +89,8 @@ class ReportHelper_blisslink {
     ///   - post_blisslink: 评论所属的帖子
     ///   - completion_blisslink: 删除完成回调
     static func deleteComment_blisslink(
-        comment_blisslink: Comment_baseswiftui,
-        post_blisslink: TitleModel_baseswiftui,
+        comment_blisslink: Comment_blisslink,
+        post_blisslink: TitleModel_blisslink,
         completion_blisslink: (() -> Void)? = nil
     ) {
         // 执行删除评论逻辑，操作完成后调用回调
@@ -105,11 +105,11 @@ class ReportHelper_blisslink {
     
     /// 执行拉黑用户操作
     /// - Parameter user_blisslink: 要拉黑的用户
-    private static func performBlockUser_blisslink(user_blisslink: PrewUserModel_baseswiftui) {
+    private static func performBlockUser_blisslink(user_blisslink: PrewUserModel_blisslink) {
         // 模拟网络请求延迟
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            UserViewModel_baseswiftui.shared_baseswiftui.reportUser_baseswiftui(user_baseswiftui: user_blisslink)
-            print("✅ 已拉黑用户: \(user_blisslink.userName_baseswiftui ?? "Unknown")")
+            UserViewModel_blisslink.shared_blisslink.reportUser_blisslink(user_blisslink: user_blisslink)
+            print("✅ 已拉黑用户: \(user_blisslink.userName_blisslink ?? "Unknown")")
         }
     }
     
@@ -118,12 +118,12 @@ class ReportHelper_blisslink {
     ///   - post_blisslink: 被举报的帖子
     ///   - completion_blisslink: 操作完成回调
     private static func performReportPost_blisslink(
-        post_blisslink: TitleModel_baseswiftui,
+        post_blisslink: TitleModel_blisslink,
         completion_blisslink: (() -> Void)? = nil
     ) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            TitleViewModel_baseswiftui.shared_baseswiftui.deletePost_baseswiftui(post_baseswiftui: post_blisslink)
-            print("✅ 已举报帖子: \(post_blisslink.title_baseswiftui)")
+            TitleViewModel_blisslink.shared_blisslink.deletePost_blisslink(post_blisslink: post_blisslink)
+            print("✅ 已举报帖子: \(post_blisslink.title_blisslink)")
             
             // 确保在主线程上执行回调
             DispatchQueue.main.async {
@@ -138,16 +138,16 @@ class ReportHelper_blisslink {
     ///   - post_blisslink: 评论所属帖子
     ///   - completion_blisslink: 操作完成回调
     private static func performReportComment_blisslink(
-        comment_blisslink: Comment_baseswiftui,
-        post_blisslink: TitleModel_baseswiftui,
+        comment_blisslink: Comment_blisslink,
+        post_blisslink: TitleModel_blisslink,
         completion_blisslink: (() -> Void)? = nil
     ) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            TitleViewModel_baseswiftui.shared_baseswiftui.deleteComment_baseswiftui(
-                post_baseswiftui: post_blisslink,
-                comment_baseswiftui: comment_blisslink
+            TitleViewModel_blisslink.shared_blisslink.deleteComment_blisslink(
+                post_blisslink: post_blisslink,
+                comment_blisslink: comment_blisslink
             )
-            print("✅ 已举报评论: \(comment_blisslink.commentContent_baseswiftui)")
+            print("✅ 已举报评论: \(comment_blisslink.commentContent_blisslink)")
             
             // 确保在主线程上执行回调
             DispatchQueue.main.async {
@@ -161,16 +161,16 @@ class ReportHelper_blisslink {
     ///   - post_blisslink: 要删除的帖子
     ///   - completion_blisslink: 操作完成回调
     private static func performDeletePost_blisslink(
-        post_blisslink: TitleModel_baseswiftui,
+        post_blisslink: TitleModel_blisslink,
         completion_blisslink: (() -> Void)? = nil
     ) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             // 调用 ViewModel 删除帖子
-            TitleViewModel_baseswiftui.shared_baseswiftui.deletePost_baseswiftui(
-                post_baseswiftui: post_blisslink,
-                isDelete_baseswiftui: true
+            TitleViewModel_blisslink.shared_blisslink.deletePost_blisslink(
+                post_blisslink: post_blisslink,
+                isDelete_blisslink: true
             )
-            print("✅ 已删除帖子: \(post_blisslink.title_baseswiftui)")
+            print("✅ 已删除帖子: \(post_blisslink.title_blisslink)")
             
             // 确保在主线程上执行回调
             DispatchQueue.main.async {
@@ -185,18 +185,18 @@ class ReportHelper_blisslink {
     ///   - post_blisslink: 评论所属帖子
     ///   - completion_blisslink: 操作完成回调
     private static func performDeleteComment_blisslink(
-        comment_blisslink: Comment_baseswiftui,
-        post_blisslink: TitleModel_baseswiftui,
+        comment_blisslink: Comment_blisslink,
+        post_blisslink: TitleModel_blisslink,
         completion_blisslink: (() -> Void)? = nil
     ) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             // 调用 ViewModel 删除评论
-            TitleViewModel_baseswiftui.shared_baseswiftui.deleteComment_baseswiftui(
-                post_baseswiftui: post_blisslink,
-                comment_baseswiftui: comment_blisslink,
-                isDelete_baseswiftui: true
+            TitleViewModel_blisslink.shared_blisslink.deleteComment_blisslink(
+                post_blisslink: post_blisslink,
+                comment_blisslink: comment_blisslink,
+                isDelete_blisslink: true
             )
-            print("✅ 已删除评论: \(comment_blisslink.commentContent_baseswiftui)")
+            print("✅ 已删除评论: \(comment_blisslink.commentContent_blisslink)")
             
             // 确保在主线程上执行回调
             DispatchQueue.main.async {

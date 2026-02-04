@@ -11,11 +11,11 @@ struct VideoChat_blisslink: View {
     // MARK: - 属性
     
     /// 通话用户信息
-    let user_blisslink: PrewUserModel_baseswiftui
+    let user_blisslink: PrewUserModel_blisslink
     
     /// 路由管理器
-    @ObservedObject var router_baseswiftui = Router_baseswiftui.shared_baseswiftui
-    @ObservedObject var localData_baseswiftui = LocalData_baseswiftui.shared_baseswiftui
+    @ObservedObject var router_blisslink = Router_blisslink.shared_blisslink
+    @ObservedObject var localData_blisslink = LocalData_blisslink.shared_blisslink
     
     /// 状态
     @State private var showReportSheet_blisslink: Bool = false
@@ -60,14 +60,14 @@ struct VideoChat_blisslink: View {
                             showReportSheet_blisslink = true
                         }) {
                             Image(systemName: "ellipsis")
-                                .font(.system(size: 36.sp_baseswiftui, weight: .bold))
+                                .font(.system(size: 36.sp_blisslink, weight: .bold))
                                 .foregroundColor(.white)
                         }
                         .transition(.opacity.combined(with: .scale))
                     }
                 }
-                .padding(.top, 50.h_baseswiftui)
-                .padding(.trailing, 20.w_baseswiftui)
+                .padding(.top, 50.h_blisslink)
+                .padding(.trailing, 20.w_blisslink)
                 
                 Spacer()
             }
@@ -99,7 +99,7 @@ struct VideoChat_blisslink: View {
     private var backgroundView_blisslink: some View {
         ZStack {
             // 用户头像作为背景
-            if let avatarPath_blisslink = user_blisslink.userHead_baseswiftui,
+            if let avatarPath_blisslink = user_blisslink.userHead_blisslink,
                let image_blisslink = UIImage(named: avatarPath_blisslink) {
                 Image(uiImage: image_blisslink)
                     .resizable()
@@ -141,41 +141,41 @@ struct VideoChat_blisslink: View {
     /// 中间内容（头像和信息）
     /// 核心作用：展示对方头像、水波纹动画、用户名和状态
     private var centerContent_blisslink: some View {
-        VStack(spacing: 24.h_baseswiftui) {
+        VStack(spacing: 24.h_blisslink) {
             // 头像和水波纹
             ZStack {
                 // 水波纹动画层
                 ForEach(0..<3) { index_blisslink in
                     Circle()
                         .stroke(Color(hex: "667EEA"), lineWidth: 2)
-                        .frame(width: 126.w_baseswiftui, height: 126.h_baseswiftui)
+                        .frame(width: 126.w_blisslink, height: 126.h_blisslink)
                         .scaleEffect(rippleScale_blisslink[index_blisslink])
                         .opacity(rippleOpacity_blisslink[index_blisslink])
                 }
                 
                 // 用户头像
-                UserAvatarView_baseswiftui(
-                    userId_baseswiftui: user_blisslink.userId_baseswiftui ?? 0,
-                    avatarPath_baseswiftui: user_blisslink.userHead_baseswiftui,
-                    userName_baseswiftui: user_blisslink.userName_baseswiftui,
-                    size_baseswiftui: 126.w_baseswiftui,
-                    showBorder_baseswiftui: true,
-                    borderColor_baseswiftui: .white,
-                    borderWidth_baseswiftui: 4.w_baseswiftui
+                UserAvatarView_blisslink(
+                    userId_blisslink: user_blisslink.userId_blisslink ?? 0,
+                    avatarPath_blisslink: user_blisslink.userHead_blisslink,
+                    userName_blisslink: user_blisslink.userName_blisslink,
+                    size_blisslink: 126.w_blisslink,
+                    showBorder_blisslink: true,
+                    borderColor_blisslink: .white,
+                    borderWidth_blisslink: 4.w_blisslink
                 )
                 .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 10)
             }
-            .frame(width: 180.w_baseswiftui, height: 180.h_baseswiftui)
+            .frame(width: 180.w_blisslink, height: 180.h_blisslink)
             
             // 用户名
-            Text(user_blisslink.userName_baseswiftui ?? "User")
-                .font(.system(size: 28.sp_baseswiftui, weight: .bold))
+            Text(user_blisslink.userName_blisslink ?? "User")
+                .font(.system(size: 28.sp_blisslink, weight: .bold))
                 .foregroundColor(.white)
                 .shadow(color: Color.black.opacity(0.3), radius: 8, x: 0, y: 4)
             
             // 状态标签
             Text("Calling...")
-                .font(.system(size: 16.sp_baseswiftui, weight: .medium))
+                .font(.system(size: 16.sp_blisslink, weight: .medium))
                 .foregroundColor(.white.opacity(0.8))
         }
         .scaleEffect(showContent_blisslink ? 1.0 : 0.8)
@@ -194,17 +194,17 @@ struct VideoChat_blisslink: View {
                 // 按钮背景
                 Capsule()
                     .fill(Color(hex: "FF6B9D"))
-                    .frame(width: 120.w_baseswiftui, height: 70.h_baseswiftui)
+                    .frame(width: 120.w_blisslink, height: 70.h_blisslink)
                     .shadow(color: Color(hex: "FF6B9D").opacity(0.4), radius: 16, x: 0, y: 8)
                 
                 // 挂断图标
                 Image(systemName: "phone.down.fill")
-                    .font(.system(size: 32.sp_baseswiftui, weight: .bold))
+                    .font(.system(size: 32.sp_blisslink, weight: .bold))
                     .foregroundColor(.white)
             }
             .scaleEffect(buttonScale_blisslink)
         }
-        .padding(.bottom, 80.h_baseswiftui)
+        .padding(.bottom, 80.h_blisslink)
     }
     
     // MARK: - 动画方法
@@ -275,7 +275,7 @@ struct VideoChat_blisslink: View {
         
         // 延迟关闭
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            router_baseswiftui.dismissFullScreen_baseswiftui()
+            router_blisslink.dismissFullScreen_blisslink()
         }
         
         print("📞 挂断视频通话")
@@ -284,18 +284,18 @@ struct VideoChat_blisslink: View {
     /// 处理拉黑用户
     /// 核心作用：拉黑用户后关闭通话并返回（从ReportActionSheet回调）
     private func handleBlockUser_blisslink() {
-        Utils_baseswiftui.showLoading_baseswiftui(message_baseswiftui: "Processing...")
+        Utils_blisslink.showLoading_blisslink(message_blisslink: "Processing...")
         
         // 拉黑用户
         ReportHelper_blisslink.blockUser_blisslink(user_blisslink: user_blisslink) {
-            Utils_baseswiftui.dismissLoading_baseswiftui()
+            Utils_blisslink.dismissLoading_blisslink()
             
             // 关闭视频通话
-            router_baseswiftui.dismissFullScreen_baseswiftui()
+            router_blisslink.dismissFullScreen_blisslink()
             
             // 返回上一页
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                router_baseswiftui.pop_baseswiftui()
+                router_blisslink.pop_blisslink()
             }
         }
     }

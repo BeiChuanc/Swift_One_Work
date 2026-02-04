@@ -14,7 +14,7 @@ struct BadgeView_blisslink: View {
     let badge_blisslink: MeditationBadge_blisslink
     
     /// 尺寸
-    var size_blisslink: CGFloat = 70.w_baseswiftui
+    var size_blisslink: CGFloat = 70.w_blisslink
     
     /// 是否显示名称
     var showName_blisslink: Bool = true
@@ -28,7 +28,7 @@ struct BadgeView_blisslink: View {
         Button(action: {
             onTap_blisslink?()
         }) {
-            VStack(spacing: 8.h_baseswiftui) {
+            VStack(spacing: 8.h_blisslink) {
                 // 徽章图标
                 ZStack {
                     if badge_blisslink.isUnlocked_blisslink {
@@ -62,11 +62,11 @@ struct BadgeView_blisslink: View {
                 // 徽章名称
                 if showName_blisslink {
                     Text(badge_blisslink.badgeName_blisslink)
-                        .font(.system(size: 11.sp_baseswiftui, weight: badge_blisslink.isUnlocked_blisslink ? .bold : .medium))
+                        .font(.system(size: 11.sp_blisslink, weight: badge_blisslink.isUnlocked_blisslink ? .bold : .medium))
                         .foregroundColor(badge_blisslink.isUnlocked_blisslink ? .primary : .secondary)
                         .lineLimit(2)
                         .multilineTextAlignment(.center)
-                        .frame(width: size_blisslink + 10.w_baseswiftui)
+                        .frame(width: size_blisslink + 10.w_blisslink)
                 }
             }
         }
@@ -107,7 +107,7 @@ struct BadgeDetailView_blisslink: View {
                     }
                 
                 // 卡片内容
-                VStack(spacing: 24.h_baseswiftui) {
+                VStack(spacing: 24.h_blisslink) {
                     // 徽章大图
                     ZStack {
                         if badge_blisslink.isUnlocked_blisslink {
@@ -119,45 +119,45 @@ struct BadgeDetailView_blisslink: View {
                                         endPoint: .bottomTrailing
                                     )
                                 )
-                                .frame(width: 120.w_baseswiftui, height: 120.h_baseswiftui)
+                                .frame(width: 120.w_blisslink, height: 120.h_blisslink)
                                 .shadow(color: Color(hex: badge_blisslink.badgeColor_blisslink[0]).opacity(0.5), radius: 20, x: 0, y: 10)
                             
                             Image(systemName: badge_blisslink.badgeIcon_blisslink)
-                                .font(.system(size: 60.sp_baseswiftui, weight: .bold))
+                                .font(.system(size: 60.sp_blisslink, weight: .bold))
                                 .foregroundColor(.white)
                         } else {
                             Circle()
                                 .fill(Color.gray.opacity(0.3))
-                                .frame(width: 120.w_baseswiftui, height: 120.h_baseswiftui)
+                                .frame(width: 120.w_blisslink, height: 120.h_blisslink)
                             
                             Image(systemName: "lock.fill")
-                                .font(.system(size: 50.sp_baseswiftui))
+                                .font(.system(size: 50.sp_blisslink))
                                 .foregroundColor(.gray)
                         }
                     }
                     
                     // 徽章信息
-                    VStack(spacing: 12.h_baseswiftui) {
+                    VStack(spacing: 12.h_blisslink) {
                         Text(badge_blisslink.badgeName_blisslink)
-                            .font(.system(size: 24.sp_baseswiftui, weight: .bold))
+                            .font(.system(size: 24.sp_blisslink, weight: .bold))
                             .foregroundColor(.primary)
                         
                         Text(badge_blisslink.badgeDescription_blisslink)
-                            .font(.system(size: 15.sp_baseswiftui))
+                            .font(.system(size: 15.sp_blisslink))
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                             .lineLimit(3)
                         
                         // 解锁条件
-                        HStack(spacing: 6.w_baseswiftui) {
+                        HStack(spacing: 6.w_blisslink) {
                             Image(systemName: badge_blisslink.isUnlocked_blisslink ? "checkmark.circle.fill" : "circle")
-                                .font(.system(size: 14.sp_baseswiftui))
+                                .font(.system(size: 14.sp_blisslink))
                             Text(badge_blisslink.unlockCondition_blisslink)
-                                .font(.system(size: 13.sp_baseswiftui, weight: .medium))
+                                .font(.system(size: 13.sp_blisslink, weight: .medium))
                         }
                         .foregroundColor(badge_blisslink.isUnlocked_blisslink ? .green : .gray)
-                        .padding(.horizontal, 16.w_baseswiftui)
-                        .padding(.vertical, 8.h_baseswiftui)
+                        .padding(.horizontal, 16.w_blisslink)
+                        .padding(.vertical, 8.h_blisslink)
                         .background(
                             Capsule()
                                 .fill(badge_blisslink.isUnlocked_blisslink ? Color.green.opacity(0.1) : Color.gray.opacity(0.1))
@@ -166,18 +166,18 @@ struct BadgeDetailView_blisslink: View {
                         // 解锁日期
                         if badge_blisslink.isUnlocked_blisslink, let unlockDate_blisslink = badge_blisslink.unlockDate_blisslink {
                             Text("Unlocked on \(formattedDate_blisslink(unlockDate_blisslink))")
-                                .font(.system(size: 12.sp_baseswiftui))
+                                .font(.system(size: 12.sp_blisslink))
                                 .foregroundColor(.secondary)
                         }
                     }
-                    .padding(.horizontal, 30.w_baseswiftui)
+                    .padding(.horizontal, 30.w_blisslink)
                 }
-                .padding(30.w_baseswiftui)
+                .padding(30.w_blisslink)
                 .background(
-                    RoundedRectangle(cornerRadius: 24.w_baseswiftui)
+                    RoundedRectangle(cornerRadius: 24.w_blisslink)
                         .fill(Color.white)
                 )
-                .padding(.horizontal, 40.w_baseswiftui)
+                .padding(.horizontal, 40.w_blisslink)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .frame(

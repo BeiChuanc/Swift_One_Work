@@ -43,9 +43,9 @@ struct MemoryStickerView_blisslink: View {
                     // 照片容器
                     ZStack {
                         // 白色背景（拍立得效果）
-                        RoundedRectangle(cornerRadius: 14.w_baseswiftui)
+                        RoundedRectangle(cornerRadius: 14.w_blisslink)
                             .fill(Color.white)
-                            .frame(width: 150.w_baseswiftui, height: 170.h_baseswiftui)
+                            .frame(width: 150.w_blisslink, height: 170.h_blisslink)
                             .shadow(color: Color.black.opacity(0.28), radius: 12, x: 3, y: 5)
                         
                         VStack(spacing: 0) {
@@ -54,9 +54,9 @@ struct MemoryStickerView_blisslink: View {
                                 Image(uiImage: image_blisslink)
                                     .resizable()
                                     .scaledToFill()
-                                    .frame(width: 135.w_baseswiftui, height: 115.h_baseswiftui)
+                                    .frame(width: 135.w_blisslink, height: 115.h_blisslink)
                                     .clipped()
-                                    .cornerRadius(8.w_baseswiftui)
+                                    .cornerRadius(8.w_blisslink)
                             } else {
                                 // 占位符
                                 ZStack {
@@ -71,28 +71,28 @@ struct MemoryStickerView_blisslink: View {
                                                 endPoint: .bottomTrailing
                                             )
                                         )
-                                        .frame(width: 135.w_baseswiftui, height: 115.h_baseswiftui)
-                                        .cornerRadius(8.w_baseswiftui)
+                                        .frame(width: 135.w_blisslink, height: 115.h_blisslink)
+                                        .cornerRadius(8.w_blisslink)
                                     
                                     Image(systemName: "photo.fill")
-                                        .font(.system(size: 40.sp_baseswiftui))
+                                        .font(.system(size: 40.sp_blisslink))
                                         .foregroundColor(.gray.opacity(0.5))
                                 }
                             }
                             
                             // 标题（底部白边，添加圆角）
                             Text(sticker_blisslink.title_blisslink)
-                                .font(.system(size: 12.sp_baseswiftui, weight: .medium))
+                                .font(.system(size: 12.sp_blisslink, weight: .medium))
                                 .foregroundColor(.primary)
                                 .lineLimit(2)
                                 .multilineTextAlignment(.center)
-                                .frame(width: 135.w_baseswiftui)
-                                .padding(.vertical, 9.h_baseswiftui)
+                                .frame(width: 135.w_blisslink)
+                                .padding(.vertical, 9.h_blisslink)
                                 .background(
-                                    RoundedRectangle(cornerRadius: 8.w_baseswiftui)
+                                    RoundedRectangle(cornerRadius: 8.w_blisslink)
                                         .fill(Color.white)
                                 )
-                                .padding(.top, 6.h_baseswiftui)
+                                .padding(.top, 6.h_blisslink)
                         }
                     }
                 }
@@ -108,15 +108,15 @@ struct MemoryStickerView_blisslink: View {
                 ZStack {
                     Circle()
                         .fill(Color.red)
-                        .frame(width: 28.w_baseswiftui, height: 28.h_baseswiftui)
+                        .frame(width: 28.w_blisslink, height: 28.h_blisslink)
                     
                     Image(systemName: "xmark")
-                        .font(.system(size: 13.sp_baseswiftui, weight: .bold))
+                        .font(.system(size: 13.sp_blisslink, weight: .bold))
                         .foregroundColor(.white)
                 }
                 .shadow(color: Color.red.opacity(0.5), radius: 8, x: 0, y: 3)
             }
-            .offset(x: 10.w_baseswiftui, y: -10.h_baseswiftui)
+            .offset(x: 10.w_blisslink, y: -10.h_blisslink)
         }
         .rotationEffect(.degrees(sticker_blisslink.rotation_blisslink))
         .position(
@@ -190,7 +190,7 @@ struct AddMemoryStickerButton_blisslink: View {
             
             onTap_blisslink?()
         }) {
-            VStack(spacing: 8.h_baseswiftui) {
+            VStack(spacing: 8.h_blisslink) {
                 ZStack {
                     Circle()
                         .stroke(
@@ -199,12 +199,12 @@ struct AddMemoryStickerButton_blisslink: View {
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             ),
-                            style: StrokeStyle(lineWidth: 2.w_baseswiftui, dash: [5, 3])
+                            style: StrokeStyle(lineWidth: 2.w_blisslink, dash: [5, 3])
                         )
-                        .frame(width: 60.w_baseswiftui, height: 60.h_baseswiftui)
+                        .frame(width: 60.w_blisslink, height: 60.h_blisslink)
                     
                     Image(systemName: "plus")
-                        .font(.system(size: 24.sp_baseswiftui, weight: .bold))
+                        .font(.system(size: 24.sp_blisslink, weight: .bold))
                         .foregroundStyle(
                             LinearGradient(
                                 gradient: Gradient(colors: [Color(hex: "667EEA"), Color(hex: "764BA2")]),
@@ -215,7 +215,7 @@ struct AddMemoryStickerButton_blisslink: View {
                 }
                 
                 Text("Add Memory")
-                    .font(.system(size: 11.sp_baseswiftui, weight: .medium))
+                    .font(.system(size: 11.sp_blisslink, weight: .medium))
                     .foregroundColor(.secondary)
             }
         }
