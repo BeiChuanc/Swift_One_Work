@@ -225,15 +225,10 @@ class TitleViewModel_baseswiftui: ObservableObject {
     
     /// 显示登录提示
     private func showLoginPrompt_baseswiftui() {
-        Utils_baseswiftui.showWarning_baseswiftui(
-            message_baseswiftui: "Please login first.",
-            delay_baseswiftui: 1.5
-        )
-        
         // 延迟跳转到登录页面
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒
-            Router_baseswiftui.shared_baseswiftui.toLogin_baseswiftui()
+            try? await Task.sleep(nanoseconds: 200_000_000) // 0.2秒
+            Router_baseswiftui.shared_baseswiftui.toLogin_baseswiftuiui()
         }
     }
 }

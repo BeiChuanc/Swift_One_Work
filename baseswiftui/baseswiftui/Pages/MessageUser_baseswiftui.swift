@@ -5,7 +5,7 @@ import SwiftUI
 // 设计思路：简化实现，仅保留数据导入和页面标识
 
 /// 聊天页面
-struct MessageUser_baseswift: View {
+struct MessageUser_baseswiftui: View {
     
     /// 用户数据（用于用户聊天）
     var user_baseswiftui: PrewUserModel_baseswiftui?

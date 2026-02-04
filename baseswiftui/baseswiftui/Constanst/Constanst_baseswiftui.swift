@@ -86,3 +86,27 @@ enum APPSCREEN_baseswift {
         ScreenSize_baseswiftui.shared_baseswiftui.height_baseswiftui
     }
 }
+
+// MARK: - 媒体展示配置
+
+/// 媒体展示配置常量
+enum MediaConfig_baseswiftui {
+    
+    /// 渐变色方案集合
+    /// 用于系统图标背景和占位符
+    static let gradientColorSchemes_baseswiftui: [[Color]] = [
+        [Color(hex: "667eea"), Color(hex: "764ba2")],  // 紫色
+        [Color(hex: "f093fb"), Color(hex: "f5576c")],  // 粉红
+        [Color(hex: "4facfe"), Color(hex: "00f2fe")],  // 蓝色
+        [Color(hex: "43e97b"), Color(hex: "38f9d7")],  // 绿色
+        [Color(hex: "fa709a"), Color(hex: "fee140")]   // 暖色
+    ]
+    
+    /// 根据字符串哈希值获取渐变色方案
+    /// - Parameter identifier_baseswiftui: 标识字符串
+    /// - Returns: 渐变色数组
+    static func getGradientColors_baseswiftui(for identifier_baseswiftui: String) -> [Color] {
+        let index_baseswiftui = abs(identifier_baseswiftui.hashValue) % gradientColorSchemes_baseswiftui.count
+        return gradientColorSchemes_baseswiftui[index_baseswiftui]
+    }
+}

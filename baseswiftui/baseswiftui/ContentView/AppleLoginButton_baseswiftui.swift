@@ -13,19 +13,70 @@ struct AppleLoginButton_baseswiftui: View {
     let onFailure_baseswiftui: (String) -> Void
     
     var body: some View {
-        SignInWithAppleButton(
-            .signIn,
-            onRequest: { request_baseswiftui in
-                // 配置请求
-                request_baseswiftui.requestedScopes = [.fullName, .email]
-            },
-            onCompletion: { result_baseswiftui in
-                handleResult_baseswiftui(result_baseswiftui)
+        Button {
+            // 触发 Apple 登录流程
+            performAppleLogin_baseswiftui()
+        } label: {
+            HStack(spacing: 12) {
+                // 苹果图标（调大）
+                Image("apple")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 22, height: 22)
+                
+                // 登录文本（小一号）
+                Text("Sign in with Apple")
+                    .font(.system(size: 15, weight: .semibold))
             }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .frame(height: 50)
+            .background(Color.black)
+            .cornerRadius(12)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    // MARK: - Apple 登录流程
+    
+    /// 执行 Apple 登录
+    private func performAppleLogin_baseswiftui() {
+        // 触觉反馈
+        handleButtonTap_baseswiftui()
+        
+        // 创建 Apple ID 授权请求
+        let request_baseswiftui = ASAuthorizationAppleIDProvider().createRequest()
+        request_baseswiftui.requestedScopes = [.fullName, .email]
+        
+        // 创建授权控制器
+        let controller_baseswiftui = ASAuthorizationController(authorizationRequests: [request_baseswiftui])
+        
+        // 创建代理对象
+        let delegate_baseswiftui = AppleLoginDelegate_baseswiftui(
+            onSuccess: onSuccess_baseswiftui,
+            onFailure: onFailure_baseswiftui,
+            handleResult: handleResult_baseswiftui
         )
-        .signInWithAppleButtonStyle(.black)
-        .frame(height: 50)
-        .cornerRadius(12)
+        
+        // 设置代理
+        controller_baseswiftui.delegate = delegate_baseswiftui
+        
+        // 执行授权请求
+        controller_baseswiftui.performRequests()
+        
+        // 保持代理对象在内存中
+        objc_setAssociatedObject(controller_baseswiftui, "delegate", delegate_baseswiftui, .OBJC_ASSOCIATION_RETAIN)
+    }
+    
+    // MARK: - 点击事件处理
+    
+    /// 处理按钮点击
+    private func handleButtonTap_baseswiftui() {
+        // 触觉反馈
+        let generator_baseswiftui = UIImpactFeedbackGenerator(style: .medium)
+        generator_baseswiftui.impactOccurred()
+        
+        print("🔵 Apple登录按钮被点击")
     }
     
     // MARK: - 处理结果
@@ -131,56 +182,38 @@ struct AppleLoginButton_baseswiftui: View {
     }
 }
 
-// MARK: - 自定义 Apple 登录按钮（可选）
+// MARK: - Apple 登录代理
 
-/// 自定义样式的 Apple 登录按钮
-struct CustomAppleLoginButton_baseswiftui: View {
+/// Apple 登录授权代理
+class AppleLoginDelegate_baseswiftui: NSObject, ASAuthorizationControllerDelegate {
     
     /// 成功回调
-    let onSuccess_baseswiftui: (String) -> Void
+    let onSuccess: (String) -> Void
     
     /// 失败回调
-    let onFailure_baseswiftui: (String) -> Void
+    let onFailure: (String) -> Void
     
-    @State private var isPressed_baseswiftui: Bool = false
+    /// 结果处理方法
+    let handleResult: (Result<ASAuthorization, Error>) -> Void
     
-    var body: some View {
-        Button(action: {
-            // 使用系统的 Apple 登录按钮
-        }) {
-            HStack(spacing: 12) {
-                Image(systemName: "apple.logo")
-                    .font(.title3)
-                    .foregroundColor(.white)
-                
-                Text("Continue with Apple")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.white)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(Color.black)
-            .cornerRadius(12)
-            .scaleEffect(isPressed_baseswiftui ? 0.95 : 1.0)
-            .animation(.easeInOut(duration: 0.1), value: isPressed_baseswiftui)
-        }
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in
-                    isPressed_baseswiftui = true
-                }
-                .onEnded { _ in
-                    isPressed_baseswiftui = false
-                }
-        )
-        .overlay(
-            // 使用透明的 SignInWithAppleButton 覆盖
-            AppleLoginButton_baseswiftui(
-                onSuccess_baseswiftui: onSuccess_baseswiftui,
-                onFailure_baseswiftui: onFailure_baseswiftui
-            )
-            .opacity(0.001)
-            .allowsHitTesting(true)
-        )
+    /// 初始化
+    init(onSuccess: @escaping (String) -> Void,
+         onFailure: @escaping (String) -> Void,
+         handleResult: @escaping (Result<ASAuthorization, Error>) -> Void) {
+        self.onSuccess = onSuccess
+        self.onFailure = onFailure
+        self.handleResult = handleResult
+    }
+    
+    /// 授权成功
+    func authorizationController(controller: ASAuthorizationController,
+                                didCompleteWithAuthorization authorization: ASAuthorization) {
+        handleResult(.success(authorization))
+    }
+    
+    /// 授权失败
+    func authorizationController(controller: ASAuthorizationController,
+                                didCompleteWithError error: Error) {
+        handleResult(.failure(error))
     }
 }

@@ -10,22 +10,22 @@ import Combine
 /// 应用路由枚举
 enum Route_baseswiftui: Hashable, Identifiable {
     // 认证
-    case login_baseswiftui
+    case Login_baseswiftuiui
     case register_baseswiftui
     
     // 主页面
-    case home_baseswiftui
-    case discover_baseswiftui
+    case Home_baseswiftuiui
+    case Discover_baseswiftuiui
     case messageList_baseswiftui
     case me_baseswiftui
     
     // 帖子
-    case postDetail_baseswiftui(post_baseswiftui: TitleModel_baseswiftui)
+    case postDetail_baseswiftuiui(post_baseswiftui: TitleModel_baseswiftui)
     case release_baseswiftui
     
     // 用户
     case userInfo_baseswiftui(user_baseswiftui: PrewUserModel_baseswiftui)
-    case editInfo_baseswiftui
+    case EditInfo_baseswiftuiui
     case settings_baseswiftui
     
     // 消息
@@ -36,23 +36,27 @@ enum Route_baseswiftui: Hashable, Identifiable {
     // 媒体
     case mediaPlayer_baseswiftui(mediaUrl_baseswiftui: String)
     
+    // 视频通话
+    case videoChat_baseswiftui(user_baseswiftui: PrewUserModel_baseswiftui)
+    
     var id: String {
         switch self {
-        case .login_baseswiftui: return "login"
+        case .Login_baseswiftuiui: return "login"
         case .register_baseswiftui: return "register"
-        case .home_baseswiftui: return "home"
-        case .discover_baseswiftui: return "discover"
+        case .Home_baseswiftuiui: return "home"
+        case .Discover_baseswiftuiui: return "discover"
         case .messageList_baseswiftui: return "messageList"
         case .me_baseswiftui: return "me"
-        case .postDetail_baseswiftui(let post): return "postDetail_\(post.titleId_baseswiftui)"
+        case .postDetail_baseswiftuiui(let post): return "postDetail_\(post.titleId_baseswiftui)"
         case .release_baseswiftui: return "release"
         case .userInfo_baseswiftui(let user): return "userInfo_\(user.userId_baseswiftui ?? 0)"
-        case .editInfo_baseswiftui: return "editInfo"
+        case .EditInfo_baseswiftuiui: return "editInfo"
         case .settings_baseswiftui: return "settings"
         case .userChat_baseswiftui(let user): return "userChat_\(user.userId_baseswiftui ?? 0)"
         case .groupChat_baseswiftui(let groupId): return "groupChat_\(groupId)"
         case .aiChat_baseswiftui: return "aiChat"
         case .mediaPlayer_baseswiftui(let mediaUrl): return "mediaPlayer_\(mediaUrl.hashValue)"
+        case .videoChat_baseswiftui(let user): return "videoChat_\(user.userId_baseswiftui ?? 0)"
         }
     }
     
@@ -136,16 +140,16 @@ class Router_baseswiftui: ObservableObject {
     
     // MARK: - 便捷导航方法
     
-    func toLogin_baseswiftui() {
-        presentFullScreen_baseswiftui(route_baseswiftui: .login_baseswiftui)
+    func toLogin_baseswiftuiui() {
+        presentFullScreen_baseswiftui(route_baseswiftui: .Login_baseswiftuiui)
     }
     
     func toRegister_baseswiftui() {
         navigate_baseswiftui(to: .register_baseswiftui)
     }
     
-    func toPostDetail_baseswiftui(post_baseswiftui: TitleModel_baseswiftui) {
-        navigate_baseswiftui(to: .postDetail_baseswiftui(post_baseswiftui: post_baseswiftui))
+    func toPostDetail_baseswiftuiui(post_baseswiftui: TitleModel_baseswiftui) {
+        navigate_baseswiftui(to: .postDetail_baseswiftuiui(post_baseswiftui: post_baseswiftui))
     }
     
     func toUserInfo_baseswiftui(user_baseswiftui: PrewUserModel_baseswiftui) {
@@ -156,8 +160,8 @@ class Router_baseswiftui: ObservableObject {
         presentFullScreen_baseswiftui(route_baseswiftui: .release_baseswiftui)
     }
     
-    func toEditInfo_baseswiftui() {
-        navigate_baseswiftui(to: .editInfo_baseswiftui)
+    func toEditInfo_baseswiftuiui() {
+        navigate_baseswiftui(to: .EditInfo_baseswiftuiui)
     }
     
     func toSettings_baseswiftui() {
@@ -180,41 +184,47 @@ class Router_baseswiftui: ObservableObject {
         presentFullScreen_baseswiftui(route_baseswiftui: .mediaPlayer_baseswiftui(mediaUrl_baseswiftui: mediaUrl_baseswiftui))
     }
     
+    func toVideoChat_baseswiftui(user_baseswiftui: PrewUserModel_baseswiftui) {
+        presentFullScreen_baseswiftui(route_baseswiftui: .videoChat_baseswiftui(user_baseswiftui: user_baseswiftui))
+    }
+    
     // MARK: - 视图构建器
     
     @ViewBuilder
     func view_baseswiftui(for route_baseswiftui: Route_baseswiftui) -> some View {
         switch route_baseswiftui {
-        case .login_baseswiftui:
-            Login_baseswift()
+        case .Login_baseswiftuiui:
+            Login_baseswiftui()
         case .register_baseswiftui:
-            Register_baseswift()
-        case .home_baseswiftui:
-            Home_baseswift()
-        case .discover_baseswiftui:
-            Discover_baseswift()
+            Register_baseswiftui()
+        case .Home_baseswiftuiui:
+            Home_baseswiftui()
+        case .Discover_baseswiftuiui:
+            Discover_baseswiftui()
         case .messageList_baseswiftui:
-            MessageList_baseswift()
+            MessageList_baseswiftui()
         case .me_baseswiftui:
-            Me_baseswift()
-        case .postDetail_baseswiftui(let post):
-            Detail_baseswift(post_baseswiftui: post)
+            Me_baseswiftui()
+        case .postDetail_baseswiftuiui(let post):
+            Detail_baseswiftui(post_baseswiftui: post)
         case .release_baseswiftui:
-            Release_baseswift()
+            Release_baseswiftui()
         case .userInfo_baseswiftui(let user):
-            Prewuser_baseswift(user_baseswiftui: user)
-        case .editInfo_baseswiftui:
-            EditInfo_baseswift()
+            Prewuser_baseswiftui(user_baseswiftui: user)
+        case .EditInfo_baseswiftuiui:
+            EditInfo_baseswiftui()
         case .settings_baseswiftui:
-            Set_baseswift()
+            Set_baseswiftui()
         case .userChat_baseswiftui(let user):
-            MessageUser_baseswift(user_baseswiftui: user)
+            MessageUser_baseswiftui(user_baseswiftui: user)
         case .groupChat_baseswiftui(let groupId):
-            MessageUser_baseswift(groupId_baseswiftui: groupId)
+            MessageUser_baseswiftui(groupId_baseswiftui: groupId)
         case .aiChat_baseswiftui:
-            MessageUser_baseswift(isAIChat_baseswiftui: true)
+            MessageUser_baseswiftui(isAIChat_baseswiftui: true)
         case .mediaPlayer_baseswiftui(let mediaUrl):
-            MediaPlayer_baseswift(mediaUrl_baseswiftui: mediaUrl)
+            MediaPlayer_baseswiftui(mediaUrl_baseswiftui: mediaUrl)
+        case .videoChat_baseswiftui(let user):
+            VideoChat_baseswiftui(user_baseswiftui: user)
         }
     }
 }

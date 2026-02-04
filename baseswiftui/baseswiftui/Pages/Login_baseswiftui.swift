@@ -1,11 +1,11 @@
 import SwiftUI
 
-// MARK: - 编辑信息页
-// 核心作用：编辑用户个人信息
+// MARK: - 登录页
+// 核心作用：用户登录界面
 // 设计思路：简化实现，仅保留数据导入和页面标识
 
-/// 编辑信息页
-struct EditInfo_baseswift: View {
+/// 登录页
+struct Login_baseswiftui: View {
     
     @ObservedObject var userVM_baseswiftui = UserViewModel_baseswiftui.shared_baseswiftui
     @ObservedObject var router_baseswiftui = Router_baseswiftui.shared_baseswiftui
@@ -14,7 +14,7 @@ struct EditInfo_baseswift: View {
         VStack {
             Spacer()
             
-            Text("Edit Profile")
+            Text("Login")
                 .font(.system(size: 36, weight: .bold))
                 .foregroundColor(.primary)
             
@@ -22,18 +22,14 @@ struct EditInfo_baseswift: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .customNavigationBar_baseswiftui(
-            title_baseswiftui: "Edit Profile",
-            onBack_baseswiftui: {
-                router_baseswiftui.pop_baseswiftui()
-            }
-        ) {
-            NavTextButton_baseswiftui(
-                text_baseswiftui: "Save",
-                onTapped_baseswiftui: {
-                    // 保存操作
-                    router_baseswiftui.pop_baseswiftui()
-                }
-            )
-        }
+            title_baseswiftui: "Login",
+            showBackButton_baseswiftui: false, rightButton_baseswiftui:  {
+                NavIconButton_baseswiftui(
+                    iconName_baseswiftui: "xmark",
+                    onTapped_baseswiftui: {
+                        router_baseswiftui.dismissFullScreen_baseswiftui()
+                    }
+                )
+            })
     }
 }

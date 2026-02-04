@@ -478,3 +478,127 @@ extension View {
         )
     }
 }
+
+// MARK: - 媒体工具类
+
+import AVKit
+
+/// 媒体工具类
+/// 提供图片加载、视频缩略图生成等媒体处理功能
+class MediaUtils_baseswiftui {
+    
+    // MARK: - 系统图标判断
+    
+    /// 判断是否是系统图标（SF Symbol）
+    /// - Parameter name_baseswiftui: 图标名称
+    /// - Returns: 是否是有效的系统图标
+    static func isSystemIcon_baseswiftui(name_baseswiftui: String) -> Bool {
+        return UIImage(systemName: name_baseswiftui) != nil
+    }
+    
+    // MARK: - 图片加载
+    
+    /// 从文档目录加载图片
+    /// - Parameter imageName_baseswiftui: 图片名称（可能带或不带扩展名）
+    /// - Returns: UIImage 或 nil
+    static func loadImageFromDocuments_baseswiftui(imageName_baseswiftui: String) -> UIImage? {
+        let fileManager_baseswiftui = FileManager.default
+        guard let documentsDirectory_baseswiftui = fileManager_baseswiftui.urls(
+            for: .documentDirectory,
+            in: .userDomainMask
+        ).first else {
+            print("⚠️ 无法获取文档目录")
+            return nil
+        }
+        
+        // 尝试带 .jpg 扩展名
+        var fileURL_baseswiftui = documentsDirectory_baseswiftui.appendingPathComponent("\(imageName_baseswiftui).jpg")
+        if let image_baseswiftui = UIImage(contentsOfFile: fileURL_baseswiftui.path) {
+            print("✅ 从文档目录加载图片：\(imageName_baseswiftui).jpg")
+            return image_baseswiftui
+        }
+        
+        // 尝试带 .png 扩展名
+        fileURL_baseswiftui = documentsDirectory_baseswiftui.appendingPathComponent("\(imageName_baseswiftui).png")
+        if let image_baseswiftui = UIImage(contentsOfFile: fileURL_baseswiftui.path) {
+            print("✅ 从文档目录加载图片：\(imageName_baseswiftui).png")
+            return image_baseswiftui
+        }
+        
+        // 尝试不带扩展名（文件名本身可能已包含扩展名）
+        fileURL_baseswiftui = documentsDirectory_baseswiftui.appendingPathComponent(imageName_baseswiftui)
+        if let image_baseswiftui = UIImage(contentsOfFile: fileURL_baseswiftui.path) {
+            print("✅ 从文档目录加载图片：\(imageName_baseswiftui)")
+            return image_baseswiftui
+        }
+        
+        print("⚠️ 无法从文档目录加载图片：\(imageName_baseswiftui)")
+        return nil
+    }
+    
+    // MARK: - 视频缩略图生成
+    
+    /// 从Bundle中的视频文件生成缩略图
+    /// - Parameters:
+    ///   - videoName_baseswiftui: 视频文件名（不带扩展名或带.mp4扩展名）
+    ///   - time_baseswiftui: 截取时间点（秒），默认1.0秒
+    /// - Returns: UIImage 或 nil
+    static func loadVideoThumbnail_baseswiftui(
+        videoName_baseswiftui: String,
+        time_baseswiftui: Double = 1.0
+    ) -> UIImage? {
+        // 1. 处理文件名，确保有.mp4扩展名
+        let fileName_baseswiftui: String
+        if videoName_baseswiftui.hasSuffix(".mp4") {
+            fileName_baseswiftui = videoName_baseswiftui
+        } else {
+            fileName_baseswiftui = "\(videoName_baseswiftui).mp4"
+        }
+        
+        // 2. 从主Bundle中查找视频文件
+        let resourceName_baseswiftui = fileName_baseswiftui.replacingOccurrences(of: ".mp4", with: "")
+        guard let videoPath_baseswiftui = Bundle.main.path(
+            forResource: resourceName_baseswiftui,
+            ofType: "mp4"
+        ) else {
+            print("⚠️ 无法在Bundle中找到视频文件：\(fileName_baseswiftui)")
+            return nil
+        }
+        
+        return generateThumbnail_baseswiftui(
+            from: URL(fileURLWithPath: videoPath_baseswiftui),
+            at: time_baseswiftui
+        )
+    }
+    
+    /// 从视频URL生成缩略图
+    /// - Parameters:
+    ///   - videoURL_baseswiftui: 视频URL
+    ///   - time_baseswiftui: 截取时间点（秒）
+    /// - Returns: UIImage 或 nil
+    static func generateThumbnail_baseswiftui(
+        from videoURL_baseswiftui: URL,
+        at time_baseswiftui: Double
+    ) -> UIImage? {
+        // 创建 AVAsset
+        let asset_baseswiftui = AVAsset(url: videoURL_baseswiftui)
+        let imageGenerator_baseswiftui = AVAssetImageGenerator(asset: asset_baseswiftui)
+        imageGenerator_baseswiftui.appliesPreferredTrackTransform = true  // 保持视频方向
+        
+        // 设置生成缩略图的时间点
+        let cmTime_baseswiftui = CMTime(seconds: time_baseswiftui, preferredTimescale: 600)
+        
+        do {
+            let cgImage_baseswiftui = try imageGenerator_baseswiftui.copyCGImage(
+                at: cmTime_baseswiftui,
+                actualTime: nil
+            )
+            let thumbnail_baseswiftui = UIImage(cgImage: cgImage_baseswiftui)
+            print("✅ 成功生成视频缩略图")
+            return thumbnail_baseswiftui
+        } catch {
+            print("❌ 生成视频缩略图失败：\(error.localizedDescription)")
+            return nil
+        }
+    }
+}

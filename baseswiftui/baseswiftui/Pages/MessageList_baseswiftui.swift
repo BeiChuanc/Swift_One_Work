@@ -5,7 +5,7 @@ import SwiftUI
 // 设计思路：简化实现，仅保留数据导入和页面标识
 
 /// 消息列表页
-struct MessageList_baseswift: View {
+struct MessageList_baseswiftui: View {
     
     @ObservedObject var messageVM_baseswiftui = MessageViewModel_baseswiftui.shared_baseswiftui
     @ObservedObject var router_baseswiftui = Router_baseswiftui.shared_baseswiftui

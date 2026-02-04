@@ -5,7 +5,7 @@ import SwiftUI
 // 设计思路：简化实现，仅保留数据导入和页面标识
 
 /// 发现页
-struct Discover_baseswift: View {
+struct Discover_baseswiftui: View {
     
     @ObservedObject var localData_baseswiftui = LocalData_baseswiftui.shared_baseswiftui
     @ObservedObject var router_baseswiftui = Router_baseswiftui.shared_baseswiftui

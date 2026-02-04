@@ -19,17 +19,17 @@ struct ContentView: View {
                 Group {
                     switch selectedTab_baseswiftui {
                     case 0:
-                        Home_baseswift()
+                        Home_baseswiftui()
                     case 1:
-                        Discover_baseswift()
+                        Discover_baseswiftui()
                     case 2:
-                        Release_baseswift()
+                        Release_baseswiftui()
                     case 3:
-                        MessageList_baseswift()
+                        MessageList_baseswiftui()
                     case 4:
-                        Me_baseswift()
+                        Me_baseswiftui()
                     default:
-                        Home_baseswift()
+                        Home_baseswiftui()
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -72,10 +72,4 @@ struct ContentView: View {
         titleVM_baseswiftui.initPosts_baseswiftui()
         messageVM_baseswiftui.initChat_baseswiftui()
     }
-}
-
-// MARK: - 预览
-
-#Preview {
-    ContentView()
 }

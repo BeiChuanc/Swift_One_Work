@@ -5,7 +5,7 @@ import SwiftUI
 // 设计思路：简化实现，仅保留数据导入和页面标识
 
 /// 帖子详情页
-struct Detail_baseswift: View {
+struct Detail_baseswiftui: View {
     
     /// 帖子数据
     let post_baseswiftui: TitleModel_baseswiftui

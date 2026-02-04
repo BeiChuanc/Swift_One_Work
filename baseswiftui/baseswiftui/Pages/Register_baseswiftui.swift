@@ -5,7 +5,7 @@ import SwiftUI
 // 设计思路：简化实现，仅保留数据导入和页面标识
 
 /// 注册页
-struct Register_baseswift: View {
+struct Register_baseswiftui: View {
     
     @ObservedObject var router_baseswiftui = Router_baseswiftui.shared_baseswiftui
     

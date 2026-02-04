@@ -123,6 +123,12 @@ class LoginUserModel_baseswiftui: NSObject, Codable, Identifiable {
     
     /// 用户头像
     var userHead_baseswiftui: String?
+
+    /// 用户简介
+    var userIntroduce_baseswiftui: String?
+
+    /// 用户封面
+    var userCover_baseswiftui: String?
     
     /// 用户发布帖子列表
     var userPosts_baseswiftui: [TitleModel_baseswiftui]
@@ -138,6 +144,8 @@ class LoginUserModel_baseswiftui: NSObject, Codable, Identifiable {
          userPwd_baseswiftui: String? = nil,
          userName_baseswiftui: String? = nil,
          userHead_baseswiftui: String? = nil,
+         userIntroduce_baseswiftui: String? = nil,
+         userCover_baseswiftui: String? = nil,
          userPosts_baseswiftui: [TitleModel_baseswiftui],
          userLike_baseswiftui: [TitleModel_baseswiftui],
          userFollow_baseswiftui: [PrewUserModel_baseswiftui]) {
@@ -145,6 +153,8 @@ class LoginUserModel_baseswiftui: NSObject, Codable, Identifiable {
         self.userPwd_baseswiftui = userPwd_baseswiftui
         self.userName_baseswiftui = userName_baseswiftui
         self.userHead_baseswiftui = userHead_baseswiftui
+        self.userIntroduce_baseswiftui = userIntroduce_baseswiftui
+        self.userCover_baseswiftui = userCover_baseswiftui
         self.userPosts_baseswiftui = userPosts_baseswiftui
         self.userLike_baseswiftui = userLike_baseswiftui
         self.userFollow_baseswiftui = userFollow_baseswiftui

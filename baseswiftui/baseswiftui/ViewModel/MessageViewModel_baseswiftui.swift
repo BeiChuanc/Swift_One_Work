@@ -50,45 +50,7 @@ class MessageViewModel_baseswiftui: ObservableObject {
     }
     
     /// 设置群聊基础信息
-    private func setGroup_baseswiftui() {
-        groupChats_baseswiftui = [
-            10: GroupChatInfo_baseswiftui(
-                gid_baseswiftui: 10,
-                intro_baseswiftui: "Creative Ideas Hub",
-                cover_baseswiftui: "",
-                join_baseswiftui: "",
-                messages_baseswiftui: []
-            ),
-            11: GroupChatInfo_baseswiftui(
-                gid_baseswiftui: 11,
-                intro_baseswiftui: "Tech Enthusiasts",
-                cover_baseswiftui: "",
-                join_baseswiftui: "",
-                messages_baseswiftui: []
-            ),
-            12: GroupChatInfo_baseswiftui(
-                gid_baseswiftui: 12,
-                intro_baseswiftui: "Adventure Team",
-                cover_baseswiftui: "",
-                join_baseswiftui: "",
-                messages_baseswiftui: []
-            ),
-            13: GroupChatInfo_baseswiftui(
-                gid_baseswiftui: 13,
-                intro_baseswiftui: "Creative Community",
-                cover_baseswiftui: "",
-                join_baseswiftui: "",
-                messages_baseswiftui: []
-            ),
-            14: GroupChatInfo_baseswiftui(
-                gid_baseswiftui: 14,
-                intro_baseswiftui: "Friendly Circle",
-                cover_baseswiftui: "",
-                join_baseswiftui: "",
-                messages_baseswiftui: []
-            )
-        ]
-    }
+    private func setGroup_baseswiftui() {}
     
     // MARK: - 公共方法 - 获取数据
     

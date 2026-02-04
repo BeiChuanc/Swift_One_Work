@@ -29,6 +29,7 @@ class UserViewModel_baseswiftui: ObservableObject {
         userPwd_baseswiftui: nil,
         userName_baseswiftui: "Guest",
         userHead_baseswiftui: "default_avatar",
+        userIntroduce_baseswiftui: "Nothing yet.",
         userPosts_baseswiftui: [],
         userLike_baseswiftui: [],
         userFollow_baseswiftui: []
@@ -60,15 +61,13 @@ class UserViewModel_baseswiftui: ObservableObject {
     
     /// 通过用户ID登录
     func loginById_baseswiftui(userId_baseswiftui: Int) {
-        // 显示加载动画
-        Utils_baseswiftui.showLoading_baseswiftui(message_baseswiftui: "Logging in...")
-        
         // 创建登录用户
         loggedUser_baseswiftui = LoginUserModel_baseswiftui(
             userId_baseswiftui: userId_baseswiftui,
             userPwd_baseswiftui: nil,
-            userName_baseswiftui: "User", // 可以从本地数据或服务器获取
+            userName_baseswiftui: "Baseswiftui", // 可以从本地数据或服务器获取
             userHead_baseswiftui: "user_avatar",
+            userIntroduce_baseswiftui: "Nothing yet.",
             userPosts_baseswiftui: [],
             userLike_baseswiftui: [],
             userFollow_baseswiftui: []
@@ -76,10 +75,7 @@ class UserViewModel_baseswiftui: ObservableObject {
         
         // 延迟跳转到首页
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 1_200_000_000) // 1.2秒
-            
-            // 关闭加载动画
-            Utils_baseswiftui.dismissLoading_baseswiftui()
+            try? await Task.sleep(nanoseconds: 500_000_000) // 1.2秒
             
             // 显示成功提示
             Utils_baseswiftui.showSuccess_baseswiftui(message_baseswiftui: "Login successful!")
@@ -96,9 +92,6 @@ class UserViewModel_baseswiftui: ObservableObject {
             return
         }
         
-        // 显示加载动画
-        Utils_baseswiftui.showLoading_baseswiftui(message_baseswiftui: "Logging out...")
-        
         // 重置为游客状态
         loggedUser_baseswiftui = defaultUser_baseswiftui
         
@@ -113,10 +106,7 @@ class UserViewModel_baseswiftui: ObservableObject {
         
         // 延迟显示提示
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 1_200_000_000)
-            
-            // 关闭加载动画
-            Utils_baseswiftui.dismissLoading_baseswiftui()
+            try? await Task.sleep(nanoseconds: 500_000_000)
             
             if logoutType_baseswiftui == .delete_baseswiftui {
                 Utils_baseswiftui.showInfo_baseswiftui(
@@ -149,7 +139,18 @@ class UserViewModel_baseswiftui: ObservableObject {
     
     /// 上传用户封面
     func uploadCover_baseswiftui(coverUrl_baseswiftui: String) {
+        loggedUser_baseswiftui?.userCover_baseswiftui = coverUrl_baseswiftui
+        // 手动触发更新，因为修改了嵌套属性
+        objectWillChange.send()
         Utils_baseswiftui.showSuccess_baseswiftui(message_baseswiftui: "Cover updated successfully")
+    }
+
+    /// 更新用户简介
+    func updateIntroduce_baseswiftui(introduce_baseswiftui: String) {
+        loggedUser_baseswiftui?.userIntroduce_baseswiftui = introduce_baseswiftui
+        // 手动触发更新，因为修改了嵌套属性
+        objectWillChange.send()
+        Utils_baseswiftui.showSuccess_baseswiftui(message_baseswiftui: "Introduce updated successfully")
     }
     
     // MARK: - 打卡功能
@@ -209,9 +210,6 @@ class UserViewModel_baseswiftui: ObservableObject {
     func reportUser_baseswiftui(user_baseswiftui: PrewUserModel_baseswiftui) {
         guard let userId_baseswiftui = user_baseswiftui.userId_baseswiftui else { return }
         
-        // 显示加载动画
-        Utils_baseswiftui.showLoading_baseswiftui(message_baseswiftui: "Processing...")
-        
         // 取消关注
         // 从关注列表中移除（需要实现）
         
@@ -230,8 +228,7 @@ class UserViewModel_baseswiftui: ObservableObject {
         
         // 延迟显示成功提示
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
-            Utils_baseswiftui.dismissLoading_baseswiftui()
+            try? await Task.sleep(nanoseconds: 200_000_000) // 0.2秒
             Utils_baseswiftui.showSuccess_baseswiftui(
                 message_baseswiftui: "This user will no longer appear.",
                 delay_baseswiftui: 2.0
@@ -315,15 +312,10 @@ class UserViewModel_baseswiftui: ObservableObject {
     
     /// 显示登录提示
     private func showLoginPrompt_baseswiftui() {
-        Utils_baseswiftui.showWarning_baseswiftui(
-            message_baseswiftui: "Please login first.",
-            delay_baseswiftui: 1.5
-        )
-        
         // 延迟跳转到登录页面
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒
-            Router_baseswiftui.shared_baseswiftui.toLogin_baseswiftui()
+            try? await Task.sleep(nanoseconds: 200_000_000) // 0.2秒
+            Router_baseswiftui.shared_baseswiftui.toLogin_baseswiftuiui()
         }
     }
 }

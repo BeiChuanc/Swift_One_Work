@@ -5,7 +5,7 @@ import SwiftUI
 // 设计思路：简化实现，仅保留数据导入和页面标识
 
 /// 用户信息页
-struct Prewuser_baseswift: View {
+struct Prewuser_baseswiftui: View {
     
     /// 用户数据
     let user_baseswiftui: PrewUserModel_baseswiftui

@@ -5,7 +5,7 @@ import SwiftUI
 // 设计思路：简化实现，仅保留数据导入和页面标识
 
 /// 发布页
-struct Release_baseswift: View {
+struct Release_baseswiftui: View {
     
     @ObservedObject var titleVM_baseswiftui = TitleViewModel_baseswiftui.shared_baseswiftui
     @ObservedObject var router_baseswiftui = Router_baseswiftui.shared_baseswiftui
