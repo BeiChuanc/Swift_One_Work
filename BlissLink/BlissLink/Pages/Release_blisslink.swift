@@ -44,6 +44,7 @@ struct Release_baseswift: View {
     @State private var contentText_blisslink: String = ""
     
     @State private var isPublishing_blisslink: Bool = false
+    @State private var showEula_blissLink: Bool = false
     
     // MARK: - 视图主体
     
@@ -135,10 +136,36 @@ struct Release_baseswift: View {
                         // 发布按钮
                         publishButton_blisslink
                             .padding(.top, 20.h_blisslink)
+
+                        // EULA按钮
+                        Button(action: {
+                            showEula_blissLink = true
+                        }) {
+                            Text("EULA")
+                                .font(.system(size: 15.sp_blisslink, weight: .bold))
+                                .foregroundColor(.black)
+                                .underline()
+                        }
+                        .padding(.top, 20.h_blisslink)
+                        .sheet(isPresented: $showEula_blissLink) {
+                            NavigationStack {
+                                ProtocolContentView_blisslink(
+                                    type_blisslink: .terms_blisslink,
+                                    content_blisslink: "eula.png"
+                                )
+                                .toolbar {
+                                    ToolbarItem(placement: .navigationBarTrailing) {
+                                        Button("Close") {
+                                            showEula_blissLink = false
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                     .padding(.horizontal, 20.w_blisslink)
                     .padding(.top, 20.h_blisslink)
-                    .padding(.bottom, 40.h_blisslink)
+                    .padding(.bottom, 100.h_blisslink)
                 }
             }
         }

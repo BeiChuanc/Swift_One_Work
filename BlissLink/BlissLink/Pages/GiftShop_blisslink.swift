@@ -204,13 +204,13 @@ struct GiftShop_blisslink: View {
         }) {
             VStack(spacing: 6) {
                 // 上部：图标和商品名称
-                HStack(spacing: 8) {
+                HStack(spacing: 4) {
                     Image(iconName_blisslink)
                         .resizable()
                         .frame(width: 36, height: 36)
                     
                     Text(goods_blisslink.goodsName_blisslink ?? "")
-                        .font(.system(size: 14, weight: .regular))
+                        .font(.system(size: 13, weight: .regular))
                         .foregroundColor(isSelected_blisslink ? .white : Color(hex: "005A64"))
                 }
                 
@@ -221,7 +221,7 @@ struct GiftShop_blisslink: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 10)
-            .padding(.horizontal, 8)
+            .padding(.horizontal, 5)
             .background(isSelected_blisslink ? Color(hex: "00C68D") : Color.white)
             .cornerRadius(20)
             .overlay(
