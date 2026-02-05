@@ -308,6 +308,59 @@ class UserViewModel_lite: ObservableObject {
         return user_lite.userLike_lite.contains { $0.titleId_lite == post_lite.titleId_lite }
     }
     
+    // MARK: - 穿搭时光轴管理
+    
+    /// 获取当前用户的穿搭时光轴列表
+    func getUserTimeline_lite() -> [OutfitTimeline_lite] {
+        return loggedUser_lite?.userTimeline_lite ?? []
+    }
+    
+    /// 添加穿搭到时光轴
+    /// - Parameters:
+    ///   - outfit_lite: 要添加的穿搭组合
+    ///   - note_lite: 文字备注（可选）
+    ///   - memoryTag_lite: 纪念标签（可选）
+    func addOutfitToTimeline_lite(outfit_lite: OutfitCombo_lite, note_lite: String? = nil, memoryTag_lite: String? = nil) {
+        // 检查是否登录
+        if !isLoggedIn_lite {
+            showLoginPrompt_lite()
+            return
+        }
+        
+        // 创建时光轴记录
+        let timelineId_lite = Int.random(in: 10000...99999)
+        let timeline_lite = OutfitTimeline_lite(
+            timelineId_lite: timelineId_lite,
+            userId_lite: loggedUser_lite?.userId_lite ?? 0,
+            outfit_lite: outfit_lite,
+            recordDate_lite: Date(),
+            note_lite: note_lite,
+            memoryTag_lite: memoryTag_lite
+        )
+        
+        // 添加到用户的时光轴列表
+        loggedUser_lite?.userTimeline_lite.append(timeline_lite)
+        
+        // 手动触发更新
+        objectWillChange.send()
+        
+        Utils_lite.showSuccess_lite(
+            message_lite: "Added to your style timeline!",
+            image_lite: UIImage(systemName: "calendar.badge.checkmark")
+        )
+    }
+    
+    /// 从时光轴移除穿搭记录
+    /// - Parameter timelineId_lite: 时光轴记录ID
+    func removeFromTimeline_lite(timelineId_lite: Int) {
+        loggedUser_lite?.userTimeline_lite.removeAll { $0.timelineId_lite == timelineId_lite }
+        
+        // 手动触发更新
+        objectWillChange.send()
+        
+        Utils_lite.showSuccess_lite(message_lite: "Removed from timeline")
+    }
+    
     // MARK: - 私有方法 - 工具方法
     
     /// 显示登录提示

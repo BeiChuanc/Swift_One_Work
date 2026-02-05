@@ -34,10 +34,13 @@ enum Route_lite: Hashable, Identifiable {
     case aiChat_lite
     
     // 媒体
-    case mediaPlayer_lite(mediaUrl_lite: String)
+    case mediaPlayer_lite(mediaUrl_lite: String, isVideo_lite: Bool)
     
     // 视频通话
     case videoChat_lite(user_lite: PrewUserModel_lite)
+    
+    // 灵感活动详情
+    case inspirationDetail_lite(challenge_lite: OutfitChallenge_lite)
     
     var id: String {
         switch self {
@@ -55,8 +58,9 @@ enum Route_lite: Hashable, Identifiable {
         case .userChat_lite(let user): return "userChat_\(user.userId_lite ?? 0)"
         case .groupChat_lite(let groupId): return "groupChat_\(groupId)"
         case .aiChat_lite: return "aiChat"
-        case .mediaPlayer_lite(let mediaUrl): return "mediaPlayer_\(mediaUrl.hashValue)"
+        case .mediaPlayer_lite(let mediaUrl, let isVideo): return "mediaPlayer_\(mediaUrl.hashValue)_\(isVideo)"
         case .videoChat_lite(let user): return "videoChat_\(user.userId_lite ?? 0)"
+        case .inspirationDetail_lite(let challenge): return "inspirationDetail_\(challenge.challengeId_lite)"
         }
     }
     
@@ -180,8 +184,8 @@ class Router_lite: ObservableObject {
         navigate_lite(to: .aiChat_lite)
     }
     
-    func toMediaPlayer_lite(mediaUrl_lite: String) {
-        presentFullScreen_lite(route_lite: .mediaPlayer_lite(mediaUrl_lite: mediaUrl_lite))
+    func toMediaPlayer_lite(mediaUrl_lite: String, isVideo_lite: Bool) {
+        presentFullScreen_lite(route_lite: .mediaPlayer_lite(mediaUrl_lite: mediaUrl_lite, isVideo_lite: isVideo_lite))
     }
     
     func toVideoChat_lite(user_lite: PrewUserModel_lite) {
@@ -221,10 +225,12 @@ class Router_lite: ObservableObject {
             MessageUser_lite(groupId_lite: groupId)
         case .aiChat_lite:
             MessageUser_lite(isAIChat_lite: true)
-        case .mediaPlayer_lite(let mediaUrl):
-            MediaPlayer_lite(mediaUrl_lite: mediaUrl)
+        case .mediaPlayer_lite(let mediaUrl_lite, let isVideo_lite):
+            MediaPlayer_lite(mediaUrl_lite: mediaUrl_lite, isVideo_lite: isVideo_lite)
         case .videoChat_lite(let user):
             VideoChat_lite(user_lite: user)
+        case .inspirationDetail_lite(let challenge):
+            InspirationDetail_lite(challenge_lite: challenge)
         }
     }
 }
