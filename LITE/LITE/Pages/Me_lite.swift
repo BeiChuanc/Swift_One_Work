@@ -28,32 +28,35 @@ struct Me_lite: View {
             enhancedBackground_lite
                 .ignoresSafeArea()
             
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 0) {
-                    // 顶部用户信息区域
-                    profileHeaderSection_lite
-                        .padding(.horizontal, 20.w_lite)
-                        .padding(.top, 20.h_lite)
-                    
-                    // 快捷按钮（编辑+设置）
-                    quickActionButtons_lite
-                        .padding(.horizontal, 20.w_lite)
-                        .padding(.top, 20.h_lite)
-                    
-                    // 数据统计区域
-                    statsSection_lite
-                        .padding(.horizontal, 20.w_lite)
-                        .padding(.top, 20.h_lite)
-                    
-                    // 内容切换标签
-                    contentTabBar_lite
-                        .padding(.top, 24.h_lite)
-                    
-                    // 内容展示区域
-                    contentSection_lite
-                        .padding(.horizontal, 20.w_lite)
-                        .padding(.top, 20.h_lite)
-                        .padding(.bottom, 120.h_lite)
+            VStack(spacing: 0) {
+                // 顶部可滚动内容
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        // 顶部用户信息区域
+                        profileHeaderSection_lite
+                            .padding(.horizontal, 20.w_lite)
+                            .padding(.top, 20.h_lite)
+                        
+                        // 快捷按钮（编辑+设置）
+                        quickActionButtons_lite
+                            .padding(.horizontal, 20.w_lite)
+                            .padding(.top, 20.h_lite)
+                        
+                        // 数据统计区域
+                        statsSection_lite
+                            .padding(.horizontal, 20.w_lite)
+                            .padding(.top, 20.h_lite)
+                        
+                        // 内容切换标签
+                        contentTabBar_lite
+                            .padding(.top, 24.h_lite)
+                        
+                        // 内容展示区域
+                        contentSection_lite
+                            .padding(.horizontal, 20.w_lite)
+                            .padding(.top, 20.h_lite)
+                            .padding(.bottom, 120.h_lite)
+                    }
                 }
             }
         }
@@ -133,43 +136,22 @@ struct Me_lite: View {
                 .frame(width: 88.w_lite, height: 88.h_lite)
                 .rotationEffect(.degrees(rotateAnimation_lite ? 360 : 0))
             
-            // 主头像
-            Circle()
-                .fill(
-                    LinearGradient(
-                        colors: MediaConfig_lite.getGradientColors_lite(
-                            for: userVM_lite.getCurrentUser_lite().userName_lite ?? ""
+            // 主头像 - 使用UserAvatarView_lite组件
+            UserAvatarView_lite(
+                userId_lite: userVM_lite.getCurrentUser_lite().userId_lite ?? 0,
+                size_lite: 80
+            )
+            .overlay(
+                Circle()
+                    .stroke(
+                        LinearGradient(
+                            colors: [Color.white.opacity(0.8), Color.white.opacity(0.3)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
                         ),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
+                        lineWidth: 3
                     )
-                )
-                .frame(width: 80.w_lite, height: 80.h_lite)
-                .overlay(
-                    Circle()
-                        .stroke(
-                            LinearGradient(
-                                colors: [Color.white.opacity(0.8), Color.white.opacity(0.3)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            lineWidth: 3
-                        )
-                )
-            
-            // 用户名首字母或图标
-            if let userName_lite = userVM_lite.getCurrentUser_lite().userName_lite,
-               !userName_lite.isEmpty {
-                Text(String(userName_lite.prefix(1)).uppercased())
-                    .font(.system(size: 36.sp_lite, weight: .black))
-                    .foregroundColor(.white)
-                    .shadow(color: Color.black.opacity(0.3), radius: 3, x: 0, y: 2)
-            } else {
-                Image(systemName: "person.fill")
-                    .font(.system(size: 36.sp_lite, weight: .bold))
-                    .foregroundColor(.white)
-                    .shadow(color: Color.black.opacity(0.3), radius: 3, x: 0, y: 2)
-            }
+            )
         }
         .shadow(color: MediaConfig_lite.getGradientColors_lite(for: userVM_lite.getCurrentUser_lite().userName_lite ?? "")[0].opacity(0.4), radius: 20, x: 0, y: 10)
         .shadow(color: Color.black.opacity(0.12), radius: 15, x: 0, y: 8)
@@ -358,6 +340,7 @@ struct Me_lite: View {
             .shadow(color: Color.black.opacity(0.06), radius: 15, x: 0, y: 8)
         }
         .padding(.horizontal, 20.w_lite)
+        .zIndex(10)
     }
     
     // MARK: - 内容展示区域
@@ -590,7 +573,12 @@ struct EnhancedTabButton_lite: View {
     let onTap_lite: () -> Void
     
     var body: some View {
-        Button(action: onTap_lite) {
+        Button(action: {
+            // 添加触觉反馈
+            let generator_lite = UIImpactFeedbackGenerator(style: .light)
+            generator_lite.impactOccurred()
+            onTap_lite()
+        }) {
             VStack(spacing: 0) {
                 HStack(spacing: 8.w_lite) {
                     Image(systemName: icon_lite)
@@ -627,6 +615,7 @@ struct EnhancedTabButton_lite: View {
                             endPoint: .trailing
                         )
                 )
+                .contentShape(Rectangle())
                 
                 // 底部指示器
                 ZStack {
@@ -656,6 +645,7 @@ struct EnhancedTabButton_lite: View {
             }
         }
         .buttonStyle(PlainButtonStyle())
+        .allowsHitTesting(true)
     }
 }
 
@@ -666,35 +656,75 @@ struct PostCard_lite: View {
     
     let post_lite: TitleModel_lite
     
+    @ObservedObject private var userVM_lite = UserViewModel_lite.shared_lite
     @State private var isPressed_lite = false
+    @State private var showReportSheet_lite = false
+    @State private var showDeleteConfirm_lite = false
+    
+    /// 判断是否为当前用户的帖子
+    private var isOwnPost_lite: Bool {
+        let currentUserId_lite = userVM_lite.getCurrentUser_lite().userId_lite ?? 0
+        return post_lite.titleUserId_lite == currentUserId_lite
+    }
     
     var body: some View {
         Button {
             Router_lite.shared_lite.toPostDetail_liteui(post_lite: post_lite)
         } label: {
-            VStack(alignment: .leading, spacing: 14.h_lite) {
-                // 媒体预览
-                ZStack {
-                    RoundedRectangle(cornerRadius: 20.w_lite)
-                        .fill(
+            VStack(alignment: .leading, spacing: 0) {
+                // 媒体预览 - 使用MediaDisplayView_lite组件
+                ZStack(alignment: .topTrailing) {
+                    if let mediaPath_lite = post_lite.titleMeidas_lite.first {
+                        MediaDisplayView_lite(
+                            mediaPath_lite: mediaPath_lite,
+                            isVideo_lite: mediaPath_lite.contains("video"),
+                            cornerRadius_lite: 0
+                        )
+                        .frame(height: 200.h_lite)
+                    } else {
+                        // 无媒体时显示渐变占位
+                        ZStack {
                             LinearGradient(
                                 colors: MediaConfig_lite.getGradientColors_lite(for: post_lite.title_lite),
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
-                        )
+                            
+                            // 装饰图案
+                            Circle()
+                                .fill(Color.white.opacity(0.2))
+                                .frame(width: 120.w_lite, height: 120.h_lite)
+                                .offset(x: -40.w_lite, y: -30.h_lite)
+                                .blur(radius: 20)
+                            
+                            Image(systemName: "photo.fill")
+                                .font(.system(size: 50.sp_lite, weight: .bold))
+                                .foregroundColor(.white.opacity(0.8))
+                        }
                         .frame(height: 200.h_lite)
+                    }
                     
-                    // 装饰图案
-                    Circle()
-                        .fill(Color.white.opacity(0.2))
-                        .frame(width: 120.w_lite, height: 120.h_lite)
-                        .offset(x: -40.w_lite, y: -30.h_lite)
-                        .blur(radius: 20)
-                    
-                    Image(systemName: "photo.fill")
-                        .font(.system(size: 50.sp_lite, weight: .bold))
-                        .foregroundColor(.white.opacity(0.8))
+                    // 删除/举报按钮（右上角）
+                    Button {
+                        if isOwnPost_lite {
+                            showDeleteConfirm_lite = true
+                        } else {
+                            showReportSheet_lite = true
+                        }
+                    } label: {
+                        ZStack {
+                            Circle()
+                                .fill(isOwnPost_lite ? Color(hex: "FFE5E5").opacity(0.95) : Color.white.opacity(0.95))
+                                .frame(width: 32.w_lite, height: 32.h_lite)
+                            
+                            Image(systemName: isOwnPost_lite ? "trash.fill" : "ellipsis")
+                                .font(.system(size: 14.sp_lite, weight: .bold))
+                                .foregroundColor(isOwnPost_lite ? Color(hex: "FF6B6B") : Color(hex: "6C757D"))
+                        }
+                        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+                    }
+                    .buttonStyle(ScaleButtonStyle_lite())
+                    .padding(10.w_lite)
                 }
                 
                 // 帖子信息
@@ -733,8 +763,10 @@ struct PostCard_lite: View {
                     }
                 }
                 .padding(.horizontal, 16.w_lite)
+                .padding(.top, 14.h_lite)
                 .padding(.bottom, 16.h_lite)
             }
+            .clipShape(RoundedRectangle(cornerRadius: 24.w_lite))
             .background(
                 ZStack {
                     RoundedRectangle(cornerRadius: 24.w_lite)
@@ -777,5 +809,40 @@ struct PostCard_lite: View {
                     }
                 }
         )
+        .confirmationDialog("Report Post", isPresented: $showReportSheet_lite, titleVisibility: .visible) {
+            Button("Report Sexually Explicit Material") {
+                reportPost_lite()
+            }
+            Button("Report spam") {
+                reportPost_lite()
+            }
+            Button("Report something else") {
+                reportPost_lite()
+            }
+            Button("Report", role: .destructive) {
+                reportPost_lite()
+            }
+            Button("Cancel", role: .cancel) {}
+        }
+        .alert(isPresented: $showDeleteConfirm_lite) {
+            Alert(
+                title: Text("Delete Post"),
+                message: Text("Are you sure you want to delete this post? This action cannot be undone."),
+                primaryButton: .destructive(Text("Delete")) {
+                    deletePost_lite()
+                },
+                secondaryButton: .cancel()
+            )
+        }
+    }
+    
+    /// 举报帖子
+    private func reportPost_lite() {
+        ReportHelper_lite.reportPost_lite(post_lite: post_lite)
+    }
+    
+    /// 删除帖子
+    private func deletePost_lite() {
+        ReportHelper_lite.deletePost_lite(post_lite: post_lite)
     }
 }

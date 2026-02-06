@@ -661,6 +661,15 @@ struct CapsuleCard_lite: View {
     let capsule_lite: OutfitCapsule_lite
     let onUnlock_lite: () -> Void
     
+    @State private var showReportSheet_lite = false
+    @State private var showDeleteConfirm_lite = false
+    
+    /// 判断是否为当前用户的胶囊
+    private var isOwnCapsule_lite: Bool {
+        let currentUserId_lite = UserViewModel_lite.shared_lite.getCurrentUser_lite().userId_lite ?? 0
+        return capsule_lite.userId_lite == currentUserId_lite
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 18.h_lite) {
             // 顶部状态 - 增强版
@@ -716,6 +725,34 @@ struct CapsuleCard_lite: View {
                     .font(.system(size: 20.sp_lite))
                     .foregroundColor(Color(hex: "FFD700"))
                     .shadow(color: Color(hex: "FFD700").opacity(0.5), radius: 4)
+                
+                // 删除/举报按钮
+                Button {
+                    if isOwnCapsule_lite {
+                        // 如果是自己的胶囊，显示删除确认
+                        showDeleteConfirm_lite = true
+                    } else {
+                        // 如果是他人的胶囊，显示举报菜单
+                        showReportSheet_lite = true
+                    }
+                } label: {
+                    ZStack {
+                        // 背景圆形
+                        Circle()
+                            .fill(isOwnCapsule_lite ? Color(hex: "FFE5E5") : Color(hex: "F8F9FA"))
+                            .frame(width: 32.w_lite, height: 32.h_lite)
+                            .overlay(
+                                Circle()
+                                    .stroke(isOwnCapsule_lite ? Color(hex: "FF6B6B").opacity(0.3) : Color(hex: "E9ECEF"), lineWidth: 1)
+                            )
+                        
+                        // 图标：删除或举报
+                        Image(systemName: isOwnCapsule_lite ? "trash.fill" : "ellipsis")
+                            .font(.system(size: isOwnCapsule_lite ? 14.sp_lite : 16.sp_lite, weight: .bold))
+                            .foregroundColor(isOwnCapsule_lite ? Color(hex: "FF6B6B") : Color(hex: "6C757D"))
+                    }
+                }
+                .buttonStyle(ScaleButtonStyle_lite())
             }
             
             // 分隔线
@@ -895,6 +932,40 @@ struct CapsuleCard_lite: View {
             x: 0,
             y: 5
         )
+        .overlay(
+            // 添加举报菜单
+            ReportActionSheet_lite(
+                isShowing_lite: $showReportSheet_lite,
+                isBlockUser_lite: false,
+                onConfirm_lite: {
+                    reportCapsule_lite()
+                }
+            )
+        )
+        .alert(isPresented: $showDeleteConfirm_lite) {
+            Alert(
+                title: Text("Delete Capsule"),
+                message: Text("Are you sure you want to delete this capsule? This action cannot be undone."),
+                primaryButton: .destructive(Text("Delete")) {
+                    deleteCapsule_lite()
+                },
+                secondaryButton: .cancel()
+            )
+        }
+    }
+    
+    /// 删除时空胶囊方法
+    /// 功能：删除自己发布的时空胶囊
+    private func deleteCapsule_lite() {
+        // 调用举报助手方法（内部会判断是否为自己的胶囊）
+        ReportHelper_lite.reportCapsule_lite(capsule_lite: capsule_lite) {}
+    }
+    
+    /// 举报时空胶囊方法
+    /// 功能：调用ReportHelper举报他人发布的胶囊
+    private func reportCapsule_lite() {
+        // 调用举报助手方法
+        ReportHelper_lite.reportCapsule_lite(capsule_lite: capsule_lite) {}
     }
     
     private var dateFormatter_lite: DateFormatter {

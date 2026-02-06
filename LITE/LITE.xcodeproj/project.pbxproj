@@ -8,16 +8,33 @@
 
 /* Begin PBXBuildFile section */
 		0487487C2F332E7D00839A3E /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0487487B2F332E7D00839A3E /* StoreKit.framework */; };
+		69A4A4DCB38FD6457E72CDB2 /* Pods_LITE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BACFBC7FA704ECD5CFC1E4B /* Pods_LITE.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		048747CB2F332E1E00839A3E /* LITE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LITE.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0487487B2F332E7D00839A3E /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		1213D8E668E9458E8B81E19E /* Pods-LITE.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LITE.release.xcconfig"; path = "Target Support Files/Pods-LITE/Pods-LITE.release.xcconfig"; sourceTree = "<group>"; };
+		2BACFBC7FA704ECD5CFC1E4B /* Pods_LITE.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LITE.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AE2F22192847983B2406C81C /* Pods-LITE.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LITE.debug.xcconfig"; path = "Target Support Files/Pods-LITE/Pods-LITE.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		04A124072F35AEA800AC0326 /* Exceptions for "LITE" folder in "LITE" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 048747CA2F332E1E00839A3E /* LITE */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		048747CD2F332E1E00839A3E /* LITE */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				04A124072F35AEA800AC0326 /* Exceptions for "LITE" folder in "LITE" target */,
+			);
 			path = LITE;
 			sourceTree = "<group>";
 		};
@@ -29,6 +46,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0487487C2F332E7D00839A3E /* StoreKit.framework in Frameworks */,
+				69A4A4DCB38FD6457E72CDB2 /* Pods_LITE.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -41,6 +59,7 @@
 				048747CD2F332E1E00839A3E /* LITE */,
 				0487487A2F332E7D00839A3E /* Frameworks */,
 				048747CC2F332E1E00839A3E /* Products */,
+				51BCFDE9773E1674B39408A6 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -56,8 +75,18 @@
 			isa = PBXGroup;
 			children = (
 				0487487B2F332E7D00839A3E /* StoreKit.framework */,
+				2BACFBC7FA704ECD5CFC1E4B /* Pods_LITE.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		51BCFDE9773E1674B39408A6 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				AE2F22192847983B2406C81C /* Pods-LITE.debug.xcconfig */,
+				1213D8E668E9458E8B81E19E /* Pods-LITE.release.xcconfig */,
+			);
+			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -67,9 +96,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 048747D62F332E1F00839A3E /* Build configuration list for PBXNativeTarget "LITE" */;
 			buildPhases = (
+				3000484548B837CFA4A17191 /* [CP] Check Pods Manifest.lock */,
 				048747C72F332E1E00839A3E /* Sources */,
 				048747C82F332E1E00839A3E /* Frameworks */,
 				048747C92F332E1E00839A3E /* Resources */,
+				EC8C34838E7B2010D44BA047 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -79,8 +110,6 @@
 				048747CD2F332E1E00839A3E /* LITE */,
 			);
 			name = LITE;
-			packageProductDependencies = (
-			);
 			productName = LITE;
 			productReference = 048747CB2F332E1E00839A3E /* LITE.app */;
 			productType = "com.apple.product-type.application";
@@ -128,6 +157,52 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3000484548B837CFA4A17191 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-LITE-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EC8C34838E7B2010D44BA047 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LITE/Pods-LITE-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LITE/Pods-LITE-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LITE/Pods-LITE-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		048747C72F332E1E00839A3E /* Sources */ = {
@@ -261,6 +336,7 @@
 		};
 		048747D72F332E1F00839A3E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AE2F22192847983B2406C81C /* Pods-LITE.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -269,7 +345,16 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LITE/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "LITE needs your consent to access the camera to shoot personal works/personal portraits. If prohibited, you will not be able to take photos or update information.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "LITE requires your consent to obtain location information when using it in order to upload photos or update avatars. If prohibited, you will not be able to publish works/update avatars.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "LITE requires your consent to obtain location information when using it in order to upload photos or update avatars. If prohibited, you will not be able to publish works/update avatars.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "LITE requires your consent to obtain location information when using it in order to upload photos or update avatars. If prohibited, you will not be able to publish works/update avatars.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "LITE needs your permission to access the microphone. If blocked, you will not be able to send audio messages to users.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "LITE needs your consent to access the album in order to save the work. If it is prohibited, you will not be able to save your work to the album.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "LITE needs your consent to access the album to select photos to upload/publish works/update avatars. If prohibited, you will not be able to upload selected photos to upload/publish works/update avatars.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -280,8 +365,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sne.LITE;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.LITE.outfit.wea;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -300,6 +385,7 @@
 		};
 		048747D82F332E1F00839A3E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1213D8E668E9458E8B81E19E /* Pods-LITE.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -308,7 +394,16 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LITE/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "LITE needs your consent to access the camera to shoot personal works/personal portraits. If prohibited, you will not be able to take photos or update information.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "LITE requires your consent to obtain location information when using it in order to upload photos or update avatars. If prohibited, you will not be able to publish works/update avatars.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "LITE requires your consent to obtain location information when using it in order to upload photos or update avatars. If prohibited, you will not be able to publish works/update avatars.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "LITE requires your consent to obtain location information when using it in order to upload photos or update avatars. If prohibited, you will not be able to publish works/update avatars.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "LITE needs your permission to access the microphone. If blocked, you will not be able to send audio messages to users.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "LITE needs your consent to access the album in order to save the work. If it is prohibited, you will not be able to save your work to the album.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "LITE needs your consent to access the album to select photos to upload/publish works/update avatars. If prohibited, you will not be able to upload selected photos to upload/publish works/update avatars.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -319,8 +414,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sne.LITE;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.LITE.outfit.wea;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;

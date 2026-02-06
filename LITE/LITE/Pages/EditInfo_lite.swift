@@ -211,6 +211,7 @@ struct EditInfo_lite: View {
                     
                     // 主头像
                     if let selectedImage_lite = selectedImage_lite {
+                        // 显示选中的新图片
                         Image(uiImage: selectedImage_lite)
                             .resizable()
                             .scaledToFill()
@@ -221,25 +222,15 @@ struct EditInfo_lite: View {
                                     .stroke(Color.white, lineWidth: 5)
                             )
                     } else {
-                        Circle()
-                            .fill(
-                                LinearGradient(
-                                    colors: MediaConfig_lite.getGradientColors_lite(for: userName_lite),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .frame(width: 130.w_lite, height: 130.h_lite)
-                            .overlay(
-                                Circle()
-                                    .stroke(Color.white, lineWidth: 5)
-                            )
-                            .overlay(
-                                Text(String((userName_lite.isEmpty ? "U" : userName_lite).prefix(1)).uppercased())
-                                    .font(.system(size: 54.sp_lite, weight: .black))
-                                    .foregroundColor(.white)
-                                    .shadow(color: Color.black.opacity(0.3), radius: 4, x: 0, y: 2)
-                            )
+                        // 使用UserAvatarView_lite组件显示当前头像
+                        UserAvatarView_lite(
+                            userId_lite: userVM_lite.getCurrentUser_lite().userId_lite ?? 0,
+                            size_lite: 130
+                        )
+                        .overlay(
+                            Circle()
+                                .stroke(Color.white, lineWidth: 5)
+                        )
                     }
                     
                     // 编辑标记

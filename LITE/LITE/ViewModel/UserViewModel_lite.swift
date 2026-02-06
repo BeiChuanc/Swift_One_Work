@@ -65,7 +65,7 @@ class UserViewModel_lite: ObservableObject {
         loggedUser_lite = LoginUserModel_lite(
             userId_lite: userId_lite,
             userPwd_lite: nil,
-            userName_lite: "Lite", // 可以从本地数据或服务器获取
+            userName_lite: "Liter", // 可以从本地数据或服务器获取
             userHead_lite: "user_avatar",
             userIntroduce_lite: "Nothing yet.",
             userPosts_lite: [],
@@ -193,15 +193,31 @@ class UserViewModel_lite: ObservableObject {
             return
         }
         
+        guard let userId_lite = user_lite.userId_lite else { return }
+        
         if isFollowing_lite(user_lite: user_lite) {
             // 取消关注
-            loggedUser_lite?.userFollow_lite.removeAll { $0.userId_lite == user_lite.userId_lite }
+            loggedUser_lite?.userFollow_lite.removeAll { $0.userId_lite == userId_lite }
+            
+            // 更新被关注用户的粉丝数（减少）
+            if let index_lite = LocalData_lite.shared_lite.userList_lite.firstIndex(where: { $0.userId_lite == userId_lite }) {
+                if let currentFans_lite = LocalData_lite.shared_lite.userList_lite[index_lite].userFans_lite, currentFans_lite > 0 {
+                    LocalData_lite.shared_lite.userList_lite[index_lite].userFans_lite = currentFans_lite - 1
+                }
+            }
         } else {
             // 关注
             loggedUser_lite?.userFollow_lite.append(user_lite)
+            
+            // 更新被关注用户的粉丝数（增加）
+            if let index_lite = LocalData_lite.shared_lite.userList_lite.firstIndex(where: { $0.userId_lite == userId_lite }) {
+                LocalData_lite.shared_lite.userList_lite[index_lite].userFans_lite = (LocalData_lite.shared_lite.userList_lite[index_lite].userFans_lite ?? 0) + 1
+            }
         }
+        
         // 手动触发更新，因为修改了嵌套属性
         objectWillChange.send()
+        LocalData_lite.shared_lite.objectWillChange.send()
     }
     
     // MARK: - 举报功能

@@ -91,13 +91,15 @@ class MessageViewModel_lite: ObservableObject {
     /// 发送消息
     func sendMessage_lite(message_lite: String, chatType_lite: ChatType_lite, id_lite: Int) {
         let currentTime_lite = getCurrentTime_lite()
+        let currentUserId_lite = UserViewModel_lite.shared_lite.getCurrentUser_lite().userId_lite ?? 0
         
         let chatMessage_lite = MessageModel_lite(
             messageId_lite: Int(Date().timeIntervalSince1970 * 1000),
             content_lite: message_lite,
             userHead_lite: "current_user_head", // 这里应该从UserViewModel获取
             isMine_lite: true,
-            time_lite: currentTime_lite
+            time_lite: currentTime_lite,
+            sendUserId_lite: currentUserId_lite
         )
         
         switch chatType_lite {
@@ -107,6 +109,8 @@ class MessageViewModel_lite: ObservableObject {
                 userMesMap_lite[id_lite] = []
             }
             userMesMap_lite[id_lite]?.append(chatMessage_lite)
+            // 手动触发更新，确保UI及时刷新
+            objectWillChange.send()
             handleMessage_lite(message_lite: chatMessage_lite, id_lite: id_lite, chatType_lite: chatType_lite)
             
         case .group_lite:
@@ -148,18 +152,23 @@ class MessageViewModel_lite: ObservableObject {
                 content_lite: response_lite ?? "Server error",
                 userHead_lite: "",
                 isMine_lite: false,
-                time_lite: getCurrentTime_lite()
+                time_lite: getCurrentTime_lite(),
+                sendUserId_lite: id_lite  // 设置为对方的用户ID
             )
             
             switch chatType_lite {
             case .ai_lite:
                 self.aiChats_lite.append(replyMessage_lite)
+                // 手动触发更新，确保UI及时刷新
+                self.objectWillChange.send()
                 
             case .personal_lite:
                 if self.userMesMap_lite[id_lite] == nil {
                     self.userMesMap_lite[id_lite] = []
                 }
                 self.userMesMap_lite[id_lite]?.append(replyMessage_lite)
+                // 手动触发更新，确保UI及时刷新
+                self.objectWillChange.send()
                 
             case .group_lite:
                 break // 群聊不自动回复

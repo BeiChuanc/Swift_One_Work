@@ -202,17 +202,22 @@ class MessageModel_lite: Codable, Identifiable {
     /// 消息时间
     var time_lite: String?
     
+    /// 发送者用户ID（用于显示头像）
+    var sendUserId_lite: Int?
+    
     /// 初始化方法
     init(messageId_lite: Int? = nil,
          content_lite: String? = nil,
          userHead_lite: String? = nil,
          isMine_lite: Bool? = nil,
-         time_lite: String? = nil) {
+         time_lite: String? = nil,
+         sendUserId_lite: Int? = nil) {
         self.messageId_lite = messageId_lite
         self.content_lite = content_lite
         self.userHead_lite = userHead_lite
         self.isMine_lite = isMine_lite
         self.time_lite = time_lite
+        self.sendUserId_lite = sendUserId_lite
     }
 }
 
@@ -602,6 +607,43 @@ class OutfitCapsule_lite: NSObject, Codable, Identifiable {
         self.unlockDate_lite = unlockDate_lite
         self.isUnlocked_lite = isUnlocked_lite
         self.unlockNote_lite = unlockNote_lite
+        super.init()
+    }
+}
+
+/// 商店模型
+class StoreModel_lite: NSObject {
+    
+    /// ID编号
+    var id_lite: Int?
+    
+    /// 商品ID
+    var goodsId_lite: String?
+    
+    /// 商品名字
+    var goodsName_lite: String?
+    
+    /// 商品价格
+    var goodsPrice_lite: String?
+    
+    /// 是否顶部商品
+    var goodIsTop_lite: Bool?
+    
+    /// 是否特殊商品
+    var goodIsSpecial_lite: Bool?
+    
+    init(id_lite: Int? = nil,
+         goodsId_lite: String? = nil,
+         goodsName_lite: String? = nil,
+         goodsPrice_lite: String? = nil,
+         goodIsTop_lite: Bool? = false,
+         goodIsLimit_lite: Bool? = false) {
+        self.id_lite = id_lite
+        self.goodsId_lite = goodsId_lite
+        self.goodsName_lite = goodsName_lite
+        self.goodsPrice_lite = goodsPrice_lite
+        self.goodIsTop_lite = goodIsTop_lite
+        self.goodIsSpecial_lite = goodIsLimit_lite
         super.init()
     }
 }

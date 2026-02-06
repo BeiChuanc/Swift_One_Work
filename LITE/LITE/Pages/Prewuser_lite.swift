@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 // MARK: - 用户信息页
 // 核心作用：展示其他用户的个人信息、统计数据和发布内容
@@ -16,6 +17,7 @@ struct Prewuser_lite: View {
     @ObservedObject private var localData_lite = LocalData_lite.shared_lite
     
     @State private var showReportSheet_lite = false
+    @State private var userPosts_lite: [TitleModel_lite] = []
     
     var body: some View {
         ZStack {
@@ -51,6 +53,13 @@ struct Prewuser_lite: View {
             }
         }
         .navigationBarHidden(true)
+        .onAppear {
+            loadUserPosts_lite()
+        }
+        .onReceive(localData_lite.objectWillChange) { _ in
+            // 监听数据变化，自动刷新帖子列表
+            loadUserPosts_lite()
+        }
         .background(
             ReportActionSheet_lite(
                 isShowing_lite: $showReportSheet_lite,
@@ -63,6 +72,15 @@ struct Prewuser_lite: View {
                 }
             )
         )
+    }
+    
+    // MARK: - 私有方法
+    
+    /// 加载用户帖子
+    private func loadUserPosts_lite() {
+        userPosts_lite = user_lite.userLike_lite.filter { post in
+            localData_lite.titleList_lite.contains { $0.titleId_lite == post.titleId_lite }
+        }
     }
     
     // MARK: - 增强背景
@@ -261,7 +279,7 @@ struct Prewuser_lite: View {
                     Image(systemName: userVM_lite.isFollowing_lite(user_lite: user_lite) ? "person.fill.checkmark" : "person.fill.badge.plus")
                         .font(.system(size: 18.sp_lite, weight: .bold))
                     
-                    Text(userVM_lite.isFollowing_lite(user_lite: user_lite) ? "Following" : "Follow")
+                    Text(userVM_lite.isFollowing_lite(user_lite: user_lite) ? "Followed" : "Follow")
                         .font(.system(size: 16.sp_lite, weight: .bold))
                 }
                 .foregroundColor(.white)
@@ -302,6 +320,7 @@ struct Prewuser_lite: View {
             
             // 发送消息按钮
             Button {
+                router_lite.pop_lite()
                 router_lite.toUserChat_lite(user_lite: user_lite)
             } label: {
                 ZStack {
@@ -387,18 +406,18 @@ struct Prewuser_lite: View {
                 
                 Spacer()
                 
-                Text("\(user_lite.userLike_lite.count)")
+                Text("\(userPosts_lite.count)")
                     .font(.system(size: 16.sp_lite, weight: .bold))
                     .foregroundColor(Color(hex: "ADB5BD"))
             }
             .padding(.horizontal, 4.w_lite)
             
             // 帖子列表
-            if user_lite.userLike_lite.isEmpty {
+            if userPosts_lite.isEmpty {
                 // 空状态
                 emptyPostsView_lite
             } else {
-                ForEach(user_lite.userLike_lite) { post_lite in
+                ForEach(userPosts_lite) { post_lite in
                     UserPostCard_lite(post_lite: post_lite)
                 }
             }
@@ -558,7 +577,9 @@ struct UserPostCard_lite: View {
     
     let post_lite: TitleModel_lite
     
+    @ObservedObject private var localData_lite = LocalData_lite.shared_lite
     @State private var isPressed_lite = false
+    @State private var showReportSheet_lite = false
     
     var body: some View {
         Button {
@@ -566,42 +587,61 @@ struct UserPostCard_lite: View {
         } label: {
             VStack(alignment: .leading, spacing: 0) {
                 // 媒体预览 - 使用MediaDisplayView_lite组件
-                Group {
-                    if let mediaPath_lite = post_lite.titleMeidas_lite.first {
-                        MediaDisplayView_lite(
-                            mediaPath_lite: mediaPath_lite,
-                            isVideo_lite: mediaPath_lite.contains("video"),
-                            cornerRadius_lite: 0
-                        )
-                        .frame(height: 200.h_lite)
-                    } else {
-                        // 无媒体时显示渐变占位
-                        ZStack {
-                            LinearGradient(
-                                colors: MediaConfig_lite.getGradientColors_lite(for: post_lite.title_lite),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
+                ZStack(alignment: .topTrailing) {
+                    Group {
+                        if let mediaPath_lite = post_lite.titleMeidas_lite.first {
+                            MediaDisplayView_lite(
+                                mediaPath_lite: mediaPath_lite,
+                                isVideo_lite: mediaPath_lite.contains("video"),
+                                cornerRadius_lite: 0
                             )
-                            
-                            // 装饰图案
-                            Circle()
-                                .fill(Color.white.opacity(0.2))
-                                .frame(width: 120.w_lite, height: 120.h_lite)
-                                .offset(x: -40.w_lite, y: -30.h_lite)
-                                .blur(radius: 20)
-                            
-                            Circle()
-                                .fill(Color.white.opacity(0.15))
-                                .frame(width: 100.w_lite, height: 100.h_lite)
-                                .offset(x: 50.w_lite, y: 30.h_lite)
-                                .blur(radius: 18)
-                            
-                            Image(systemName: "photo.fill")
-                                .font(.system(size: 50.sp_lite, weight: .bold))
-                                .foregroundColor(.white.opacity(0.8))
+                            .frame(height: 200.h_lite)
+                        } else {
+                            // 无媒体时显示渐变占位
+                            ZStack {
+                                LinearGradient(
+                                    colors: MediaConfig_lite.getGradientColors_lite(for: post_lite.title_lite),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                                
+                                // 装饰图案
+                                Circle()
+                                    .fill(Color.white.opacity(0.2))
+                                    .frame(width: 120.w_lite, height: 120.h_lite)
+                                    .offset(x: -40.w_lite, y: -30.h_lite)
+                                    .blur(radius: 20)
+                                
+                                Circle()
+                                    .fill(Color.white.opacity(0.15))
+                                    .frame(width: 100.w_lite, height: 100.h_lite)
+                                    .offset(x: 50.w_lite, y: 30.h_lite)
+                                    .blur(radius: 18)
+                                
+                                Image(systemName: "photo.fill")
+                                    .font(.system(size: 50.sp_lite, weight: .bold))
+                                    .foregroundColor(.white.opacity(0.8))
+                            }
+                            .frame(height: 200.h_lite)
                         }
-                        .frame(height: 200.h_lite)
                     }
+                    
+                    // 举报按钮（右上角）
+                    Button {
+                        showReportSheet_lite = true
+                    } label: {
+                        ZStack {
+                            Circle()
+                                .fill(Color.white.opacity(0.9))
+                                .frame(width: 32.w_lite, height: 32.h_lite)
+                            
+                            Image(systemName: "ellipsis")
+                                .font(.system(size: 14.sp_lite, weight: .bold))
+                                .foregroundColor(Color(hex: "6C757D"))
+                        }
+                    }
+                    .buttonStyle(ScaleButtonStyle_lite())
+                    .padding(10.w_lite)
                 }
                 
                 // 帖子信息（添加顶部间距）
@@ -685,5 +725,25 @@ struct UserPostCard_lite: View {
                     }
                 }
         )
+        .confirmationDialog("Report Post", isPresented: $showReportSheet_lite, titleVisibility: .visible) {
+            Button("Report Sexually Explicit Material") {
+                reportPost_lite()
+            }
+            Button("Report spam") {
+                reportPost_lite()
+            }
+            Button("Report something else") {
+                reportPost_lite()
+            }
+            Button("Report", role: .destructive) {
+                reportPost_lite()
+            }
+            Button("Cancel", role: .cancel) {}
+        }
+    }
+    
+    /// 举报帖子
+    private func reportPost_lite() {
+        ReportHelper_lite.reportPost_lite(post_lite: post_lite)
     }
 }

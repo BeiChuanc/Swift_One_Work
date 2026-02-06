@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 // MARK: - 帖子详情页
 // 核心作用：展示帖子的详细内容、评论和操作
@@ -16,15 +17,23 @@ struct Detail_lite: View {
     @ObservedObject private var localData_lite = LocalData_lite.shared_lite
     
     @State private var commentText_lite = ""
-    @State private var showShareSheet_lite = false
+    @State private var showGiftShop_lite = false
     @State private var showReportSheet_lite = false
+    @State private var showDeleteConfirm_lite = false
     @State private var isLiked_lite = false
     @State private var likeAnimation_lite = false
+    @State private var isFollowed_lite = false
     @FocusState private var isCommentFocused_lite: Bool
     
     /// 获取最新的帖子数据
     private var currentPost_lite: TitleModel_lite? {
         localData_lite.titleList_lite.first(where: { $0.titleId_lite == post_lite.titleId_lite })
+    }
+    
+    /// 判断帖子是否为当前登录用户发布
+    private var isOwnPost_lite: Bool {
+        let currentUserId_lite = userVM_lite.getCurrentUser_lite().userId_lite ?? 0
+        return post_lite.titleUserId_lite == currentUserId_lite
     }
     
     var body: some View {
@@ -70,6 +79,17 @@ struct Detail_lite: View {
         .navigationBarHidden(true)
         .onAppear {
             isLiked_lite = titleVM_lite.isLikedPost_lite(post_lite: post_lite)
+            
+            // 获取帖子发布者信息并判断是否已关注
+            let postUser_lite = userVM_lite.getUserById_lite(userId_lite: post_lite.titleUserId_lite)
+            isFollowed_lite = userVM_lite.isFollowing_lite(user_lite: postUser_lite)
+        }
+        .onReceive(localData_lite.objectWillChange) { _ in
+            // 监听评论变化，自动刷新
+            // 不需要额外操作，currentPost_lite会自动从localData获取最新数据
+        }
+        .sheet(isPresented: $showGiftShop_lite) {
+            GiftShop_lite()
         }
         .confirmationDialog("Report Post", isPresented: $showReportSheet_lite, titleVisibility: .visible) {
             Button("Report Sexually Explicit Material") {
@@ -85,6 +105,16 @@ struct Detail_lite: View {
                 reportPost_lite()
             }
             Button("Cancel", role: .cancel) {}
+        }
+        .alert(isPresented: $showDeleteConfirm_lite) {
+            Alert(
+                title: Text("Delete Post"),
+                message: Text("Are you sure you want to delete this post? This action cannot be undone."),
+                primaryButton: .destructive(Text("Delete")) {
+                    deletePost_lite()
+                },
+                secondaryButton: .cancel()
+            )
         }
     }
     
@@ -154,18 +184,22 @@ struct Detail_lite: View {
                 
                 Spacer()
                 
-                // 更多按钮
+                // 删除/举报按钮
                 Button {
-                    showReportSheet_lite = true
+                    if isOwnPost_lite {
+                        showDeleteConfirm_lite = true
+                    } else {
+                        showReportSheet_lite = true
+                    }
                 } label: {
                     ZStack {
                         Circle()
-                            .fill(Color(hex: "F8F9FA"))
+                            .fill(isOwnPost_lite ? Color(hex: "FFE5E5") : Color(hex: "F8F9FA"))
                             .frame(width: 44.w_lite, height: 44.h_lite)
                         
-                        Image(systemName: "ellipsis")
+                        Image(systemName: isOwnPost_lite ? "trash.fill" : "ellipsis")
                             .font(.system(size: 18.sp_lite, weight: .bold))
-                            .foregroundColor(Color(hex: "495057"))
+                            .foregroundColor(isOwnPost_lite ? Color(hex: "FF6B6B") : Color(hex: "495057"))
                     }
                 }
                 .buttonStyle(ScaleButtonStyle_lite())
@@ -295,6 +329,7 @@ struct Detail_lite: View {
                 size_lite: 48,
                 isClickable_lite: true,
                 onTapped_lite: {
+                    Router_lite.shared_lite.pop_lite()
                     let user_lite = userVM_lite.getUserById_lite(userId_lite: post_lite.titleUserId_lite)
                     Router_lite.shared_lite.toUserInfo_lite(user_lite: user_lite)
                 }
@@ -317,31 +352,35 @@ struct Detail_lite: View {
             
             Spacer()
             
-            // 关注按钮
-            Button {
-                Utils_lite.showSuccess_lite(message_lite: "Follow feature coming soon")
-            } label: {
-                HStack(spacing: 6.w_lite) {
-                    Image(systemName: "plus")
-                        .font(.system(size: 12.sp_lite, weight: .bold))
-                    
-                    Text("Follow")
-                        .font(.system(size: 14.sp_lite, weight: .bold))
-                }
-                .foregroundColor(.white)
-                .padding(.horizontal, 16.w_lite)
-                .padding(.vertical, 10.h_lite)
-                .background(
-                    LinearGradient(
-                        colors: [Color(hex: "667eea"), Color(hex: "764ba2")],
-                        startPoint: .leading,
-                        endPoint: .trailing
+            // 关注按钮（仅在不是自己的帖子时显示）
+            if !isOwnPost_lite {
+                Button {
+                    followUser_lite()
+                } label: {
+                    HStack(spacing: 6.w_lite) {
+                        Image(systemName: isFollowed_lite ? "checkmark" : "plus")
+                            .font(.system(size: 12.sp_lite, weight: .bold))
+                        
+                        Text(isFollowed_lite ? "Followed" : "Follow")
+                            .font(.system(size: 14.sp_lite, weight: .bold))
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 16.w_lite)
+                    .padding(.vertical, 10.h_lite)
+                    .background(
+                        LinearGradient(
+                            colors: isFollowed_lite ?
+                                [Color(hex: "ADB5BD"), Color(hex: "6C757D")] :
+                                [Color(hex: "667eea"), Color(hex: "764ba2")],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
                     )
-                )
-                .cornerRadius(20.w_lite)
-                .shadow(color: Color(hex: "667eea").opacity(0.4), radius: 10, x: 0, y: 5)
+                    .cornerRadius(20.w_lite)
+                    .shadow(color: isFollowed_lite ? Color.clear : Color(hex: "667eea").opacity(0.4), radius: 10, x: 0, y: 5)
+                }
+                .buttonStyle(ScaleButtonStyle_lite())
             }
-            .buttonStyle(ScaleButtonStyle_lite())
         }
     }
     
@@ -471,13 +510,8 @@ struct Detail_lite: View {
                     isCommentFocused_lite = true
                 }
                 
-                // 分享按钮
-                actionButton_lite(
-                    icon: "square.and.arrow.up",
-                    color: Color(hex: "43e97b")
-                ) {
-                    Utils_lite.showSuccess_lite(message_lite: "Share feature coming soon")
-                }
+                // 送礼按钮
+                giftButton_lite
                 
                 Spacer()
                 
@@ -523,10 +557,34 @@ struct Detail_lite: View {
         .buttonStyle(ScaleButtonStyle_lite())
     }
     
+    /// 送礼按钮
+    private var giftButton_lite: some View {
+        Button {
+            showGiftShop_lite = true
+        } label: {
+            Image("gift_btn")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 26.w_lite, height: 26.h_lite)
+                .foregroundColor(Color(hex: "FFD700"))
+        }
+        .buttonStyle(ScaleButtonStyle_lite())
+    }
+    
     // MARK: - 私有方法
     
     /// 切换点赞
     private func toggleLike_lite() {
+        // 优先判断用户是否登录
+        if !userVM_lite.isLoggedIn_lite {
+            // 未登录直接进入登录页，不提示
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 200_000_000) // 0.2秒
+                Router_lite.shared_lite.toLogin_liteui()
+            }
+            return
+        }
+        
         isLiked_lite.toggle()
         
         // 点赞动画
@@ -542,6 +600,22 @@ struct Detail_lite: View {
         
         // 调用ViewModel
         titleVM_lite.likePost_lite(post_lite: post_lite)
+    }
+    
+    /// 关注/取关用户
+    private func followUser_lite() {
+        let postUser_lite = userVM_lite.getUserById_lite(userId_lite: post_lite.titleUserId_lite)
+        userVM_lite.followUser_lite(user_lite: postUser_lite)
+        
+        // 更新关注状态
+        isFollowed_lite = userVM_lite.isFollowing_lite(user_lite: postUser_lite)
+    }
+    
+    /// 删除帖子
+    private func deletePost_lite() {
+        ReportHelper_lite.deletePost_lite(post_lite: post_lite) {
+            Router_lite.shared_lite.pop_lite()
+        }
     }
     
     /// 发布评论

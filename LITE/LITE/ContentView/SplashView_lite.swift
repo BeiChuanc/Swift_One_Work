@@ -8,7 +8,7 @@ struct SplashView_lite: View {
     // MARK: - 配置
     
     /// 闪屏图片名称（在 Assets 中）
-    private let imageName_lite = "splash"
+    private let imageName_lite = "launch"
     
     /// 闪屏持续时间（秒）
     private let duration_lite: Double = 1.5

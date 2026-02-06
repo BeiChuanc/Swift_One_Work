@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 // MARK: - 首页
 // 核心作用：展示今日穿搭推荐和用户穿搭时光轴
@@ -44,6 +45,10 @@ struct Home_lite: View {
             }
         }
         .onAppear {
+            loadRecommendations_lite()
+        }
+        .onReceive(localData_lite.objectWillChange) { _ in
+            // 监听数据变化，自动刷新推荐列表
             loadRecommendations_lite()
         }
         .sheet(isPresented: $showAddOutfitSheet_lite) {

@@ -171,13 +171,12 @@ class TitleViewModel_lite: ObservableObject {
         comment_lite: Comment_lite,
         isDelete_lite: Bool = false
     ) {
-        // 找到对应的帖子并删除评论
+        // 找到对应的帖子并删除指定的评论
         if let index_lite = posts_lite.firstIndex(where: { $0.titleId_lite == post_lite.titleId_lite }) {
-            posts_lite[index_lite].reviews_lite.removeAll { comment_lite in
-                comment_lite.commentId_lite == comment_lite.commentId_lite
-            }
+            posts_lite[index_lite].reviews_lite.removeAll { $0.commentId_lite == comment_lite.commentId_lite }
             // 手动触发更新，因为修改了嵌套属性
             objectWillChange.send()
+            LocalData_lite.shared_lite.objectWillChange.send()
         }
         
         let message_lite = isDelete_lite
@@ -250,6 +249,9 @@ class TitleViewModel_lite: ObservableObject {
         if let index_lite = LocalData_lite.shared_lite.outfitComboList_lite.firstIndex(where: { $0.comboId_lite == outfit_lite.comboId_lite }) {
             LocalData_lite.shared_lite.outfitComboList_lite[index_lite].isFavorited_lite.toggle()
             
+            // 手动触发更新通知，确保UI及时刷新
+            LocalData_lite.shared_lite.objectWillChange.send()
+            
             let message_lite = LocalData_lite.shared_lite.outfitComboList_lite[index_lite].isFavorited_lite
                 ? "Added to favorites"
                 : "Removed from favorites"
@@ -270,6 +272,9 @@ class TitleViewModel_lite: ObservableObject {
         
         if let index_lite = LocalData_lite.shared_lite.outfitComboList_lite.firstIndex(where: { $0.comboId_lite == outfit_lite.comboId_lite }) {
             LocalData_lite.shared_lite.outfitComboList_lite[index_lite].isDailyOutfit_lite = true
+            
+            // 手动触发更新通知，确保UI及时刷新
+            LocalData_lite.shared_lite.objectWillChange.send()
             
             // 自动添加到时光轴
             addToTimeline_lite(outfit_lite: outfit_lite)
@@ -310,6 +315,9 @@ class TitleViewModel_lite: ObservableObject {
         
         if let index_lite = LocalData_lite.shared_lite.outfitComboList_lite.firstIndex(where: { $0.comboId_lite == outfit_lite.comboId_lite }) {
             LocalData_lite.shared_lite.outfitComboList_lite[index_lite].likes_lite += 1
+            
+            // 手动触发更新通知，确保UI及时刷新
+            LocalData_lite.shared_lite.objectWillChange.send()
         }
     }
     

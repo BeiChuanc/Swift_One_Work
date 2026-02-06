@@ -85,6 +85,20 @@ class ReportHelper_lite {
         )
     }
     
+    /// 举报时空胶囊
+    /// - Parameters:
+    ///   - capsule_lite: 被举报的时空胶囊
+    ///   - completion_lite: 举报完成回调
+    static func reportCapsule_lite(
+        capsule_lite: OutfitCapsule_lite,
+        completion_lite: (() -> Void)? = nil
+    ) {
+        performReportCapsule_lite(
+            capsule_lite: capsule_lite,
+            completion_lite: completion_lite
+        )
+    }
+    
     // MARK: - 删除方法
     
     /// 删除帖子
@@ -261,6 +275,43 @@ class ReportHelper_lite {
             
             // 根据是否是自己的评论显示不同提示
             let message_lite = isOwnComment_lite ? "Deleted successfully." : "This comment will no longer appear."
+            Utils_lite.showSuccess_lite(
+                message_lite: message_lite,
+                delay_lite: 1.5
+            )
+            
+            // 确保在主线程上执行回调
+            DispatchQueue.main.async {
+                completion_lite?()
+            }
+        }
+    }
+    
+    /// 执行举报时空胶囊操作
+    /// - Parameters:
+    ///   - capsule_lite: 被举报的时空胶囊
+    ///   - completion_lite: 操作完成回调
+    private static func performReportCapsule_lite(
+        capsule_lite: OutfitCapsule_lite,
+        completion_lite: (() -> Void)? = nil
+    ) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            // 判断是否是自己的时空胶囊
+            let currentUserId_lite = UserViewModel_lite.shared_lite.getCurrentUser_lite().userId_lite ?? 0
+            let isOwnCapsule_lite = capsule_lite.userId_lite == currentUserId_lite
+            
+            // 从胶囊列表中移除该胶囊
+            LocalData_lite.shared_lite.capsuleList_lite.removeAll { item_lite in
+                item_lite.capsuleId_lite == capsule_lite.capsuleId_lite
+            }
+            
+            // 手动触发更新通知，确保视图刷新
+            LocalData_lite.shared_lite.objectWillChange.send()
+            
+            print("✅ 已举报时空胶囊: \(capsule_lite.outfit_lite.comboTitle_lite)")
+            
+            // 根据是否是自己的胶囊显示不同提示
+            let message_lite = isOwnCapsule_lite ? "Deleted successfully." : "This capsule will no longer appear."
             Utils_lite.showSuccess_lite(
                 message_lite: message_lite,
                 delay_lite: 1.5

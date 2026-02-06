@@ -1,7 +1,8 @@
 import SwiftUI
+import Combine
 
 // MARK: - 聊天页面
-// 核心作用：与用户、群组或AI进行聊天
+// 核心作用：与用户或群组进行聊天
 // 设计思路：现代化聊天界面，消息气泡设计，流畅的交互体验
 // 关键功能：消息发送、消息展示、举报用户、视频聊天
 
@@ -14,9 +15,6 @@ struct MessageUser_lite: View {
     /// 群组ID（用于群聊）
     var groupId_lite: Int?
     
-    /// 是否是AI聊天
-    var isAIChat_lite: Bool = false
-    
     @ObservedObject private var messageVM_lite = MessageViewModel_lite.shared_lite
     @ObservedObject private var userVM_lite = UserViewModel_lite.shared_lite
     @ObservedObject private var router_lite = Router_lite.shared_lite
@@ -28,9 +26,7 @@ struct MessageUser_lite: View {
     
     /// 聊天标题
     private var chatTitle_lite: String {
-        if isAIChat_lite {
-            return "AI Assistant"
-        } else if let user = user_lite {
+        if let user = user_lite {
             return user.userName_lite ?? "Chat"
         } else if let groupId = groupId_lite {
             return "Group Chat \(groupId)"
@@ -41,11 +37,7 @@ struct MessageUser_lite: View {
     
     /// 聊天副标题（在线状态）
     private var chatSubtitle_lite: String {
-        if isAIChat_lite {
-            return "Always here to help"
-        } else {
-            return "Online"
-        }
+        return "Online"
     }
     
     var body: some View {
@@ -98,7 +90,7 @@ struct MessageUser_lite: View {
                     ScrollView {
                         VStack(spacing: 16.h_lite) {
                             ForEach(messages_lite) { message_lite in
-                                MessageBubble_lite(message_lite: message_lite)
+                                MessageBubble_lite(message_lite: message_lite, user_lite: user_lite!,)
                                     .id(message_lite.messageId_lite)
                             }
                         }
@@ -121,6 +113,10 @@ struct MessageUser_lite: View {
         }
         .navigationBarHidden(true)
         .onAppear {
+            loadMessages_lite()
+        }
+        .onReceive(messageVM_lite.objectWillChange) { _ in
+            // 监听消息变化，自动刷新
             loadMessages_lite()
         }
         .onTapGesture {
@@ -180,35 +176,29 @@ struct MessageUser_lite: View {
                 
                 // 用户头像和信息（增强版）
                 HStack(spacing: 12.w_lite) {
-                    // 头像（增强版）
-                    ZStack {
-                        // 外圈光晕
-                        Circle()
-                            .fill(
-                                RadialGradient(
-                                    colors: MediaConfig_lite.getGradientColors_lite(
-                                        for: chatTitle_lite
-                                    ).map { $0.opacity(0.3) },
-                                    center: .center,
-                                    startRadius: 20.w_lite,
-                                    endRadius: 28.w_lite
+                    // 使用统一的头像组件
+                    if let user = user_lite, let userId = user.userId_lite {
+                        ZStack {
+                            // 外圈光晕
+                            Circle()
+                                .fill(
+                                    RadialGradient(
+                                        colors: MediaConfig_lite.getGradientColors_lite(
+                                            for: chatTitle_lite
+                                        ).map { $0.opacity(0.3) },
+                                        center: .center,
+                                        startRadius: 20.w_lite,
+                                        endRadius: 28.w_lite
+                                    )
                                 )
+                                .frame(width: 52.w_lite, height: 52.h_lite)
+                                .blur(radius: 2)
+                            
+                            // 主头像
+                            UserAvatarView_lite(
+                                userId_lite: userId,
+                                size_lite: 46
                             )
-                            .frame(width: 52.w_lite, height: 52.h_lite)
-                            .blur(radius: 2)
-                        
-                        // 主头像
-                        Circle()
-                            .fill(
-                                LinearGradient(
-                                    colors: MediaConfig_lite.getGradientColors_lite(
-                                        for: chatTitle_lite
-                                    ),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .frame(width: 46.w_lite, height: 46.h_lite)
                             .overlay(
                                 Circle()
                                     .stroke(
@@ -220,20 +210,9 @@ struct MessageUser_lite: View {
                                         lineWidth: 2
                                     )
                             )
-                        
-                        if isAIChat_lite {
-                            Image(systemName: "sparkles")
-                                .font(.system(size: 22.sp_lite, weight: .bold))
-                                .foregroundColor(.white)
-                                .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 1)
-                        } else {
-                            Text(String(chatTitle_lite.prefix(1)).uppercased())
-                                .font(.system(size: 20.sp_lite, weight: .black))
-                                .foregroundColor(.white)
-                                .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 1)
                         }
+                        .shadow(color: MediaConfig_lite.getGradientColors_lite(for: chatTitle_lite)[0].opacity(0.4), radius: 12, x: 0, y: 4)
                     }
-                    .shadow(color: MediaConfig_lite.getGradientColors_lite(for: chatTitle_lite)[0].opacity(0.4), radius: 12, x: 0, y: 4)
                     
                     // 标题和状态
                     VStack(alignment: .leading, spacing: 4.h_lite) {
@@ -266,7 +245,7 @@ struct MessageUser_lite: View {
                 // 右侧按钮组（增强版）
                 HStack(spacing: 8.w_lite) {
                     // 视频通话按钮（导航栏）
-                    if !isAIChat_lite, let user = user_lite {
+                    if let user = user_lite {
                         Button {
                             router_lite.toVideoChat_lite(user_lite: user)
                         } label: {
@@ -311,49 +290,47 @@ struct MessageUser_lite: View {
                     }
                     
                     // 举报按钮（增强版）
-                    if !isAIChat_lite {
-                        Button {
-                            showReportSheet_lite = true
-                        } label: {
-                            ZStack {
-                                // 背景渐变
-                                Circle()
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [Color.white, Color(hex: "FFF5F5")],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        )
+                    Button {
+                        showReportSheet_lite = true
+                    } label: {
+                        ZStack {
+                            // 背景渐变
+                            Circle()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [Color.white, Color(hex: "FFF5F5")],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
                                     )
-                                    .frame(width: 42.w_lite, height: 42.h_lite)
-                                
-                                // 图标
-                                Image(systemName: "exclamationmark.shield.fill")
-                                    .font(.system(size: 19.sp_lite, weight: .bold))
-                                    .foregroundStyle(
-                                        LinearGradient(
-                                            colors: [Color(hex: "f5576c"), Color(hex: "f093fb")],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        )
+                                )
+                                .frame(width: 42.w_lite, height: 42.h_lite)
+                            
+                            // 图标
+                            Image(systemName: "exclamationmark.shield.fill")
+                                .font(.system(size: 19.sp_lite, weight: .bold))
+                                .foregroundStyle(
+                                    LinearGradient(
+                                        colors: [Color(hex: "f5576c"), Color(hex: "f093fb")],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
                                     )
-                            }
-                            .overlay(
-                                Circle()
-                                    .stroke(
-                                        LinearGradient(
-                                            colors: [Color(hex: "f5576c").opacity(0.3), Color(hex: "f093fb").opacity(0.3)],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        ),
-                                        lineWidth: 1.5
-                                    )
-                            )
-                            .shadow(color: Color(hex: "f5576c").opacity(0.3), radius: 12, x: 0, y: 6)
-                            .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 2)
+                                )
                         }
-                        .buttonStyle(ScaleButtonStyle_lite())
+                        .overlay(
+                            Circle()
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [Color(hex: "f5576c").opacity(0.3), Color(hex: "f093fb").opacity(0.3)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 1.5
+                                )
+                        )
+                        .shadow(color: Color(hex: "f5576c").opacity(0.3), radius: 12, x: 0, y: 6)
+                        .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 2)
                     }
+                    .buttonStyle(ScaleButtonStyle_lite())
                 }
             }
             .padding(.horizontal, 20.w_lite)
@@ -415,7 +392,7 @@ struct MessageUser_lite: View {
                 )
                 
                 // 视频聊天按钮（输入框旁 - 增强版）
-                if !isAIChat_lite, let user = user_lite {
+                if let user = user_lite {
                     Button {
                         router_lite.toVideoChat_lite(user_lite: user)
                     } label: {
@@ -531,12 +508,12 @@ struct MessageUser_lite: View {
     
     /// 加载消息
     private func loadMessages_lite() {
-        if isAIChat_lite {
-            messages_lite = messageVM_lite.getAiChats_lite()
-        } else if let user = user_lite, let userId = user.userId_lite {
-            messages_lite = messageVM_lite.getMessagesWithUser_lite(userId_lite: userId)
-        } else if let groupId = groupId_lite {
-            messages_lite = messageVM_lite.getGroupMessages_lite(groupId_lite: groupId)
+        DispatchQueue.main.async {
+            if let user = user_lite, let userId = user.userId_lite {
+                messages_lite = messageVM_lite.getMessagesWithUser_lite(userId_lite: userId)
+            } else if let groupId = groupId_lite {
+                messages_lite = messageVM_lite.getGroupMessages_lite(groupId_lite: groupId)
+            }
         }
     }
     
@@ -547,13 +524,7 @@ struct MessageUser_lite: View {
         let trimmedMessage_lite = messageText_lite.trimmingCharacters(in: .whitespacesAndNewlines)
         
         // 发送消息
-        if isAIChat_lite {
-            messageVM_lite.sendMessage_lite(
-                message_lite: trimmedMessage_lite,
-                chatType_lite: .ai_lite,
-                id_lite: 0
-            )
-        } else if let user = user_lite, let userId = user.userId_lite {
+        if let user = user_lite, let userId = user.userId_lite {
             messageVM_lite.sendMessage_lite(
                 message_lite: trimmedMessage_lite,
                 chatType_lite: .personal_lite,
@@ -570,8 +541,10 @@ struct MessageUser_lite: View {
         // 清空输入框
         messageText_lite = ""
         
-        // 重新加载消息
-        loadMessages_lite()
+        // 延迟刷新消息列表，确保ViewModel已更新
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            loadMessages_lite()
+        }
     }
 }
 
@@ -582,10 +555,12 @@ struct MessageBubble_lite: View {
     
     let message_lite: MessageModel_lite
     
+    let user_lite: PrewUserModel_lite
+    
     @State private var appeared_lite = false
     
     var body: some View {
-        HStack(alignment: .bottom, spacing: 8.w_lite) {
+        HStack(alignment: .bottom, spacing: 10.w_lite) {
             if message_lite.isMine_lite == true {
                 Spacer()
                 
@@ -648,6 +623,15 @@ struct MessageBubble_lite: View {
                 }
             } else {
                 // 对方的消息（左侧 - 增强版）
+                // 显示对方头像
+                if let senderId = message_lite.isMine_lite, !senderId {
+                    UserAvatarView_lite(
+                        userId_lite: user_lite.userId_lite!,
+                        size_lite: 36
+                    )
+                    .offset(y: 8.h_lite)
+                }
+                
                 VStack(alignment: .leading, spacing: 6.h_lite) {
                     ZStack {
                         // 主气泡

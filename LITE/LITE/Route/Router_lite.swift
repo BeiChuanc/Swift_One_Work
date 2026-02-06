@@ -224,7 +224,7 @@ class Router_lite: ObservableObject {
         case .groupChat_lite(let groupId):
             MessageUser_lite(groupId_lite: groupId)
         case .aiChat_lite:
-            MessageUser_lite(isAIChat_lite: true)
+            MessageUser_lite()
         case .mediaPlayer_lite(let mediaUrl_lite, let isVideo_lite):
             MediaPlayer_lite(mediaUrl_lite: mediaUrl_lite, isVideo_lite: isVideo_lite)
         case .videoChat_lite(let user):

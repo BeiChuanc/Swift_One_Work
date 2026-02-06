@@ -25,8 +25,7 @@ struct FloatingTabBar_lite: View {
         HStack(spacing: 0) {
             // Home 按钮
             tabButton_lite(
-                icon_lite: "house",
-                filledIcon_lite: "house.fill",
+                icon_lite: "home",
                 label_lite: "Home",
                 index_lite: 0
             )
@@ -35,9 +34,8 @@ struct FloatingTabBar_lite: View {
             
             // Discover 按钮
             tabButton_lite(
-                icon_lite: "safari",
-                filledIcon_lite: "safari.fill",
-                label_lite: "Discover",
+                icon_lite: "discover",
+                label_lite: "Find",
                 index_lite: 1
             )
             
@@ -51,8 +49,7 @@ struct FloatingTabBar_lite: View {
             // Messages 按钮
             tabButton_lite(
                 icon_lite: "message",
-                filledIcon_lite: "message.fill",
-                label_lite: "Messages",
+                label_lite: "Chat",
                 index_lite: 3
             )
             
@@ -60,9 +57,8 @@ struct FloatingTabBar_lite: View {
             
             // Profile 按钮
             tabButton_lite(
-                icon_lite: "person",
-                filledIcon_lite: "person.fill",
-                label_lite: "Profile",
+                icon_lite: "me",
+                label_lite: "Mine",
                 index_lite: 4
             )
         }
@@ -70,9 +66,13 @@ struct FloatingTabBar_lite: View {
         .padding(.vertical, 12)
         .background(
             RoundedRectangle(cornerRadius: 25)
-                .fill(Color.white)
-                .shadow(color: Color.black.opacity(0.1), radius: 15, x: 0, y: 5)
-                .shadow(color: Color.blue.opacity(0.05), radius: 8, x: 0, y: 2)
+                .fill(
+                    LinearGradient(
+                        colors: [Color(hex: "8F9DF0"), Color(hex: "8559B3")],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
         )
         .padding(.horizontal, 20)
         .padding(.bottom, 0)
@@ -84,7 +84,6 @@ struct FloatingTabBar_lite: View {
     @ViewBuilder
     private func tabButton_lite(
         icon_lite: String,
-        filledIcon_lite: String,
         label_lite: String,
         index_lite: Int
     ) -> some View {
@@ -95,23 +94,24 @@ struct FloatingTabBar_lite: View {
             handleTabTap_lite(index_lite: index_lite)
         }) {
             VStack(spacing: 4) {
-                // 图标
-                Image(systemName: isSelected_lite ? filledIcon_lite : icon_lite)
-                    .font(.system(size: 24))
-                    .foregroundColor(isSelected_lite ? .blue : .gray)
+                // 图标 - 从 Assets 加载
+                Image(icon_lite)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
                     .scaleEffect(isTapped_lite ? 1.3 : (isSelected_lite ? 1.1 : 1.0))
                     .rotationEffect(.degrees(isTapped_lite ? 360 : 0))
                 
                 // 标签文本
                 Text(label_lite)
                     .font(.system(size: 10, weight: isSelected_lite ? .semibold : .regular))
-                    .foregroundColor(isSelected_lite ? .blue : .gray)
+                    .foregroundColor(isSelected_lite ? .white : Color(hex: "B0B0B0"))
                     .scaleEffect(isSelected_lite ? 1.05 : 1.0)
             }
             .frame(width: 60, height: 50)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected_lite ? Color.blue.opacity(0.1) : Color.clear)
+                    .fill(isSelected_lite ? Color.white.opacity(0.15) : Color.clear)
                     .scaleEffect(isTapped_lite ? 1.2 : 1.0)
             )
         }
@@ -129,46 +129,13 @@ struct FloatingTabBar_lite: View {
         return Button(action: {
             handleCenterButtonTap_lite()
         }) {
-            ZStack {
-                // 外层光晕效果
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color.blue.opacity(0.3),
-                                Color.purple.opacity(0.3)
-                            ]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 70, height: 70)
-                    .scaleEffect(isTapped_lite ? 1.3 : 1.0)
-                    .opacity(isTapped_lite ? 0 : 0.5)
-                
-                // 主按钮
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color.blue,
-                                Color.purple
-                            ]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 60, height: 60)
-                    .shadow(color: Color.blue.opacity(0.4), radius: 10, x: 0, y: 5)
-                
-                // 加号图标
-                Image(systemName: "plus")
-                    .font(.system(size: 28, weight: .semibold))
-                    .foregroundColor(.white)
-                    .rotationEffect(.degrees(centerButtonRotation_lite))
-            }
-            .scaleEffect(isTapped_lite ? 0.85 : 1.0)
-            .offset(y: -10) // 向上偏移，突出显示
+            // 发布图标 - 从 Assets 加载
+            Image("publish")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 45, height: 40)
+                .foregroundColor(Color(hex: "8559B3"))
+                .scaleEffect(isTapped_lite ? 0.85 : 1.0)
         }
         .buttonStyle(PlainButtonStyle())
         .animation(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0), value: isTapped_lite)
