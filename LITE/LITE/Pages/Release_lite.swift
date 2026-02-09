@@ -183,7 +183,7 @@ struct Release_lite: View {
                             Image(uiImage: selectedImage_lite)
                                 .resizable()
                                 .scaledToFill()
-                                .frame(height: 280.h_lite)
+                                .frame(width: ScreenSize_lite.shared_lite.width_lite - 30.w_lite, height: 280.h_lite)
                                 .clipped()
                                 .cornerRadius(20.w_lite)
                             
@@ -515,12 +515,19 @@ struct Release_lite: View {
                !postContent_lite.isEmpty &&
                postTitle_lite.count <= 50 &&
                postContent_lite.count <= 500 &&
-               hasSelectedMedia_lite &&
-               userVM_lite.isLoggedIn_lite
+               hasSelectedMedia_lite
     }
     
     /// 发布帖子
     private func publishPost_lite() {
+        guard userVM_lite.isLoggedIn_lite else {
+            // 延迟跳转到登录页面
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 200_000_000) // 0.2秒
+                Router_lite.shared_lite.toLogin_liteui()
+            }
+            return
+        }
         guard canPublish_lite else { return }
         
         isPublishing_lite = true

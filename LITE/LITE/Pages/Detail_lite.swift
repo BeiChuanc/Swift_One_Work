@@ -227,7 +227,7 @@ struct Detail_lite: View {
                     isVideo_lite: mediaPath_lite.contains("video"),
                     cornerRadius_lite: 0
                 )
-                .frame(height: 400.h_lite)
+                .frame(width: ScreenSize_lite.shared_lite.width_lite - 30.w_lite, height: 400.h_lite)
                 .clipped()
             } else {
                 // 占位渐变

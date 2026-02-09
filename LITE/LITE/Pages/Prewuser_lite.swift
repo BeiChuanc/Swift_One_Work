@@ -77,9 +77,11 @@ struct Prewuser_lite: View {
     // MARK: - 私有方法
     
     /// 加载用户帖子
-    private func loadUserPosts_lite() {
-        userPosts_lite = user_lite.userLike_lite.filter { post in
-            localData_lite.titleList_lite.contains { $0.titleId_lite == post.titleId_lite }
+    /// 功能：从最新的titleList中筛选属于该用户的帖子
+    func loadUserPosts_lite() {
+        // 直接从localData的titleList中筛选该用户的帖子
+        userPosts_lite = localData_lite.titleList_lite.filter { post_lite in
+            post_lite.titleUserId_lite == user_lite.userId_lite
         }
     }
     

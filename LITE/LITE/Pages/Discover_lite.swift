@@ -1587,23 +1587,32 @@ struct WaterfallPostsGrid_lite: View {
         posts_lite.enumerated().filter { $0.offset % 2 == 1 }.map { $0.element }
     }
     
+    // 计算列宽度（屏幕宽度 - 左右边距40 - 中间间距12，然后除以2）
+    private var columnWidth_lite: CGFloat {
+        (UIScreen.main.bounds.width - 40.w_lite - 12.w_lite) / 2
+    }
+    
     var body: some View {
         HStack(alignment: .top, spacing: 12.w_lite) {
             // 左列 - 使用LazyVStack提高性能
             LazyVStack(spacing: 12.h_lite, pinnedViews: []) {
                 ForEach(leftPosts_lite) { post_lite in
                     WaterfallPostCard_lite(post_lite: post_lite)
+                        .frame(width: columnWidth_lite)
                         .id(post_lite.titleId_lite) // 添加ID确保视图复用
                 }
             }
+            .frame(width: columnWidth_lite)
             
             // 右列 - 使用LazyVStack提高性能
             LazyVStack(spacing: 12.h_lite, pinnedViews: []) {
                 ForEach(rightPosts_lite) { post_lite in
                     WaterfallPostCard_lite(post_lite: post_lite)
+                        .frame(width: columnWidth_lite)
                         .id(post_lite.titleId_lite) // 添加ID确保视图复用
                 }
             }
+            .frame(width: columnWidth_lite)
         }
     }
 }
@@ -1630,13 +1639,15 @@ struct WaterfallPostCard_lite: View {
                 ZStack(alignment: .topTrailing) {
                     // 媒体展示
                     if let mediaPath_lite = post_lite.titleMeidas_lite.first {
-                        MediaDisplayView_lite(
-                            mediaPath_lite: mediaPath_lite,
-                            isVideo_lite: mediaPath_lite.contains("video"),
-                            cornerRadius_lite: 12
-                        )
+                        GeometryReader { geometry_lite in
+                            MediaDisplayView_lite(
+                                mediaPath_lite: mediaPath_lite,
+                                isVideo_lite: mediaPath_lite.contains("video"),
+                                cornerRadius_lite: 0
+                            )
+                            .frame(width: geometry_lite.size.width, height: imageHeight_lite)
+                        }
                         .frame(height: imageHeight_lite)
-                        .clipped()
                     } else {
                         // 无媒体时显示渐变占位
                         ZStack {
@@ -1660,7 +1671,6 @@ struct WaterfallPostCard_lite: View {
                                 .offset(x: 40.w_lite, y: 30.h_lite)
                         }
                         .frame(height: imageHeight_lite)
-                        .cornerRadius(12.w_lite)
                     }
                     
                     // 点赞标记
@@ -1689,6 +1699,7 @@ struct WaterfallPostCard_lite: View {
                         .foregroundColor(Color(hex: "212529"))
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
                     
                     HStack(spacing: 6.w_lite) {
                         // 用户头像 - 使用UserAvatarView_lite组件
@@ -1700,6 +1711,7 @@ struct WaterfallPostCard_lite: View {
                         Text(post_lite.titleUserName_lite)
                             .font(.system(size: 12.sp_lite, weight: .semibold))
                             .foregroundColor(Color(hex: "6C757D"))
+                            .lineLimit(1)
                         
                         Spacer()
                         
@@ -1714,8 +1726,12 @@ struct WaterfallPostCard_lite: View {
                         .foregroundColor(Color(hex: "ADB5BD"))
                     }
                 }
-                .padding(12.w_lite)
+                .padding(.horizontal, 12.w_lite)
+                .padding(.vertical, 12.h_lite)
             }
+            .frame(maxWidth: .infinity)
+            .fixedSize(horizontal: false, vertical: true)
+            .clipShape(RoundedRectangle(cornerRadius: 16.w_lite))
             .background(
                 ZStack {
                     Color.white

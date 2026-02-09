@@ -74,7 +74,7 @@ class ScreenSize_lite: ObservableObject {
 }
 
 /// 屏幕尺寸常量（兼容旧代码）
-enum APPSCREEN_baseswift {
+enum APPSCREEN_lite {
     
     /// 屏幕宽度
     static var WIDTH_baseswift: CGFloat {

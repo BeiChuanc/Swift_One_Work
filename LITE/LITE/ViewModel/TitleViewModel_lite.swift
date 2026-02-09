@@ -112,6 +112,12 @@ class TitleViewModel_lite: ObservableObject {
         // 从帖子列表中移除
         posts_lite.removeAll { $0.titleId_lite == post_lite.titleId_lite }
         
+        // 从LocalData的帖子列表中移除（关键！）
+        LocalData_lite.shared_lite.titleList_lite.removeAll { $0.titleId_lite == post_lite.titleId_lite }
+        
+        // 手动触发更新通知
+        LocalData_lite.shared_lite.objectWillChange.send()
+        
         let message_lite = isDelete_lite
             ? "Deleted successfully."
             : "This post will no longer appear."
