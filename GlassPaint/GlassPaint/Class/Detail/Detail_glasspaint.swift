@@ -861,7 +861,9 @@ class Detail_Glasspaint: UIViewController {
                 }
             )
         }
-        present(giftVC_glasspaint, animated: true)
+        
+        // 使用导航管理器模态弹出礼物界面
+        Navigation_Glasspaint.present_Glasspaint(viewController: giftVC_glasspaint, animated: true, from: self)
     }
     
     /// 处理发送评论

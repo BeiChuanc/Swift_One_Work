@@ -575,6 +575,9 @@ class MessageCell_Glasspaint: UITableViewCell {
         bubbleView_Glasspaint.addSubview(messageLabel_Glasspaint)
         messageLabel_Glasspaint.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         messageLabel_Glasspaint.numberOfLines = 0
+        messageLabel_Glasspaint.lineBreakMode = .byWordWrapping
+        messageLabel_Glasspaint.setContentHuggingPriority(.required, for: .vertical)
+        messageLabel_Glasspaint.setContentCompressionResistancePriority(.required, for: .vertical)
         
         contentView.addSubview(timeLabel_Glasspaint)
         timeLabel_Glasspaint.font = UIFont.systemFont(ofSize: 11, weight: .medium)
@@ -622,11 +625,12 @@ class MessageCell_Glasspaint: UITableViewCell {
                 make.top.equalToSuperview().offset(6)
                 make.right.equalToSuperview().offset(-16)
                 make.bottom.equalToSuperview().offset(-6)
-                make.width.lessThanOrEqualTo(260)
+                make.width.lessThanOrEqualTo(UIScreen.main.bounds.width * 0.75)
             }
             
             messageLabel_Glasspaint.snp.makeConstraints { make in
                 make.edges.equalToSuperview().inset(UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16))
+                make.width.lessThanOrEqualTo(UIScreen.main.bounds.width * 0.75 - 32)
             }
             
             statusIconView_Glasspaint.snp.makeConstraints { make in
@@ -651,11 +655,12 @@ class MessageCell_Glasspaint: UITableViewCell {
                 make.top.equalToSuperview().offset(6)
                 make.left.equalToSuperview().offset(16)
                 make.bottom.equalToSuperview().offset(-6)
-                make.width.lessThanOrEqualTo(260)
+                make.width.lessThanOrEqualTo(UIScreen.main.bounds.width * 0.75)
             }
             
             messageLabel_Glasspaint.snp.makeConstraints { make in
                 make.edges.equalToSuperview().inset(UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16))
+                make.width.lessThanOrEqualTo(UIScreen.main.bounds.width * 0.75 - 32)
             }
             
             timeLabel_Glasspaint.snp.makeConstraints { make in

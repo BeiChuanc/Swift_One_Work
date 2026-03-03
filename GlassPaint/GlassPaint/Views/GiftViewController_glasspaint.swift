@@ -136,7 +136,6 @@ class GiftViewController_Glasspaint: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         loadGiftData_Glasspaint()
         setupUI_Glasspaint()
         setupConstraints_Glasspaint()
@@ -145,9 +144,6 @@ class GiftViewController_Glasspaint: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        // 添加弹出动画
-        animateIn_Glasspaint()
     }
     
     // MARK: - UI设置
@@ -521,15 +517,6 @@ class GiftViewController_Glasspaint: UIViewController {
     }
     
     // MARK: - 动画
-    
-    /// 弹入动画
-    private func animateIn_Glasspaint() {
-        containerView_Glasspaint.transform = CGAffineTransform(translationX: 0, y: containerView_Glasspaint.frame.height)
-        
-        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
-            self.containerView_Glasspaint.transform = .identity
-        }
-    }
     
     /// 弹出动画
     private func animateOut_Glasspaint(completion: @escaping () -> Void) {

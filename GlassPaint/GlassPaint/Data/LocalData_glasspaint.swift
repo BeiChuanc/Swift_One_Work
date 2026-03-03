@@ -65,35 +65,35 @@ private struct DataSource_Glasspaint {
     
     /// 用户信息列表 (用户名, 简介, 头像URL, 相册URL)
     static let usersInfo_Glasspaint: [(String, String, String, String)] = [
-        ("EmberSeeker", "Love exploring around bonfires", "head1", "head1"),
-        ("ForestWhisper", "Nature enthusiast and storyteller", "head2", "head2"),
-        ("FlameJumper", "Adventure seeker and fire dancer", "head3", "head3"),
-        ("AshesToArt", "Turning moments into memories", "head4", "head4"),
-        ("NightGlow", "Capturing the magic of firelight", "head5", "head5"),
+        ("GlassArtisan", "Creating magic on glass surfaces", "head1", "head1"),
+        ("ColorfulCanvas", "Transforming glass into vibrant art", "head2", "head2"),
+        ("PaintingDreamer", "Glass painting enthusiast and collector", "head3", "head3"),
+        ("ArtisticGlow", "Turning glass into beautiful masterpieces", "head4", "head4"),
+        ("CrystalBrush", "Passionate about glass art and creativity", "head5", "head5"),
     ]
     
     /// 帖子信息列表 (标题, 内容, 媒体URL)
     static let postsInfo_Glasspaint: [(String, String, String)] = [
-        ("Perfect Bonfire Night", "The bonfire crackles softly, wrapping every face in warm light; we pass around s'mores, and stories flow as freely as the laughter. This is the kind of night that stays with you long after the embers fade.", "title1"),
-        ("Magical Firelight", "There's something magical about firelight—it turns ordinary moments into treasures. Sitting here, feeling the warmth on my hands and listening to friends chat, I realize happiness is just this simple.", "title2"),
-        ("Dancing Flames", "The flames dance and flicker, casting gentle shadows on the grass. No loud noises, no rush—just the glow of fire, the breeze, and people who make the night feel like home.", "title3"),
-        ("Warm Hearts", "As the night grows darker, the bonfire burns brighter. It's not just the fire that warms us, but the company, the shared smiles, and the quiet connection between every heart here.", "title4"),
-        ("Glowing Memories", "Look at this glowing fire and the grinning faces around it—this is what good nights are made of! Tag the person you'd drag to sit with you by such a bonfire.", "title5"),
-        ("Absolute Perfection", "Last night's bonfire was absolute perfection: great friends, crispy marshmallows, and a fire that burned steady till midnight. Who's got a bonfire story to top this?", "title6"),
-        ("Fire Family", "I used to think bonfires were just about fire, but now I know it's about the people. This crew turned a simple fire into an unforgettable night.", "title7"),
-        ("Fun Activities", "We spent hours around this bonfire: singing off-key, playing silly games, and even debating whether the fire is orange or red. What's your go-to bonfire activity?", "title8"),
+        ("My First Glass Painting", "Just completed my first glass cup design! The colors blend beautifully when the light shines through. It took patience and steady hands, but seeing the final result makes every careful stroke worth it.", "title1"),
+        ("Sunset on Glass", "Captured the essence of a golden sunset on this glass vase. The gradient technique really brings out the warmth and glow. Glass painting lets you preserve beautiful moments in such a unique way.", "title2"),
+        ("Delicate Floral Design", "Spent the afternoon painting delicate flowers on glass plates. Each petal required precision, but the transparency of glass adds such depth to the artwork. Loving how it turned out!", "title3"),
+        ("Magical Window Art", "Transformed a plain glass window into a colorful masterpiece. The way sunlight filters through the painted glass creates dancing colors across the room. This is why I love glass art!", "title4"),
+        ("Geometric Perfection", "Clean lines and bold colors on this glass ornament. Minimalist designs on glass have such elegant appeal. Who else loves modern geometric patterns in glass art?", "title5"),
+        ("Vintage Elegance", "Created a retro-inspired design on this glass vase. The rich colors and classic patterns bring old-world charm to life. Glass painting is perfect for bringing vintage styles back!", "title6"),
+        ("Rainbow Dreams", "Layered multiple colors on this glass cup to create a rainbow effect. The translucent quality of glass makes each color pop beautifully. This might be my favorite piece yet!", "title7"),
+        ("Nature Inspired", "Painted leaves and branches flowing across this glass plate. Nature motifs work so well on glass—the organic shapes blend perfectly with the smooth surface. What's your favorite theme for glass painting?", "title8"),
     ]
     
     /// 评论列表 (评论1, 评论2)
     static let comments_Glasspaint: [(String, String)] = [
-        ("This looks absolutely magical! Nothing beats a bonfire with good friends", "S'mores and stories by the fire—that's the perfect night right there!"),
-        ("You captured the essence of what makes bonfires special! Love this vibe", "The simplicity of firelight and friendship is truly magical. Beautiful moment!"),
-        ("Those dancing flames and peaceful vibes—I can feel the warmth through the screen!", "This is exactly what I needed to see today. Time to plan a bonfire night!"),
-        ("The connection between hearts around a fire is something special. Beautifully said!", "Love how you describe the warmth coming from both the fire and the company"),
-        ("Already know who I'd tag for this! Nothing beats bonfire nights with the right people", "First thing I'd share? Probably my terrible ghost stories! Who's with me?"),
-        ("Our bonfire story: We accidentally used green wood and it wouldn't stop smoking!", "Crispy marshmallows till midnight sounds perfect! Need to organize one soon"),
-        ("Your fire family sounds amazing! Count me in for round two", "It really is all about the people. The fire is just an excuse to gather!"),
-        ("Off-key singing is mandatory at our bonfires too! Also love the fire color debate", "My go-to activity: trying to roast the perfect marshmallow"),
+        ("This looks absolutely stunning! Your color blending technique is amazing", "The transparency really adds depth to your design. Beautiful work!"),
+        ("You captured the essence of what makes glass painting special! Love this piece", "The attention to detail is incredible. Such steady hands you have!"),
+        ("Those color gradients are mesmerizing—I can see the light dancing through!", "This is exactly the inspiration I needed today. Time to start my own project!"),
+        ("The way light interacts with your painted glass is magical. Beautifully done!", "Love how you describe the creative process. The result is definitely worth it"),
+        ("Already know what my next project will be! This style is absolutely gorgeous", "Your geometric patterns are so clean and precise. What brush size did you use?"),
+        ("That vintage aesthetic is perfection! The color palette is so well chosen", "Retro designs on glass never go out of style. Need to try this technique!"),
+        ("Your rainbow gradient is breathtaking! Count me in as a new follower", "It really is all about how the colors layer. The translucent effect is stunning!"),
+        ("Nature themes work so beautifully on glass! Also love your organic flowing lines", "My favorite glass painting style too—botanical designs on clear surfaces"),
     ]
     
     // MARK: - 彩绘相关数据
