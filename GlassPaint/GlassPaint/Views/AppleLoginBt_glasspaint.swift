@@ -24,6 +24,16 @@ class AppleLoginBt_Glasspaint: UIView {
         return view_Glasspaint
     }()
     
+    /// 内容StackView
+    private let contentStackView_Glasspaint: UIStackView = {
+        let stackView_Glasspaint = UIStackView()
+        stackView_Glasspaint.axis = .horizontal
+        stackView_Glasspaint.alignment = .center
+        stackView_Glasspaint.distribution = .fill
+        stackView_Glasspaint.spacing = 10
+        return stackView_Glasspaint
+    }()
+    
     /// 苹果图标
     private let appleIconView_Glasspaint: UIImageView = {
         let imageView_Glasspaint = UIImageView()
@@ -62,8 +72,11 @@ class AppleLoginBt_Glasspaint: UIView {
     /// 设置UI
     private func setupUI_Glasspaint() {
         addSubview(containerView_Glasspaint)
-        containerView_Glasspaint.addSubview(appleIconView_Glasspaint)
-        containerView_Glasspaint.addSubview(titleLabel_Glasspaint)
+        containerView_Glasspaint.addSubview(contentStackView_Glasspaint)
+        
+        // 将图标和文字添加到StackView
+        contentStackView_Glasspaint.addArrangedSubview(appleIconView_Glasspaint)
+        contentStackView_Glasspaint.addArrangedSubview(titleLabel_Glasspaint)
         
         // 容器视图约束
         containerView_Glasspaint.snp.makeConstraints { make in
@@ -71,17 +84,14 @@ class AppleLoginBt_Glasspaint: UIView {
             make.height.equalTo(50)
         }
         
-        // 苹果图标约束
-        appleIconView_Glasspaint.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.centerX.equalToSuperview().offset(-30)
-            make.width.height.equalTo(22)
+        // StackView约束（整体居中）
+        contentStackView_Glasspaint.snp.makeConstraints { make in
+            make.center.equalToSuperview()
         }
         
-        // 文字标签约束
-        titleLabel_Glasspaint.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.left.equalTo(appleIconView_Glasspaint.snp.right).offset(10)
+        // 苹果图标约束（固定大小）
+        appleIconView_Glasspaint.snp.makeConstraints { make in
+            make.width.height.equalTo(22)
         }
     }
     

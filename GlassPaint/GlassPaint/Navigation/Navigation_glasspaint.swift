@@ -269,6 +269,24 @@ class Navigation_Glasspaint: NSObject {
         )
     }
     
+    /// 跳转到时间胶囊创建页
+    /// 参数：
+    /// - style_glasspaint: 导航方式
+    /// - animated_glasspaint: 是否动画
+    /// - completion_glasspaint: 完成回调
+    static func toAddTimeCapsule_Glasspaint(
+        style_glasspaint: NavigationStyle_Glasspaint = .present_glasspaint,
+        animated_glasspaint: Bool = true,
+        completion_glasspaint: (() -> Void)? = nil
+    ) {
+        navigate_Glasspaint(
+            to: AddTimeCapsuleViewController_Glasspaint(),
+            style_glasspaint: style_glasspaint,
+            animated_glasspaint: animated_glasspaint,
+            completion_glasspaint: completion_glasspaint
+        )
+    }
+    
     // MARK: - 消息相关
     
     /// 跳转到消息列表

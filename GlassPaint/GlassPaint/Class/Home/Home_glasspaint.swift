@@ -5,8 +5,8 @@ import SnapKit
 // MARK: 首页
 
 /// 首页页面
-/// 功能：展示今日灵感推荐和我的彩绘时光轴
-/// 特性：推荐卡片横向滚动、成长曲线图、时光轴列表
+/// 功能：展示今日灵感推荐和我的彩绘日记
+/// 特性：推荐卡片横向滚动、日历视图、日记列表、图片选择与记录
 class Home_Glasspaint: UIViewController {
     
     // MARK: - UI属性
@@ -52,7 +52,7 @@ class Home_Glasspaint: UIViewController {
         let layout_glasspaint = UICollectionViewFlowLayout()
         layout_glasspaint.scrollDirection = .horizontal
         layout_glasspaint.minimumLineSpacing = 16
-        layout_glasspaint.itemSize = CGSize(width: 280, height: 420)
+        layout_glasspaint.itemSize = CGSize(width: 280, height: 350)
         let collectionView_glasspaint = UICollectionView(frame: .zero, collectionViewLayout: layout_glasspaint)
         collectionView_glasspaint.showsHorizontalScrollIndicator = false
         collectionView_glasspaint.backgroundColor = .clear
@@ -63,10 +63,34 @@ class Home_Glasspaint: UIViewController {
     // 我的彩绘时光轴区域
     private let timelineContainer_Glasspaint = UIView()
     private let timelineTitleLabel_Glasspaint = UILabel()
-    private let growthChartView_Glasspaint = GrowthChartView_Glasspaint()
+    
+    /// 日历视图
+    private let calendarView_Glasspaint = PaintingCalendarView_Glasspaint()
+    
+    /// 日记列表表格视图
+    private let diaryTableView_Glasspaint: UITableView = {
+        let tableView_glasspaint = UITableView()
+        tableView_glasspaint.backgroundColor = .clear
+        tableView_glasspaint.separatorStyle = .none
+        tableView_glasspaint.showsVerticalScrollIndicator = false
+        tableView_glasspaint.isScrollEnabled = false
+        return tableView_glasspaint
+    }()
+    
+    /// 日记条目列表
+    private var diaryEntries_Glasspaint: [PaintingDiaryEntry_Glasspaint] = []
+    
+    /// 当前选中的日期
+    private var selectedDate_Glasspaint: Date?
     
     /// 空状态视图
     private let emptyStateView_Glasspaint = EmptyStateView_Glasspaint(stateType_glasspaint: .noRecommendations_glasspaint)
+    
+    /// 日记空状态视图
+    private let diaryEmptyStateView_Glasspaint = EmptyStateView_Glasspaint(stateType_glasspaint: .custom_glasspaint("No Diary Yet", "Tap the + button to record your painting journey"))
+    
+    /// 底部占位视图
+    private let bottomSpacer_Glasspaint = UIView()
     
     // MARK: - 数据属性
     
@@ -86,7 +110,7 @@ class Home_Glasspaint: UIViewController {
         setupUI_Glasspaint()
         setupNotifications_Glasspaint()
         loadRecommendations_Glasspaint()
-        loadGrowthData_Glasspaint()
+        loadDiaryData_Glasspaint()
     }
     
     // MARK: - UI设置
@@ -125,9 +149,6 @@ class Home_Glasspaint: UIViewController {
         // 空状态视图
         contentView_Glasspaint.addSubview(emptyStateView_Glasspaint)
         emptyStateView_Glasspaint.isHidden = true
-        emptyStateView_Glasspaint.onActionTap_Glasspaint = { [weak self] in
-            self?.handleRefresh_Glasspaint()
-        }
         
         // 布局
         setupConstraints_Glasspaint()
@@ -286,61 +307,104 @@ class Home_Glasspaint: UIViewController {
         recommendCollectionView_Glasspaint.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
             make.top.equalTo(titleContainer_glasspaint.snp.bottom).offset(20)
-            make.height.equalTo(440)
+            make.height.equalTo(350)
             make.bottom.equalToSuperview()
         }
     }
     
     /// 设置时光轴区域
     private func setupTimelineSection_Glasspaint() {
-        // 标题容器（添加图标和描述）
+        // 标题容器（添加图标）
         let titleContainer_glasspaint = UIView()
         timelineContainer_Glasspaint.addSubview(titleContainer_glasspaint)
         
         // 装饰图标
-        let iconView_glasspaint = UIImageView(image: UIImage(systemName: "chart.line.uptrend.xyaxis"))
+        let iconView_glasspaint = UIImageView(image: UIImage(systemName: "calendar.badge.plus"))
         titleContainer_glasspaint.addSubview(iconView_glasspaint)
         iconView_glasspaint.tintColor = ColorConfig_Glasspaint.levelAdvancedColor_Glasspaint
         iconView_glasspaint.contentMode = .scaleAspectFit
         
         // 标题
         titleContainer_glasspaint.addSubview(timelineTitleLabel_Glasspaint)
-        timelineTitleLabel_Glasspaint.text = "My Growth Journey"
+        timelineTitleLabel_Glasspaint.text = "My Painting Diary"
         timelineTitleLabel_Glasspaint.font = UIFont.systemFont(ofSize: 22, weight: .bold)
         timelineTitleLabel_Glasspaint.textColor = ColorConfig_Glasspaint.textPrimary_Glasspaint
         
-        // 成长曲线图（添加容器增强视觉效果）
-        let chartContainer_glasspaint = UIView()
-        timelineContainer_Glasspaint.addSubview(chartContainer_glasspaint)
-        chartContainer_glasspaint.backgroundColor = .clear
+        // 提示标签
+        let hintLabel_glasspaint = UILabel()
+        titleContainer_glasspaint.addSubview(hintLabel_glasspaint)
+        hintLabel_glasspaint.text = "Tap date to filter"
+        hintLabel_glasspaint.font = UIFont.systemFont(ofSize: 12, weight: .regular)
+        hintLabel_glasspaint.textColor = ColorConfig_Glasspaint.textSecondary_Glasspaint
+        hintLabel_glasspaint.alpha = 0.7
         
-        chartContainer_glasspaint.addSubview(growthChartView_Glasspaint)
+        // 日历视图
+        timelineContainer_Glasspaint.addSubview(calendarView_Glasspaint)
+        calendarView_Glasspaint.onDateSelected_Glasspaint = { [weak self] date_glasspaint in
+            self?.handleDateSelected_Glasspaint(date_glasspaint: date_glasspaint)
+        }
+        calendarView_Glasspaint.onAddTapped_Glasspaint = { [weak self] in
+            self?.handleAddDiaryEntry_Glasspaint()
+        }
+        
+        // 日记列表
+        timelineContainer_Glasspaint.addSubview(diaryTableView_Glasspaint)
+        diaryTableView_Glasspaint.delegate = self
+        diaryTableView_Glasspaint.dataSource = self
+        diaryTableView_Glasspaint.register(DiaryEntryCell_Glasspaint.self, forCellReuseIdentifier: "DiaryEntryCell")
+        
+        // 空状态视图
+        timelineContainer_Glasspaint.addSubview(diaryEmptyStateView_Glasspaint)
+        diaryEmptyStateView_Glasspaint.isHidden = true
+        
+        // 底部占位视图（确保可滚动）
+        timelineContainer_Glasspaint.addSubview(bottomSpacer_Glasspaint)
+        bottomSpacer_Glasspaint.backgroundColor = .clear
         
         // 布局
         titleContainer_glasspaint.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(20)
+            make.left.right.equalToSuperview().inset(20)
             make.top.equalToSuperview()
         }
         
         iconView_glasspaint.snp.makeConstraints { make in
-            make.left.centerY.equalToSuperview()
+            make.left.top.equalToSuperview()
             make.width.height.equalTo(24)
         }
         
         timelineTitleLabel_Glasspaint.snp.makeConstraints { make in
             make.left.equalTo(iconView_glasspaint.snp.right).offset(8)
-            make.centerY.top.bottom.right.equalToSuperview()
+            make.top.equalToSuperview()
         }
         
-        chartContainer_glasspaint.snp.makeConstraints { make in
-            make.left.right.equalToSuperview().inset(20)
-            make.top.equalTo(titleContainer_glasspaint.snp.bottom).offset(20)
+        hintLabel_glasspaint.snp.makeConstraints { make in
+            make.right.equalToSuperview()
+            make.centerY.equalTo(timelineTitleLabel_Glasspaint)
             make.bottom.equalToSuperview()
         }
         
-        growthChartView_Glasspaint.snp.makeConstraints { make in
-            make.top.left.right.equalToSuperview()
-            make.bottom.equalToSuperview().offset(-120)
+        calendarView_Glasspaint.snp.makeConstraints { make in
+            make.top.equalTo(titleContainer_glasspaint.snp.bottom).offset(20)
+            make.left.right.equalToSuperview().inset(20)
+        }
+        
+        diaryTableView_Glasspaint.snp.makeConstraints { make in
+            make.top.equalTo(calendarView_Glasspaint.snp.bottom).offset(20)
+            make.left.right.equalToSuperview()
+            make.height.equalTo(0)
+        }
+        
+        diaryEmptyStateView_Glasspaint.snp.makeConstraints { make in
+            make.top.equalTo(calendarView_Glasspaint.snp.bottom).offset(40)
+            make.left.right.equalToSuperview().inset(20)
+            make.height.equalTo(300)
+        }
+        
+        bottomSpacer_Glasspaint.snp.makeConstraints { make in
+            make.top.equalTo(diaryTableView_Glasspaint.snp.bottom)
+            make.left.right.equalToSuperview()
+            make.height.equalTo(120)
+            make.bottom.equalToSuperview()
         }
     }
     
@@ -368,8 +432,7 @@ class Home_Glasspaint: UIViewController {
         
         timelineContainer_Glasspaint.snp.makeConstraints { make in
             make.top.equalTo(recommendContainer_Glasspaint.snp.bottom).offset(16)
-            make.left.right.equalToSuperview()
-            make.bottom.equalToSuperview().offset(-24)
+            make.left.right.bottom.equalToSuperview()
         }
         
         emptyStateView_Glasspaint.snp.makeConstraints { make in
@@ -397,9 +460,97 @@ class Home_Glasspaint: UIViewController {
     }
     
     /// 加载成长数据
-    private func loadGrowthData_Glasspaint() {
-        let growthData_glasspaint = RecommendViewModel_Glasspaint.shared_Glasspaint.getGrowthCurve_Glasspaint()
-        growthChartView_Glasspaint.configure_Glasspaint(with_glasspaint: growthData_glasspaint)
+    /// 加载日记数据
+    private func loadDiaryData_Glasspaint() {
+        // 获取当前登录用户的日记数据
+        let currentUser_glasspaint = UserViewModel_Glasspaint.shared_Glasspaint.getCurrentUser_Glasspaint()
+        let allDiaries_glasspaint = currentUser_glasspaint.paintingDiary_Glasspaint
+        
+        // 配置日历（标记有记录的日期）
+        calendarView_Glasspaint.configure_Glasspaint(with_glasspaint: allDiaries_glasspaint)
+        
+        // 更新列表数据
+        updateDiaryList_Glasspaint(diaries_glasspaint: allDiaries_glasspaint)
+    }
+    
+    /// 更新日记列表
+    /// 参数：
+    /// - diaries_glasspaint: 日记列表
+    private func updateDiaryList_Glasspaint(diaries_glasspaint: [PaintingDiaryEntry_Glasspaint]) {
+        // 如果有选中日期，筛选该日期的日记
+        if let selectedDate_glasspaint = selectedDate_Glasspaint {
+            let calendar_glasspaint = Calendar.current
+            diaryEntries_Glasspaint = diaries_glasspaint.filter { entry_glasspaint in
+                calendar_glasspaint.isDate(entry_glasspaint.date_Glasspaint, inSameDayAs: selectedDate_glasspaint)
+            }.sorted { $0.createdAt_Glasspaint > $1.createdAt_Glasspaint }
+            
+            // 有选中日期时，空状态显示特定日期无数据
+            if diaryEntries_Glasspaint.isEmpty {
+                let formatter_glasspaint = DateFormatter()
+                formatter_glasspaint.dateFormat = "MMM dd"
+                let dateString_glasspaint = formatter_glasspaint.string(from: selectedDate_glasspaint)
+                diaryEmptyStateView_Glasspaint.configure_Glasspaint(with_glasspaint: .custom_glasspaint(
+                    "No Diary on \(dateString_glasspaint)",
+                    "Tap the + button to add your first entry"
+                ))
+            }
+        } else {
+            // 显示所有日记，按时间倒序
+            diaryEntries_Glasspaint = diaries_glasspaint.sorted { $0.createdAt_Glasspaint > $1.createdAt_Glasspaint }
+            
+            // 无选中日期时，空状态显示通用提示
+            if diaryEntries_Glasspaint.isEmpty {
+                diaryEmptyStateView_Glasspaint.configure_Glasspaint(with_glasspaint: .custom_glasspaint(
+                    "No Diary Yet",
+                    "Tap the + button to record your painting journey"
+                ))
+            }
+        }
+        
+        // 更新空状态视图
+        diaryEmptyStateView_Glasspaint.isHidden = !diaryEntries_Glasspaint.isEmpty
+        diaryTableView_Glasspaint.isHidden = diaryEntries_Glasspaint.isEmpty
+        
+        // 更新底部占位视图约束
+        bottomSpacer_Glasspaint.snp.remakeConstraints { make in
+            if diaryEntries_Glasspaint.isEmpty {
+                make.top.equalTo(diaryEmptyStateView_Glasspaint.snp.bottom).offset(20)
+            } else {
+                make.top.equalTo(diaryTableView_Glasspaint.snp.bottom)
+            }
+            make.left.right.equalToSuperview()
+            make.height.equalTo(120)
+            make.bottom.equalToSuperview()
+        }
+        
+        // 刷新表格
+        diaryTableView_Glasspaint.reloadData()
+        
+        // 更新表格高度
+        updateDiaryTableHeight_Glasspaint()
+    }
+    
+    /// 更新日记表格高度
+    private func updateDiaryTableHeight_Glasspaint() {
+        // 计算固定高度：每个日记条目 236 像素（卡片220 + 上下间距16）
+        let totalHeight_glasspaint = CGFloat(diaryEntries_Glasspaint.count) * 236
+        
+        // 更新表格高度约束
+        diaryTableView_Glasspaint.snp.updateConstraints { make in
+            make.height.equalTo(totalHeight_glasspaint)
+        }
+        
+        // 平滑更新布局，并确保滚动视图更新内容大小
+        UIView.animate(withDuration: 0.3) {
+            self.diaryTableView_Glasspaint.layoutIfNeeded()
+            self.timelineContainer_Glasspaint.layoutIfNeeded()
+            self.contentView_Glasspaint.layoutIfNeeded()
+            self.scrollView_Glasspaint.layoutIfNeeded()
+        } completion: { _ in
+            // 确保滚动视图内容大小已更新
+            self.scrollView_Glasspaint.setNeedsLayout()
+            self.scrollView_Glasspaint.layoutIfNeeded()
+        }
     }
     
     // MARK: - 通知
@@ -423,12 +574,12 @@ class Home_Glasspaint: UIViewController {
     
     @objc private func handleTitleStateChange_Glasspaint() {
         loadRecommendations_Glasspaint()
-        loadGrowthData_Glasspaint()
+        loadDiaryData_Glasspaint()
     }
     
     @objc private func handleUserStateChange_Glasspaint() {
         loadRecommendations_Glasspaint()
-        loadGrowthData_Glasspaint()
+        loadDiaryData_Glasspaint()
     }
     
     // MARK: - 交互
@@ -456,6 +607,152 @@ class Home_Glasspaint: UIViewController {
                             animations: nil,
                             completion: nil)
         }
+    }
+    
+    /// 处理日期选择
+    /// 参数：
+    /// - date_glasspaint: 选中的日期
+    private func handleDateSelected_Glasspaint(date_glasspaint: Date) {
+        // 检查日历是否有选中日期
+        if let calendarSelectedDate_glasspaint = calendarView_Glasspaint.getSelectedDate_Glasspaint() {
+            // 有选中日期
+            selectedDate_Glasspaint = calendarSelectedDate_glasspaint
+        } else {
+            // 取消选中，显示所有日记
+            selectedDate_Glasspaint = nil
+        }
+        
+        // 触觉反馈
+        let generator_glasspaint = UIImpactFeedbackGenerator(style: .light)
+        generator_glasspaint.impactOccurred()
+        
+        // 重新加载日记列表
+        let currentUser_glasspaint = UserViewModel_Glasspaint.shared_Glasspaint.getCurrentUser_Glasspaint()
+        updateDiaryList_Glasspaint(diaries_glasspaint: currentUser_glasspaint.paintingDiary_Glasspaint)
+        
+        // 如果有数据，平滑滚动到日记列表区域
+        if !diaryEntries_Glasspaint.isEmpty && selectedDate_Glasspaint != nil {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                let tableViewOffset_glasspaint = self.calendarView_Glasspaint.frame.maxY + 20
+                let scrollPoint_glasspaint = CGPoint(x: 0, y: tableViewOffset_glasspaint)
+                self.scrollView_Glasspaint.setContentOffset(scrollPoint_glasspaint, animated: true)
+            }
+        }
+    }
+    
+    /// 处理添加日记
+    private func handleAddDiaryEntry_Glasspaint() {
+        // 弹出添加日记页面
+        let addDiaryVC_glasspaint = AddDiaryViewController_Glasspaint(selectedDate_glasspaint: selectedDate_Glasspaint ?? Date())
+        addDiaryVC_glasspaint.onCompleted_Glasspaint = { [weak self] in
+            // 刷新数据
+            self?.loadDiaryData_Glasspaint()
+        }
+        
+        // 以模态方式展示
+        addDiaryVC_glasspaint.modalPresentationStyle = .pageSheet
+        if #available(iOS 15.0, *) {
+            if let sheet_glasspaint = addDiaryVC_glasspaint.sheetPresentationController {
+                sheet_glasspaint.detents = [.large()]
+                sheet_glasspaint.prefersGrabberVisible = true
+            }
+        }
+        
+        present(addDiaryVC_glasspaint, animated: true)
+    }
+    
+    /// 处理删除选中日期的日记
+    private func handleDeleteSelectedDateDiaries_Glasspaint() {
+        // 检查是否有选中日期
+        guard let selectedDate_glasspaint = selectedDate_Glasspaint else {
+            return
+        }
+        
+        // 获取选中日期的日记条目
+        let currentUser_glasspaint = UserViewModel_Glasspaint.shared_Glasspaint.getCurrentUser_Glasspaint()
+        let calendar_glasspaint = Calendar.current
+        let diariesToDelete_glasspaint = currentUser_glasspaint.paintingDiary_Glasspaint.filter { entry_glasspaint in
+            calendar_glasspaint.isDate(entry_glasspaint.date_Glasspaint, inSameDayAs: selectedDate_glasspaint)
+        }
+        
+        // 检查是否有日记可删除
+        if diariesToDelete_glasspaint.isEmpty {
+            return
+        }
+        
+        // 显示确认对话框
+        let dateFormatter_glasspaint = DateFormatter()
+        dateFormatter_glasspaint.dateFormat = "MMM dd, yyyy"
+        let dateString_glasspaint = dateFormatter_glasspaint.string(from: selectedDate_glasspaint)
+        
+        let alert_glasspaint = UIAlertController(
+            title: "Delete Diaries",
+            message: "Delete all diary entries on \(dateString_glasspaint)? (\(diariesToDelete_glasspaint.count) entries)",
+            preferredStyle: .alert
+        )
+        
+        let deleteAction_glasspaint = UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
+            
+            // 删除所有选中日期的日记
+            for entry_glasspaint in diariesToDelete_glasspaint {
+                UserViewModel_Glasspaint.shared_Glasspaint.deleteDiaryEntry_Glasspaint(entryId_glasspaint: entry_glasspaint.entryId_Glasspaint)
+                
+                // 删除本地图片文件
+                for imagePath_glasspaint in entry_glasspaint.imagePaths_Glasspaint {
+                    try? FileManager.default.removeItem(atPath: imagePath_glasspaint)
+                }
+            }
+            
+            // 清除选中状态
+            self.selectedDate_Glasspaint = nil
+            
+            // 刷新数据
+            self.loadDiaryData_Glasspaint()
+            
+            Utils_Glasspaint.showSuccess_Glasspaint(message_Glasspaint: "Diaries Deleted")
+        }
+        
+        let cancelAction_glasspaint = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert_glasspaint.addAction(cancelAction_glasspaint)
+        alert_glasspaint.addAction(deleteAction_glasspaint)
+        
+        present(alert_glasspaint, animated: true)
+    }
+    
+    /// 处理删除日记
+    /// 参数：
+    /// - entry_glasspaint: 要删除的日记条目
+    private func handleDeleteDiary_Glasspaint(entry_glasspaint: PaintingDiaryEntry_Glasspaint) {
+        // 显示确认对话框
+        let alert_glasspaint = UIAlertController(
+            title: "Delete Diary",
+            message: "Are you sure you want to delete this diary entry?",
+            preferredStyle: .alert
+        )
+        
+        let deleteAction_glasspaint = UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+            // 删除数据
+            UserViewModel_Glasspaint.shared_Glasspaint.deleteDiaryEntry_Glasspaint(entryId_glasspaint: entry_glasspaint.entryId_Glasspaint)
+            
+            // 删除本地图片文件
+            for imagePath_glasspaint in entry_glasspaint.imagePaths_Glasspaint {
+                try? FileManager.default.removeItem(atPath: imagePath_glasspaint)
+            }
+            
+            // 刷新数据
+            self?.loadDiaryData_Glasspaint()
+            
+            Utils_Glasspaint.showSuccess_Glasspaint(message_Glasspaint: "Diary Deleted")
+        }
+        
+        let cancelAction_glasspaint = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert_glasspaint.addAction(cancelAction_glasspaint)
+        alert_glasspaint.addAction(deleteAction_glasspaint)
+        
+        present(alert_glasspaint, animated: true)
     }
     
     @objc private func handleRefresh_Glasspaint() {
@@ -768,3 +1065,82 @@ class RecommendationCardCell_Glasspaint: UICollectionViewCell {
         cardView_Glasspaint.configure_Glasspaint(with_glasspaint: post_glasspaint)
     }
 }
+
+// MARK: - 日记列表 TableView 代理
+
+extension Home_Glasspaint: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return diaryEntries_Glasspaint.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell_glasspaint = tableView.dequeueReusableCell(withIdentifier: "DiaryEntryCell", for: indexPath) as! DiaryEntryCell_Glasspaint
+        let entry_glasspaint = diaryEntries_Glasspaint[indexPath.row]
+        cell_glasspaint.configure_Glasspaint(with_glasspaint: entry_glasspaint)
+        
+        // 设置删除回调
+        cell_glasspaint.onDelete_Glasspaint = { [weak self] in
+            self?.handleDeleteDiary_Glasspaint(entry_glasspaint: entry_glasspaint)
+        }
+        
+        // 添加入场动画
+        cell_glasspaint.alpha = 0
+        cell_glasspaint.transform = CGAffineTransform(translationX: 0, y: 20)
+        
+        UIView.animate(
+            withDuration: AnimationConfig_Glasspaint.durationNormal_Glasspaint,
+            delay: Double(indexPath.row) * AnimationConfig_Glasspaint.delayShort_Glasspaint
+        ) {
+            cell_glasspaint.alpha = 1.0
+            cell_glasspaint.transform = .identity
+        }
+        
+        return cell_glasspaint
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 236
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let entry_glasspaint = diaryEntries_Glasspaint[indexPath.row]
+            
+            // 显示确认对话框
+            let alert_glasspaint = UIAlertController(
+                title: "Delete Diary",
+                message: "Are you sure you want to delete this diary entry?",
+                preferredStyle: .alert
+            )
+            
+            let deleteAction_glasspaint = UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+                // 删除数据
+                UserViewModel_Glasspaint.shared_Glasspaint.deleteDiaryEntry_Glasspaint(entryId_glasspaint: entry_glasspaint.entryId_Glasspaint)
+                
+                // 删除本地图片文件
+                for imagePath_glasspaint in entry_glasspaint.imagePaths_Glasspaint {
+                    try? FileManager.default.removeItem(atPath: imagePath_glasspaint)
+                }
+                
+                // 刷新数据
+                self?.loadDiaryData_Glasspaint()
+                
+                Utils_Glasspaint.showSuccess_Glasspaint(message_Glasspaint: "Diary Deleted")
+            }
+            
+            let cancelAction_glasspaint = UIAlertAction(title: "Cancel", style: .cancel)
+            
+            alert_glasspaint.addAction(cancelAction_glasspaint)
+            alert_glasspaint.addAction(deleteAction_glasspaint)
+            
+            present(alert_glasspaint, animated: true)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {
+        return "Delete"
+    }
+}
+
+

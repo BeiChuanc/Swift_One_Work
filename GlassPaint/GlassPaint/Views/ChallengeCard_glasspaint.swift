@@ -40,12 +40,6 @@ class ChallengeCard_Glasspaint: UIView {
     /// 挑战数据
     private var challenge_Glasspaint: ChallengeModel_Glasspaint?
     
-    /// 点击回调
-    var onTap_Glasspaint: ((ChallengeModel_Glasspaint) -> Void)?
-    
-    /// 参与按钮回调
-    var onJoinTap_Glasspaint: ((ChallengeModel_Glasspaint) -> Void)?
-    
     // MARK: - 初始化
     
     override init(frame: CGRect) {
@@ -111,7 +105,7 @@ class ChallengeCard_Glasspaint: UIView {
         joinButton_Glasspaint.backgroundColor = ColorConfig_Glasspaint.primaryGradientStart_Glasspaint
         joinButton_Glasspaint.setTitleColor(.white, for: .normal)
         joinButton_Glasspaint.layer.cornerRadius = 10
-        joinButton_Glasspaint.addTarget(self, action: #selector(handleJoinTap_Glasspaint), for: .touchUpInside)
+        joinButton_Glasspaint.isUserInteractionEnabled = false
         
         // 布局
         cardContainer_Glasspaint.snp.makeConstraints { make in
@@ -149,11 +143,6 @@ class ChallengeCard_Glasspaint: UIView {
             make.height.equalTo(44)
             make.bottom.equalToSuperview().offset(-16)
         }
-        
-        // 添加点击手势
-        let tapGesture_glasspaint = UITapGestureRecognizer(target: self, action: #selector(handleTap_Glasspaint))
-        cardContainer_Glasspaint.addGestureRecognizer(tapGesture_glasspaint)
-        cardContainer_Glasspaint.isUserInteractionEnabled = true
     }
     
     // MARK: - 配置
@@ -216,34 +205,6 @@ class ChallengeCard_Glasspaint: UIView {
             startColor_glasspaint.cgColor,
             endColor_glasspaint.cgColor
         ]
-    }
-    
-    // MARK: - 交互
-    
-    /// 处理卡片点击
-    @objc private func handleTap_Glasspaint() {
-        guard let challenge_glasspaint = challenge_Glasspaint else { return }
-        
-        // 卡片缩放动画
-        animatePressDown_Glasspaint {
-            self.animatePressUp_Glasspaint()
-        }
-        
-        // 触发回调
-        onTap_Glasspaint?(challenge_glasspaint)
-    }
-    
-    /// 处理参与按钮点击
-    @objc private func handleJoinTap_Glasspaint() {
-        guard let challenge_glasspaint = challenge_Glasspaint else { return }
-        
-        // 按钮动画
-        joinButton_Glasspaint.animatePressDown_Glasspaint {
-            self.joinButton_Glasspaint.animatePressUp_Glasspaint()
-        }
-        
-        // 触发回调
-        onJoinTap_Glasspaint?(challenge_glasspaint)
     }
     
     // MARK: - 布局

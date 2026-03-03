@@ -12,6 +12,7 @@ target 'GlassPaint' do
   pod 'Kingfisher', '7.6.2'
   pod 'FSPagerView'
   pod 'lottie-ios'
+  pod 'RMStore'
 
 end
 post_install do |installer|

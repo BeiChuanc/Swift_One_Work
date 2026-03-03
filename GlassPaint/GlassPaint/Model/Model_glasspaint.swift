@@ -167,8 +167,6 @@ class TitleModel_Glasspaint: NSObject, Codable {
     /// 玻璃载体类型
     var carrier_Glasspaint: CarrierType_Glasspaint
     
-    /// 复刻率（0-100）
-    var replicationRate_Glasspaint: Int
     
     /// 创作日期
     var createdDate_Glasspaint: Date
@@ -185,7 +183,6 @@ class TitleModel_Glasspaint: NSObject, Codable {
          paintingStyle_Glasspaint: PaintingStyle_Glasspaint = .modern_glasspaint,
          scene_Glasspaint: String = "Home Decoration",
          carrier_Glasspaint: CarrierType_Glasspaint = .glassCup_glasspaint,
-         replicationRate_Glasspaint: Int = 50,
          createdDate_Glasspaint: Date = Date()) {
         self.titleId_Glasspaint = titleId_Glasspaint
         self.titleUserId_Glasspaint = titleUserId_Glasspaint
@@ -199,10 +196,141 @@ class TitleModel_Glasspaint: NSObject, Codable {
         self.paintingStyle_Glasspaint = paintingStyle_Glasspaint
         self.scene_Glasspaint = scene_Glasspaint
         self.carrier_Glasspaint = carrier_Glasspaint
-        self.replicationRate_Glasspaint = replicationRate_Glasspaint
         self.createdDate_Glasspaint = createdDate_Glasspaint
     }
     
+}
+
+// MARK: - 彩绘日记条目
+
+/// 彩绘日记条目模型
+/// 功能：记录用户每日彩绘创作数据
+class PaintingDiaryEntry_Glasspaint: NSObject, Codable {
+    
+    /// 条目ID
+    var entryId_Glasspaint: String
+    
+    /// 日期
+    var date_Glasspaint: Date
+    
+    /// 图片路径列表（支持多张图片）
+    var imagePaths_Glasspaint: [String]
+    
+    /// 文案内容
+    var content_Glasspaint: String
+    
+    /// 创建时间
+    var createdAt_Glasspaint: Date
+    
+    /// 初始化
+    init(entryId_Glasspaint: String = UUID().uuidString,
+         date_Glasspaint: Date,
+         imagePaths_Glasspaint: [String],
+         content_Glasspaint: String,
+         createdAt_Glasspaint: Date = Date()) {
+        self.entryId_Glasspaint = entryId_Glasspaint
+        self.date_Glasspaint = date_Glasspaint
+        self.imagePaths_Glasspaint = imagePaths_Glasspaint
+        self.content_Glasspaint = content_Glasspaint
+        self.createdAt_Glasspaint = createdAt_Glasspaint
+    }
+}
+
+// MARK: - 时间胶囊
+
+/// 时间胶囊状态枚举
+/// 功能：定义时间胶囊的锁定状态
+enum TimeCapsuleStatus_Glasspaint: String, Codable {
+    /// 已锁定
+    case locked_glasspaint = "Locked"
+    /// 已解锁
+    case unlocked_glasspaint = "Unlocked"
+}
+
+/// 时间胶囊模型
+/// 功能：封存玻璃彩绘作品，设置未来解锁时间
+/// 特性：作品照片、创作心得、背后故事、解锁时间、自动解锁
+class TimeCapsulePost_Glasspaint: NSObject, Codable {
+    
+    /// 时间胶囊ID
+    var capsuleId_Glasspaint: String
+    
+    /// 作品标题
+    var title_Glasspaint: String
+    
+    /// 作品图片路径列表
+    var imagePaths_Glasspaint: [String]
+    
+    /// 创作心得
+    var creativeThoughts_Glasspaint: String
+    
+    /// 背后故事
+    var story_Glasspaint: String
+    
+    /// 创建时间
+    var createdDate_Glasspaint: Date
+    
+    /// 解锁时间
+    var unlockDate_Glasspaint: Date
+    
+    /// 锁定状态
+    var status_Glasspaint: TimeCapsuleStatus_Glasspaint
+    
+    /// 用户ID
+    var userId_Glasspaint: Int
+    
+    /// 用户名称
+    var userName_Glasspaint: String
+    
+    /// 彩绘相关属性
+    var paintingLevel_Glasspaint: PaintingLevel_Glasspaint?
+    var paintingStyle_Glasspaint: PaintingStyle_Glasspaint?
+    var scene_Glasspaint: String?
+    var carrier_Glasspaint: CarrierType_Glasspaint?
+    
+    /// 初始化
+    init(capsuleId_Glasspaint: String = UUID().uuidString,
+         title_Glasspaint: String,
+         imagePaths_Glasspaint: [String],
+         creativeThoughts_Glasspaint: String,
+         story_Glasspaint: String,
+         createdDate_Glasspaint: Date = Date(),
+         unlockDate_Glasspaint: Date,
+         status_Glasspaint: TimeCapsuleStatus_Glasspaint = .locked_glasspaint,
+         userId_Glasspaint: Int,
+         userName_Glasspaint: String,
+         paintingLevel_Glasspaint: PaintingLevel_Glasspaint? = nil,
+         paintingStyle_Glasspaint: PaintingStyle_Glasspaint? = nil,
+         scene_Glasspaint: String? = nil,
+         carrier_Glasspaint: CarrierType_Glasspaint? = nil) {
+        self.capsuleId_Glasspaint = capsuleId_Glasspaint
+        self.title_Glasspaint = title_Glasspaint
+        self.imagePaths_Glasspaint = imagePaths_Glasspaint
+        self.creativeThoughts_Glasspaint = creativeThoughts_Glasspaint
+        self.story_Glasspaint = story_Glasspaint
+        self.createdDate_Glasspaint = createdDate_Glasspaint
+        self.unlockDate_Glasspaint = unlockDate_Glasspaint
+        self.status_Glasspaint = status_Glasspaint
+        self.userId_Glasspaint = userId_Glasspaint
+        self.userName_Glasspaint = userName_Glasspaint
+        self.paintingLevel_Glasspaint = paintingLevel_Glasspaint
+        self.paintingStyle_Glasspaint = paintingStyle_Glasspaint
+        self.scene_Glasspaint = scene_Glasspaint
+        self.carrier_Glasspaint = carrier_Glasspaint
+        super.init()
+    }
+    
+    /// 检查是否已到解锁时间
+    func shouldUnlock_Glasspaint() -> Bool {
+        return Date() >= unlockDate_Glasspaint && status_Glasspaint == .locked_glasspaint
+    }
+    
+    /// 自动解锁
+    func autoUnlock_Glasspaint() {
+        if shouldUnlock_Glasspaint() {
+            status_Glasspaint = .unlocked_glasspaint
+        }
+    }
 }
 
 /// 登录用户数据模型
@@ -216,6 +344,9 @@ class LoginUserModel_Glasspaint: NSObject, Codable {
     
     /// 用户名称
     var userName_Glasspaint: String?
+    
+    /// 用户简介
+    var userIntroduce_Glasspaint: String?
     
     /// 用户头像
     var userHead_Glasspaint: String?
@@ -243,10 +374,17 @@ class LoginUserModel_Glasspaint: NSObject, Codable {
     /// 成长数据
     var growthData_Glasspaint: GrowthData_Glasspaint
     
+    /// 彩绘日记列表
+    var paintingDiary_Glasspaint: [PaintingDiaryEntry_Glasspaint]
+    
+    /// 时间胶囊列表
+    var timeCapsules_Glasspaint: [TimeCapsulePost_Glasspaint]
+    
     /// 初始化
     init(userId_Glasspaint: Int? = nil,
          userPwd_Glasspaint: String? = nil,
          userName_Glasspaint: String? = nil,
+         userIntroduce_Glasspaint: String? = nil,
          userHead_Glasspaint: String? = nil,
          userPosts_Glasspaint: [TitleModel_Glasspaint],
          userLike_Glasspaint: [TitleModel_Glasspaint],
@@ -254,10 +392,13 @@ class LoginUserModel_Glasspaint: NSObject, Codable {
          paintingLevel_Glasspaint: PaintingLevel_Glasspaint = .beginner_glasspaint,
          preferredStyles_Glasspaint: [PaintingStyle_Glasspaint] = [.modern_glasspaint],
          preferredScenes_Glasspaint: [String] = ["Home Decoration"],
-         growthData_Glasspaint: GrowthData_Glasspaint = GrowthData_Glasspaint()) {
+         growthData_Glasspaint: GrowthData_Glasspaint = GrowthData_Glasspaint(),
+         paintingDiary_Glasspaint: [PaintingDiaryEntry_Glasspaint] = [],
+         timeCapsules_Glasspaint: [TimeCapsulePost_Glasspaint] = []) {
         self.userId_Glasspaint = userId_Glasspaint
         self.userPwd_Glasspaint = userPwd_Glasspaint
         self.userName_Glasspaint = userName_Glasspaint
+        self.userIntroduce_Glasspaint = userIntroduce_Glasspaint
         self.userHead_Glasspaint = userHead_Glasspaint
         self.userPosts_Glasspaint = userPosts_Glasspaint
         self.userLike_Glasspaint = userLike_Glasspaint
@@ -266,6 +407,8 @@ class LoginUserModel_Glasspaint: NSObject, Codable {
         self.preferredStyles_Glasspaint = preferredStyles_Glasspaint
         self.preferredScenes_Glasspaint = preferredScenes_Glasspaint
         self.growthData_Glasspaint = growthData_Glasspaint
+        self.paintingDiary_Glasspaint = paintingDiary_Glasspaint
+        self.timeCapsules_Glasspaint = timeCapsules_Glasspaint
     }
 }
 
@@ -402,6 +545,44 @@ class ChallengeModel_Glasspaint: NSObject, Codable {
         self.posts_Glasspaint = posts_Glasspaint
         self.startDate_Glasspaint = startDate_Glasspaint
         self.endDate_Glasspaint = endDate_Glasspaint
+        super.init()
+    }
+}
+
+
+/// 商店模型
+class StoreModel_Glasspaint: NSObject {
+    
+    /// ID编号
+    var id_Glasspaint: Int?
+    
+    /// 商品ID
+    var goodsId_Glasspaint: String?
+    
+    /// 商品名字
+    var goodsName_Glasspaint: String?
+    
+    /// 商品价格
+    var goodsPrice_Glasspaint: String?
+    
+    /// 是否顶部商品
+    var goodIsTop_Glasspaint: Bool?
+    
+    /// 是否特殊商品
+    var goodIsSpecial_Glasspaint: Bool?
+    
+    init(id_Glasspaint: Int? = nil,
+         goodsId_Glasspaint: String? = nil,
+         goodsName_Glasspaint: String? = nil,
+         goodsPrice_Glasspaint: String? = nil,
+         goodIsTop_Glasspaint: Bool? = false,
+         goodIsLimit_Glasspaint: Bool? = false) {
+        self.id_Glasspaint = id_Glasspaint
+        self.goodsId_Glasspaint = goodsId_Glasspaint
+        self.goodsName_Glasspaint = goodsName_Glasspaint
+        self.goodsPrice_Glasspaint = goodsPrice_Glasspaint
+        self.goodIsTop_Glasspaint = goodIsTop_Glasspaint
+        self.goodIsSpecial_Glasspaint = goodIsLimit_Glasspaint
         super.init()
     }
 }

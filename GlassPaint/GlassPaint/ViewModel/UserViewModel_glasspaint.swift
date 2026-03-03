@@ -34,6 +34,7 @@ class UserViewModel_Glasspaint {
         userId_Glasspaint: 0,
         userPwd_Glasspaint: nil,
         userName_Glasspaint: "Guest",
+        userIntroduce_Glasspaint: "Welcome to GlassPaint",
         userHead_Glasspaint: "default_avatar",
         userPosts_Glasspaint: [],
         userLike_Glasspaint: [],
@@ -67,17 +68,19 @@ class UserViewModel_Glasspaint {
     /// 通过用户ID登录
     func loginById_Glasspaint(userId_glasspaint: Int) {
         // 显示加载动画
-        Utils_Glasspaint.showLoading_Glasspaint(message_Glasspaint: "Logging in...")
+        Utils_Glasspaint.showLoading_Glasspaint(message_Glasspaint: "Loading...")
         
         // 创建登录用户
         loggedUser_Glasspaint = LoginUserModel_Glasspaint(
             userId_Glasspaint: userId_glasspaint,
             userPwd_Glasspaint: nil,
-            userName_Glasspaint: "Wanderer", // 可以从本地数据或服务器获取
+            userName_Glasspaint: "Glasser", // 可以从本地数据或服务器获取
+            userIntroduce_Glasspaint: "Nothing yet.",
             userHead_Glasspaint: "user_avatar",
             userPosts_Glasspaint: [],
             userLike_Glasspaint: [],
-            userFollow_Glasspaint: []
+            userFollow_Glasspaint: [],
+            paintingDiary_Glasspaint: []
         )
         
         // 延迟跳转到首页
@@ -104,9 +107,6 @@ class UserViewModel_Glasspaint {
             return
         }
         
-        // 显示加载动画
-        Utils_Glasspaint.showLoading_Glasspaint(message_Glasspaint: "Logging out...")
-        
         // 重置为游客状态
         loggedUser_Glasspaint = defaultUser_Glasspaint
         
@@ -119,14 +119,11 @@ class UserViewModel_Glasspaint {
         notifyStateChange_Glasspaint()
         
         // 跳转到首页
-         Navigation_Glasspaint.toHome_Glasspaint()
+         Navigation_Glasspaint.switchToTabbar_Glasspaint()
         
         // 延迟显示提示
         Task {
             try? await Task.sleep(nanoseconds: 1_200_000_000)
-            
-            // 关闭加载动画
-            Utils_Glasspaint.dismissLoading_Glasspaint()
             
             if logoutType_glasspaint == .delete_glasspaint {
                 Utils_Glasspaint.showInfo_Glasspaint(
@@ -195,8 +192,8 @@ class UserViewModel_Glasspaint {
     
     /// 判断是否关注指定用户
     func isFollowing_Glasspaint(user_glasspaint: PrewUserModel_Glasspaint) -> Bool {
-        guard let user_glasspaint = loggedUser_Glasspaint else { return false }
-        return user_glasspaint.userFollow_Glasspaint.contains(where: { $0.userId_Glasspaint == user_glasspaint.userId_Glasspaint })
+        guard let loggedUser_glasspaint = loggedUser_Glasspaint else { return false }
+        return loggedUser_glasspaint.userFollow_Glasspaint.contains(where: { $0.userId_Glasspaint == user_glasspaint.userId_Glasspaint })
     }
     
     /// 关注/取消关注用户
@@ -248,6 +245,34 @@ class UserViewModel_Glasspaint {
             Utils_Glasspaint.dismissLoading_Glasspaint()
             Utils_Glasspaint.showSuccess_Glasspaint(
                 message_Glasspaint: "This user will no longer appear.",
+                delay_Glasspaint: 2.0
+            )
+        }
+        
+        notifyStateChange_Glasspaint()
+    }
+    
+    /// 举报时空胶囊
+    func reportTimeCapsule_Glasspaint(capsule_glasspaint: TimeCapsulePost_Glasspaint) {
+        // 显示加载动画
+        Utils_Glasspaint.showLoading_Glasspaint(message_Glasspaint: "Processing...")
+        
+        // 从当前登录用户的时空胶囊列表中移除
+        loggedUser_Glasspaint?.timeCapsules_Glasspaint.removeAll { 
+            $0.capsuleId_Glasspaint == capsule_glasspaint.capsuleId_Glasspaint
+        }
+        
+        // 从公共时空胶囊列表中移除
+        LocalData_Glasspaint.shared_Glasspaint.timeCapsuleList_Glasspaint.removeAll { 
+            $0.capsuleId_Glasspaint == capsule_glasspaint.capsuleId_Glasspaint
+        }
+        
+        // 延迟显示成功提示
+        Task {
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            Utils_Glasspaint.dismissLoading_Glasspaint()
+            Utils_Glasspaint.showSuccess_Glasspaint(
+                message_Glasspaint: "This capsule will no longer appear.",
                 delay_Glasspaint: 2.0
             )
         }
@@ -331,26 +356,182 @@ class UserViewModel_Glasspaint {
         return user_glasspaint.userLike_Glasspaint.contains { $0.titleId_Glasspaint == post_glasspaint.titleId_Glasspaint }
     }
     
-    // MARK: - 私有方法 - 工具方法
+    // MARK: - 彩绘日记管理
+    
+    /// 添加彩绘日记
+    /// 参数：
+    /// - entry_glasspaint: 日记条目
+    func addDiaryEntry_Glasspaint(entry_glasspaint: PaintingDiaryEntry_Glasspaint) {
+        guard let user_glasspaint = loggedUser_Glasspaint else { return }
+        user_glasspaint.paintingDiary_Glasspaint.append(entry_glasspaint)
+        loggedUser_Glasspaint = user_glasspaint
+        notifyStateChange_Glasspaint()
+    }
+    
+    /// 删除彩绘日记
+    /// 参数：
+    /// - entryId_glasspaint: 日记条目ID
+    func deleteDiaryEntry_Glasspaint(entryId_glasspaint: String) {
+        guard let user_glasspaint = loggedUser_Glasspaint else { return }
+        user_glasspaint.paintingDiary_Glasspaint.removeAll { $0.entryId_Glasspaint == entryId_glasspaint }
+        loggedUser_Glasspaint = user_glasspaint
+        notifyStateChange_Glasspaint()
+    }
+    
+    /// 获取当前用户的所有日记
+    func getAllDiaryEntries_Glasspaint() -> [PaintingDiaryEntry_Glasspaint] {
+        return loggedUser_Glasspaint?.paintingDiary_Glasspaint ?? []
+    }
+    
+    // MARK: - 时间胶囊管理
+    
+    /// 创建时间胶囊
+    /// 参数：
+    /// - capsule_glasspaint: 时间胶囊对象
+    func createTimeCapsule_Glasspaint(capsule_glasspaint: TimeCapsulePost_Glasspaint) {
+        guard let user_glasspaint = loggedUser_Glasspaint else { return }
+        user_glasspaint.timeCapsules_Glasspaint.append(capsule_glasspaint)
+        loggedUser_Glasspaint = user_glasspaint
+        
+        Utils_Glasspaint.showSuccess_Glasspaint(
+            message_Glasspaint: "Time Capsule created successfully!",
+            image_Glasspaint: UIImage(systemName: "clock.badge.checkmark")
+        )
+        notifyStateChange_Glasspaint()
+    }
+    
+    /// 删除时间胶囊
+    /// 参数：
+    /// - capsuleId_glasspaint: 时间胶囊ID
+    func deleteTimeCapsule_Glasspaint(capsuleId_glasspaint: String) {
+        guard let user_glasspaint = loggedUser_Glasspaint else { return }
+        user_glasspaint.timeCapsules_Glasspaint.removeAll { $0.capsuleId_Glasspaint == capsuleId_glasspaint }
+        loggedUser_Glasspaint = user_glasspaint
+        
+        Utils_Glasspaint.showSuccess_Glasspaint(message_Glasspaint: "Time Capsule deleted")
+        notifyStateChange_Glasspaint()
+    }
+    
+    /// 获取当前用户的所有时间胶囊
+    /// 返回：时间胶囊列表
+    func getAllTimeCapsules_Glasspaint() -> [TimeCapsulePost_Glasspaint] {
+        return loggedUser_Glasspaint?.timeCapsules_Glasspaint ?? []
+    }
+    
+    /// 获取所有时间胶囊（包括所有用户的，不管解锁状态）
+    /// 返回：所有时间胶囊列表
+    func getAllPublicTimeCapsules_Glasspaint() -> [TimeCapsulePost_Glasspaint] {
+        // 获取当前用户的时间胶囊
+        let userCapsules_glasspaint = getAllTimeCapsules_Glasspaint()
+        
+        // 获取所有公共时间胶囊（从LocalData）
+        let publicCapsules_glasspaint = LocalData_Glasspaint.shared_Glasspaint.timeCapsuleList_Glasspaint
+        
+        // 合并并去重
+        var allCapsules_glasspaint = userCapsules_glasspaint
+        for capsule_glasspaint in publicCapsules_glasspaint {
+            if !allCapsules_glasspaint.contains(where: { $0.capsuleId_Glasspaint == capsule_glasspaint.capsuleId_Glasspaint }) {
+                allCapsules_glasspaint.append(capsule_glasspaint)
+            }
+        }
+        
+        return allCapsules_glasspaint
+    }
+    
+    /// 获取已解锁的时间胶囊（包括所有用户的）
+    /// 返回：已解锁的时间胶囊列表
+    func getUnlockedTimeCapsules_Glasspaint() -> [TimeCapsulePost_Glasspaint] {
+        // 获取当前用户的时间胶囊
+        let userCapsules_glasspaint = getAllTimeCapsules_Glasspaint().filter { $0.status_Glasspaint == .unlocked_glasspaint }
+        
+        // 获取所有已解锁的公共时间胶囊（从LocalData）
+        let publicCapsules_glasspaint = LocalData_Glasspaint.shared_Glasspaint.timeCapsuleList_Glasspaint.filter { 
+            $0.status_Glasspaint == .unlocked_glasspaint 
+        }
+        
+        // 合并并去重
+        var allCapsules_glasspaint = userCapsules_glasspaint
+        for capsule_glasspaint in publicCapsules_glasspaint {
+            if !allCapsules_glasspaint.contains(where: { $0.capsuleId_Glasspaint == capsule_glasspaint.capsuleId_Glasspaint }) {
+                allCapsules_glasspaint.append(capsule_glasspaint)
+            }
+        }
+        
+        return allCapsules_glasspaint
+    }
+    
+    /// 获取锁定中的时间胶囊
+    /// 返回：锁定中的时间胶囊列表
+    func getLockedTimeCapsules_Glasspaint() -> [TimeCapsulePost_Glasspaint] {
+        return getAllTimeCapsules_Glasspaint().filter { $0.status_Glasspaint == .locked_glasspaint }
+    }
+    
+    /// 检查并自动解锁到期的时间胶囊
+    /// 返回：新解锁的时间胶囊数量
+    @discardableResult
+    func checkAndUnlockTimeCapsules_Glasspaint() -> Int {
+        guard let user_glasspaint = loggedUser_Glasspaint else { return 0 }
+        
+        var unlockedCount_glasspaint = 0
+        
+        for i in 0..<user_glasspaint.timeCapsules_Glasspaint.count {
+            let capsule_glasspaint = user_glasspaint.timeCapsules_Glasspaint[i]
+            if capsule_glasspaint.shouldUnlock_Glasspaint() {
+                user_glasspaint.timeCapsules_Glasspaint[i].autoUnlock_Glasspaint()
+                unlockedCount_glasspaint += 1
+            }
+        }
+        
+        if unlockedCount_glasspaint > 0 {
+            loggedUser_Glasspaint = user_glasspaint
+            notifyStateChange_Glasspaint()
+            
+            Utils_Glasspaint.showSuccess_Glasspaint(
+                message_Glasspaint: "\(unlockedCount_glasspaint) Time Capsule(s) unlocked!",
+                image_Glasspaint: UIImage(systemName: "lock.open.fill"),
+                delay_Glasspaint: 2.0
+            )
+        }
+        
+        return unlockedCount_glasspaint
+    }
+    
+    /// 手动解锁时间胶囊（用于测试或特殊情况）
+    /// 参数：
+    /// - capsuleId_glasspaint: 时间胶囊ID
+    func unlockTimeCapsule_Glasspaint(capsuleId_glasspaint: String) {
+        guard let user_glasspaint = loggedUser_Glasspaint else { return }
+        
+        if let index_glasspaint = user_glasspaint.timeCapsules_Glasspaint.firstIndex(where: { $0.capsuleId_Glasspaint == capsuleId_glasspaint }) {
+            user_glasspaint.timeCapsules_Glasspaint[index_glasspaint].status_Glasspaint = .unlocked_glasspaint
+            loggedUser_Glasspaint = user_glasspaint
+            
+            Utils_Glasspaint.showSuccess_Glasspaint(
+                message_Glasspaint: "Time Capsule unlocked!",
+                image_Glasspaint: UIImage(systemName: "lock.open.fill")
+            )
+            notifyStateChange_Glasspaint()
+        }
+    }
+    
+    // MARK: - 公共方法 - 工具方法
     
     /// 发送状态更新通知
-    private func notifyStateChange_Glasspaint() {
+    /// 功能：通知所有监听者用户状态已更新
+    func notifyStateChange_Glasspaint() {
         NotificationCenter.default.post(
             name: UserViewModel_Glasspaint.userStateDidChangeNotification_Glasspaint,
             object: nil
         )
     }
     
+    // MARK: - 私有方法 - 工具方法
+    
     /// 显示登录提示
     private func showLoginPrompt_Glasspaint() {
-        Utils_Glasspaint.showWarning_Glasspaint(
-            message_Glasspaint: "Please login first.",
-            delay_Glasspaint: 1.5
-        )
-        
         // 延迟跳转到登录页面
         Task {
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒
+            try? await Task.sleep(nanoseconds: 500_000_000) // 1.5秒
             Navigation_Glasspaint.toLogin_Glasspaint(style_glasspaint: .present_glasspaint)
         }
     }

@@ -7,7 +7,7 @@ import Kingfisher
 
 /// 推荐卡片视图
 /// 功能：展示今日推荐的彩绘作品
-/// 特性：渐变背景、毛玻璃效果、难度标签、复刻率进度条
+/// 特性：渐变背景、毛玻璃效果、难度标签
 class RecommendationCard_Glasspaint: UIView {
     
     // MARK: - UI属性
@@ -43,7 +43,7 @@ class RecommendationCard_Glasspaint: UIView {
     private let authorContainer_Glasspaint = UIView()
     
     /// 作者头像
-    private let authorAvatar_Glasspaint = UIImageView()
+    private let authorAvatar_Glasspaint = UserAvatarView_Glasspaint()
     
     /// 作者名称
     private let authorLabel_Glasspaint = UILabel()
@@ -56,18 +56,6 @@ class RecommendationCard_Glasspaint: UIView {
     
     /// 载体标签
     private let carrierTag_Glasspaint = PaintingTagView_Glasspaint()
-    
-    /// 复刻率容器
-    private let replicationContainer_Glasspaint = UIView()
-    
-    /// 复刻率图标
-    private let replicationIcon_Glasspaint = UIImageView()
-    
-    /// 复刻率标签
-    private let replicationLabel_Glasspaint = UILabel()
-    
-    /// 复刻率进度条
-    private let progressBar_Glasspaint = ReplicationProgressBar_Glasspaint()
     
     /// 统计容器
     private let statsContainer_Glasspaint = UIView()
@@ -185,10 +173,6 @@ class RecommendationCard_Glasspaint: UIView {
         
         // 作者头像
         authorContainer_Glasspaint.addSubview(authorAvatar_Glasspaint)
-        authorAvatar_Glasspaint.contentMode = .scaleAspectFill
-        authorAvatar_Glasspaint.layer.cornerRadius = 10
-        authorAvatar_Glasspaint.layer.masksToBounds = true
-        authorAvatar_Glasspaint.backgroundColor = ColorConfig_Glasspaint.divider_Glasspaint
         
         // 作者名称
         authorContainer_Glasspaint.addSubview(authorLabel_Glasspaint)
@@ -203,28 +187,6 @@ class RecommendationCard_Glasspaint: UIView {
         tagsStack_glasspaint.spacing = 6
         tagsStack_glasspaint.distribution = .equalSpacing
         tagsStack_glasspaint.alignment = .center
-        
-        // 复刻率容器
-        infoContainer_Glasspaint.addSubview(replicationContainer_Glasspaint)
-        replicationContainer_Glasspaint.backgroundColor = ColorConfig_Glasspaint.highReplicationColor_Glasspaint.withAlphaComponent(0.1)
-        replicationContainer_Glasspaint.layer.cornerRadius = 8
-        
-        // 复刻率图标
-        replicationContainer_Glasspaint.addSubview(replicationIcon_Glasspaint)
-        replicationIcon_Glasspaint.image = UIImage(systemName: "star.fill")
-        replicationIcon_Glasspaint.tintColor = ColorConfig_Glasspaint.highReplicationColor_Glasspaint
-        replicationIcon_Glasspaint.contentMode = .scaleAspectFit
-        
-        // 复刻率标签
-        replicationContainer_Glasspaint.addSubview(replicationLabel_Glasspaint)
-        replicationLabel_Glasspaint.font = UIFont.systemFont(ofSize: 10, weight: .bold)
-        replicationLabel_Glasspaint.textColor = ColorConfig_Glasspaint.highReplicationColor_Glasspaint
-        replicationLabel_Glasspaint.text = "Easy to Replicate"
-        replicationLabel_Glasspaint.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-        
-        // 复刻率进度条
-        infoContainer_Glasspaint.addSubview(progressBar_Glasspaint)
-        progressBar_Glasspaint.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         
         // 统计容器
         infoContainer_Glasspaint.addSubview(statsContainer_Glasspaint)
@@ -274,9 +236,9 @@ class RecommendationCard_Glasspaint: UIView {
         }
         
         infoContainer_Glasspaint.snp.makeConstraints { make in
-            make.top.equalTo(imageContainer_Glasspaint.snp.bottom).offset(12)
+            make.top.equalTo(imageContainer_Glasspaint.snp.bottom).offset(8)
             make.left.right.equalToSuperview().inset(14)
-            make.bottom.lessThanOrEqualToSuperview().offset(-14).priority(.high)
+            make.bottom.equalToSuperview().offset(-10)
         }
         
         titleLabel_Glasspaint.snp.makeConstraints { make in
@@ -285,7 +247,7 @@ class RecommendationCard_Glasspaint: UIView {
         }
         
         authorContainer_Glasspaint.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel_Glasspaint.snp.bottom).offset(6)
+            make.top.equalTo(titleLabel_Glasspaint.snp.bottom).offset(4)
             make.left.equalToSuperview()
         }
         
@@ -301,36 +263,15 @@ class RecommendationCard_Glasspaint: UIView {
         }
         
         tagsStack_glasspaint.snp.makeConstraints { make in
-            make.top.equalTo(authorContainer_Glasspaint.snp.bottom).offset(10)
+            make.top.equalTo(authorContainer_Glasspaint.snp.bottom).offset(6)
             make.left.equalToSuperview()
             make.right.lessThanOrEqualToSuperview()
         }
         
-        replicationContainer_Glasspaint.snp.makeConstraints { make in
-            make.top.equalTo(tagsStack_glasspaint.snp.bottom).offset(10)
-            make.left.equalToSuperview()
-        }
-        
-        replicationIcon_Glasspaint.snp.makeConstraints { make in
-            make.left.top.bottom.equalToSuperview().inset(4)
-            make.width.height.equalTo(12)
-        }
-        
-        replicationLabel_Glasspaint.snp.makeConstraints { make in
-            make.left.equalTo(replicationIcon_Glasspaint.snp.right).offset(4)
-            make.centerY.equalToSuperview()
-            make.right.equalToSuperview().offset(-8)
-        }
-        
-        progressBar_Glasspaint.snp.makeConstraints { make in
-            make.top.equalTo(replicationContainer_Glasspaint.snp.bottom).offset(8)
-            make.left.right.equalToSuperview()
-        }
-        
         statsContainer_Glasspaint.snp.makeConstraints { make in
-            make.top.equalTo(progressBar_Glasspaint.snp.bottom).offset(10)
+            make.top.equalTo(tagsStack_glasspaint.snp.bottom).offset(6)
             make.left.equalToSuperview()
-            make.bottom.lessThanOrEqualToSuperview()
+            make.bottom.equalToSuperview()
         }
         
         likeIcon_Glasspaint.snp.makeConstraints { make in
@@ -374,9 +315,8 @@ class RecommendationCard_Glasspaint: UIView {
         // 设置作者信息
         authorLabel_Glasspaint.text = "by \(post_glasspaint.titleUserName_Glasspaint)"
         
-        // 设置作者头像（使用默认图标）
-        authorAvatar_Glasspaint.image = UIImage(systemName: "person.circle.fill")
-        authorAvatar_Glasspaint.tintColor = ColorConfig_Glasspaint.primaryGradientStart_Glasspaint
+        // 配置作者头像
+        authorAvatar_Glasspaint.configure_Glasspaint(userId_Glasspaint: post_glasspaint.titleUserId_Glasspaint)
         
         // 设置图片
         if let mediaUrl_glasspaint = post_glasspaint.titleMeidas_Glasspaint.first {
@@ -399,8 +339,10 @@ class RecommendationCard_Glasspaint: UIView {
         likeLabel_Glasspaint.text = "\(post_glasspaint.likes_Glasspaint)"
         commentLabel_Glasspaint.text = "\(post_glasspaint.reviews_Glasspaint.count)"
         
-        // 设置复刻率
-        progressBar_Glasspaint.setProgress_Glasspaint(progress_glasspaint: post_glasspaint.replicationRate_Glasspaint, animated_glasspaint: true)
+        // 设置收藏按钮状态
+        let isLiked_glasspaint = TitleViewModel_Glasspaint.shared_Glasspaint.isLikedPost_Glasspaint(post_glasspaint: post_glasspaint)
+        let iconName_glasspaint = isLiked_glasspaint ? "heart.fill" : "heart"
+        favoriteButton_Glasspaint.setImage(UIImage(systemName: iconName_glasspaint), for: .normal)
         
         // 根据风格设置渐变色
         updateGradientColors_Glasspaint(style_glasspaint: post_glasspaint.paintingStyle_Glasspaint)

@@ -87,6 +87,20 @@ class ReportDeleteHelper_Glasspaint {
         })
     }
     
+    /// 举报时空胶囊
+    static func report_Glasspaint(
+        capsule_Glasspaint: TimeCapsulePost_Glasspaint,
+        from viewController_Glasspaint: UIViewController,
+        completion_Glasspaint: (() -> Void)? = nil
+    ) {
+        UIAlertController.report_Glasspaint(with: false, completeBlock: {
+            performReportTimeCapsule_Glasspaint(
+                capsule_Glasspaint: capsule_Glasspaint,
+                viewController_Glasspaint: viewController_Glasspaint,
+                completion_Glasspaint: completion_Glasspaint)
+        })
+    }
+    
     // MARK: - 删除方法
     
     /// 删除帖子
@@ -224,6 +238,21 @@ class ReportDeleteHelper_Glasspaint {
                     comment_glasspaint: comment_Glasspaint
                 )
                 print("已举报评论: \(comment_Glasspaint.commentContent_Glasspaint)")
+            },
+            completion_Glasspaint: completion_Glasspaint
+        )
+    }
+    
+    /// 执行举报时空胶囊操作
+    private static func performReportTimeCapsule_Glasspaint(
+        capsule_Glasspaint: TimeCapsulePost_Glasspaint,
+        viewController_Glasspaint: UIViewController,
+        completion_Glasspaint: (() -> Void)? = nil
+    ) {
+        performAsyncAction_Glasspaint(
+            action_Glasspaint: {
+                UserViewModel_Glasspaint.shared_Glasspaint.reportTimeCapsule_Glasspaint(capsule_glasspaint: capsule_Glasspaint)
+                print("已举报时空胶囊: \(capsule_Glasspaint.title_Glasspaint)")
             },
             completion_Glasspaint: completion_Glasspaint
         )

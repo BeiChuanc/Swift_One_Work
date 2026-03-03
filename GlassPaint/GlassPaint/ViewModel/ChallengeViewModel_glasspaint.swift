@@ -5,7 +5,7 @@ import UIKit
 
 /// 挑战状态管理类
 /// 功能：管理官方挑战和榜单数据
-/// 职责：挑战列表、参与挑战、排行榜、高复刻率作品筛选
+/// 职责：挑战列表、参与挑战、排行榜
 @MainActor
 class ChallengeViewModel_Glasspaint {
     
@@ -85,7 +85,7 @@ class ChallengeViewModel_Glasspaint {
         
         // 延迟跳转到发布页
         Task {
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒
+            try? await Task.sleep(nanoseconds: 500_000_000) // 1.5秒
             
             // 跳转到发布页，可以在发布页预填载体类型
             Navigation_Glasspaint.toRelease_Glasspaint()
@@ -118,28 +118,11 @@ class ChallengeViewModel_Glasspaint {
         }
     }
     
-    /// 获取高复刻率作品
-    /// 功能：筛选复刻率 >= 70 的作品
-    /// 返回值：高复刻率作品列表
-    func getEasyReplicationPosts_Glasspaint() -> [TitleModel_Glasspaint] {
-        let allPosts_glasspaint = TitleViewModel_Glasspaint.shared_Glasspaint.getPosts_Glasspaint()
-        
-        // 筛选高复刻率作品
-        let highReplicationPosts_glasspaint = allPosts_glasspaint.filter { post_glasspaint in
-            post_glasspaint.replicationRate_Glasspaint >= 70
-        }
-        
-        // 按复刻率排序
-        return highReplicationPosts_glasspaint.sorted { post1_glasspaint, post2_glasspaint in
-            post1_glasspaint.replicationRate_Glasspaint > post2_glasspaint.replicationRate_Glasspaint
-        }
-    }
-    
     // MARK: - 私有方法 - 排序逻辑
     
     /// 按场景排序
     /// 功能：计算每个作品的综合评分并排序
-    /// 排序规则：高复刻率 → 点赞数 → 评论数
+    /// 排序规则：点赞数 → 评论数
     /// 参数：
     /// - posts_glasspaint: 作品列表
     /// 返回值：排序后的作品列表
@@ -175,17 +158,16 @@ class ChallengeViewModel_Glasspaint {
     }
     
     /// 计算排行榜评分
-    /// 功能：综合复刻率、点赞数、评论数计算作品评分
-    /// 公式：复刻率 * 10 + 点赞数 * 5 + 评论数 * 3
+    /// 功能：综合点赞数、评论数计算作品评分
+    /// 公式：点赞数 * 7 + 评论数 * 3
     /// 参数：
     /// - post_glasspaint: 作品模型
     /// 返回值：综合评分
     private func calculateRankingScore_Glasspaint(post_glasspaint: TitleModel_Glasspaint) -> Int {
-        let replicationScore_glasspaint = post_glasspaint.replicationRate_Glasspaint * 10
-        let likesScore_glasspaint = post_glasspaint.likes_Glasspaint * 5
+        let likesScore_glasspaint = post_glasspaint.likes_Glasspaint * 7
         let commentsScore_glasspaint = post_glasspaint.reviews_Glasspaint.count * 3
         
-        return replicationScore_glasspaint + likesScore_glasspaint + commentsScore_glasspaint
+        return likesScore_glasspaint + commentsScore_glasspaint
     }
     
     // MARK: - 私有方法 - 工具方法
@@ -200,14 +182,9 @@ class ChallengeViewModel_Glasspaint {
     
     /// 显示登录提示
     private func showLoginPrompt_Glasspaint() {
-        Utils_Glasspaint.showWarning_Glasspaint(
-            message_Glasspaint: "Please login first.",
-            delay_Glasspaint: 1.5
-        )
-        
         // 延迟跳转到登录页面
         Task {
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒
+            try? await Task.sleep(nanoseconds: 500_000_000) // 1.5秒
             Navigation_Glasspaint.toLogin_Glasspaint(style_glasspaint: .present_glasspaint)
         }
     }

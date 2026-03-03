@@ -30,16 +30,6 @@ class UserAvatarView_Glasspaint: UIView {
         return imageView_Glasspaint
     }()
     
-    /// 在线状态指示器（登录用户专属）
-    let onlineIndicator_Glasspaint: UIView = {
-        let view_Glasspaint = UIView()
-        view_Glasspaint.backgroundColor = UIColor(hexstring_Glasspaint: "#48BB78") // 绿色
-        view_Glasspaint.layer.borderWidth = 2
-        view_Glasspaint.layer.borderColor = UIColor.white.cgColor
-        view_Glasspaint.isHidden = true
-        return view_Glasspaint
-    }()
-    
     // MARK: - 属性
     
     var userId_Glasspaint: Int?
@@ -60,8 +50,9 @@ class UserAvatarView_Glasspaint: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         // 设置圆形
+        layer.cornerRadius = bounds.width / 2
         imageView_Glasspaint.layer.cornerRadius = bounds.width / 2
-        onlineIndicator_Glasspaint.layer.cornerRadius = onlineIndicator_Glasspaint.bounds.width / 2
+        imageView_Glasspaint.layer.masksToBounds = true
     }
     
     // MARK: - UI设置
@@ -69,15 +60,9 @@ class UserAvatarView_Glasspaint: UIView {
     /// 设置基础UI布局，子类可重写以自定义布局
     func setupUI_Glasspaint() {
         addSubview(imageView_Glasspaint)
-        addSubview(onlineIndicator_Glasspaint)
         
         imageView_Glasspaint.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-        }
-        
-        onlineIndicator_Glasspaint.snp.makeConstraints { make in
-            make.right.bottom.equalToSuperview()
-            make.width.height.equalTo(12)
         }
     }
     
@@ -100,9 +85,6 @@ class UserAvatarView_Glasspaint: UIView {
         // 判断是否是当前登录用户
         let currentUser_Glasspaint = UserViewModel_Glasspaint.shared_Glasspaint.getCurrentUser_Glasspaint()
         isCurrentUser_Glasspaint = (currentUser_Glasspaint.userId_Glasspaint == userId_Glasspaint)
-        
-        // 显示/隐藏在线指示器
-        onlineIndicator_Glasspaint.isHidden = !isCurrentUser_Glasspaint
         
         // 加载头像
         if isCurrentUser_Glasspaint {
@@ -274,15 +256,6 @@ class CurrentUserAvatarView_Glasspaint: UserAvatarView_Glasspaint {
             make.right.bottom.equalToSuperview().offset(2)
             make.width.height.equalTo(28)
         }
-        
-        // 修改在线指示器尺寸
-        onlineIndicator_Glasspaint.snp.remakeConstraints { make in
-            make.right.bottom.equalToSuperview()
-            make.width.height.equalTo(14)
-        }
-        
-        // 默认显示在线状态
-        onlineIndicator_Glasspaint.isHidden = false
         
         // 添加点击手势
         let tapGesture_Glasspaint = UITapGestureRecognizer(target: self, action: #selector(handleTap_Glasspaint))

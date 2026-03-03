@@ -115,6 +115,9 @@ class TitleViewModel_Glasspaint {
         // 从帖子列表中移除
         posts_Glasspaint.removeAll { $0.titleId_Glasspaint == post_glasspaint.titleId_Glasspaint }
         
+        // 从LocalData的帖子列表中移除
+        LocalData_Glasspaint.shared_Glasspaint.titleList_Glasspaint.removeAll { $0.titleId_Glasspaint == post_glasspaint.titleId_Glasspaint }
+        
         let message_glasspaint = isDelete_glasspaint
             ? "Deleted successfully."
             : "This post will no longer appear."
@@ -131,6 +134,11 @@ class TitleViewModel_Glasspaint {
     /// 删除指定用户的所有帖子
     func deleteUserPosts_Glasspaint(userId_glasspaint: Int) {
         posts_Glasspaint.removeAll { post in
+            post.titleUserId_Glasspaint == userId_glasspaint
+        }
+        
+        // 从LocalData的帖子列表中移除
+        LocalData_Glasspaint.shared_Glasspaint.titleList_Glasspaint.removeAll { post in
             post.titleUserId_Glasspaint == userId_glasspaint
         }
         notifyStateChange_Glasspaint()
@@ -240,14 +248,9 @@ class TitleViewModel_Glasspaint {
     
     /// 显示登录提示
     private func showLoginPrompt_Glasspaint() {
-        Utils_Glasspaint.showWarning_Glasspaint(
-            message_Glasspaint: "Please login first.",
-            delay_Glasspaint: 1.5
-        )
-        
         // 延迟跳转到登录页面
         Task {
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒
+            try? await Task.sleep(nanoseconds: 500_000_000) // 1.5秒
             Navigation_Glasspaint.toLogin_Glasspaint(style_glasspaint: .present_glasspaint)
         }
     }

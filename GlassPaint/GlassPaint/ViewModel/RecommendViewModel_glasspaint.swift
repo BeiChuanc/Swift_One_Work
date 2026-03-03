@@ -23,7 +23,7 @@ class RecommendViewModel_Glasspaint {
     
     /// 获取今日推荐作品
     /// 功能：基于用户水平和偏好风格进行智能推荐
-    /// 算法：优先匹配风格 → 难度适配 → 高复刻率优先
+    /// 算法：优先匹配风格 → 难度适配
     /// 返回值：2-3幅推荐作品
     func getTodayRecommendations_Glasspaint() -> [TitleModel_Glasspaint] {
         let currentUser_glasspaint = UserViewModel_Glasspaint.shared_Glasspaint.getCurrentUser_Glasspaint()
@@ -33,7 +33,7 @@ class RecommendViewModel_Glasspaint {
         let userLevel_glasspaint = currentUser_glasspaint.paintingLevel_Glasspaint
         let userPreferredStyles_glasspaint = currentUser_glasspaint.preferredStyles_Glasspaint
         
-        // 如果用户没有偏好，返回通用推荐（高复刻率 + 热门）
+        // 如果用户没有偏好，返回通用推荐（热门作品）
         if userPreferredStyles_glasspaint.isEmpty {
             return getDefaultRecommendations_Glasspaint(from_glasspaint: allPosts_glasspaint)
         }
@@ -70,9 +70,9 @@ class RecommendViewModel_Glasspaint {
             levelFilteredPosts_glasspaint = matchedPosts_glasspaint
         }
         
-        // 按复刻率排序
+        // 按点赞数排序
         levelFilteredPosts_glasspaint.sort { post1_glasspaint, post2_glasspaint in
-            post1_glasspaint.replicationRate_Glasspaint > post2_glasspaint.replicationRate_Glasspaint
+            post1_glasspaint.likes_Glasspaint > post2_glasspaint.likes_Glasspaint
         }
         
         // 使用日期种子进行随机，确保每日变化
@@ -89,13 +89,11 @@ class RecommendViewModel_Glasspaint {
     
     /// 获取默认推荐
     /// 功能：用户无偏好时的推荐策略
-    /// 返回值：热门 + 高复刻率作品
+    /// 返回值：热门作品
     private func getDefaultRecommendations_Glasspaint(from_glasspaint posts_glasspaint: [TitleModel_Glasspaint]) -> [TitleModel_Glasspaint] {
-        // 按点赞数和复刻率综合排序
+        // 按点赞数排序
         let sortedPosts_glasspaint = posts_glasspaint.sorted { post1_glasspaint, post2_glasspaint in
-            let score1_glasspaint = post1_glasspaint.likes_Glasspaint + post1_glasspaint.replicationRate_Glasspaint
-            let score2_glasspaint = post2_glasspaint.likes_Glasspaint + post2_glasspaint.replicationRate_Glasspaint
-            return score1_glasspaint > score2_glasspaint
+            return post1_glasspaint.likes_Glasspaint > post2_glasspaint.likes_Glasspaint
         }
         
         let count_glasspaint = min(3, sortedPosts_glasspaint.count)
@@ -240,10 +238,10 @@ class RecommendViewModel_Glasspaint {
         if posts_glasspaint.isEmpty { return 0 }
         
         let avgLikes_glasspaint = Double(posts_glasspaint.reduce(0) { $0 + $1.likes_Glasspaint }) / Double(posts_glasspaint.count)
-        let avgReplication_glasspaint = Double(posts_glasspaint.reduce(0) { $0 + $1.replicationRate_Glasspaint }) / Double(posts_glasspaint.count)
+        let avgComments_glasspaint = Double(posts_glasspaint.reduce(0) { $0 + $1.reviews_Glasspaint.count }) / Double(posts_glasspaint.count)
         
-        // 综合评分：点赞数 * 0.5 + 复刻率 * 0.5
-        return min(100, avgLikes_glasspaint * 5 + avgReplication_glasspaint * 0.5)
+        // 综合评分：点赞数 * 0.7 + 评论数 * 0.3
+        return min(100, avgLikes_glasspaint * 7 + avgComments_glasspaint * 3)
     }
     
     // MARK: - 工具方法

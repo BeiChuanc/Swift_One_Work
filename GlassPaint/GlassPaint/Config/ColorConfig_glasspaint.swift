@@ -104,8 +104,6 @@ struct ColorConfig_Glasspaint {
     
     // MARK: - 功能颜色
     
-    /// 高复刻率标签颜色 - 橙色
-    static let highReplicationColor_Glasspaint = UIColor(hexstring_Glasspaint: "#F6AD55")
     
     /// 成功颜色 - 绿色
     static let successColor_Glasspaint = UIColor(hexstring_Glasspaint: "#48BB78")
