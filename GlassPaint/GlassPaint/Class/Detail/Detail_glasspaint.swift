@@ -629,6 +629,14 @@ class Detail_Glasspaint: UIViewController {
         // 加载媒体
         if let firstMedia_glasspaint = post_glasspaint.titleMeidas_Glasspaint.first {
             mediaDisplayView_Glasspaint.configure_Glasspaint(mediaPath_Glasspaint: firstMedia_glasspaint, isVideo_Glasspaint: false)
+            
+            // 添加全屏展示功能
+            MediaFullScreenHelper_Glasspaint.enableFullScreenDisplay_Glasspaint(
+                for: mediaDisplayView_Glasspaint,
+                mediaPath_glasspaint: firstMedia_glasspaint,
+                isVideo_glasspaint: false,
+                from: self
+            )
         }
         
         // 加载标题

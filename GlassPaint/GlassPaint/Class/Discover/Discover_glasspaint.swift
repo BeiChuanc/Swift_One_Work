@@ -1897,3 +1897,4 @@ class TimeCapsuleDetailViewController_Glasspaint: UIViewController {
         unlockedLabel_Glasspaint.text = "🔓 Unlocked: \(unlockFormatter_glasspaint.string(from: capsule_Glasspaint.unlockDate_Glasspaint))"
     }
 }
+
