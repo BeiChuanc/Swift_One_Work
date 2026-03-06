@@ -23,6 +23,9 @@ class LocalData_Trace {
     
     /// 帖子列表
     var titleList_Trace: [TitleModel_Trace] = []
+
+    /// 轻量挑战列表
+    var challengeList_Trace: [ChallengeModel_Trace] = []
     
     /// 数据生成器
     private lazy var generator_Trace: DataGenerator_Trace = {
@@ -36,6 +39,7 @@ class LocalData_Trace {
         generator_Trace.initUsers_Trace()
         generator_Trace.initPosts_Trace()
         generator_Trace.setUserLikes_Trace()
+        generator_Trace.initChallenges_Trace()
     }
     
     /// 获取排除指定用户的帖子列表
@@ -56,27 +60,59 @@ private struct DataSource_Trace {
     
     /// 用户信息列表 (用户名, 简介, 头像URL, 相册URL)
     static let usersInfo_Trace: [(String, String, String, String)] = [
-        ("DawnJournal", "Capturing quiet mornings before the world wakes up", "user_head_1", "user_album_1"),
-        ("MomentKeeper", "Every ordinary day holds a story worth saving", "user_head_2", "user_album_2"),
-        ("SoftGrowth", "Growing slowly, noticing everything along the way", "user_head_3", "user_album_3"),
-        ("TraceOfLight", "Collecting sunsets, coffee rings, and small victories", "user_head_4", "user_album_4"),
-        ("StillWaters", "Finding depth in the smallest ripples of everyday life", "user_head_5", "user_album_5"),
+        ("DawnJournal", "Capturing quiet mornings before the world wakes up", "head1", "head1"),
+        ("MomentKeeper", "Every ordinary day holds a story worth saving", "head2", "head2"),
+        ("SoftGrowth", "Growing slowly, noticing everything along the way", "head3", "head3"),
+        ("TraceOfLight", "Collecting sunsets, coffee rings, and small victories", "head4", "head4"),
+        ("StillWaters", "Finding depth in the smallest ripples of everyday life", "head5", "head5"),
     ]
     
     /// 帖子信息列表 (标题, 内容, 媒体URL, 标签)
     static let postsInfo_Trace: [(String, String, String, String)] = [
-        ("Morning Light in a Cup", "The kettle hums, the light hits the table at exactly the right angle, and for a moment nothing needs fixing. This is my daily reset—five minutes with a warm cup before the world starts asking things of me. Some mornings the ritual is all that holds the day together.", "post_media_1", "Warmth"),
-        ("Three Seconds Before It Fades", "There's a kind of light that only lasts for three seconds—the kind that catches on wet leaves or slants through a train window just so. I've started keeping my phone in my pocket and just watching. Some things are worth more than a photo. Some moments are meant only for you.", "post_media_2", "Moments"),
-        ("2 AM and Still Writing", "The quietest version of a city is the one you only hear past midnight. Tonight I opened my old notebook and let things spill out—not pretty thoughts, just honest ones. I think writing at 2 AM is my way of talking to myself without interruption. It doesn't solve anything. It just makes the weight lighter.", "post_media_3", "Night"),
-        ("Same Table, Different Seasons", "Every month we come back to the same corner booth, order too much food, and talk for three hours straight. We've sat here through new jobs, breakups, and unexplained bad weeks. The booth looks the same. We don't. I think that's what friendship is—a constant place to track how much you've grown.", "post_media_4", "Friends"),
-        ("Found in an Old Notebook", "I was looking for a pen and found a journal from three years ago. My handwriting was messier, my worries smaller-sounding now. I wrote things like 'I hope I figure this out.' It did. Not all of it—but enough. Reading old entries feels like sending a postcard back to yourself: you made it.", "post_media_5", "Memory"),
-        ("The Walk I Almost Skipped", "I told myself ten more minutes at the desk, then another ten, then I just put on my shoes and went anyway. The street had that specific late-afternoon light that only shows up in autumn. I walked for an hour without checking my phone. Sometimes the best thing you can do is leave the house with no plan.", "post_media_6", "Life"),
-        ("We Don't Need an Occasion", "We decided at 7 PM to get food, and four of us ended up in someone's kitchen eating noodles and talking about everything—childhood, mistakes, what we'd do differently. No one planned it. No one wanted it to end. The best moments of my adult life have started with someone saying 'do you want to just...'", "post_media_7", "Friends"),
-        ("The Light Just Then", "Standing at the window between two meetings—the light fell across the desk in a way that felt deliberate. Gold and quiet and impossibly brief. I didn't take a photo. I just stood there and let it land on me. It's the kind of beauty that asks nothing of you except to notice it.", "post_media_8", "Moments"),
-        ("What I Told the Stars Tonight", "I make a habit of looking up before I go in. Tonight the sky was clear and enormous, and I thought about everything I want and haven't said yet. Standing under that much space, the things that felt heavy this week started to loosen. I didn't ask for anything. I just stayed out a little longer than I needed to.", "post_media_9", "Stars"),
-        ("Autumn Is Patient", "The leaves don't rush. They go through every shade of red and orange before they finally let go. I've been trying to learn that from them—that change doesn't have to be fast to be real. I sat under a tree today and watched one leaf make its whole descent. It took almost a minute. I didn't look at my phone once.", "post_media_10", "Nature"),
+        ("Morning Light in a Cup", "The kettle hums, the light hits the table at exactly the right angle, and for a moment nothing needs fixing. This is my daily reset—five minutes with a warm cup before the world starts asking things of me. Some mornings the ritual is all that holds the day together.", "title1", "Warmth"),
+        ("Three Seconds Before It Fades", "There's a kind of light that only lasts for three seconds—the kind that catches on wet leaves or slants through a train window just so. I've started keeping my phone in my pocket and just watching. Some things are worth more than a photo. Some moments are meant only for you.", "title2", "Moments"),
+        ("2 AM and Still Writing", "The quietest version of a city is the one you only hear past midnight. Tonight I opened my old notebook and let things spill out—not pretty thoughts, just honest ones. I think writing at 2 AM is my way of talking to myself without interruption. It doesn't solve anything. It just makes the weight lighter.", "title3", "Night"),
+        ("Same Table, Different Seasons", "Every month we come back to the same corner booth, order too much food, and talk for three hours straight. We've sat here through new jobs, breakups, and unexplained bad weeks. The booth looks the same. We don't. I think that's what friendship is—a constant place to track how much you've grown.", "title4", "Friends"),
+        ("Found in an Old Notebook", "I was looking for a pen and found a journal from three years ago. My handwriting was messier, my worries smaller-sounding now. I wrote things like 'I hope I figure this out.' It did. Not all of it—but enough. Reading old entries feels like sending a postcard back to yourself: you made it.", "title5", "Memory"),
+        ("The Walk I Almost Skipped", "I told myself ten more minutes at the desk, then another ten, then I just put on my shoes and went anyway. The street had that specific late-afternoon light that only shows up in autumn. I walked for an hour without checking my phone. Sometimes the best thing you can do is leave the house with no plan.", "title6", "Life"),
+        ("We Don't Need an Occasion", "We decided at 7 PM to get food, and four of us ended up in someone's kitchen eating noodles and talking about everything—childhood, mistakes, what we'd do differently. No one planned it. No one wanted it to end. The best moments of my adult life have started with someone saying 'do you want to just...'", "title7", "Friends"),
+        ("The Light Just Then", "Standing at the window between two meetings—the light fell across the desk in a way that felt deliberate. Gold and quiet and impossibly brief. I didn't take a photo. I just stood there and let it land on me. It's the kind of beauty that asks nothing of you except to notice it.", "title8", "Moments"),
+        ("What I Told the Stars Tonight", "I make a habit of looking up before I go in. Tonight the sky was clear and enormous, and I thought about everything I want and haven't said yet. Standing under that much space, the things that felt heavy this week started to loosen. I didn't ask for anything. I just stayed out a little longer than I needed to.", "title9", "Stars"),
+        ("Autumn Is Patient", "The leaves don't rush. They go through every shade of red and orange before they finally let go. I've been trying to learn that from them—that change doesn't have to be fast to be real. I sat under a tree today and watched one leaf make its whole descent. It took almost a minute. I didn't look at my phone once.", "title10", "Nature"),
     ]
     
+    /// 挑战参与记录列表 (所属挑战ID, 参与者名, 头像颜色索引, 内容, 相对时间)
+    static let participationsInfo_Trace: [(Int, String, Int, String, String)] = [
+        // 挑战1：Catch Tonight's Sunset
+        (1, "DawnJournal",  0, "Found a gap between buildings where the light pooled gold. Stopped for three full minutes. The world felt very small and very good.", "2h ago"),
+        (1, "TraceOfLight", 3, "The sky was coral and quiet. I sat on the fire escape and watched it die. Didn't take a photo. Just kept it.", "5h ago"),
+        // 挑战2：One Sentence, Right Now
+        (2, "MomentKeeper", 1, "I am tired in a way that isn't fixed by sleep, but I am also strangely okay.", "1h ago"),
+        (2, "SoftGrowth",   2, "Grateful for the cold air this morning that made everything feel a little more awake.", "3h ago"),
+        // 挑战3：Tiny Win of the Day
+        (3, "StillWaters",  4, "Replied to an email I'd been avoiding for two weeks. That's it. That's the win.", "4h ago"),
+        (3, "DawnJournal",  0, "Made the bed before noon. Small thing. Felt huge.", "6h ago"),
+        // 挑战4：Night Sky Diary
+        (4, "TraceOfLight", 3, "Three stars visible through the haze. I named them after things I want to stop worrying about.", "Yesterday"),
+        (4, "MomentKeeper", 1, "The moon was half. I thought about how it's always whole — we just can't always see it.", "Yesterday"),
+        // 挑战5：Spot Something Green
+        (5, "SoftGrowth",   2, "A single weed pushing through a sidewalk crack. I almost stepped on it. Now I think about it constantly.", "3h ago"),
+        (5, "StillWaters",  4, "Moss on the north side of a stone wall. Ancient, patient, unbothered. Goals.", "7h ago"),
+        // 挑战6：Memory Lane
+        (6, "DawnJournal",  0, "Found a photo of my old kitchen table. The coffee stain is still there. I miss it in a way I can't explain.", "1d ago"),
+        (6, "TraceOfLight", 3, "An old note from a friend saying 'see you soon'. We drifted. The handwriting still makes me smile.", "2d ago"),
+    ]
+
+    /// 挑战数据列表 (标题, 描述, 表情, 关联标签, 是否官方, 参与人数, 渐变起始色, 渐变结束色)
+    static let challengesInfo_Trace: [(String, String, String, String, Bool, Int, String, String)] = [
+        ("Catch Tonight's Sunset",   "Step outside before dark. Find the last light.",           "🌅", "Warmth",  true,  234, "#FC8181", "#F6AD55"),
+        ("One Sentence, Right Now",  "How are you really? Just one honest sentence.",            "✍️", "Moments", true,  891, "#FBB6CE", "#FED7AA"),
+        ("Tiny Win of the Day",      "Name one small thing that went right today.",              "✨", "Life",    false, 567, "#B794F6", "#90CDF4"),
+        ("Night Sky Diary",          "Look up tonight and write what you find.",                 "🌙", "Night",   true,  412, "#553C9A", "#6B46C1"),
+        ("Spot Something Green",     "Find a plant, a leaf, or a patch of grass near you.",     "🌿", "Nature",  false, 328, "#68D391", "#38B2AC"),
+        ("Memory Lane",              "Share an old photo and the one story behind it.",          "📷", "Memory",  false, 789, "#F6AD55", "#ED8936"),
+    ]
+
     /// 评论列表 (评论1, 评论2)
     static let comments_Trace: [(String, String)] = [
         ("This is exactly the energy I try to start my day with. The cup, the quiet—you captured it.", "That morning reset ritual is sacred. Five minutes that make everything feel more possible."),
@@ -223,6 +259,40 @@ class DataGenerator_Trace {
         ]
     }
     
+    /// 初始化生成轻量挑战数据（含预制参与记录）
+    func initChallenges_Trace() {
+        guard let dataLocal_trace = dataLocal_Trace else { return }
+        dataLocal_trace.challengeList_Trace.removeAll()
+
+        for (index_trace, info_trace) in DataSource_Trace.challengesInfo_Trace.enumerated() {
+            let (title_trace, desc_trace, emoji_trace, tag_trace, isOfficial_trace, participants_trace, gradStart_trace, gradEnd_trace) = info_trace
+            let challengeId_trace = index_trace + 1
+            let challenge_trace = ChallengeModel_Trace(
+                challengeId_Trace: challengeId_trace,
+                title_Trace: title_trace,
+                description_Trace: desc_trace,
+                emoji_Trace: emoji_trace,
+                tag_Trace: tag_trace,
+                isOfficial_Trace: isOfficial_trace,
+                participants_Trace: participants_trace,
+                gradientStart_Trace: gradStart_trace,
+                gradientEnd_Trace: gradEnd_trace
+            )
+            // 注入与该挑战 ID 匹配的预制参与记录
+            challenge_trace.participations_Trace = DataSource_Trace.participationsInfo_Trace
+                .filter { $0.0 == challengeId_trace }
+                .map { (_, name_trace, colorIdx_trace, content_trace, time_trace) in
+                    ChallengeParticipation_Trace(
+                        authorName_Trace: name_trace,
+                        authorColorIndex_Trace: colorIdx_trace,
+                        content_Trace: content_trace,
+                        timeAgo_Trace: time_trace
+                    )
+                }
+            dataLocal_trace.challengeList_Trace.append(challenge_trace)
+        }
+    }
+
     /// 更新用户的喜欢帖子列表
     func setUserLikes_Trace() {
         guard let dataLocal_trace = dataLocal_Trace else { return }

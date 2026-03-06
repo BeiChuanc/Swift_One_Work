@@ -4,8 +4,9 @@ import SnapKit
 // MARK: - 消息列表 Section
 
 private enum MsgListSection_Trace: Int, CaseIterable {
-    case discover_trace = 0
-    case chats_trace = 1
+    case header_trace   = 0  // 顶部描述区
+    case discover_trace = 1
+    case chats_trace    = 2
 }
 
 // MARK: - 消息列表页
@@ -30,6 +31,7 @@ class MessageList_Trace: UIViewController {
         cv_Trace.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
         cv_Trace.dataSource = self
         cv_Trace.delegate = self
+        cv_Trace.register(MsgHeaderDescCell_Trace.self, forCellWithReuseIdentifier: MsgHeaderDescCell_Trace.reuseId_Trace)
         cv_Trace.register(MsgDiscoverCell_Trace.self, forCellWithReuseIdentifier: MsgDiscoverCell_Trace.reuseId_Trace)
         cv_Trace.register(MsgChatRowCell_Trace.self, forCellWithReuseIdentifier: MsgChatRowCell_Trace.reuseId_Trace)
         cv_Trace.register(MsgChatEmptyCell_Trace.self, forCellWithReuseIdentifier: MsgChatEmptyCell_Trace.reuseId_Trace)
@@ -49,13 +51,16 @@ class MessageList_Trace: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.navigationBar.isHidden = false
+        // 使用 setNavigationBarHidden 覆盖 navigationController 内部状态
+        // 直接设置 navigationBar.isHidden 无法覆盖 setNavigationBarHidden 设置的状态
+        navigationController?.setNavigationBarHidden(false, animated: animated)
         loadData_Trace()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.navigationBar.isHidden = true
+        // push 到 MessageUser 时不隐藏（两者都需要导航栏可见）
+        // 当导航栈 pop 回 TabBar 时由 TabBar.viewWillAppear 负责隐藏
     }
     
     deinit {
@@ -97,7 +102,20 @@ class MessageList_Trace: UIViewController {
     }
     
     private func subscribeNotifications_Trace() {
-        NotificationCenter.default.addObserver(self, selector: #selector(handleMsgStateChange_Trace), name: MessageViewModel_Trace.messageStateDidChangeNotification_Trace, object: nil)
+        // 聊天记录变化（发消息/清空等）
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleMsgStateChange_Trace),
+            name: MessageViewModel_Trace.messageStateDidChangeNotification_Trace,
+            object: nil
+        )
+        // 用户状态变化（举报/拉黑后异步移除完成）→ 重载推荐用户列表
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleUserStateChange_Trace),
+            name: UserViewModel_Trace.userStateDidChangeNotification_Trace,
+            object: nil
+        )
     }
     
     // MARK: - Compositional Layout
@@ -107,10 +125,25 @@ class MessageList_Trace: UIViewController {
             guard let self = self,
                   let section_trace = MsgListSection_Trace(rawValue: sectionIndex_trace) else { return nil }
             switch section_trace {
+            case .header_trace:   return self.createHeaderDescSection_Trace()
             case .discover_trace: return self.createDiscoverSection_Trace()
             case .chats_trace:    return self.createChatsSection_Trace()
             }
         }
+    }
+    
+    /// 顶部描述区分区（固定高度 90pt）
+    private func createHeaderDescSection_Trace() -> NSCollectionLayoutSection {
+        let item_Trace = NSCollectionLayoutItem(
+            layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(90))
+        )
+        let group_Trace = NSCollectionLayoutGroup.horizontal(
+            layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(90)),
+            subitems: [item_Trace]
+        )
+        let section_Trace = NSCollectionLayoutSection(group: group_Trace)
+        section_Trace.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 20, bottom: 4, trailing: 20)
+        return section_Trace
     }
     
     /// 推荐用户横向滑动分区（每卡 160pt 宽 × 200pt 高）
@@ -169,6 +202,11 @@ class MessageList_Trace: UIViewController {
     @objc private func handleMsgStateChange_Trace() {
         loadData_Trace()
     }
+    
+    /// 用户状态变化通知（举报/拉黑后触发），重新加载推荐用户列表以移除已屏蔽用户
+    @objc private func handleUserStateChange_Trace() {
+        loadData_Trace()
+    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -182,6 +220,7 @@ extension MessageList_Trace: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard let sec_Trace = MsgListSection_Trace(rawValue: section) else { return 0 }
         switch sec_Trace {
+        case .header_trace:   return 1
         case .discover_trace: return allUsers_Trace.count
         case .chats_trace:    return max(1, chatUsers_Trace.count)
         }
@@ -191,11 +230,23 @@ extension MessageList_Trace: UICollectionViewDataSource {
         guard let sec_Trace = MsgListSection_Trace(rawValue: indexPath.section) else { return UICollectionViewCell() }
         
         switch sec_Trace {
+        case .header_trace:
+            return collectionView.dequeueReusableCell(withReuseIdentifier: MsgHeaderDescCell_Trace.reuseId_Trace, for: indexPath)
+            
         case .discover_trace:
             let cell_Trace = collectionView.dequeueReusableCell(withReuseIdentifier: MsgDiscoverCell_Trace.reuseId_Trace, for: indexPath) as! MsgDiscoverCell_Trace
             cell_Trace.configure_Trace(user_trace: allUsers_Trace[indexPath.item])
             cell_Trace.onMessageTapped_Trace = { [weak self] user_trace in
                 Navigation_Trace.toMessageUser_Trace(with: user_trace)
+            }
+            cell_Trace.onReportTapped_Trace = { [weak self] user_trace in
+                guard let self = self else { return }
+                // 调用统一举报/拉黑流程，确认后从推荐列表移除并刷新
+                ReportDeleteHelper_Trace.block_Trace(user_Trace: user_trace, from: self) { [weak self] in
+                    guard let self = self else { return }
+                    self.allUsers_Trace.removeAll { $0.userId_Trace == user_trace.userId_Trace }
+                    self.collectionView_Trace.reloadSections(IndexSet(integer: MsgListSection_Trace.discover_trace.rawValue))
+                }
             }
             return cell_Trace
             
@@ -215,6 +266,8 @@ extension MessageList_Trace: UICollectionViewDataSource {
         let header_Trace = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MsgSectionHeaderView_Trace.reuseId_Trace, for: indexPath) as! MsgSectionHeaderView_Trace
         guard let sec_Trace = MsgListSection_Trace(rawValue: indexPath.section) else { return header_Trace }
         switch sec_Trace {
+        case .header_trace:
+            break
         case .discover_trace:
             header_Trace.configure_Trace(title_trace: "Discover People", subtitle_trace: "\(allUsers_Trace.count) creators")
         case .chats_trace:
@@ -283,13 +336,16 @@ private class MsgSectionHeaderView_Trace: UICollectionReusableView {
 // MARK: - 推荐用户卡片 Cell
 
 /// 推荐用户卡片 Cell（Discover People 横向区）
-/// 功能：展示用户头像（渐变圆环）、昵称、简介、Message 按钮
+/// 功能：展示用户头像（渐变圆环）、昵称、简介、Message 按钮，右上角举报按钮
 private class MsgDiscoverCell_Trace: UICollectionViewCell {
     
     static let reuseId_Trace = "MsgDiscoverCell_Trace"
     
     private var user_Trace: PrewUserModel_Trace?
+    /// 点击 Message 按钮的回调，参数为对应用户模型
     var onMessageTapped_Trace: ((PrewUserModel_Trace) -> Void)?
+    /// 点击举报按钮的回调，参数为对应用户模型
+    var onReportTapped_Trace: ((PrewUserModel_Trace) -> Void)?
     
     private let cardView_Trace: UIView = {
         let v_Trace = UIView()
@@ -302,27 +358,8 @@ private class MsgDiscoverCell_Trace: UICollectionViewCell {
         return v_Trace
     }()
     
-    /// 渐变圆环头像容器
-    private let avatarRing_Trace: UIView = {
-        let v_Trace = UIView()
-        v_Trace.layer.cornerRadius = 30
-        v_Trace.layer.masksToBounds = true
-        return v_Trace
-    }()
-    
-    private let avatarRingGrad_Trace = CAGradientLayer()
-    
-    private let avatarIcon_Trace: UIImageView = {
-        let iv_Trace = UIImageView()
-        let config_Trace = UIImage.SymbolConfiguration(pointSize: 28, weight: .light)
-        iv_Trace.image = UIImage(systemName: "person.circle.fill", withConfiguration: config_Trace)
-        iv_Trace.tintColor = ColorConfig_Trace.primaryGradientStart_Trace
-        iv_Trace.contentMode = .scaleAspectFill
-        iv_Trace.backgroundColor = .white
-        iv_Trace.layer.cornerRadius = 24
-        iv_Trace.layer.masksToBounds = true
-        return iv_Trace
-    }()
+    /// 用户头像（UserAvatarView_Trace 自动加载真实头像）
+    private let avatarView_Trace = UserAvatarView_Trace()
     
     private let nameLabel_Trace: UILabel = {
         let lbl_Trace = UILabel()
@@ -355,6 +392,18 @@ private class MsgDiscoverCell_Trace: UICollectionViewCell {
         return btn_Trace
     }()
     
+    /// 右上角举报按钮（椭圆三点图标，使用 ReportDeleteHelper_Trace 统一风格）
+    private lazy var reportBtn_Trace: UIButton = {
+        let btn_Trace = ReportDeleteHelper_Trace.createUserReportButton_Trace(
+            size_Trace: 26,
+            backgroundColor_Trace: ColorConfig_Trace.textSecondary_Trace.withAlphaComponent(0.08),
+            tintColor_Trace: ColorConfig_Trace.textSecondary_Trace,
+            withShadow_Trace: false
+        )
+        btn_Trace.addTarget(self, action: #selector(handleReportTap_Trace), for: .touchUpInside)
+        return btn_Trace
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI_Trace()
@@ -364,33 +413,26 @@ private class MsgDiscoverCell_Trace: UICollectionViewCell {
     
     private func setupUI_Trace() {
         contentView.addSubview(cardView_Trace)
-        cardView_Trace.addSubview(avatarRing_Trace)
-        avatarRing_Trace.addSubview(avatarIcon_Trace)
+        cardView_Trace.addSubview(avatarView_Trace)
         cardView_Trace.addSubview(nameLabel_Trace)
         cardView_Trace.addSubview(bioLabel_Trace)
         cardView_Trace.addSubview(messageBtn_Trace)
-        
-        avatarRingGrad_Trace.colors = [
-            ColorConfig_Trace.primaryGradientStart_Trace.cgColor,
-            ColorConfig_Trace.primaryGradientEnd_Trace.cgColor
-        ]
-        avatarRingGrad_Trace.startPoint = CGPoint(x: 0, y: 0)
-        avatarRingGrad_Trace.endPoint = CGPoint(x: 1, y: 1)
-        avatarRingGrad_Trace.cornerRadius = 30
-        avatarRing_Trace.layer.insertSublayer(avatarRingGrad_Trace, at: 0)
-        
+        cardView_Trace.addSubview(reportBtn_Trace)
+
         cardView_Trace.snp.makeConstraints { make in make.edges.equalToSuperview() }
-        avatarRing_Trace.snp.makeConstraints { make in
+        // 举报按钮固定在卡片右上角
+        reportBtn_Trace.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(10)
+            make.trailing.equalToSuperview().offset(-10)
+            make.width.height.equalTo(26)
+        }
+        avatarView_Trace.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(20)
             make.centerX.equalToSuperview()
             make.width.height.equalTo(60)
         }
-        avatarIcon_Trace.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.height.equalTo(48)
-        }
         nameLabel_Trace.snp.makeConstraints { make in
-            make.top.equalTo(avatarRing_Trace.snp.bottom).offset(10)
+            make.top.equalTo(avatarView_Trace.snp.bottom).offset(10)
             make.leading.trailing.equalToSuperview().inset(12)
         }
         bioLabel_Trace.snp.makeConstraints { make in
@@ -403,14 +445,10 @@ private class MsgDiscoverCell_Trace: UICollectionViewCell {
             make.centerX.equalToSuperview()
         }
     }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        avatarRingGrad_Trace.frame = avatarRing_Trace.bounds
-    }
-    
+
     func configure_Trace(user_trace: PrewUserModel_Trace) {
         user_Trace = user_trace
+        avatarView_Trace.configure_Trace(userId_Trace: user_trace.userId_Trace ?? 0)
         nameLabel_Trace.text = user_trace.userName_Trace ?? "User"
         bioLabel_Trace.text = user_trace.userIntroduce_Trace ?? ""
     }
@@ -419,6 +457,12 @@ private class MsgDiscoverCell_Trace: UICollectionViewCell {
         guard let user_Trace = user_Trace else { return }
         messageBtn_Trace.animatePressDown_Trace { self.messageBtn_Trace.animatePressUp_Trace() }
         onMessageTapped_Trace?(user_Trace)
+    }
+    
+    /// 举报按钮点击：通知外部处理举报/拉黑逻辑
+    @objc private func handleReportTap_Trace() {
+        guard let user_Trace = user_Trace else { return }
+        onReportTapped_Trace?(user_Trace)
     }
 }
 
@@ -430,23 +474,8 @@ private class MsgChatRowCell_Trace: UICollectionViewCell {
     
     static let reuseId_Trace = "MsgChatRowCell_Trace"
     
-    private let avatarView_Trace: UIView = {
-        let v_Trace = UIView()
-        v_Trace.layer.cornerRadius = 24
-        v_Trace.layer.masksToBounds = true
-        return v_Trace
-    }()
-    
-    private let avatarGrad_Trace = CAGradientLayer()
-    
-    private let avatarIcon_Trace: UIImageView = {
-        let iv_Trace = UIImageView()
-        let config_Trace = UIImage.SymbolConfiguration(pointSize: 22, weight: .light)
-        iv_Trace.image = UIImage(systemName: "person.fill", withConfiguration: config_Trace)
-        iv_Trace.tintColor = .white
-        iv_Trace.contentMode = .scaleAspectFit
-        return iv_Trace
-    }()
+    /// 用户头像（UserAvatarView_Trace 自动加载真实头像）
+    private let avatarView_Trace = UserAvatarView_Trace()
     
     private let nameLabel_Trace: UILabel = {
         let lbl_Trace = UILabel()
@@ -486,28 +515,16 @@ private class MsgChatRowCell_Trace: UICollectionViewCell {
     private func setupUI_Trace() {
         contentView.backgroundColor = .white
         contentView.addSubview(avatarView_Trace)
-        avatarView_Trace.addSubview(avatarIcon_Trace)
         contentView.addSubview(nameLabel_Trace)
         contentView.addSubview(lastMsgLabel_Trace)
         contentView.addSubview(timeLabel_Trace)
         contentView.addSubview(divider_Trace)
-        
-        // 头像渐变背景
-        avatarGrad_Trace.colors = [
-            ColorConfig_Trace.primaryGradientStart_Trace.cgColor,
-            ColorConfig_Trace.primaryGradientEnd_Trace.cgColor
-        ]
-        avatarGrad_Trace.startPoint = CGPoint(x: 0, y: 0)
-        avatarGrad_Trace.endPoint = CGPoint(x: 1, y: 1)
-        avatarGrad_Trace.cornerRadius = 24
-        avatarView_Trace.layer.insertSublayer(avatarGrad_Trace, at: 0)
-        
+
         avatarView_Trace.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
             make.centerY.equalToSuperview()
             make.width.height.equalTo(48)
         }
-        avatarIcon_Trace.snp.makeConstraints { make in make.center.equalToSuperview(); make.width.height.equalTo(26) }
         timeLabel_Trace.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-20)
             make.top.equalToSuperview().offset(16)
@@ -529,12 +546,8 @@ private class MsgChatRowCell_Trace: UICollectionViewCell {
         }
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        avatarGrad_Trace.frame = avatarView_Trace.bounds
-    }
-    
     func configure_Trace(user_trace: PrewUserModel_Trace, lastMessage_trace: MessageModel_Trace?) {
+        avatarView_Trace.configure_Trace(userId_Trace: user_trace.userId_Trace ?? 0)
         nameLabel_Trace.text = user_trace.userName_Trace ?? "User"
         if let msg_Trace = lastMessage_trace {
             let prefix_Trace = (msg_Trace.isMine_Trace == true) ? "You: " : ""
@@ -589,4 +602,91 @@ private class MsgChatEmptyCell_Trace: UICollectionViewCell {
     }
     
     required init?(coder: NSCoder) { fatalError() }
+}
+
+// MARK: - 消息列表顶部描述 Cell
+
+/// 消息列表顶部描述区 Cell
+/// 核心作用：以图标 + 主标题 + 副标题 + 徽章行形式，传达「消息」功能的主题氛围
+/// 设计思路：与发布页顶部描述保持统一风格，无卡片背景，轻量融入页面
+private class MsgHeaderDescCell_Trace: UICollectionViewCell {
+    
+    static let reuseId_Trace = "MsgHeaderDescCell_Trace"
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupUI_Trace()
+    }
+    
+    required init?(coder: NSCoder) { fatalError() }
+    
+    /// 搭建描述区布局：图标圆 + 主标题 + 副标题 + 徽章行
+    private func setupUI_Trace() {
+        
+        // 图标背景圆
+        let iconBg_Trace = UIView()
+        iconBg_Trace.backgroundColor = ColorConfig_Trace.primaryGradientStart_Trace.withAlphaComponent(0.12)
+        iconBg_Trace.layer.cornerRadius = 24
+        
+        let iconIV_Trace = UIImageView()
+        let iconCfg_Trace = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
+        iconIV_Trace.image = UIImage(systemName: "bubble.left.and.bubble.right.fill", withConfiguration: iconCfg_Trace)
+        iconIV_Trace.tintColor = ColorConfig_Trace.primaryGradientStart_Trace
+        iconIV_Trace.contentMode = .scaleAspectFit
+        
+        // 主标题
+        let titleLbl_Trace = UILabel()
+        titleLbl_Trace.text = "Your Connections"
+        titleLbl_Trace.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        titleLbl_Trace.textColor = ColorConfig_Trace.textPrimary_Trace
+        
+        // 副标题
+        let subLbl_Trace = UILabel()
+        subLbl_Trace.text = "Discover new voices, start a conversation, and keep every trace alive."
+        subLbl_Trace.font = UIFont.systemFont(ofSize: 13, weight: .regular)
+        subLbl_Trace.textColor = ColorConfig_Trace.textSecondary_Trace
+        subLbl_Trace.numberOfLines = 2
+        
+        // 徽章行
+        let badgeStack_Trace = UIStackView()
+        badgeStack_Trace.axis = .horizontal
+        badgeStack_Trace.spacing = 6
+        badgeStack_Trace.alignment = .center
+        ["✦ Discover", "✦ Connect", "✦ Resonate"].forEach { text_trace in
+            let badge_Trace = UILabel()
+            badge_Trace.text = text_trace
+            badge_Trace.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
+            badge_Trace.textColor = ColorConfig_Trace.primaryGradientStart_Trace.withAlphaComponent(0.7)
+            badgeStack_Trace.addArrangedSubview(badge_Trace)
+        }
+        
+        contentView.addSubview(iconBg_Trace)
+        iconBg_Trace.addSubview(iconIV_Trace)
+        contentView.addSubview(titleLbl_Trace)
+        contentView.addSubview(subLbl_Trace)
+        contentView.addSubview(badgeStack_Trace)
+        
+        iconBg_Trace.snp.makeConstraints { make in
+            make.leading.top.equalToSuperview()
+            make.width.height.equalTo(48)
+        }
+        iconIV_Trace.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(22)
+        }
+        titleLbl_Trace.snp.makeConstraints { make in
+            make.leading.equalTo(iconBg_Trace.snp.trailing).offset(12)
+            make.trailing.equalToSuperview()
+            make.top.equalTo(iconBg_Trace.snp.top).offset(2)
+        }
+        subLbl_Trace.snp.makeConstraints { make in
+            make.leading.equalTo(iconBg_Trace.snp.trailing).offset(12)
+            make.trailing.equalToSuperview()
+            make.top.equalTo(titleLbl_Trace.snp.bottom).offset(4)
+        }
+        badgeStack_Trace.snp.makeConstraints { make in
+            make.leading.equalTo(iconBg_Trace.snp.trailing).offset(12)
+            make.top.equalTo(subLbl_Trace.snp.bottom).offset(6)
+        }
+    }
 }

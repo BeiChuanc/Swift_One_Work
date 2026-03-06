@@ -122,6 +122,9 @@ class LoginUserModel_Trace: NSObject, Codable {
     /// 用户头像
     var userHead_Trace: String?
     
+    /// 用户简介
+    var userIntroduce_Trace: String?
+    
     /// 用户发布帖子列表
     var userPosts_Trace: [TitleModel_Trace]
     
@@ -136,6 +139,7 @@ class LoginUserModel_Trace: NSObject, Codable {
          userPwd_Trace: String? = nil,
          userName_Trace: String? = nil,
          userHead_Trace: String? = nil,
+         userIntroduce_Trace: String? = nil,
          userPosts_Trace: [TitleModel_Trace],
          userLike_Trace: [TitleModel_Trace],
          userFollow_Trace: [PrewUserModel_Trace]) {
@@ -143,6 +147,7 @@ class LoginUserModel_Trace: NSObject, Codable {
         self.userPwd_Trace = userPwd_Trace
         self.userName_Trace = userName_Trace
         self.userHead_Trace = userHead_Trace
+        self.userIntroduce_Trace = userIntroduce_Trace
         self.userPosts_Trace = userPosts_Trace
         self.userLike_Trace = userLike_Trace
         self.userFollow_Trace = userFollow_Trace
@@ -247,6 +252,107 @@ class TraceRecord_Trace: NSObject {
         self.recordId_Trace = recordId_Trace
         self.content_Trace = content_Trace
         self.timestamp_Trace = timestamp_Trace
+        super.init()
+    }
+}
+
+/// 挑战参与记录模型
+/// 核心作用：存储其他用户在某挑战下留下的一条极简参与记录，用于挑战详情页的"Recent Traces"展示
+/// 关键属性：authorName_Trace（参与者名称），content_Trace（记录内容），timeAgo_Trace（相对时间描述）
+class ChallengeParticipation_Trace: NSObject {
+
+    /// 参与者用户名
+    var authorName_Trace: String
+
+    /// 用于生成渐变头像的颜色索引（对应 UserAvatarView_Trace.defaultAvatarColors_Trace）
+    var authorColorIndex_Trace: Int
+
+    /// 参与内容（一段极简记录文字）
+    var content_Trace: String
+
+    /// 相对时间描述（如 "2h ago", "Yesterday"）
+    var timeAgo_Trace: String
+
+    /// - Parameters:
+    ///   - authorName_Trace: 参与者用户名
+    ///   - authorColorIndex_Trace: 头像颜色索引
+    ///   - content_Trace: 参与内容
+    ///   - timeAgo_Trace: 相对时间描述
+    init(authorName_Trace: String,
+         authorColorIndex_Trace: Int,
+         content_Trace: String,
+         timeAgo_Trace: String) {
+        self.authorName_Trace = authorName_Trace
+        self.authorColorIndex_Trace = authorColorIndex_Trace
+        self.content_Trace = content_Trace
+        self.timeAgo_Trace = timeAgo_Trace
+        super.init()
+    }
+}
+
+/// 轻量记录挑战模型
+/// 核心作用：承载官方或用户发起的极简打卡挑战，如「记录今日晚霞」「一句心情打卡」
+/// 关键属性：title_Trace（挑战名称），emoji_Trace（视觉标志），tag_Trace（关联话题标签），isOfficial_Trace（是否官方发起），participations_Trace（预制参与记录）
+class ChallengeModel_Trace: NSObject {
+
+    /// 挑战唯一 ID
+    var challengeId_Trace: Int
+
+    /// 挑战标题（如 "Catch Tonight's Sunset"）
+    var title_Trace: String
+
+    /// 挑战描述（一句引导语）
+    var description_Trace: String
+
+    /// 代表表情（用于视觉强化）
+    var emoji_Trace: String
+
+    /// 关联话题标签（与帖子标签体系对齐）
+    var tag_Trace: String
+
+    /// 是否由官方发起（true = 官方，false = 用户社区）
+    var isOfficial_Trace: Bool
+
+    /// 参与人数
+    var participants_Trace: Int
+
+    /// 卡片渐变起始色（十六进制字符串）
+    var gradientStart_Trace: String
+
+    /// 卡片渐变结束色（十六进制字符串）
+    var gradientEnd_Trace: String
+
+    /// 该挑战的预制参与记录列表（每条由其他用户发布，展示在详情页）
+    var participations_Trace: [ChallengeParticipation_Trace] = []
+
+    /// - Parameters:
+    ///   - challengeId_Trace: 唯一标识
+    ///   - title_Trace: 挑战标题
+    ///   - description_Trace: 引导描述
+    ///   - emoji_Trace: 表情符号
+    ///   - tag_Trace: 话题标签
+    ///   - isOfficial_Trace: 是否官方
+    ///   - participants_Trace: 参与人数
+    ///   - gradientStart_Trace: 渐变起始色
+    ///   - gradientEnd_Trace: 渐变结束色
+    init(challengeId_Trace: Int,
+         title_Trace: String,
+         description_Trace: String,
+         emoji_Trace: String,
+         tag_Trace: String,
+         isOfficial_Trace: Bool,
+         participants_Trace: Int,
+         gradientStart_Trace: String,
+         gradientEnd_Trace: String) {
+        self.challengeId_Trace = challengeId_Trace
+        self.title_Trace = title_Trace
+        self.description_Trace = description_Trace
+        self.emoji_Trace = emoji_Trace
+        self.tag_Trace = tag_Trace
+        self.isOfficial_Trace = isOfficial_Trace
+        self.participants_Trace = participants_Trace
+        self.gradientStart_Trace = gradientStart_Trace
+        self.gradientEnd_Trace = gradientEnd_Trace
         super.init()
     }
 }

@@ -12,32 +12,24 @@ class Store_Trace: NSObject {
     // 礼物商品列表
     var goodsList_Trace: [StoreModel_Trace] = [
         StoreModel_Trace(
-            id_Trace: 0,
-            goodsId_Trace: "Glasspaint.gift.x2.1_9",
-            goodsName_Trace: "x2",
-            goodsPrice_Trace: "$1.99",
-            goodIsTop_Trace: true,
-            goodIsLimit_Trace: false
-        ),
-        StoreModel_Trace(
             id_Trace: 1,
-            goodsId_Trace: "Glasspaint.gift.x3.3_9",
-            goodsName_Trace: "x3",
+            goodsId_Trace: "trace.pur.e.x5.3_9",
+            goodsName_Trace: "x5",
             goodsPrice_Trace: "$3.99",
             goodIsTop_Trace: true,
             goodIsLimit_Trace: false
         ),
         StoreModel_Trace(
             id_Trace: 2,
-            goodsId_Trace: "Glasspaint.gift.x5.4_9",
-            goodsName_Trace: "x5",
+            goodsId_Trace: "trace.pur.e.x10.4_9",
+            goodsName_Trace: "x10",
             goodsPrice_Trace: "$4.99",
             goodIsTop_Trace: true,
             goodIsLimit_Trace: false
         ),
         StoreModel_Trace(
             id_Trace: 3,
-            goodsId_Trace: "Glasspaint.gift.x1.1_9",
+            goodsId_Trace: "trace.pur.e.x1.1_9",
             goodsName_Trace: "x1",
             goodsPrice_Trace: "$1.99",
             goodIsTop_Trace: false,
@@ -45,7 +37,7 @@ class Store_Trace: NSObject {
         ),
         StoreModel_Trace(
             id_Trace: 4,
-            goodsId_Trace: "Glasspaint.gift.x2.2_9",
+            goodsId_Trace: "trace.pur.e.x2.2_9",
             goodsName_Trace: "x2",
             goodsPrice_Trace: "$2.99",
             goodIsTop_Trace: false,
@@ -53,7 +45,7 @@ class Store_Trace: NSObject {
         ),
         StoreModel_Trace(
             id_Trace: 5,
-            goodsId_Trace: "Glasspaint.gift.x3.3_9_s",
+            goodsId_Trace: "trace.pur.e.x3.3_9_s",
             goodsName_Trace: "x3",
             goodsPrice_Trace: "$3.99",
             goodIsTop_Trace: false,
@@ -61,7 +53,7 @@ class Store_Trace: NSObject {
         ),
         StoreModel_Trace(
             id_Trace: 6,
-            goodsId_Trace: "Glasspaint.gift.x4.4_9",
+            goodsId_Trace: "trace.pur.e.x4.4_9",
             goodsName_Trace: "x4",
             goodsPrice_Trace: "$4.99",
             goodIsTop_Trace: false,
@@ -69,7 +61,7 @@ class Store_Trace: NSObject {
         ),
         StoreModel_Trace(
             id_Trace: 7,
-            goodsId_Trace: "Glasspaint.gift.x5.6_9",
+            goodsId_Trace: "trace.pur.e.x5.6_9",
             goodsName_Trace: "x5",
             goodsPrice_Trace: "$6.99",
             goodIsTop_Trace: false,
@@ -77,48 +69,48 @@ class Store_Trace: NSObject {
         ),
         StoreModel_Trace(
             id_Trace: 8,
-            goodsId_Trace: "Glasspaint.gift.x10.9_9",
-            goodsName_Trace: "x10",
+            goodsId_Trace: "trace.pur.e.x7.9_9",
+            goodsName_Trace: "x7",
             goodsPrice_Trace: "$9.99",
             goodIsTop_Trace: false,
             goodIsLimit_Trace: false
         ),
         StoreModel_Trace(
             id_Trace: 9,
-            goodsId_Trace: "Glasspaint.gift.x20.19_9",
-            goodsName_Trace: "x20",
+            goodsId_Trace: "trace.pur.e.x12.19_9",
+            goodsName_Trace: "x12",
             goodsPrice_Trace: "$19.99",
             goodIsTop_Trace: false,
             goodIsLimit_Trace: false
         ),
         StoreModel_Trace(
             id_Trace: 10,
-            goodsId_Trace: "Glasspaint.gift.x30.29_9",
-            goodsName_Trace: "x30",
+            goodsId_Trace: "trace.pur.e.x20.29_9",
+            goodsName_Trace: "x20",
             goodsPrice_Trace: "$29.99",
             goodIsTop_Trace: false,
             goodIsLimit_Trace: false
         ),
         StoreModel_Trace(
             id_Trace: 11,
-            goodsId_Trace: "Glasspaint.gift.x50.49_9",
-            goodsName_Trace: "x50",
+            goodsId_Trace: "trace.pur.e.x42.49_9",
+            goodsName_Trace: "x42",
             goodsPrice_Trace: "$49.99",
             goodIsTop_Trace: false,
             goodIsLimit_Trace: false
         ),
         StoreModel_Trace(
             id_Trace: 12,
-            goodsId_Trace: "Glasspaint.gift.x70.69_9",
-            goodsName_Trace: "x70",
+            goodsId_Trace: "trace.pur.e.x64.69_9",
+            goodsName_Trace: "x64",
             goodsPrice_Trace: "$69.99",
             goodIsTop_Trace: false,
             goodIsLimit_Trace: false
         ),
         StoreModel_Trace(
             id_Trace: 13,
-            goodsId_Trace: "Glasspaint.gift.x100.99_9",
-            goodsName_Trace: "x100",
+            goodsId_Trace: "trace.pur.e.x102.99_9",
+            goodsName_Trace: "x102",
             goodsPrice_Trace: "$99.99",
             goodIsTop_Trace: false,
             goodIsLimit_Trace: false

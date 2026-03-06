@@ -149,7 +149,8 @@ class Navigation_Trace: NSObject {
         
         let tabbar_trace = TabBar_Trace()
         let nav_trace = UINavigationController(rootViewController: tabbar_trace)
-        nav_trace.navigationBar.isHidden = true
+        // 统一使用 setNavigationBarHidden，由 TabBar_Trace.viewWillAppear 在运行时托管实际状态
+        nav_trace.setNavigationBarHidden(true, animated: false)
         
         validWindow_trace.rootViewController = nav_trace
         validWindow_trace.makeKeyAndVisible()
@@ -178,6 +179,15 @@ class Navigation_Trace: NSObject {
         return nil
     }
     
+    /// 切换 TabBar 到指定 Tab 索引（用于首页头像等快捷入口）
+    /// - Parameter index: 目标 Tab 索引（0=首页, 1=发现, 2=发布, 3=消息, 4=我的）
+    static func switchToTab_Trace(index: Int) {
+        guard let window = getAppWindow_Trace(),
+              let nav = window.rootViewController as? UINavigationController,
+              let tabBar = nav.viewControllers.first as? TabBar_Trace else { return }
+        tabBar.switchToTab_Trace(index: index)
+    }
+
     /// 切换到主Tabbar（从其他地方调用，自动获取Window）
     static func switchToTabbar_Trace(animated: Bool = true) {
         let window = getAppWindow_Trace()
@@ -241,6 +251,17 @@ class Navigation_Trace: NSObject {
     }
     
     // MARK: - 发现页相关
+
+    /// 跳转到挑战详情页（带挑战模型）
+    static func toChallengeDetail_Trace(
+        challenge_trace: ChallengeModel_Trace,
+        style_trace: NavigationStyle_Trace = .push_trace,
+        animated_trace: Bool = true
+    ) {
+        let vc_trace = ChallengeDetail_Trace()
+        vc_trace.challenge_Trace = challenge_trace
+        navigate_Trace(to: vc_trace, style_trace: style_trace, animated_trace: animated_trace)
+    }
     
     /// 跳转到发现页
     static func toDiscover_Trace(
@@ -279,6 +300,18 @@ class Navigation_Trace: NSObject {
     
     // MARK: - 消息相关
     
+    /// 跳转到视频通话页（全屏模态，传入通话对象用户模型）
+    /// - Parameter userModel_trace: 通话对象用户信息
+    static func toVideoChat_Trace(
+        with userModel_trace: PrewUserModel_Trace,
+        animated_trace: Bool = true
+    ) {
+        let vc_trace = VideoChat_Trace()
+        vc_trace.userModel_Trace = userModel_trace
+        vc_trace.modalPresentationStyle = .fullScreen
+        present_Trace(viewController: vc_trace, animated: animated_trace)
+    }
+
     /// 跳转到消息列表
     static func toMessageList_Trace(
         style_trace: NavigationStyle_Trace = .push_trace,

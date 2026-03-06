@@ -6,15 +6,31 @@ import SnapKit
 // MARK: - Apple登录按钮组件
 
 /// Apple登录按钮组件
+/// 核心作用：封装 Apple 登录的完整 UI 与逻辑（内部管理 AppleLoginManager_Trace），
+///          外部只需传入所在 ViewController 及成功/失败回调，无需在业务页面中处理任何 Apple 登录细节
+/// 关键属性：
+///   - viewController_Trace：用于呈现 Apple 授权界面的宿主控制器
+///   - success_Trace：授权成功回调，参数为用户账号标识（邮箱或 appleId）
+///   - failure_Trace：授权失败回调，参数为错误描述
+@MainActor
 class AppleLoginBt_Trace: UIView {
-    
-    // MARK: - 回调闭包
-    
-    /// 点击回调
-    private var onTap_Trace: (() -> Void)?
-    
-    // MARK: - UI组件
-    
+
+    // MARK: - 私有属性
+
+    /// Apple 登录管理器（组件内部持有，无需外部管理）
+    private var appleLoginManager_Trace: AppleLoginManager_Trace?
+
+    /// 宿主控制器（弱引用，避免循环引用）
+    private weak var viewController_Trace: UIViewController?
+
+    /// 授权成功回调
+    private var success_Trace: ((String) -> Void)?
+
+    /// 授权失败回调
+    private var failure_Trace: ((String) -> Void)?
+
+    // MARK: - UI 组件
+
     /// 容器视图
     private let containerView_Trace: UIView = {
         let view_Trace = UIView()
@@ -23,7 +39,7 @@ class AppleLoginBt_Trace: UIView {
         view_Trace.layer.masksToBounds = true
         return view_Trace
     }()
-    
+
     /// 苹果图标
     private let appleIconView_Trace: UIImageView = {
         let imageView_Trace = UIImageView()
@@ -32,7 +48,7 @@ class AppleLoginBt_Trace: UIView {
         imageView_Trace.contentMode = .scaleAspectFit
         return imageView_Trace
     }()
-    
+
     /// 文字标签
     private let titleLabel_Trace: UILabel = {
         let label_Trace = UILabel()
@@ -42,60 +58,68 @@ class AppleLoginBt_Trace: UIView {
         label_Trace.textAlignment = .center
         return label_Trace
     }()
-    
+
     // MARK: - 初始化
-    
-    /// 初始化方法
-    init(onTap_Trace: @escaping () -> Void) {
-        self.onTap_Trace = onTap_Trace
+
+    /// 初始化 Apple 登录按钮
+    /// - Parameters:
+    ///   - viewController_Trace: 用于呈现 Apple 授权 UI 的宿主控制器
+    ///   - success_Trace: 授权成功回调，返回用户账号标识字符串
+    ///   - failure_Trace: 授权失败回调，返回错误描述字符串
+    init(
+        from viewController_Trace: UIViewController,
+        success_Trace: @escaping (String) -> Void,
+        failure_Trace: @escaping (String) -> Void
+    ) {
+        self.viewController_Trace = viewController_Trace
+        self.success_Trace = success_Trace
+        self.failure_Trace = failure_Trace
         super.init(frame: .zero)
         setupUI_Trace()
         setupGesture_Trace()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    // MARK: - UI设置
-    
-    /// 设置UI
+
+    // MARK: - UI 设置
+
     private func setupUI_Trace() {
+        // 用水平 StackView 包裹图标与文字，整体居中对齐
+        let contentStack_Trace = UIStackView(arrangedSubviews: [appleIconView_Trace, titleLabel_Trace])
+        contentStack_Trace.axis = .horizontal
+        contentStack_Trace.spacing = 10
+        contentStack_Trace.alignment = .center
+        contentStack_Trace.isUserInteractionEnabled = false
+
         addSubview(containerView_Trace)
-        containerView_Trace.addSubview(appleIconView_Trace)
-        containerView_Trace.addSubview(titleLabel_Trace)
-        
-        // 容器视图约束
+        containerView_Trace.addSubview(contentStack_Trace)
+
         containerView_Trace.snp.makeConstraints { make in
             make.edges.equalToSuperview()
             make.height.equalTo(50)
         }
-        
-        // 苹果图标约束
+
         appleIconView_Trace.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.centerX.equalToSuperview().offset(-30)
             make.width.height.equalTo(22)
         }
-        
-        // 文字标签约束
-        titleLabel_Trace.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.left.equalTo(appleIconView_Trace.snp.right).offset(10)
+
+        // StackView 整体水平垂直居中
+        contentStack_Trace.snp.makeConstraints { make in
+            make.center.equalToSuperview()
         }
     }
-    
-    /// 设置手势
+
     private func setupGesture_Trace() {
-        let tapGesture_Trace = UITapGestureRecognizer(target: self, action: #selector(handleTap_Trace))
-        containerView_Trace.addGestureRecognizer(tapGesture_Trace)
+        let tap_Trace = UITapGestureRecognizer(target: self, action: #selector(handleTap_Trace))
+        containerView_Trace.addGestureRecognizer(tap_Trace)
     }
-    
+
     // MARK: - 事件处理
-    
-    /// 处理点击事件
+
+    /// 处理点击：执行按压动画，然后启动 Apple 登录流程
     @objc private func handleTap_Trace() {
-        // 添加点击动画
         UIView.animate(withDuration: 0.1, animations: {
             self.containerView_Trace.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
         }) { _ in
@@ -103,9 +127,21 @@ class AppleLoginBt_Trace: UIView {
                 self.containerView_Trace.transform = .identity
             }
         }
-        
-        // 调用回调
-        onTap_Trace?()
+        startAppleLogin_Trace()
+    }
+
+    /// 启动 Apple 登录授权流程（内部调用，外部无需感知）
+    private func startAppleLogin_Trace() {
+        guard let vc_Trace = viewController_Trace else { return }
+        appleLoginManager_Trace = AppleLoginManager_Trace(viewController_Trace: vc_Trace)
+        appleLoginManager_Trace?.startAppleLogin_Trace(
+            success_Trace: { [weak self] account_Trace in
+                self?.success_Trace?(account_Trace)
+            },
+            failure_Trace: { [weak self] error_Trace in
+                self?.failure_Trace?(error_Trace)
+            }
+        )
     }
 }
 

@@ -36,6 +36,8 @@ class Release_Trace: UIViewController {
         sv_Trace.showsVerticalScrollIndicator = false
         sv_Trace.alwaysBounceVertical = true
         sv_Trace.keyboardDismissMode = .onDrag
+        // 禁止系统自动调整 contentInset，防止导航栏高度被叠加产生顶部空白
+        sv_Trace.contentInsetAdjustmentBehavior = .never
         return sv_Trace
     }()
     
@@ -47,6 +49,9 @@ class Release_Trace: UIViewController {
         return v_Trace
     }()
     private let navGradLayer_Trace = CAGradientLayer()
+    
+    // --- 顶部描述区域 ---
+    private let headerDescView_Trace = UIView()
     
     // --- 媒体选择区域 ---
     
@@ -206,9 +211,6 @@ class Release_Trace: UIViewController {
     
     private lazy var publishButton_Trace: UIButton = {
         let btn_Trace = UIButton(type: .custom)
-        btn_Trace.setTitle("Publish", for: .normal)
-        btn_Trace.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
-        btn_Trace.setTitleColor(.white, for: .normal)
         btn_Trace.layer.cornerRadius = 26
         btn_Trace.layer.masksToBounds = true
         btn_Trace.addTarget(self, action: #selector(handlePublish_Trace), for: .touchUpInside)
@@ -229,12 +231,12 @@ class Release_Trace: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.navigationBar.isHidden = false
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.navigationBar.isHidden = true
+        navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
     override func viewDidLayoutSubviews() {
@@ -247,6 +249,8 @@ class Release_Trace: UIViewController {
     
     private func setupNavigation_Trace() {
         title = "New Post"
+        // 禁用大标题模式，避免导航栏撑开产生额外顶部空白
+        navigationItem.largeTitleDisplayMode = .never
         navigationController?.navigationBar.tintColor = ColorConfig_Trace.primaryGradientStart_Trace
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "xmark"),
@@ -260,22 +264,103 @@ class Release_Trace: UIViewController {
     
     private func setupUI_Trace() {
         view.backgroundColor = ColorConfig_Trace.backgroundPrimary_Trace
-        
+
         view.addSubview(scrollView_Trace)
         scrollView_Trace.addSubview(contentView_Trace)
-        scrollView_Trace.snp.makeConstraints { make in make.edges.equalToSuperview() }
+        // 底部额外预留 110pt（浮动 TabBar 高度 80 + 底部偏移 30），确保内容可滚动至 TabBar 上方
+        scrollView_Trace.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 110, right: 0)
+        scrollView_Trace.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview()
+        }
         contentView_Trace.snp.makeConstraints { make in
             make.edges.equalToSuperview()
             make.width.equalTo(view)
         }
-        
+
+        setupHeaderDesc_Trace()
         setupMediaSection_Trace()
         setupFormSection_Trace()
+        // 发布按钮位于表单卡片下方，跟随 ScrollView 滚动显示
         setupPublishButton_Trace()
+        setupEulaButton_Trace()
+    }
+    
+    /// 顶部页眉描述区：图标 + 主标题 + 副标题
+    /// 功能：向用户说明发布页的主题与用途，营造「留存时光」的氛围感
+    private func setupHeaderDesc_Trace() {
+        contentView_Trace.addSubview(headerDescView_Trace)
+        headerDescView_Trace.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(20)
+            make.leading.trailing.equalToSuperview().inset(24)
+        }
         
-        // 底部收尾约束
-        publishButton_Trace.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().offset(-40)
+        // 图标背景圆
+        let iconBg_Trace = UIView()
+        iconBg_Trace.backgroundColor = ColorConfig_Trace.primaryGradientStart_Trace.withAlphaComponent(0.12)
+        iconBg_Trace.layer.cornerRadius = 24
+        
+        let iconIV_Trace = UIImageView()
+        let iconCfg_Trace = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
+        iconIV_Trace.image = UIImage(systemName: "square.and.pencil", withConfiguration: iconCfg_Trace)
+        iconIV_Trace.tintColor = ColorConfig_Trace.primaryGradientStart_Trace
+        iconIV_Trace.contentMode = .scaleAspectFit
+        
+        // 主标题
+        let titleLbl_Trace = UILabel()
+        titleLbl_Trace.text = "Share a Trace"
+        titleLbl_Trace.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        titleLbl_Trace.textColor = ColorConfig_Trace.textPrimary_Trace
+        
+        // 副标题
+        let subLbl_Trace = UILabel()
+        subLbl_Trace.text = "Capture the story behind this moment — title it, tag it, and let it live in your timeline."
+        subLbl_Trace.font = UIFont.systemFont(ofSize: 13, weight: .regular)
+        subLbl_Trace.textColor = ColorConfig_Trace.textSecondary_Trace
+        subLbl_Trace.numberOfLines = 2
+        
+        // 右侧小徽章：Record · Share
+        let badgeStack_Trace = UIStackView()
+        badgeStack_Trace.axis = .horizontal
+        badgeStack_Trace.spacing = 6
+        badgeStack_Trace.alignment = .center
+        ["✦ Record", "✦ Share", "✦ Remember"].forEach { text_trace in
+            let badge_Trace = UILabel()
+            badge_Trace.text = text_trace
+            badge_Trace.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
+            badge_Trace.textColor = ColorConfig_Trace.primaryGradientStart_Trace.withAlphaComponent(0.7)
+            badgeStack_Trace.addArrangedSubview(badge_Trace)
+        }
+        
+        headerDescView_Trace.addSubview(iconBg_Trace)
+        iconBg_Trace.addSubview(iconIV_Trace)
+        headerDescView_Trace.addSubview(titleLbl_Trace)
+        headerDescView_Trace.addSubview(subLbl_Trace)
+        headerDescView_Trace.addSubview(badgeStack_Trace)
+        
+        iconBg_Trace.snp.makeConstraints { make in
+            make.leading.top.equalToSuperview()
+            make.width.height.equalTo(48)
+        }
+        iconIV_Trace.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(22)
+        }
+        titleLbl_Trace.snp.makeConstraints { make in
+            make.leading.equalTo(iconBg_Trace.snp.trailing).offset(12)
+            make.trailing.equalToSuperview()
+            make.top.equalTo(iconBg_Trace.snp.top).offset(2)
+        }
+        subLbl_Trace.snp.makeConstraints { make in
+            make.leading.equalTo(iconBg_Trace.snp.trailing).offset(12)
+            make.trailing.equalToSuperview()
+            make.top.equalTo(titleLbl_Trace.snp.bottom).offset(4)
+        }
+        badgeStack_Trace.snp.makeConstraints { make in
+            make.leading.equalTo(iconBg_Trace.snp.trailing).offset(12)
+            make.top.equalTo(subLbl_Trace.snp.bottom).offset(8)
+            make.bottom.equalToSuperview()
         }
     }
     
@@ -291,7 +376,7 @@ class Release_Trace: UIViewController {
         mediaPlaceholderView_Trace.addSubview(mediaPlaceholderLabel_Trace)
         
         mediaCard_Trace.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(16)
+            make.top.equalTo(headerDescView_Trace.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview().inset(20)
             make.height.equalTo(220)
         }
@@ -411,16 +496,46 @@ class Release_Trace: UIViewController {
             make.bottom.equalToSuperview().offset(-10)
         }
         contentTextView_Trace.delegate = self
+
+        // contentCard 底部不再直接收尾，由后续 EULA 按钮区收尾
     }
     
-    /// 底部发布按钮
+    /// EULA 下划线文本按钮（发布按钮下方 10pt，作为滚动区底部收尾元素）
+    /// 点击跳转 EULA 协议页，与 ProtocolHelper_Trace 联动
+    private func setupEulaButton_Trace() {
+        let eulaAttr_Trace = NSMutableAttributedString(string: "EULA")
+        eulaAttr_Trace.addAttributes([
+            .underlineStyle: NSUnderlineStyle.single.rawValue,
+            .underlineColor: ColorConfig_Trace.textSecondary_Trace,
+            .foregroundColor: ColorConfig_Trace.textSecondary_Trace,
+            .font: UIFont.systemFont(ofSize: 12, weight: .regular)
+        ], range: NSRange(location: 0, length: eulaAttr_Trace.length))
+
+        let eulaBtn_Trace = UIButton(type: .custom)
+        eulaBtn_Trace.setAttributedTitle(eulaAttr_Trace, for: .normal)
+        eulaBtn_Trace.contentHorizontalAlignment = .center
+        eulaBtn_Trace.addTarget(self, action: #selector(handleEulaTap_Trace), for: .touchUpInside)
+
+        contentView_Trace.addSubview(eulaBtn_Trace)
+        eulaBtn_Trace.snp.makeConstraints { make in
+            // 紧贴发布按钮下方 10pt
+            make.top.equalTo(publishButton_Trace.snp.bottom).offset(10)
+            make.centerX.equalToSuperview()
+            make.height.equalTo(28)
+            // ScrollView 内容区收尾约束
+            make.bottom.equalToSuperview().offset(-20)
+        }
+    }
+
+    /// 确认发布按钮（跟随 ScrollView 滚动，位于表单卡片下方，EULA 按钮上方 10pt）
     private func setupPublishButton_Trace() {
         contentView_Trace.addSubview(publishButton_Trace)
         publishButton_Trace.snp.makeConstraints { make in
-            make.top.equalTo(contentCard_Trace.snp.bottom).offset(32)
+            make.top.equalTo(contentCard_Trace.snp.bottom).offset(24)
             make.leading.trailing.equalToSuperview().inset(20)
             make.height.equalTo(52)
         }
+        // 渐变背景
         publishGradLayer_Trace.colors = [
             ColorConfig_Trace.primaryGradientStart_Trace.cgColor,
             ColorConfig_Trace.primaryGradientEnd_Trace.cgColor
@@ -429,6 +544,20 @@ class Release_Trace: UIViewController {
         publishGradLayer_Trace.endPoint = CGPoint(x: 1, y: 1)
         publishGradLayer_Trace.cornerRadius = 26
         publishButton_Trace.layer.insertSublayer(publishGradLayer_Trace, at: 0)
+        // 延迟一帧确保 bounds 已确定后再设置渐变 frame
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.publishGradLayer_Trace.frame = self.publishButton_Trace.bounds
+        }
+        // 标题 label 作为 subview 叠在渐变层之上（CAGradientLayer 会遮挡 setTitle 内容）
+        let titleLbl_Trace = UILabel()
+        titleLbl_Trace.text = "Publish Trace"
+        titleLbl_Trace.font = UIFont.systemFont(ofSize: 17, weight: .bold)
+        titleLbl_Trace.textColor = .white
+        titleLbl_Trace.textAlignment = .center
+        titleLbl_Trace.isUserInteractionEnabled = false
+        publishButton_Trace.addSubview(titleLbl_Trace)
+        titleLbl_Trace.snp.makeConstraints { make in make.edges.equalToSuperview() }
     }
     
     // MARK: - 标签按钮构建
@@ -475,7 +604,44 @@ class Release_Trace: UIViewController {
     }
     
     // MARK: - 辅助方法
-    
+
+    /// 将选中图片持久化到 Documents 目录，返回文件名供 MediaDisplayView 加载
+    /// - Parameter image_Trace: 需要保存的图片
+    /// - Returns: 保存成功返回文件名（如 trace_post_1234567890.jpg），失败返回 nil
+    private func saveImageToDisk_Trace(_ image_Trace: UIImage) -> String? {
+        let fileName_Trace = "trace_post_\(Int(Date().timeIntervalSince1970)).jpg"
+        let docs_Trace = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let fileURL_Trace = docs_Trace.appendingPathComponent(fileName_Trace)
+        guard let data_Trace = image_Trace.jpegData(compressionQuality: 0.85) else {
+            print("图片压缩失败，无法保存")
+            return nil
+        }
+        do {
+            try data_Trace.write(to: fileURL_Trace)
+            print("图片已保存到 Documents: \(fileName_Trace)")
+            return fileName_Trace
+        } catch {
+            print("图片保存失败: \(error)")
+            return nil
+        }
+    }
+
+    /// 发布成功后重置表单所有输入数据，保证下次进入页面是干净状态
+    private func resetForm_Trace() {
+        selectedImage_Trace = nil
+        isVideo_Trace = false
+        updateMediaPreview_Trace()
+
+        titleField_Trace.text = ""
+        contentTextView_Trace.text = ""
+        charCountLabel_Trace.text = "0 / 500"
+        contentPlaceholder_Trace.isHidden = false
+
+        // 重置标签回第一项
+        selectedTag_Trace = tags_Trace[0]
+        updateTagStates_Trace()
+    }
+
     /// 创建区域标题标签
     private func makeSectionLabel_Trace(text_trace: String) -> UILabel {
         let lbl_Trace = UILabel()
@@ -503,6 +669,15 @@ class Release_Trace: UIViewController {
     
     @objc private func handleClose_Trace() {
         Navigation_Trace.pop_Trace()
+    }
+    
+    /// EULA 按钮点击：通过 ProtocolHelper_Trace 展示最终用户许可协议页面
+    @objc private func handleEulaTap_Trace() {
+        ProtocolHelper_Trace.showProtocol_Trace(
+            type_Trace: .eula_Trace,
+            content_Trace: "eula.png",
+            from: self
+        )
     }
     
     @objc private func handleMediaTap_Trace() {
@@ -556,18 +731,32 @@ class Release_Trace: UIViewController {
             return
         }
         
-        // 5. 发布
+        // 5. 将选中图片持久化到本地，获取可被 MediaDisplayView 加载的文件名
+        let mediaFileName_Trace: String
+        if let img_Trace = selectedImage_Trace,
+           let savedName_Trace = saveImageToDisk_Trace(img_Trace) {
+            mediaFileName_Trace = savedName_Trace
+        } else {
+            // 保存失败时使用空字符串，MediaDisplayView 会显示占位图
+            mediaFileName_Trace = ""
+        }
+
+        // 6. 触觉反馈
         publishButton_Trace.animatePressDown_Trace { self.publishButton_Trace.animatePressUp_Trace() }
         let generator_Trace = UIImpactFeedbackGenerator(style: .medium)
         generator_Trace.impactOccurred()
-        
+
+        // 7. 发布帖子
         TitleViewModel_Trace.shared_Trace.releasePost_Trace(
             title_trace: title_Trace,
             content_trace: content_Trace,
-            media_trace: "post_media_\(Int(Date().timeIntervalSince1970))",
+            media_trace: mediaFileName_Trace,
             type_trace: 0
         )
-        
+
+        // 8. 重置表单，发布页复用同一 VC 实例（Tab 页），需清除旧数据
+        resetForm_Trace()
+
         Navigation_Trace.pop_Trace()
     }
 }

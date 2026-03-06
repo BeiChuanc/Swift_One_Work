@@ -73,7 +73,7 @@ class UserViewModel_Trace {
         loggedUser_Trace = LoginUserModel_Trace(
             userId_Trace: userId_trace,
             userPwd_Trace: nil,
-            userName_Trace: "Wanderer", // 可以从本地数据或服务器获取
+            userName_Trace: "Tracer", // 可以从本地数据或服务器获取
             userHead_Trace: "user_avatar",
             userPosts_Trace: [],
             userLike_Trace: [],
@@ -87,25 +87,19 @@ class UserViewModel_Trace {
             // 关闭加载动画
             Utils_Trace.dismissLoading_Trace()
             
-            // 显示成功提示
-            Utils_Trace.showSuccess_Trace(message_Trace: "Login successful!")
-            
             // 切换到主Tabbar
             Navigation_Trace.switchToTabbar_Trace(animated: true)
             
             notifyStateChange_Trace()
         }
     }
-    
+
     /// 用户登出
     func logout_Trace(logoutType_trace: LogOutType_Trace) {
         if !isLoggedIn_Trace {
             showLoginPrompt_Trace()
             return
         }
-        
-        // 显示加载动画
-        Utils_Trace.showLoading_Trace(message_Trace: "Logging out...")
         
         // 重置为游客状态
         loggedUser_Trace = defaultUser_Trace
@@ -119,14 +113,11 @@ class UserViewModel_Trace {
         notifyStateChange_Trace()
         
         // 跳转到首页
-         Navigation_Trace.toHome_Trace()
+         Navigation_Trace.switchToTabbar_Trace()
         
         // 延迟显示提示
         Task {
             try? await Task.sleep(nanoseconds: 1_200_000_000)
-            
-            // 关闭加载动画
-            Utils_Trace.dismissLoading_Trace()
             
             if logoutType_trace == .delete_trace {
                 Utils_Trace.showInfo_Trace(
@@ -157,6 +148,86 @@ class UserViewModel_Trace {
         loggedUser_Trace = user_trace
         Utils_Trace.showSuccess_Trace(message_Trace: "Name updated successfully")
         notifyStateChange_Trace()
+    }
+    
+    /// 更新用户简介
+    func updateIntroduce_Trace(introduce_trace: String) {
+        guard let user_trace = loggedUser_Trace else { return }
+        user_trace.userIntroduce_Trace = introduce_trace
+        loggedUser_Trace = user_trace
+        notifyStateChange_Trace()
+    }
+    
+    /// 更新用户头像图片（直接传入 UIImage，内部负责保存到文档目录）
+    /// - Parameter image_trace: 用户选择的头像图片
+    func updateAvatarImage_Trace(image_trace: UIImage) {
+        guard let savedPath_trace = saveAvatarImage_Trace(image_trace: image_trace) else {
+            Utils_Trace.showError_Trace(message_Trace: "Failed to update avatar")
+            return
+        }
+        updateHead_Trace(headUrl_trace: savedPath_trace)
+    }
+    
+    /// 批量更新用户个人资料（只更新非 nil 字段）
+    /// - Parameters:
+    ///   - userName_trace: 新用户名，nil 表示不修改
+    ///   - introduce_trace: 新简介，nil 表示不修改
+    ///   - headImage_trace: 新头像 UIImage，nil 表示不修改
+    func updateProfile_Trace(
+        userName_trace: String? = nil,
+        introduce_trace: String? = nil,
+        headImage_trace: UIImage? = nil
+    ) {
+        guard let user_trace = loggedUser_Trace else { return }
+        
+        var hasChanges_trace = false
+        
+        // 更新用户名
+        if let name_trace = userName_trace, !name_trace.isEmpty {
+            user_trace.userName_Trace = name_trace
+            hasChanges_trace = true
+        }
+        
+        // 更新简介
+        if let intro_trace = introduce_trace {
+            user_trace.userIntroduce_Trace = intro_trace
+            hasChanges_trace = true
+        }
+        
+        // 更新头像（先保存图片到文档目录）
+        if let image_trace = headImage_trace,
+           let savedPath_trace = saveAvatarImage_Trace(image_trace: image_trace) {
+            user_trace.userHead_Trace = savedPath_trace
+            hasChanges_trace = true
+        }
+        
+        guard hasChanges_trace else {
+            Utils_Trace.showInfo_Trace(message_Trace: "No changes to save")
+            return
+        }
+        
+        loggedUser_Trace = user_trace
+        Utils_Trace.showSuccess_Trace(message_Trace: "Profile updated!")
+        notifyStateChange_Trace()
+    }
+    
+    /// 将头像图片保存到应用文档目录
+    /// - Parameter image_trace: 要保存的 UIImage
+    /// - Returns: 文件路径字符串，失败返回 nil
+    private func saveAvatarImage_Trace(image_trace: UIImage) -> String? {
+        guard let data_trace = image_trace.jpegData(compressionQuality: 0.85) else { return nil }
+        let filename_trace = "user_avatar_\(Int(Date().timeIntervalSince1970)).jpg"
+        let fileURL_trace = FileManager.default
+            .urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent(filename_trace)
+        do {
+            try data_trace.write(to: fileURL_trace)
+            print("✅ 头像已保存至: \(fileURL_trace.path)")
+            return fileURL_trace.path
+        } catch {
+            print("❌ 保存头像失败: \(error)")
+            return nil
+        }
     }
     
     /// 上传用户封面
@@ -290,10 +361,13 @@ class UserViewModel_Trace {
     
     // MARK: - 关注功能
     
-    /// 判断是否关注指定用户
+    /// 判断当前登录用户是否已关注指定用户
+    /// - Parameter user_trace: 目标用户
+    /// - Returns: 已关注返回 true，未登录或未关注返回 false
     func isFollowing_Trace(user_trace: PrewUserModel_Trace) -> Bool {
-        guard let user_trace = loggedUser_Trace else { return false }
-        return user_trace.userFollow_Trace.contains(where: { $0.userId_Trace == user_trace.userId_Trace })
+        guard let currentUser_trace = loggedUser_Trace,
+              let targetId_trace = user_trace.userId_Trace else { return false }
+        return currentUser_trace.userFollow_Trace.contains(where: { $0.userId_Trace == targetId_trace })
     }
     
     /// 关注/取消关注用户

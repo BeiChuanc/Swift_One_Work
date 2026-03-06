@@ -4,8 +4,8 @@ import SnapKit
 // MARK: - 帖子卡片显示模式枚举
 
 /// 帖子卡片显示模式
-/// - fullWidth: 首页单列宽卡模式，图标区高度 120pt
-/// - grid: 发现页双列窄卡模式，图标区高度 90pt
+/// - fullWidth: 首页单列宽卡模式，媒体区高度 150pt
+/// - grid: 发现页双列窄卡模式，媒体区高度 130pt
 enum TracePostCardMode_Trace {
     case fullWidth_trace
     case grid_trace
@@ -60,23 +60,12 @@ class TracePostCard_Trace: UIView {
         return view_Trace
     }()
     
-    /// 渐变图标区（卡片顶部彩色区域）
-    private let gradientIconView_Trace: UIView = {
-        let view_Trace = UIView()
-        view_Trace.layer.cornerRadius = 12
-        view_Trace.layer.masksToBounds = true
-        return view_Trace
-    }()
-    
-    /// 渐变图层
-    private let gradientLayer_Trace = CAGradientLayer()
-    
-    /// 中心图标
-    private let iconImageView_Trace: UIImageView = {
-        let iv_Trace = UIImageView()
-        iv_Trace.contentMode = .scaleAspectFit
-        iv_Trace.tintColor = UIColor.white.withAlphaComponent(0.9)
-        return iv_Trace
+    /// 媒体展示区（卡片顶部，使用 MediaDisplayView_Trace 展示帖子实际媒体资源）
+    private let mediaView_Trace: MediaDisplayView_Trace = {
+        let v_Trace = MediaDisplayView_Trace()
+        v_Trace.layer.cornerRadius = 12
+        v_Trace.clipsToBounds = true
+        return v_Trace
     }()
     
     /// 标签徽章容器
@@ -120,22 +109,8 @@ class TracePostCard_Trace: UIView {
     /// 作者行容器
     private let authorRowView_Trace: UIView = UIView()
     
-    /// 作者头像（小圆圈占位）
-    private let authorAvatarView_Trace: UIView = {
-        let view_Trace = UIView()
-        view_Trace.layer.cornerRadius = 10
-        view_Trace.layer.masksToBounds = true
-        return view_Trace
-    }()
-    
-    /// 作者头像图标
-    private let authorIconView_Trace: UIImageView = {
-        let iv_Trace = UIImageView()
-        iv_Trace.image = UIImage(systemName: "person.circle.fill")
-        iv_Trace.contentMode = .scaleAspectFill
-        iv_Trace.tintColor = ColorConfig_Trace.primaryGradientStart_Trace
-        return iv_Trace
-    }()
+    /// 作者头像（使用 UserAvatarView_Trace 加载真实头像）
+    private let authorAvatarView_Trace = UserAvatarView_Trace()
     
     /// 作者名称
     private let authorNameLabel_Trace: UILabel = {
@@ -204,8 +179,7 @@ class TracePostCard_Trace: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        // 更新渐变图层尺寸
-        gradientLayer_Trace.frame = gradientIconView_Trace.bounds
+        // 更新标签徽章渐变图层尺寸
         tagGradientLayer_Trace.frame = tagBadgeView_Trace.bounds
     }
     
@@ -220,28 +194,20 @@ class TracePostCard_Trace: UIView {
             make.edges.equalToSuperview()
         }
         
-        // 渐变图标区
-        cardContainer_Trace.addSubview(gradientIconView_Trace)
-        gradientIconView_Trace.layer.addSublayer(gradientLayer_Trace)
-        gradientIconView_Trace.addSubview(iconImageView_Trace)
-        
-        gradientIconView_Trace.snp.makeConstraints { make in
+        // 媒体展示区（替代原渐变图标区，展示帖子实际媒体内容）
+        cardContainer_Trace.addSubview(mediaView_Trace)
+        mediaView_Trace.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
             iconHeightConstraint_Trace = make.height.equalTo(iconHeight_Trace).constraint
         }
-        
-        iconImageView_Trace.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.height.equalTo(36)
-        }
-        
-        // 标签徽章
+
+        // 标签徽章（叠放在媒体区底部左侧，增强层次感）
         cardContainer_Trace.addSubview(tagBadgeView_Trace)
         tagBadgeView_Trace.layer.insertSublayer(tagGradientLayer_Trace, at: 0)
         tagBadgeView_Trace.addSubview(tagLabel_Trace)
         
         tagBadgeView_Trace.snp.makeConstraints { make in
-            make.top.equalTo(gradientIconView_Trace.snp.bottom).offset(8)
+            make.top.equalTo(mediaView_Trace.snp.bottom).offset(8)
             make.leading.equalToSuperview().offset(12)
             make.height.equalTo(18)
         }
@@ -266,27 +232,22 @@ class TracePostCard_Trace: UIView {
             make.leading.trailing.equalToSuperview().inset(12)
         }
         
-        // 作者行
+        // 作者行（UserAvatarView_Trace 展示真实头像）
         cardContainer_Trace.addSubview(authorRowView_Trace)
         authorRowView_Trace.addSubview(authorAvatarView_Trace)
-        authorAvatarView_Trace.addSubview(authorIconView_Trace)
         authorRowView_Trace.addSubview(authorNameLabel_Trace)
-        
+
         authorRowView_Trace.snp.makeConstraints { make in
             make.top.equalTo(contentLabel_Trace.snp.bottom).offset(8)
             make.leading.trailing.equalToSuperview().inset(12)
-            make.height.equalTo(20)
+            make.height.equalTo(22)
         }
-        
+
         authorAvatarView_Trace.snp.makeConstraints { make in
             make.leading.centerY.equalToSuperview()
-            make.width.height.equalTo(20)
+            make.width.height.equalTo(22)
         }
-        
-        authorIconView_Trace.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        
+
         authorNameLabel_Trace.snp.makeConstraints { make in
             make.leading.equalTo(authorAvatarView_Trace.snp.trailing).offset(5)
             make.centerY.equalToSuperview()
@@ -327,11 +288,11 @@ class TracePostCard_Trace: UIView {
         titleLabel_Trace.numberOfLines = displayMode_Trace == .fullWidth_trace ? 2 : 2
     }
     
-    /// 当前模式对应的图标区高度
+    /// 当前模式对应的媒体区高度
     private var iconHeight_Trace: CGFloat {
         switch displayMode_Trace {
-        case .fullWidth_trace: return 120
-        case .grid_trace: return 90
+        case .fullWidth_trace: return 150
+        case .grid_trace:      return 130
         }
     }
     
@@ -352,22 +313,12 @@ class TracePostCard_Trace: UIView {
         self.post_Trace = post_trace
         
         let tag_trace = post_trace.titleTag_Trace
-        
-        // 配置渐变图标区
+
+        // 媒体区：使用帖子第一张媒体资源，无媒体时自动显示渐变占位符
+        mediaView_Trace.configure_Trace(mediaPath_Trace: post_trace.titleMeidas_Trace.first)
+
+        // 配置标签徽章（渐变色取自 tag 映射表）
         let colors_trace = Self.tagGradientMap_Trace[tag_trace] ?? ("#B794F6", "#90CDF4")
-        gradientLayer_Trace.colors = [
-            UIColor(hexstring_Trace: colors_trace.0).cgColor,
-            UIColor(hexstring_Trace: colors_trace.1).cgColor
-        ]
-        gradientLayer_Trace.startPoint = CGPoint(x: 0, y: 0)
-        gradientLayer_Trace.endPoint = CGPoint(x: 1, y: 1)
-        gradientLayer_Trace.cornerRadius = 12
-        
-        let iconName_trace = Self.tagIconMap_Trace[tag_trace] ?? "sparkles"
-        let config_trace = UIImage.SymbolConfiguration(pointSize: 28, weight: .medium)
-        iconImageView_Trace.image = UIImage(systemName: iconName_trace, withConfiguration: config_trace)
-        
-        // 配置标签徽章
         tagLabel_Trace.text = tag_trace
         tagGradientLayer_Trace.colors = [
             UIColor(hexstring_Trace: colors_trace.0).withAlphaComponent(0.9).cgColor,
@@ -383,11 +334,9 @@ class TracePostCard_Trace: UIView {
         authorNameLabel_Trace.text = post_trace.titleUserName_Trace
         likeCountLabel_Trace.text = "\(post_trace.likes_Trace)"
         
-        // 配置头像颜色（根据用户ID）
-        let avatarColors_trace = UserAvatarView_Trace.defaultAvatarColors_Trace
-        let colorIndex_trace = post_trace.titleUserId_Trace % avatarColors_trace.count
-        authorIconView_Trace.tintColor = avatarColors_trace[colorIndex_trace]
-        
+        // 配置作者头像（UserAvatarView_Trace 根据 userId 自动加载真实头像）
+        authorAvatarView_Trace.configure_Trace(userId_Trace: post_trace.titleUserId_Trace)
+
         // 点赞状态
         likeButton_Trace.isSelected = isLiked_trace
         likeButton_Trace.tintColor = isLiked_trace
