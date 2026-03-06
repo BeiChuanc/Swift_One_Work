@@ -81,26 +81,28 @@ private struct DataSource_Trace {
         ("Autumn Is Patient", "The leaves don't rush. They go through every shade of red and orange before they finally let go. I've been trying to learn that from them—that change doesn't have to be fast to be real. I sat under a tree today and watched one leaf make its whole descent. It took almost a minute. I didn't look at my phone once.", "title10", "Nature"),
     ]
     
-    /// 挑战参与记录列表 (所属挑战ID, 参与者名, 头像颜色索引, 内容, 相对时间)
-    static let participationsInfo_Trace: [(Int, String, Int, String, String)] = [
+    /// 挑战参与记录列表 (所属挑战ID, 参与者用户UID, 内容)
+    /// 用户 UID 对应 userIdStart(10) + usersInfo 索引：
+    /// DawnJournal=10  MomentKeeper=11  SoftGrowth=12  TraceOfLight=13  StillWaters=14
+    static let participationsInfo_Trace: [(Int, Int, String)] = [
         // 挑战1：Catch Tonight's Sunset
-        (1, "DawnJournal",  0, "Found a gap between buildings where the light pooled gold. Stopped for three full minutes. The world felt very small and very good.", "2h ago"),
-        (1, "TraceOfLight", 3, "The sky was coral and quiet. I sat on the fire escape and watched it die. Didn't take a photo. Just kept it.", "5h ago"),
+        (1, 10, "Found a gap between buildings where the light pooled gold. Stopped for three full minutes. The world felt very small and very good."),
+        (1, 13, "The sky was coral and quiet. I sat on the fire escape and watched it die. Didn't take a photo. Just kept it."),
         // 挑战2：One Sentence, Right Now
-        (2, "MomentKeeper", 1, "I am tired in a way that isn't fixed by sleep, but I am also strangely okay.", "1h ago"),
-        (2, "SoftGrowth",   2, "Grateful for the cold air this morning that made everything feel a little more awake.", "3h ago"),
+        (2, 11, "I am tired in a way that isn't fixed by sleep, but I am also strangely okay."),
+        (2, 12, "Grateful for the cold air this morning that made everything feel a little more awake."),
         // 挑战3：Tiny Win of the Day
-        (3, "StillWaters",  4, "Replied to an email I'd been avoiding for two weeks. That's it. That's the win.", "4h ago"),
-        (3, "DawnJournal",  0, "Made the bed before noon. Small thing. Felt huge.", "6h ago"),
+        (3, 14, "Replied to an email I'd been avoiding for two weeks. That's it. That's the win."),
+        (3, 10, "Made the bed before noon. Small thing. Felt huge."),
         // 挑战4：Night Sky Diary
-        (4, "TraceOfLight", 3, "Three stars visible through the haze. I named them after things I want to stop worrying about.", "Yesterday"),
-        (4, "MomentKeeper", 1, "The moon was half. I thought about how it's always whole — we just can't always see it.", "Yesterday"),
+        (4, 13, "Three stars visible through the haze. I named them after things I want to stop worrying about."),
+        (4, 11, "The moon was half. I thought about how it's always whole — we just can't always see it."),
         // 挑战5：Spot Something Green
-        (5, "SoftGrowth",   2, "A single weed pushing through a sidewalk crack. I almost stepped on it. Now I think about it constantly.", "3h ago"),
-        (5, "StillWaters",  4, "Moss on the north side of a stone wall. Ancient, patient, unbothered. Goals.", "7h ago"),
+        (5, 12, "A single weed pushing through a sidewalk crack. I almost stepped on it. Now I think about it constantly."),
+        (5, 14, "Moss on the north side of a stone wall. Ancient, patient, unbothered. Goals."),
         // 挑战6：Memory Lane
-        (6, "DawnJournal",  0, "Found a photo of my old kitchen table. The coffee stain is still there. I miss it in a way I can't explain.", "1d ago"),
-        (6, "TraceOfLight", 3, "An old note from a friend saying 'see you soon'. We drifted. The handwriting still makes me smile.", "2d ago"),
+        (6, 10, "Found a photo of my old kitchen table. The coffee stain is still there. I miss it in a way I can't explain."),
+        (6, 13, "An old note from a friend saying 'see you soon'. We drifted. The handwriting still makes me smile."),
     ]
 
     /// 挑战数据列表 (标题, 描述, 表情, 关联标签, 是否官方, 参与人数, 渐变起始色, 渐变结束色)
@@ -278,15 +280,13 @@ class DataGenerator_Trace {
                 gradientStart_Trace: gradStart_trace,
                 gradientEnd_Trace: gradEnd_trace
             )
-            // 注入与该挑战 ID 匹配的预制参与记录
+            // 注入与该挑战 ID 匹配的预制参与记录，直接存储用户 UID
             challenge_trace.participations_Trace = DataSource_Trace.participationsInfo_Trace
                 .filter { $0.0 == challengeId_trace }
-                .map { (_, name_trace, colorIdx_trace, content_trace, time_trace) in
+                .map { (_, userId_trace, content_trace) in
                     ChallengeParticipation_Trace(
-                        authorName_Trace: name_trace,
-                        authorColorIndex_Trace: colorIdx_trace,
-                        content_Trace: content_trace,
-                        timeAgo_Trace: time_trace
+                        authorUserId_Trace: userId_trace,
+                        content_Trace: content_trace
                     )
                 }
             dataLocal_trace.challengeList_Trace.append(challenge_trace)

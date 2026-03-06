@@ -237,102 +237,116 @@ class UserViewModel_Trace {
     }
     
     // MARK: - 时光记录管理
-    
+
     /// 时光记录状态更新通知
     static let traceRecordDidChangeNotification_Trace = Notification.Name("TraceRecordDidChange_Trace")
-    
-    /// 时光记录列表（按时间戳降序，最新在前）
-    private var traceRecords_Trace: [TraceRecord_Trace] = []
-    
-    /// 记录 ID 自增计数器
-    private var nextRecordId_Trace: Int = 1
-    
-    /// 添加时光记录
-    /// - Parameter content_trace: 记录内容
+
+    /// 当前用户时光记录（读写均指向 loggedUser_Trace 拓展字段）
+    private var currentTraceRecords_Trace: [TraceRecord_Trace] {
+        get { loggedUser_Trace?.userTraceRecords_Trace ?? [] }
+        set { loggedUser_Trace?.userTraceRecords_Trace = newValue }
+    }
+
+    /// 添加时光记录（需登录）
+    /// - Parameter content_trace: 记录文本内容
     func addTraceRecord_Trace(content_trace: String) {
+        guard isLoggedIn_Trace else {
+            showLoginPrompt_Trace()
+            return
+        }
+        guard let user_trace = loggedUser_Trace else { return }
         let record_Trace = TraceRecord_Trace(
-            recordId_Trace: nextRecordId_Trace,
+            recordId_Trace: user_trace.userNextRecordId_Trace,
             content_Trace: content_trace
         )
-        nextRecordId_Trace += 1
-        traceRecords_Trace.insert(record_Trace, at: 0)
+        user_trace.userNextRecordId_Trace += 1
+        user_trace.userTraceRecords_Trace.insert(record_Trace, at: 0)
         NotificationCenter.default.post(
             name: UserViewModel_Trace.traceRecordDidChangeNotification_Trace,
             object: nil
         )
     }
-    
-    /// 删除指定记录
-    /// - Parameter recordId_trace: 记录ID
+
+    /// 删除指定时光记录
+    /// - Parameter recordId_trace: 要删除的记录 ID
     func deleteTraceRecord_Trace(recordId_trace: Int) {
-        traceRecords_Trace.removeAll { $0.recordId_Trace == recordId_trace }
+        guard let user_trace = loggedUser_Trace else { return }
+        user_trace.userTraceRecords_Trace.removeAll { $0.recordId_Trace == recordId_trace }
         NotificationCenter.default.post(
             name: UserViewModel_Trace.traceRecordDidChangeNotification_Trace,
             object: nil
         )
     }
-    
-    /// 获取指定天的记录（默认今天，降序）
+
+    /// 获取指定天的时光记录（默认今天，降序）
     /// - Parameter date_trace: 目标日期
+    /// - Returns: 当天所有记录
     func getTraceRecordsForDay_Trace(date_trace: Date = Date()) -> [TraceRecord_Trace] {
         let cal_Trace = Calendar.current
-        return traceRecords_Trace.filter {
+        return currentTraceRecords_Trace.filter {
             cal_Trace.isDate($0.timestamp_Trace, inSameDayAs: date_trace)
         }
     }
-    
-    /// 获取本周的记录（降序）
+
+    /// 获取本周的时光记录（降序）
     func getTraceRecordsForWeek_Trace() -> [TraceRecord_Trace] {
         let cal_Trace = Calendar.current
         guard let weekStart_Trace = cal_Trace.dateInterval(of: .weekOfYear, for: Date())?.start else { return [] }
-        return traceRecords_Trace.filter { $0.timestamp_Trace >= weekStart_Trace }
+        return currentTraceRecords_Trace.filter { $0.timestamp_Trace >= weekStart_Trace }
     }
-    
-    /// 获取本月的记录（降序）
+
+    /// 获取本月的时光记录（降序）
     func getTraceRecordsForMonth_Trace() -> [TraceRecord_Trace] {
         let cal_Trace = Calendar.current
         guard let monthStart_Trace = cal_Trace.dateInterval(of: .month, for: Date())?.start else { return [] }
-        return traceRecords_Trace.filter { $0.timestamp_Trace >= monthStart_Trace }
+        return currentTraceRecords_Trace.filter { $0.timestamp_Trace >= monthStart_Trace }
     }
-    
+
     // MARK: - 打卡功能
-    
-    /// 打卡日期集合（格式 "yyyy-MM-dd"）
-    private var checkInDates_Trace: Set<String> = []
-    
-    /// 今日日期键
+
+    /// 今日日期键（格式 "yyyy-MM-dd"）
     private var todayKey_Trace: String {
         let fmt_Trace = DateFormatter()
         fmt_Trace.dateFormat = "yyyy-MM-dd"
         return fmt_Trace.string(from: Date())
     }
-    
+
+    /// 当前用户签到日期集合（读写均指向 loggedUser_Trace 拓展字段）
+    private var currentCheckInDates_Trace: Set<String> {
+        loggedUser_Trace?.userCheckInDates_Trace ?? []
+    }
+
     /// 检查今天是否已打卡
     func hasCheckedInToday_Trace() -> Bool {
-        return checkInDates_Trace.contains(todayKey_Trace)
+        return currentCheckInDates_Trace.contains(todayKey_Trace)
     }
-    
-    /// 执行打卡
+
+    /// 执行打卡（需登录；已打卡时给出提示）
     func checkIn_Trace() {
+        guard isLoggedIn_Trace else {
+            showLoginPrompt_Trace()
+            return
+        }
         if hasCheckedInToday_Trace() {
             Utils_Trace.showWarning_Trace(message_Trace: "Already checked in today.")
             return
         }
-        checkInDates_Trace.insert(todayKey_Trace)
+        loggedUser_Trace?.userCheckInDates_Trace.insert(todayKey_Trace)
         Utils_Trace.showSuccess_Trace(
             message_Trace: "Check-in successful! Keep it up 🔥",
             image_Trace: UIImage(systemName: "checkmark.seal.fill")
         )
         notifyStateChange_Trace()
     }
-    
+
     /// 获取指定天数范围内的打卡状态（从最早到今天排列）
     /// - Parameter days_trace: 天数（7 或 15）
-    /// - Returns: 每天的日期与打卡状态数组
+    /// - Returns: 每天日期与是否已打卡的元组数组
     func getCheckInStatus_Trace(days_trace: Int) -> [(date: Date, isCheckedIn: Bool)] {
         let cal_Trace = Calendar.current
         let fmt_Trace = DateFormatter()
         fmt_Trace.dateFormat = "yyyy-MM-dd"
+        let dates_Trace = currentCheckInDates_Trace
         return (0..<days_trace).compactMap { offset_Trace in
             guard let date_Trace = cal_Trace.date(
                 byAdding: .day,
@@ -340,18 +354,19 @@ class UserViewModel_Trace {
                 to: Date()
             ) else { return nil }
             let key_Trace = fmt_Trace.string(from: date_Trace)
-            return (date: date_Trace, isCheckedIn: checkInDates_Trace.contains(key_Trace))
+            return (date: date_Trace, isCheckedIn: dates_Trace.contains(key_Trace))
         }
     }
-    
+
     /// 获取截止今天的连续打卡天数
     func getCheckInStreak_Trace() -> Int {
         let cal_Trace = Calendar.current
         let fmt_Trace = DateFormatter()
         fmt_Trace.dateFormat = "yyyy-MM-dd"
+        let dates_Trace = currentCheckInDates_Trace
         var streak_Trace = 0
         var current_Trace = Date()
-        while checkInDates_Trace.contains(fmt_Trace.string(from: current_Trace)) {
+        while dates_Trace.contains(fmt_Trace.string(from: current_Trace)) {
             streak_Trace += 1
             guard let prev_Trace = cal_Trace.date(byAdding: .day, value: -1, to: current_Trace) else { break }
             current_Trace = prev_Trace

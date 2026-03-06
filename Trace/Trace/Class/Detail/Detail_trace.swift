@@ -347,6 +347,15 @@ class Detail_Trace: UIViewController {
         return btn
     }()
 
+    /// 送礼按钮（位于发送按钮左侧 10pt，使用 Assets 中的 gift_btn 图片）
+    private let giftBtn_Trace: UIButton = {
+        let btn = UIButton(type: .custom)
+        btn.setImage(UIImage(named: "gift_btn"), for: .normal)
+        btn.imageView?.contentMode = .scaleAspectFit
+        btn.layer.masksToBounds = true
+        return btn
+    }()
+
     // MARK: - 装饰圆圈（媒体顶部点缀）
 
     private let decorCircle1_Trace: UIView = {
@@ -460,6 +469,7 @@ class Detail_Trace: UIViewController {
         // 评论输入栏（固定底部）
         view.addSubview(commentInputBar_Trace)
         commentInputBar_Trace.addSubview(commentInputField_Trace)
+        commentInputBar_Trace.addSubview(giftBtn_Trace)
         commentInputBar_Trace.addSubview(sendButton_Trace)
 
         // 浮动导航层（最顶层）
@@ -656,9 +666,17 @@ class Detail_Trace: UIViewController {
         commentInputField_Trace.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
             make.top.equalToSuperview().offset(10)
-            make.trailing.equalTo(sendButton_Trace.snp.leading).offset(-8)
+            // 输入框右侧紧贴送礼按钮
+            make.trailing.equalTo(giftBtn_Trace.snp.leading).offset(-8)
             make.height.equalTo(40)
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-10)
+        }
+
+        // 送礼按钮：发送按钮左侧 10pt，垂直居中与输入框对齐，固定 40x40
+        giftBtn_Trace.snp.makeConstraints { make in
+            make.trailing.equalTo(sendButton_Trace.snp.leading).offset(-10)
+            make.centerY.equalTo(commentInputField_Trace)
+            make.width.height.equalTo(40)
         }
 
         sendButton_Trace.snp.makeConstraints { make in
@@ -921,6 +939,7 @@ class Detail_Trace: UIViewController {
         commentInputField_Trace.delegate = self
         commentInputField_Trace.addTarget(self, action: #selector(commentFieldChanged_Trace), for: .editingChanged)
         sendButton_Trace.addTarget(self, action: #selector(handleSendComment_Trace), for: .touchUpInside)
+        giftBtn_Trace.addTarget(self, action: #selector(handleGiftTap_Trace), for: .touchUpInside)
 
         let bgTap_trace = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard_Trace))
         bgTap_trace.cancelsTouchesInView = false
@@ -1012,6 +1031,16 @@ class Detail_Trace: UIViewController {
             post_trace: post_trace,
             content_trace: text_trace
         )
+    }
+
+    /// 送礼按钮点击：需要登录才可操作，登录后给出礼物互动反馈
+    /// 送礼按钮点击：弹出 GiftView_Trace 模态送礼界面
+    @objc private func handleGiftTap_Trace() {
+        giftBtn_Trace.animatePulse_Trace()
+        let giftVC = GiftView_Trace()
+        giftVC.modalPresentationStyle = .overFullScreen
+        giftVC.modalTransitionStyle = .crossDissolve
+        present(giftVC, animated: false)
     }
 
     @objc private func dismissKeyboard_Trace() {

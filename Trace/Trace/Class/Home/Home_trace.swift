@@ -146,6 +146,8 @@ class Home_Trace: UIViewController {
     private func subscribeNotifications_Trace() {
         NotificationCenter.default.addObserver(self, selector: #selector(handlePostsStateChange_Trace), name: TitleViewModel_Trace.titleStateDidChangeNotification_Trace, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleRecordStateChange_Trace), name: UserViewModel_Trace.traceRecordDidChangeNotification_Trace, object: nil)
+        // 监听登录/登出：切换用户后时光记录需同步刷新为当前用户的数据
+        NotificationCenter.default.addObserver(self, selector: #selector(handleUserStateChange_Trace), name: UserViewModel_Trace.userStateDidChangeNotification_Trace, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow_Trace(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide_Trace(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
@@ -269,6 +271,17 @@ class Home_Trace: UIViewController {
             ]))
         }
     }
+
+    /// 用户状态变更（登录/登出）时刷新时光记录区，确保显示当前登录用户的数据
+    @objc private func handleUserStateChange_Trace() {
+        updateCurrentPeriodRecords_Trace()
+        UIView.performWithoutAnimation {
+            collectionView_Trace.reloadSections(IndexSet([
+                HomeSectionType_Trace.timelineHeader_trace.rawValue,
+                HomeSectionType_Trace.records_trace.rawValue
+            ]))
+        }
+    }
     
     // MARK: - 键盘处理
     
@@ -366,6 +379,20 @@ extension Home_Trace: UICollectionViewDataSource {
             let record_Trace = currentPeriodRecords_Trace[indexPath.item]
             let showDate_Trace = (currentPeriod_Trace != .day_trace)
             cell_Trace.configure_Trace(record_trace: record_Trace, showDate_trace: showDate_Trace)
+            // 绑定删除按钮回调：弹出确认弹窗后再删除
+            cell_Trace.onDelete_Trace = { [weak self] in
+                guard let self = self else { return }
+                let alert_Trace = UIAlertController(
+                    title: "Delete Record",
+                    message: "Are you sure you want to delete this record?",
+                    preferredStyle: .alert
+                )
+                alert_Trace.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+                alert_Trace.addAction(UIAlertAction(title: "Delete", style: .destructive) { _ in
+                    UserViewModel_Trace.shared_Trace.deleteTraceRecord_Trace(recordId_trace: record_Trace.recordId_Trace)
+                })
+                self.present(alert_Trace, animated: true)
+            }
             return cell_Trace
             
         case .feed_trace:
@@ -856,12 +883,15 @@ private class HomeTimelineHeaderCell_Trace: UICollectionViewCell {
 
 /// 单条时光记录 Cell
 /// 核心作用：以「内容为主、时间戳置底」的清晰卡片样式展示一条时光记录
-/// 布局：左侧渐变竖条 → 右侧内容区（正文文本 + 底部时间行）
-/// 关键属性：contentLabel_Trace（记录内容），timeLabel_Trace（时间戳），showDate_trace（是否显示日期）
+/// 布局：左侧渐变竖条 → 右侧内容区（正文文本 + 底部时间行）+ 右上角删除按钮
+/// 关键属性：contentLabel_Trace（记录内容），timeLabel_Trace（时间戳），onDelete_Trace（删除回调）
 private class HomeRecordCell_Trace: UICollectionViewCell {
     
     static let reuseId_Trace = "HomeRecordCell_Trace"
-    
+
+    /// 删除回调，由外部绑定
+    var onDelete_Trace: (() -> Void)?
+
     // MARK: - UI 组件
     
     private let cardView_Trace: UIView = {
@@ -891,6 +921,16 @@ private class HomeRecordCell_Trace: UICollectionViewCell {
         lbl_Trace.textColor = ColorConfig_Trace.textPrimary_Trace
         lbl_Trace.numberOfLines = 4
         return lbl_Trace
+    }()
+
+    /// 右上角删除按钮
+    private lazy var deleteBtn_Trace: UIButton = {
+        let btn_Trace = UIButton(type: .system)
+        let config_Trace = UIImage.SymbolConfiguration(pointSize: 11, weight: .medium)
+        btn_Trace.setImage(UIImage(systemName: "xmark", withConfiguration: config_Trace), for: .normal)
+        btn_Trace.tintColor = ColorConfig_Trace.textSecondary_Trace
+        btn_Trace.addTarget(self, action: #selector(handleDeleteTap_Trace), for: .touchUpInside)
+        return btn_Trace
     }()
     
     /// 底部时间行：渐变圆点 + 时间文字
@@ -922,6 +962,7 @@ private class HomeRecordCell_Trace: UICollectionViewCell {
         contentView.addSubview(cardView_Trace)
         cardView_Trace.addSubview(accentBar_Trace)
         cardView_Trace.addSubview(contentLabel_Trace)
+        cardView_Trace.addSubview(deleteBtn_Trace)
         cardView_Trace.addSubview(timeDot_Trace)
         cardView_Trace.addSubview(timeLabel_Trace)
         
@@ -954,10 +995,17 @@ private class HomeRecordCell_Trace: UICollectionViewCell {
             make.bottom.equalToSuperview().offset(-14)
             make.width.equalTo(3)
         }
+        // 删除按钮：右上角，点击热区 28×28
+        deleteBtn_Trace.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-10)
+            make.top.equalToSuperview().offset(10)
+            make.width.height.equalTo(28)
+        }
+        // 正文右侧留出删除按钮空间
         contentLabel_Trace.snp.makeConstraints { make in
             make.leading.equalTo(accentBar_Trace.snp.trailing).offset(12)
             make.top.equalToSuperview().offset(14)
-            make.trailing.equalToSuperview().offset(-14)
+            make.trailing.equalTo(deleteBtn_Trace.snp.leading).offset(-4)
         }
         timeDot_Trace.snp.makeConstraints { make in
             make.leading.equalTo(contentLabel_Trace.snp.leading)
@@ -977,6 +1025,13 @@ private class HomeRecordCell_Trace: UICollectionViewCell {
         super.layoutSubviews()
         accentBarGrad_Trace.frame = accentBar_Trace.bounds
         timeDotGrad_Trace.frame = timeDot_Trace.bounds
+    }
+
+    // MARK: - 事件
+
+    @objc private func handleDeleteTap_Trace() {
+        deleteBtn_Trace.animatePulse_Trace()
+        onDelete_Trace?()
     }
     
     /// 配置记录数据

@@ -329,13 +329,48 @@ class ChallengeDetail_Trace: UIViewController {
         }
     }
 
-    /// 搭建参与人数行
+    /// 搭建参与人数行：最多展示3个叠层头像（UserAvatarView_Trace）+ 人数 + 说明文字
     private func buildParticipantRow_Trace() {
-        let iconView_Trace = UIImageView()
-        let cfg_Trace = UIImage.SymbolConfiguration(pointSize: 13, weight: .medium)
-        iconView_Trace.image = UIImage(systemName: "person.2.fill", withConfiguration: cfg_Trace)
-        iconView_Trace.tintColor = UIColor.white.withAlphaComponent(0.85)
-        iconView_Trace.contentMode = .scaleAspectFit
+        let avatarSize_Trace: CGFloat = 24
+        let maxAvatars_Trace = 3
+        let displayCount_Trace = min(localParticipations_Trace.count, maxAvatars_Trace)
+
+        // 叠层头像（每个向右偏移 -8pt 形成叠放效果，根据 userId 获取真实用户数据）
+        var previousAvatarView_Trace: UIView? = nil
+        for idx_Trace in 0..<displayCount_Trace {
+            let p_Trace = localParticipations_Trace[idx_Trace]
+            let av_Trace = UserAvatarView_Trace()
+            av_Trace.configure_Trace(userId_Trace: p_Trace.authorUserId_Trace)
+            // 白色圆圈边框增强叠层视觉区分
+            av_Trace.layer.borderWidth = 1.5
+            av_Trace.layer.borderColor = UIColor.white.withAlphaComponent(0.6).cgColor
+            participantRow_Trace.addSubview(av_Trace)
+            av_Trace.snp.makeConstraints { make in
+                if let prev_Trace = previousAvatarView_Trace {
+                    make.leading.equalTo(prev_Trace.snp.trailing).offset(-8)
+                } else {
+                    make.leading.equalToSuperview()
+                }
+                make.centerY.equalToSuperview()
+                make.width.height.equalTo(avatarSize_Trace)
+            }
+            previousAvatarView_Trace = av_Trace
+        }
+
+        // 无参与记录时保留 person.2.fill 图标兜底
+        if displayCount_Trace == 0 {
+            let iconView_Trace = UIImageView()
+            let cfg_Trace = UIImage.SymbolConfiguration(pointSize: 13, weight: .medium)
+            iconView_Trace.image = UIImage(systemName: "person.2.fill", withConfiguration: cfg_Trace)
+            iconView_Trace.tintColor = UIColor.white.withAlphaComponent(0.85)
+            iconView_Trace.contentMode = .scaleAspectFit
+            participantRow_Trace.addSubview(iconView_Trace)
+            iconView_Trace.snp.makeConstraints { make in
+                make.leading.centerY.equalToSuperview()
+                make.width.height.equalTo(18)
+            }
+            previousAvatarView_Trace = iconView_Trace
+        }
 
         let countLabel_Trace = UILabel()
         countLabel_Trace.tag = 9001
@@ -347,16 +382,15 @@ class ChallengeDetail_Trace: UIViewController {
         joiningLabel_Trace.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         joiningLabel_Trace.textColor = UIColor.white.withAlphaComponent(0.65)
 
-        participantRow_Trace.addSubview(iconView_Trace)
         participantRow_Trace.addSubview(countLabel_Trace)
         participantRow_Trace.addSubview(joiningLabel_Trace)
 
-        iconView_Trace.snp.makeConstraints { make in
-            make.leading.centerY.equalToSuperview()
-            make.width.height.equalTo(18)
-        }
         countLabel_Trace.snp.makeConstraints { make in
-            make.leading.equalTo(iconView_Trace.snp.trailing).offset(6)
+            if let prev_Trace = previousAvatarView_Trace {
+                make.leading.equalTo(prev_Trace.snp.trailing).offset(8)
+            } else {
+                make.leading.equalToSuperview()
+            }
             make.centerY.equalToSuperview()
         }
         joiningLabel_Trace.snp.makeConstraints { make in
@@ -415,6 +449,11 @@ class ChallengeDetail_Trace: UIViewController {
         }
     }
 
+    /// 将本地参与记录同步回 challenge 模型，确保退出重进后数据不丢失
+    private func saveParticipations_Trace() {
+        challenge_Trace?.participations_Trace = localParticipations_Trace
+    }
+
     // MARK: - 记录卡片构建
 
     /// 构建单条参与记录卡片
@@ -454,27 +493,24 @@ class ChallengeDetail_Trace: UIViewController {
             accentView_Trace.backgroundColor = ColorConfig_Trace.primaryGradientStart_Trace
         }
 
-        // 头像（UserAvatarView_Trace 根据 authorColorIndex 自动分配颜色）
+        // 根据参与者 UID 获取真实用户数据，填充头像与用户名
+        let participantUser_Trace = UserViewModel_Trace.shared_Trace.getUserById_Trace(userId_trace: participation_trace.authorUserId_Trace)
         let avatarView_Trace = UserAvatarView_Trace()
-        avatarView_Trace.configure_Trace(userId_Trace: participation_trace.authorColorIndex_Trace)
+        avatarView_Trace.configure_Trace(userId_Trace: participation_trace.authorUserId_Trace)
 
-        // 用户名
+        // 用户名（优先使用真实用户名，兜底 "Unknown"）
         let nameLabel_Trace = UILabel()
-        nameLabel_Trace.text = participation_trace.authorName_Trace
+        nameLabel_Trace.text = participantUser_Trace.userName_Trace ?? "Unknown"
         nameLabel_Trace.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
         nameLabel_Trace.textColor = ColorConfig_Trace.textPrimary_Trace
 
-        // 时间
-        let timeLabel_Trace = UILabel()
-        timeLabel_Trace.text = participation_trace.timeAgo_Trace
-        timeLabel_Trace.font = UIFont.systemFont(ofSize: 11, weight: .regular)
-        timeLabel_Trace.textColor = ColorConfig_Trace.textPlaceholder_Trace
-
-        // 举报按钮（右上角，省略号图标）
-        let reportBtn_Trace = UIButton(type: .system)
-        let reportCfg_Trace = UIImage.SymbolConfiguration(pointSize: 12, weight: .medium)
-        reportBtn_Trace.setImage(UIImage(systemName: "ellipsis", withConfiguration: reportCfg_Trace), for: .normal)
-        reportBtn_Trace.tintColor = ColorConfig_Trace.textPlaceholder_Trace
+        // 右上角操作按钮：自己的记录显示删除（trash），他人记录显示举报（ellipsis）
+        let isOwn_Trace = UserViewModel_Trace.shared_Trace.isCurrentUser_Trace(userId_trace: participation_trace.authorUserId_Trace)
+        let actionBtn_Trace = UIButton(type: .system)
+        let iconName_Trace = isOwn_Trace ? "trash" : "ellipsis"
+        let iconCfg_Trace = UIImage.SymbolConfiguration(pointSize: 12, weight: .medium)
+        actionBtn_Trace.setImage(UIImage(systemName: iconName_Trace, withConfiguration: iconCfg_Trace), for: .normal)
+        actionBtn_Trace.tintColor = ColorConfig_Trace.textPlaceholder_Trace
 
         // 内容文字
         let contentLabel_Trace = UILabel()
@@ -486,8 +522,7 @@ class ChallengeDetail_Trace: UIViewController {
         card_Trace.addSubview(accentView_Trace)
         card_Trace.addSubview(avatarView_Trace)
         card_Trace.addSubview(nameLabel_Trace)
-        card_Trace.addSubview(timeLabel_Trace)
-        card_Trace.addSubview(reportBtn_Trace)
+        card_Trace.addSubview(actionBtn_Trace)
         card_Trace.addSubview(contentLabel_Trace)
 
         accentView_Trace.snp.makeConstraints { make in
@@ -503,18 +538,14 @@ class ChallengeDetail_Trace: UIViewController {
         }
         nameLabel_Trace.snp.makeConstraints { make in
             make.leading.equalTo(avatarView_Trace.snp.trailing).offset(10)
-            make.top.equalTo(avatarView_Trace).offset(2)
+            make.centerY.equalTo(avatarView_Trace)
+            make.trailing.lessThanOrEqualTo(actionBtn_Trace.snp.leading).offset(-6)
         }
-        // 举报按钮右上角，与时间标签共用同一行
-        reportBtn_Trace.snp.makeConstraints { make in
+        // 操作按钮固定右上角
+        actionBtn_Trace.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-14)
-            make.centerY.equalTo(nameLabel_Trace)
-            make.width.equalTo(28)
-            make.height.equalTo(28)
-        }
-        timeLabel_Trace.snp.makeConstraints { make in
-            make.trailing.equalTo(reportBtn_Trace.snp.leading).offset(-4)
-            make.centerY.equalTo(nameLabel_Trace)
+            make.centerY.equalTo(avatarView_Trace)
+            make.width.height.equalTo(28)
         }
         contentLabel_Trace.snp.makeConstraints { make in
             make.leading.equalTo(avatarView_Trace.snp.leading)
@@ -523,11 +554,33 @@ class ChallengeDetail_Trace: UIViewController {
             make.bottom.equalToSuperview().offset(-14)
         }
 
-        // 举报按钮事件（通过 closure capture participation）
+        // 操作按钮事件：自己的记录弹确认后删除，他人的记录弹举报 action sheet
         let capturedParticipation_Trace = participation_trace
-        reportBtn_Trace.addAction(UIAction { [weak self] _ in
-            self?.showReportAlert_Trace(participation_trace: capturedParticipation_Trace,
-                                        sourceButton_trace: reportBtn_Trace)
+        actionBtn_Trace.addAction(UIAction { [weak self] _ in
+            guard let self_Trace = self else { return }
+            ReportDeleteHelper_Trace.addButtonAnimation_Trace(button_Trace: actionBtn_Trace)
+            if isOwn_Trace {
+                // 自己的记录：弹确认对话框后删除
+                let alert_Trace = UIAlertController(
+                    title: "Delete Record",
+                    message: "Are you sure you want to delete this record?",
+                    preferredStyle: .alert
+                )
+                alert_Trace.addAction(UIAlertAction(title: "Delete", style: .destructive) { _ in
+                    self_Trace.localParticipations_Trace.removeAll { $0 === capturedParticipation_Trace }
+                    self_Trace.saveParticipations_Trace()
+                    self_Trace.refreshRecords_Trace()
+                })
+                alert_Trace.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+                self_Trace.present(alert_Trace, animated: true)
+            } else {
+                // 他人的记录：弹举报 action sheet，确认后移除记录并保存
+                UIAlertController.report_Trace(with: false) {
+                    self_Trace.localParticipations_Trace.removeAll { $0 === capturedParticipation_Trace }
+                    self_Trace.saveParticipations_Trace()
+                    self_Trace.refreshRecords_Trace()
+                }
+            }
         }, for: .touchUpInside)
 
         // 入场动画
@@ -621,55 +674,24 @@ class ChallengeDetail_Trace: UIViewController {
             return
         }
 
-        // 获取当前用户信息
+        // 获取当前用户 UID，直接存入参与记录
         let currentUser_trace = UserViewModel_Trace.shared_Trace.getCurrentUser_Trace()
-        let authorName_trace = currentUser_trace.userName_Trace ?? "Me"
-        // 用 userId 的尾数决定头像色，保持视觉一致性
-        let colorIndex_trace = (currentUser_trace.userId_Trace ?? 0) % UserAvatarView_Trace.defaultAvatarColors_Trace.count
+        let currentUserId_trace = currentUser_trace.userId_Trace ?? 0
 
         let newRecord_trace = ChallengeParticipation_Trace(
-            authorName_Trace: authorName_trace,
-            authorColorIndex_Trace: colorIndex_trace,
-            content_Trace: text_trace,
-            timeAgo_Trace: "Just now"
+            authorUserId_Trace: currentUserId_trace,
+            content_Trace: text_trace
         )
 
-        // 追加到本地列表并刷新
+        // 追加到本地列表，同步回 challenge 模型后刷新
         localParticipations_Trace.insert(newRecord_trace, at: 0)
+        saveParticipations_Trace()
         inputField_Trace.text = nil
         inputField_Trace.resignFirstResponder()
 
         // 刷新记录区并播放新卡片入场动画
         refreshRecords_Trace()
         showToast_Trace(message_trace: "Trace shared ✦")
-    }
-
-    /// 展示举报 action sheet
-    /// - Parameters:
-    ///   - participation_trace: 被举报的参与记录
-    ///   - sourceButton_trace: 触发按钮（iPad popover 锚点）
-    private func showReportAlert_Trace(
-        participation_trace: ChallengeParticipation_Trace,
-        sourceButton_trace: UIButton
-    ) {
-        let alert_Trace = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-
-        let reportAction_Trace = UIAlertAction(title: "Report", style: .destructive) { [weak self] _ in
-            self?.showToast_Trace(message_trace: "Report submitted")
-            print("举报参与记录：\(participation_trace.content_Trace.prefix(20))")
-        }
-        let cancelAction_Trace = UIAlertAction(title: "Cancel", style: .cancel)
-
-        alert_Trace.addAction(reportAction_Trace)
-        alert_Trace.addAction(cancelAction_Trace)
-
-        // iPad 兼容：指定弹出锚点
-        if let popover_trace = alert_Trace.popoverPresentationController {
-            popover_trace.sourceView = sourceButton_trace
-            popover_trace.sourceRect = sourceButton_trace.bounds
-        }
-
-        present(alert_Trace, animated: true)
     }
 
     /// 底部悬浮 toast 提示

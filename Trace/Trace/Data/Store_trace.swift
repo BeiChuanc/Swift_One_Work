@@ -33,7 +33,7 @@ class Store_Trace: NSObject {
             goodsName_Trace: "x1",
             goodsPrice_Trace: "$1.99",
             goodIsTop_Trace: false,
-            goodIsLimit_Trace: false
+            goodIsLimit_Trace: true
         ),
         StoreModel_Trace(
             id_Trace: 4,
@@ -41,7 +41,7 @@ class Store_Trace: NSObject {
             goodsName_Trace: "x2",
             goodsPrice_Trace: "$2.99",
             goodIsTop_Trace: false,
-            goodIsLimit_Trace: false
+            goodIsLimit_Trace: true
         ),
         StoreModel_Trace(
             id_Trace: 5,
@@ -49,7 +49,7 @@ class Store_Trace: NSObject {
             goodsName_Trace: "x3",
             goodsPrice_Trace: "$3.99",
             goodIsTop_Trace: false,
-            goodIsLimit_Trace: false
+            goodIsLimit_Trace: true
         ),
         StoreModel_Trace(
             id_Trace: 6,

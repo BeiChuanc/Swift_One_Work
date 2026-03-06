@@ -21,12 +21,12 @@ class UserAvatarView_Trace: UIView {
     
     // MARK: - UI组件
     
-    /// 头像图片视图
+    /// 头像图片视图（背景默认透明，由 setDefaultAvatar_Trace 按需填充颜色）
     let imageView_Trace: UIImageView = {
         let imageView_Trace = UIImageView()
         imageView_Trace.contentMode = .scaleAspectFill
         imageView_Trace.clipsToBounds = true
-        imageView_Trace.backgroundColor = ColorConfig_Trace.backgroundPrimary_Trace
+        imageView_Trace.backgroundColor = .clear
         return imageView_Trace
     }()
     
@@ -137,25 +137,28 @@ class UserAvatarView_Trace: UIView {
         loadAvatarFromPath_Trace(path_Trace: headPath_Trace, defaultColor_Trace: color_Trace)
     }
     
-    /// 从路径加载头像
+    /// 从路径加载头像；加载成功时清除背景色，失败时回退到纯色占位头像
     func loadAvatarFromPath_Trace(path_Trace: String, defaultColor_Trace: UIColor) {
-        // 1. 尝试从Assets加载
+        // 1. 尝试从 Assets 加载
         if let assetImage_Trace = UIImage(named: path_Trace) {
+            imageView_Trace.backgroundColor = .clear
             imageView_Trace.image = assetImage_Trace
             imageView_Trace.contentMode = .scaleAspectFill
             return
         }
-        
-        // 2. 尝试从相册路径加载
+
+        // 2. 尝试从本地文件路径加载
         if let localImage_Trace = UIImage(contentsOfFile: path_Trace) {
+            imageView_Trace.backgroundColor = .clear
             imageView_Trace.image = localImage_Trace
             imageView_Trace.contentMode = .scaleAspectFill
             return
         }
-        
-        // 3. 尝试从网络URL加载
+
+        // 3. 尝试从网络 URL 加载（Kingfisher）
         if path_Trace.hasPrefix("http://") || path_Trace.hasPrefix("https://") {
             if let url_Trace = URL(string: path_Trace) {
+                imageView_Trace.backgroundColor = .clear
                 imageView_Trace.kf.setImage(
                     with: url_Trace,
                     placeholder: createPlaceholderImage_Trace(color_Trace: defaultColor_Trace),
@@ -164,16 +167,17 @@ class UserAvatarView_Trace: UIView {
             }
             return
         }
-        
-        // 4. 都失败则使用默认头像
+
+        // 4. 全部失败 → 纯色圆形占位头像
         setDefaultAvatar_Trace(color_Trace: defaultColor_Trace)
     }
     
-    /// 设置默认头像（系统图标）
-    /// - Parameter color_Trace: 图标颜色
+    /// 设置默认头像：纯色圆形背景 + 白色 person 图标（标准占位风格）
+    /// - Parameter color_Trace: 背景颜色
     func setDefaultAvatar_Trace(color_Trace: UIColor) {
-        imageView_Trace.image = UIImage(systemName: "person.circle.fill")
-        imageView_Trace.tintColor = color_Trace
+        imageView_Trace.backgroundColor = color_Trace
+        imageView_Trace.image = UIImage(systemName: "person.fill")
+        imageView_Trace.tintColor = UIColor.white.withAlphaComponent(0.9)
         imageView_Trace.contentMode = .scaleAspectFit
     }
     

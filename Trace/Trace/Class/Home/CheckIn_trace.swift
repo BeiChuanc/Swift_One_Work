@@ -532,15 +532,25 @@ class CheckIn_Trace: UIViewController {
     }
     
     @objc private func handleCheckInTap_Trace() {
+        // 优先校验登录状态，未登录则提示并跳转登录页
+        guard UserViewModel_Trace.shared_Trace.isLoggedIn_Trace else {
+            Utils_Trace.showWarning_Trace(message_Trace: "Please login first.")
+            Task {
+                try? await Task.sleep(nanoseconds: 1_500_000_000)
+                Navigation_Trace.toLogin_Trace(style_trace: .present_trace)
+            }
+            return
+        }
+
         checkInButton_Trace.animatePressDown_Trace {
             self.checkInButton_Trace.animatePressUp_Trace()
         }
         let generator_Trace = UIImpactFeedbackGenerator(style: .medium)
         generator_Trace.impactOccurred()
-        
+
         UserViewModel_Trace.shared_Trace.checkIn_Trace()
         refreshData_Trace()
-        
+
         // 打卡成功动画：图标放大淡出
         checkedInIcon_Trace.animatePulse_Trace()
     }

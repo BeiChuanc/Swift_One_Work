@@ -133,7 +133,16 @@ class LoginUserModel_Trace: NSObject, Codable {
 
     /// 用户关注列表
     var userFollow_Trace: [PrewUserModel_Trace]
-    
+
+    /// 签到日期集合（格式 "yyyy-MM-dd"，与登录用户绑定，退出后清空）
+    var userCheckInDates_Trace: Set<String>
+
+    /// 时光记录列表（按时间戳降序，最新在前）
+    var userTraceRecords_Trace: [TraceRecord_Trace]
+
+    /// 时光记录 ID 自增计数器
+    var userNextRecordId_Trace: Int
+
     /// 初始化
     init(userId_Trace: Int? = nil,
          userPwd_Trace: String? = nil,
@@ -142,7 +151,10 @@ class LoginUserModel_Trace: NSObject, Codable {
          userIntroduce_Trace: String? = nil,
          userPosts_Trace: [TitleModel_Trace],
          userLike_Trace: [TitleModel_Trace],
-         userFollow_Trace: [PrewUserModel_Trace]) {
+         userFollow_Trace: [PrewUserModel_Trace],
+         userCheckInDates_Trace: Set<String> = [],
+         userTraceRecords_Trace: [TraceRecord_Trace] = [],
+         userNextRecordId_Trace: Int = 1) {
         self.userId_Trace = userId_Trace
         self.userPwd_Trace = userPwd_Trace
         self.userName_Trace = userName_Trace
@@ -151,6 +163,9 @@ class LoginUserModel_Trace: NSObject, Codable {
         self.userPosts_Trace = userPosts_Trace
         self.userLike_Trace = userLike_Trace
         self.userFollow_Trace = userFollow_Trace
+        self.userCheckInDates_Trace = userCheckInDates_Trace
+        self.userTraceRecords_Trace = userTraceRecords_Trace
+        self.userNextRecordId_Trace = userNextRecordId_Trace
     }
 }
 
@@ -216,7 +231,7 @@ class Comment_Trace: NSObject, Codable {
 /// 时光记录模型（首页极简输入留存的即时记录）
 /// 核心作用：记录用户的即时情绪与生活瞬间，自动标注当日时刻
 /// 关键属性：content_Trace（记录内容），timestamp_Trace（时间戳），timeString_Trace（格式化时刻）
-class TraceRecord_Trace: NSObject {
+class TraceRecord_Trace: NSObject, Codable {
     
     /// 记录ID
     var recordId_Trace: Int
@@ -258,34 +273,22 @@ class TraceRecord_Trace: NSObject {
 
 /// 挑战参与记录模型
 /// 核心作用：存储其他用户在某挑战下留下的一条极简参与记录，用于挑战详情页的"Recent Traces"展示
-/// 关键属性：authorName_Trace（参与者名称），content_Trace（记录内容），timeAgo_Trace（相对时间描述）
+/// 关键属性：authorUserId_Trace（参与者用户 UID），content_Trace（记录内容）
 class ChallengeParticipation_Trace: NSObject {
 
-    /// 参与者用户名
-    var authorName_Trace: String
-
-    /// 用于生成渐变头像的颜色索引（对应 UserAvatarView_Trace.defaultAvatarColors_Trace）
-    var authorColorIndex_Trace: Int
+    /// 参与者用户 UID（与 LocalData_Trace.userList_Trace 中的 userId 对应）
+    var authorUserId_Trace: Int
 
     /// 参与内容（一段极简记录文字）
     var content_Trace: String
 
-    /// 相对时间描述（如 "2h ago", "Yesterday"）
-    var timeAgo_Trace: String
-
     /// - Parameters:
-    ///   - authorName_Trace: 参与者用户名
-    ///   - authorColorIndex_Trace: 头像颜色索引
+    ///   - authorUserId_Trace: 参与者用户 UID
     ///   - content_Trace: 参与内容
-    ///   - timeAgo_Trace: 相对时间描述
-    init(authorName_Trace: String,
-         authorColorIndex_Trace: Int,
-         content_Trace: String,
-         timeAgo_Trace: String) {
-        self.authorName_Trace = authorName_Trace
-        self.authorColorIndex_Trace = authorColorIndex_Trace
+    init(authorUserId_Trace: Int,
+         content_Trace: String) {
+        self.authorUserId_Trace = authorUserId_Trace
         self.content_Trace = content_Trace
-        self.timeAgo_Trace = timeAgo_Trace
         super.init()
     }
 }

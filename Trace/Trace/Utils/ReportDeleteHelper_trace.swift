@@ -381,8 +381,8 @@ class ReportDeleteHelper_Trace {
     
     // MARK: - 私有辅助方法
     
-    /// 添加按钮点击动画
-    fileprivate static func addButtonAnimation_Trace(button_Trace: UIButton) {
+    /// 添加按钮点击动画（供外部调用）
+    static func addButtonAnimation_Trace(button_Trace: UIButton) {
         UIView.animate(withDuration: animationDuration_Trace, animations: {
             button_Trace.transform = CGAffineTransform(
                 scaleX: animationScale_Trace,
