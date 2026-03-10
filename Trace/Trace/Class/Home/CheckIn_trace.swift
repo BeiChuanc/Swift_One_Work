@@ -534,9 +534,8 @@ class CheckIn_Trace: UIViewController {
     @objc private func handleCheckInTap_Trace() {
         // 优先校验登录状态，未登录则提示并跳转登录页
         guard UserViewModel_Trace.shared_Trace.isLoggedIn_Trace else {
-            Utils_Trace.showWarning_Trace(message_Trace: "Please login first.")
             Task {
-                try? await Task.sleep(nanoseconds: 1_500_000_000)
+                try? await Task.sleep(nanoseconds: 500_000_000)
                 Navigation_Trace.toLogin_Trace(style_trace: .present_trace)
             }
             return

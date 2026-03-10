@@ -701,9 +701,8 @@ class Release_Trace: UIViewController {
         
         // 1. 验证登录状态
         guard UserViewModel_Trace.shared_Trace.isLoggedIn_Trace else {
-            Utils_Trace.showWarning_Trace(message_Trace: "Please login first.")
             Task {
-                try? await Task.sleep(nanoseconds: 1_500_000_000)
+                try? await Task.sleep(nanoseconds: 500_000_000)
                 Navigation_Trace.toLogin_Trace(style_trace: .present_trace)
             }
             return

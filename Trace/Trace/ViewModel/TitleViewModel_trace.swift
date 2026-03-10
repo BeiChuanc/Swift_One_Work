@@ -240,14 +240,9 @@ class TitleViewModel_Trace {
     
     /// 显示登录提示
     private func showLoginPrompt_Trace() {
-        Utils_Trace.showWarning_Trace(
-            message_Trace: "Please login first.",
-            delay_Trace: 1.5
-        )
-        
         // 延迟跳转到登录页面
         Task {
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒
+            try? await Task.sleep(nanoseconds: 500_000_000) // 1.5秒
             Navigation_Trace.toLogin_Trace(style_trace: .present_trace)
         }
     }
