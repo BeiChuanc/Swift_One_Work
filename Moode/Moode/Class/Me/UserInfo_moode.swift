@@ -829,11 +829,11 @@ class UserInfoPostCell_Moode: UICollectionViewCell {
     /// 右上角举报按钮（半透明背景 + ellipsis 图标）
     private let reportBtn_Moode: UIButton = {
         let btn = UIButton(type: .system)
-        let cfg = UIImage.SymbolConfiguration(pointSize: 11, weight: .semibold)
+        let cfg = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
         btn.setImage(UIImage(systemName: "ellipsis", withConfiguration: cfg), for: .normal)
         btn.tintColor = .white
-        btn.backgroundColor = UIColor.black.withAlphaComponent(0.30)
-        btn.layer.cornerRadius = 12
+        btn.backgroundColor = UIColor.black.withAlphaComponent(0.42)
+        btn.layer.cornerRadius = 13
         btn.clipsToBounds = true
         return btn
     }()
@@ -873,12 +873,12 @@ class UserInfoPostCell_Moode: UICollectionViewCell {
             make.height.equalTo(20)
         }
 
-        // 右上角举报按钮
+        // 右上角举报按钮（26×26pt）
         contentView.addSubview(reportBtn_Moode)
         reportBtn_Moode.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(8)
             make.right.equalToSuperview().offset(-8)
-            make.width.height.equalTo(24)
+            make.width.height.equalTo(26)
         }
         reportBtn_Moode.addTarget(self, action: #selector(handleReportTapped_Moode), for: .touchUpInside)
     }
@@ -908,6 +908,20 @@ class UserInfoPostCell_Moode: UICollectionViewCell {
 
         let mediaPath = post.titleMeidas_Moode.first ?? ""
         coverView_Moode.configure_Moode(mediaPath_Moode: mediaPath.isEmpty ? nil : mediaPath)
+
+        // 自己帖子→删除(trash/红色)，他人帖子→举报(ellipsis/白色半透明)
+        let cfg = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
+        let isMyPost = UserViewModel_Moode.shared_Moode.isCurrentUser_Moode(
+            userId_moode: post.titleUserId_Moode
+        )
+        reportBtn_Moode.setImage(
+            UIImage(systemName: isMyPost ? "trash" : "ellipsis", withConfiguration: cfg),
+            for: .normal
+        )
+        reportBtn_Moode.tintColor = isMyPost ? UIColor(hexstring_Moode: "#FF6B6B") : .white
+        reportBtn_Moode.backgroundColor = isMyPost
+            ? UIColor(hexstring_Moode: "#FF6B6B").withAlphaComponent(0.28)
+            : UIColor.black.withAlphaComponent(0.42)
     }
 
     // MARK: - 复用清理

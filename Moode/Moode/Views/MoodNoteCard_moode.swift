@@ -63,11 +63,11 @@ class MoodNoteCard_Moode: UICollectionViewCell {
     /// 右上角举报/删除按钮
     private let reportBtn_Moode: UIButton = {
         let btn_Moode = UIButton(type: .system)
-        let cfg_Moode = UIImage.SymbolConfiguration(pointSize: 10, weight: .semibold)
+        let cfg_Moode = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
         btn_Moode.setImage(UIImage(systemName: "ellipsis", withConfiguration: cfg_Moode), for: .normal)
         btn_Moode.tintColor = .white
-        btn_Moode.backgroundColor = UIColor.black.withAlphaComponent(0.28)
-        btn_Moode.layer.cornerRadius = 11
+        btn_Moode.backgroundColor = UIColor.black.withAlphaComponent(0.42)
+        btn_Moode.layer.cornerRadius = 13
         btn_Moode.clipsToBounds = true
         return btn_Moode
     }()
@@ -230,12 +230,12 @@ class MoodNoteCard_Moode: UICollectionViewCell {
             make.width.height.equalTo(90)
         }
 
-        // 举报按钮（右上角悬浮，22x22pt，圆形半透明背景）
+        // 举报按钮（右上角悬浮，26x26pt，圆形半透明背景）
         cardView_Moode.addSubview(reportBtn_Moode)
         reportBtn_Moode.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
             make.right.equalToSuperview().offset(-10)
-            make.width.height.equalTo(22)
+            make.width.height.equalTo(26)
         }
         reportBtn_Moode.addTarget(self, action: #selector(handleReportTapped_Moode), for: .touchUpInside)
 
@@ -403,7 +403,7 @@ class MoodNoteCard_Moode: UICollectionViewCell {
         let isMyPost_moode = UserViewModel_Moode.shared_Moode.isCurrentUser_Moode(
             userId_moode: post_moode.titleUserId_Moode
         )
-        let cfg_moode = UIImage.SymbolConfiguration(pointSize: 10, weight: .semibold)
+        let cfg_moode = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
         let iconName_moode = isMyPost_moode ? "trash" : "ellipsis"
         reportBtn_Moode.setImage(UIImage(systemName: iconName_moode, withConfiguration: cfg_moode), for: .normal)
         reportBtn_Moode.tintColor = isMyPost_moode

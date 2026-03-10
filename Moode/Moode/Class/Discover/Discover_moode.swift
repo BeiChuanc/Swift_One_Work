@@ -925,6 +925,23 @@ extension Discover_Moode: FSPagerViewDataSource, FSPagerViewDelegate {
         if index < trendingPosts_Moode.count {
             cell_Moode.configure_Moode(post_moode: trendingPosts_Moode[index])
         }
+
+        // 举报/删除回调：自己的帖子走删除确认，他人帖子走举报
+        cell_Moode.onReportTapped_Moode = { [weak self] post_Moode in
+            guard let self = self else { return }
+            let isMyPost_Moode = UserViewModel_Moode.shared_Moode.isCurrentUser_Moode(
+                userId_moode: post_Moode.titleUserId_Moode
+            )
+            if isMyPost_Moode {
+                ReportDeleteHelper_Moode.delete_Moode(post_Moode: post_Moode, from: self) { [weak self] in
+                    self?.reloadData_Moode()
+                }
+            } else {
+                ReportDeleteHelper_Moode.report_Moode(post_Moode: post_Moode, from: self) { [weak self] in
+                    self?.reloadData_Moode()
+                }
+            }
+        }
         return cell_Moode
     }
 
@@ -1396,6 +1413,26 @@ class DiscoverTrendingCell_Moode: FSPagerViewCell {
         return l_Moode
     }()
 
+    /// 右上角举报/删除按钮（28×28，圆形半透明背景）
+    private let reportBtn_Moode: UIButton = {
+        let btn_Moode = UIButton(type: .custom)
+        let cfg_Moode = UIImage.SymbolConfiguration(pointSize: 13, weight: .bold)
+        btn_Moode.setImage(UIImage(systemName: "ellipsis", withConfiguration: cfg_Moode), for: .normal)
+        btn_Moode.tintColor = .white
+        btn_Moode.backgroundColor = UIColor.black.withAlphaComponent(0.42)
+        btn_Moode.layer.cornerRadius = 14
+        btn_Moode.clipsToBounds = true
+        return btn_Moode
+    }()
+
+    // MARK: - 回调与状态
+
+    /// 举报/删除按钮点击回调，携带当前帖子模型
+    var onReportTapped_Moode: ((TitleModel_Moode) -> Void)?
+
+    /// 当前绑定的帖子（用于按钮点击时传递）
+    private var currentPost_Moode: TitleModel_Moode?
+
     // MARK: - 初始化
 
     override init(frame: CGRect) {
@@ -1472,11 +1509,21 @@ class DiscoverTrendingCell_Moode: FSPagerViewCell {
             make.centerY.equalToSuperview()
         }
 
+        // 举报/删除按钮（右上角，28×28pt）
+        contentView.addSubview(reportBtn_Moode)
+        reportBtn_Moode.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(10)
+            make.right.equalToSuperview().offset(-10)
+            make.width.height.equalTo(28)
+        }
+        reportBtn_Moode.addTarget(self, action: #selector(handleReportTapped_Moode), for: .touchUpInside)
+
+        // HOT 角标紧靠在举报按钮左侧，防止重叠
         contentView.addSubview(hotBadge_Moode)
         hotBadge_Moode.addSubview(hotLabel_Moode)
         hotBadge_Moode.snp.makeConstraints { make in
-            make.right.equalToSuperview().offset(-14)
-            make.top.equalToSuperview().offset(16)
+            make.right.equalTo(reportBtn_Moode.snp.left).offset(-6)
+            make.centerY.equalTo(reportBtn_Moode)
             make.height.equalTo(20)
         }
         hotLabel_Moode.snp.makeConstraints { make in
@@ -1543,6 +1590,7 @@ class DiscoverTrendingCell_Moode: FSPagerViewCell {
     /// 配置轮播卡片数据
     /// - Parameter post_moode: 帖子数据模型
     func configure_Moode(post_moode: TitleModel_Moode) {
+        currentPost_Moode = post_moode
         let mood_Moode = post_moode.moodType_Moode
         moodBadgeEmoji_Moode.text = mood_Moode.emoji_Moode
         moodBadgeName_Moode.text = mood_Moode.displayName_Moode
@@ -1552,6 +1600,20 @@ class DiscoverTrendingCell_Moode: FSPagerViewCell {
         likeLabel_Moode.text = "\(post_moode.likes_Moode)"
         commentLabel_Moode.text = "\(post_moode.reviews_Moode.count)"
         hotBadge_Moode.isHidden = post_moode.likes_Moode < 80
+
+        // 自己帖子显示删除图标（红色），他人帖子显示举报图标（白色半透明）
+        let cfg_Moode = UIImage.SymbolConfiguration(pointSize: 13, weight: .bold)
+        let isMyPost_Moode = UserViewModel_Moode.shared_Moode.isCurrentUser_Moode(
+            userId_moode: post_moode.titleUserId_Moode
+        )
+        let iconName_Moode = isMyPost_Moode ? "trash" : "ellipsis"
+        reportBtn_Moode.setImage(UIImage(systemName: iconName_Moode, withConfiguration: cfg_Moode), for: .normal)
+        reportBtn_Moode.tintColor = isMyPost_Moode
+            ? UIColor(hexstring_Moode: "#FF6B6B")
+            : .white
+        reportBtn_Moode.backgroundColor = isMyPost_Moode
+            ? UIColor(hexstring_Moode: "#FF6B6B").withAlphaComponent(0.28)
+            : UIColor.black.withAlphaComponent(0.42)
 
         let firstMedia_Moode = post_moode.titleMeidas_Moode.first
         let hasMedia_Moode   = firstMedia_Moode != nil
@@ -1575,12 +1637,23 @@ class DiscoverTrendingCell_Moode: FSPagerViewCell {
         layoutIfNeeded()
     }
 
+    // MARK: - 按钮事件
+
+    /// 举报/删除按钮点击，触发上层回调
+    @objc private func handleReportTapped_Moode() {
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        guard let post_Moode = currentPost_Moode else { return }
+        onReportTapped_Moode?(post_Moode)
+    }
+
     override func prepareForReuse() {
         super.prepareForReuse()
         gradientLayer_Moode?.removeFromSuperlayer()
         gradientLayer_Moode = nil
         mediaView_Moode.isHidden = false
         dimOverlay_Moode.alpha = 1.0
+        currentPost_Moode = nil
+        onReportTapped_Moode = nil
     }
 }
 
@@ -1817,11 +1890,11 @@ class NormalPostCard_Moode: UICollectionViewCell {
     /// 右上角举报/删除按钮（半透明圆形背景）
     private let reportBtn_Moode: UIButton = {
         let btn_Moode = UIButton(type: .system)
-        let cfg_Moode = UIImage.SymbolConfiguration(pointSize: 10, weight: .semibold)
+        let cfg_Moode = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
         btn_Moode.setImage(UIImage(systemName: "ellipsis", withConfiguration: cfg_Moode), for: .normal)
-        btn_Moode.tintColor = UIColor(hexstring_Moode: "#666699")
-        btn_Moode.backgroundColor = UIColor(hexstring_Moode: "#F0EEFF")
-        btn_Moode.layer.cornerRadius = 11
+        btn_Moode.tintColor = UIColor(hexstring_Moode: "#6C5CE7")
+        btn_Moode.backgroundColor = UIColor(hexstring_Moode: "#E8E4FF")
+        btn_Moode.layer.cornerRadius = 13
         btn_Moode.clipsToBounds = true
         return btn_Moode
     }()
@@ -1953,12 +2026,12 @@ class NormalPostCard_Moode: UICollectionViewCell {
             make_Moode.centerY.equalToSuperview()
         }
 
-        // 举报按钮（右上角，覆盖在卡片上层）
+        // 举报按钮（右上角，覆盖在卡片上层，26×26pt）
         cardView_Moode.addSubview(reportBtn_Moode)
         reportBtn_Moode.snp.makeConstraints { make_Moode in
             make_Moode.top.equalToSuperview().offset(8)
             make_Moode.right.equalToSuperview().offset(-8)
-            make_Moode.width.height.equalTo(22)
+            make_Moode.width.height.equalTo(26)
         }
         reportBtn_Moode.addAction(UIAction { [weak self] _ in
             guard let self = self, let post_Moode = self.post_Moode else { return }
@@ -2043,15 +2116,15 @@ class NormalPostCard_Moode: UICollectionViewCell {
         let isMyPost_moode = UserViewModel_Moode.shared_Moode.isCurrentUser_Moode(
             userId_moode: post_moode.titleUserId_Moode
         )
-        let reportCfg_moode = UIImage.SymbolConfiguration(pointSize: 10, weight: .semibold)
+        let reportCfg_moode = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
         let reportIcon_moode = isMyPost_moode ? "trash" : "ellipsis"
         reportBtn_Moode.setImage(UIImage(systemName: reportIcon_moode, withConfiguration: reportCfg_moode), for: .normal)
         reportBtn_Moode.tintColor = isMyPost_moode
             ? UIColor(hexstring_Moode: "#FF6B6B")
-            : UIColor(hexstring_Moode: "#666699")
+            : UIColor(hexstring_Moode: "#6C5CE7")
         reportBtn_Moode.backgroundColor = isMyPost_moode
-            ? UIColor(hexstring_Moode: "#FF6B6B").withAlphaComponent(0.12)
-            : UIColor(hexstring_Moode: "#F0EEFF")
+            ? UIColor(hexstring_Moode: "#FF6B6B").withAlphaComponent(0.18)
+            : UIColor(hexstring_Moode: "#E8E4FF")
     }
 
     override func prepareForReuse() {

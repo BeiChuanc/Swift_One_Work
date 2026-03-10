@@ -906,11 +906,11 @@ class MePostCell_Moode: UICollectionViewCell {
     /// 右上角举报/删除按钮（覆盖在封面右上角）
     private let reportBtn_Moode: UIButton = {
         let btn = UIButton(type: .system)
-        let cfg = UIImage.SymbolConfiguration(pointSize: 9, weight: .bold)
+        let cfg = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
         btn.setImage(UIImage(systemName: "ellipsis", withConfiguration: cfg), for: .normal)
         btn.tintColor = .white
-        btn.backgroundColor = UIColor.black.withAlphaComponent(0.30)
-        btn.layer.cornerRadius = 11
+        btn.backgroundColor = UIColor.black.withAlphaComponent(0.42)
+        btn.layer.cornerRadius = 13
         btn.clipsToBounds = true
         return btn
     }()
@@ -964,12 +964,12 @@ class MePostCell_Moode: UICollectionViewCell {
             make.height.equalTo(mediaView_Moode.snp.width).multipliedBy(0.88)
         }
 
-        // 举报/删除按钮（封面右上角覆盖层，22×22pt）
+        // 举报/删除按钮（封面右上角覆盖层，26×26pt）
         mediaView_Moode.addSubview(reportBtn_Moode)
         reportBtn_Moode.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(6)
             make.right.equalToSuperview().offset(-6)
-            make.width.height.equalTo(22)
+            make.width.height.equalTo(26)
         }
         reportBtn_Moode.addTarget(self, action: #selector(handleReportTapped_Moode), for: .touchUpInside)
 
@@ -1042,15 +1042,15 @@ class MePostCell_Moode: UICollectionViewCell {
         let isMyPost_moode = UserViewModel_Moode.shared_Moode.isCurrentUser_Moode(
             userId_moode: post_moode.titleUserId_Moode
         )
-        let cfg_moode = UIImage.SymbolConfiguration(pointSize: 9, weight: .bold)
+        let cfg_moode = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
         let iconName_moode = isMyPost_moode ? "trash" : "ellipsis"
         reportBtn_Moode.setImage(UIImage(systemName: iconName_moode, withConfiguration: cfg_moode), for: .normal)
         reportBtn_Moode.tintColor = isMyPost_moode
             ? UIColor(hexstring_Moode: "#FF6B6B")
             : .white
         reportBtn_Moode.backgroundColor = isMyPost_moode
-            ? UIColor(hexstring_Moode: "#FF6B6B").withAlphaComponent(0.22)
-            : UIColor.black.withAlphaComponent(0.30)
+            ? UIColor(hexstring_Moode: "#FF6B6B").withAlphaComponent(0.28)
+            : UIColor.black.withAlphaComponent(0.42)
     }
 
     // MARK: - 复用清理

@@ -575,14 +575,14 @@ class ChallengeCommentCell_Moode: UITableViewCell {
         return l_Moode
     }()
 
-    /// 右上角举报/删除按钮（22×22pt，半透明背景圆形）
+    /// 右上角举报/删除按钮（26×26pt，半透明背景圆形）
     private let reportBtn_Moode: UIButton = {
         let btn_Moode = UIButton(type: .system)
-        let cfg_Moode = UIImage.SymbolConfiguration(pointSize: 10, weight: .semibold)
+        let cfg_Moode = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
         btn_Moode.setImage(UIImage(systemName: "ellipsis", withConfiguration: cfg_Moode), for: .normal)
-        btn_Moode.tintColor = UIColor(hexstring_Moode: "#9B8FCC")
-        btn_Moode.backgroundColor = UIColor(hexstring_Moode: "#F0EEFF")
-        btn_Moode.layer.cornerRadius = 11
+        btn_Moode.tintColor = UIColor(hexstring_Moode: "#6C5CE7")
+        btn_Moode.backgroundColor = UIColor(hexstring_Moode: "#E8E4FF")
+        btn_Moode.layer.cornerRadius = 13
         btn_Moode.clipsToBounds = true
         return btn_Moode
     }()
@@ -611,12 +611,12 @@ class ChallengeCommentCell_Moode: UITableViewCell {
             make.bottom.equalToSuperview().offset(-6)
         }
 
-        // 举报按钮（右上角，最先 addSubview 以便 nameLabel 约束引用）
+        // 举报按钮（右上角，26×26pt）
         cardView_Moode.addSubview(reportBtn_Moode)
         reportBtn_Moode.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
             make.right.equalToSuperview().offset(-10)
-            make.width.height.equalTo(22)
+            make.width.height.equalTo(26)
         }
         reportBtn_Moode.addTarget(self, action: #selector(handleReportTapped_Moode), for: .touchUpInside)
 
@@ -667,15 +667,15 @@ class ChallengeCommentCell_Moode: UITableViewCell {
         let isMyComment_moode = UserViewModel_Moode.shared_Moode.isCurrentUser_Moode(
             userId_moode: comment_moode.commentUserId_Moode
         )
-        let cfg_moode = UIImage.SymbolConfiguration(pointSize: 10, weight: .semibold)
+        let cfg_moode = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
         let iconName_moode = isMyComment_moode ? "trash" : "ellipsis"
         reportBtn_Moode.setImage(UIImage(systemName: iconName_moode, withConfiguration: cfg_moode), for: .normal)
         reportBtn_Moode.tintColor = isMyComment_moode
             ? UIColor(hexstring_Moode: "#FF6B6B")
-            : UIColor(hexstring_Moode: "#9B8FCC")
+            : UIColor(hexstring_Moode: "#6C5CE7")
         reportBtn_Moode.backgroundColor = isMyComment_moode
-            ? UIColor(hexstring_Moode: "#FF6B6B").withAlphaComponent(0.12)
-            : UIColor(hexstring_Moode: "#F0EEFF")
+            ? UIColor(hexstring_Moode: "#FF6B6B").withAlphaComponent(0.18)
+            : UIColor(hexstring_Moode: "#E8E4FF")
     }
 
     // MARK: - 复用清理
