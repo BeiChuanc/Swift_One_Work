@@ -358,14 +358,9 @@ class TitleViewModel_Moode {
     
     /// 显示登录提示
     private func showLoginPrompt_Moode() {
-        Utils_Moode.showWarning_Moode(
-            message_Moode: "Please login first.",
-            delay_Moode: 1.5
-        )
-        
         // 延迟跳转到登录页面
         Task {
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒
+            try? await Task.sleep(nanoseconds: 500_000_000) // 1.5秒
             Navigation_Moode.toLogin_Moode(style_moode: .present_moode)
         }
     }

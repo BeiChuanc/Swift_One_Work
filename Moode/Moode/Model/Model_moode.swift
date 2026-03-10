@@ -18,17 +18,17 @@ enum MoodType_Moode: String, Codable, CaseIterable {
     case angry_moode     = "angry"
     case surprised_moode = "surprised"
     
-    /// 情绪对应的 Emoji 符号
+    /// 情绪对应的 Emoji 符号（选用更丰富、视觉更具表现力的图标）
     var emoji_Moode: String {
         switch self {
-        case .joy_moode:       return "😊"
-        case .calm_moode:      return "😌"
-        case .sad_moode:       return "😢"
-        case .excited_moode:   return "🤩"
-        case .anxious_moode:   return "😰"
-        case .grateful_moode:  return "🙏"
-        case .angry_moode:     return "😤"
-        case .surprised_moode: return "😲"
+        case .joy_moode:       return "🥰"   // 心花怒放的喜悦
+        case .calm_moode:      return "🌿"   // 草木自然，宁静平和
+        case .sad_moode:       return "🌧️"  // 阴雨云层，诗意忧伤
+        case .excited_moode:   return "⚡"   // 闪电，充满电力的兴奋
+        case .anxious_moode:   return "🌀"   // 旋涡，翻腾不安的焦虑
+        case .grateful_moode:  return "🌸"   // 樱花绽放，温暖感恩
+        case .angry_moode:     return "🔥"   // 燃烧的火，强烈愤怒
+        case .surprised_moode: return "🤯"   // 大脑爆炸，震惊惊讶
         }
     }
     

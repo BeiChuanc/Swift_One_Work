@@ -51,16 +51,6 @@ class MessageList_Moode: UIViewController {
         return l_Moode
     }()
 
-    /// 右上角搜索按钮
-    private let searchBtn_Moode: UIButton = {
-        let btn_Moode = UIButton(type: .custom)
-        let cfg_Moode = UIImage.SymbolConfiguration(pointSize: 15, weight: .medium)
-        btn_Moode.setImage(UIImage(systemName: "magnifyingglass", withConfiguration: cfg_Moode), for: .normal)
-        btn_Moode.tintColor = .white
-        btn_Moode.backgroundColor = UIColor.white.withAlphaComponent(0.18)
-        btn_Moode.layer.cornerRadius = 18
-        return btn_Moode
-    }()
 
     // MARK: - 主滚动区
 
@@ -249,14 +239,6 @@ class MessageList_Moode: UIViewController {
             make.right.equalToSuperview().offset(-48)
             make.bottom.equalToSuperview().offset(18)
             make.width.height.equalTo(64)
-        }
-
-        // 搜索按钮右上角
-        headerView_Moode.addSubview(searchBtn_Moode)
-        searchBtn_Moode.snp.makeConstraints { make in
-            make.right.equalToSuperview().offset(-20)
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(8)
-            make.width.height.equalTo(36)
         }
 
         headerView_Moode.addSubview(pageTitleLabel_Moode)

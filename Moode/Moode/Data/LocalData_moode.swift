@@ -92,47 +92,47 @@ private struct DataSource_Moode {
     
     /// 用户信息列表 (用户名, 简介, 头像URL, 相册URL)
     static let usersInfo_Moode: [(String, String, String, String)] = [
-        ("EmberSeeker", "Love exploring around bonfires", "user_head_1", "user_album_1"),
-        ("ForestWhisper", "Nature enthusiast and storyteller", "user_head_2", "user_album_2"),
-        ("FlameJumper", "Adventure seeker and fire dancer", "user_head_3", "user_album_3"),
-        ("AshesToArt", "Turning moments into memories", "user_head_4", "user_album_4"),
-        ("NightGlow", "Capturing the magic of firelight", "user_head_5", "user_album_5"),
+        ("EmberSeeker", "Love exploring around bonfires", "head1", "head1"),
+        ("ForestWhisper", "Nature enthusiast and storyteller", "head2", "head2"),
+        ("FlameJumper", "Adventure seeker and fire dancer", "head3", "head3"),
+        ("AshesToArt", "Turning moments into memories", "head4", "head4"),
+        ("NightGlow", "Capturing the magic of firelight", "head5", "head5"),
     ]
     
     /// 普通帖子信息列表（无情绪标签）(标题, 内容, 媒体URL)
     static let postsInfo_Moode: [(String, String, String)] = [
-        ("Perfect Bonfire Night", "The bonfire crackles softly, wrapping every face in warm light; we pass around s'mores, and stories flow as freely as the laughter. This is the kind of night that stays with you long after the embers fade.", "post_media_1"),
-        ("Magical Firelight", "There's something magical about firelight—it turns ordinary moments into treasures. Sitting here, feeling the warmth on my hands and listening to friends chat, I realize happiness is just this simple.", "post_media_2"),
-        ("Dancing Flames", "The flames dance and flicker, casting gentle shadows on the grass. No loud noises, no rush—just the glow of fire, the breeze, and people who make the night feel like home.", "post_media_3"),
-        ("Warm Hearts", "As the night grows darker, the bonfire burns brighter. It's not just the fire that warms us, but the company, the shared smiles, and the quiet connection between every heart here.", "post_media_4"),
-        ("Glowing Memories", "Look at this glowing fire and the grinning faces around it—this is what good nights are made of! Tag the person you'd drag to sit with you by such a bonfire.", "post_media_5"),
-        ("Absolute Perfection", "Last night's bonfire was absolute perfection: great friends, crispy marshmallows, and a fire that burned steady till midnight. Who's got a bonfire story to top this?", "post_media_6"),
-        ("Fire Family", "I used to think bonfires were just about fire, but now I know it's about the people. This crew turned a simple fire into an unforgettable night.", "post_media_7"),
-        ("Fun Activities", "We spent hours around this bonfire: singing off-key, playing silly games, and even debating whether the fire is orange or red. What's your go-to bonfire activity?", "post_media_8"),
-        ("Stars and Fire", "Above us, the sky is dotted with stars; below us, the bonfire paints the night in warm hues. The universe feels so big, yet this little circle of fire and friends makes everything feel so close.", "post_media_9"),
-        ("Peaceful Embers", "Embers drift up like tiny fireflies, mixing with the stars in the dark. I sit here, quiet, and let the warmth seep into my bones—this is the peace I've been craving.", "post_media_10"),
+        ("Perfect Bonfire Night", "The bonfire crackles softly, wrapping every face in warm light; we pass around s'mores, and stories flow as freely as the laughter. This is the kind of night that stays with you long after the embers fade.", "title1"),
+        ("Magical Firelight", "There's something magical about firelight—it turns ordinary moments into treasures. Sitting here, feeling the warmth on my hands and listening to friends chat, I realize happiness is just this simple.", "title2"),
+        ("Dancing Flames", "The flames dance and flicker, casting gentle shadows on the grass. No loud noises, no rush—just the glow of fire, the breeze, and people who make the night feel like home.", "title3"),
+        ("Warm Hearts", "As the night grows darker, the bonfire burns brighter. It's not just the fire that warms us, but the company, the shared smiles, and the quiet connection between every heart here.", "title4"),
+        ("Glowing Memories", "Look at this glowing fire and the grinning faces around it—this is what good nights are made of! Tag the person you'd drag to sit with you by such a bonfire.", "title5"),
+        ("Absolute Perfection", "Last night's bonfire was absolute perfection: great friends, crispy marshmallows, and a fire that burned steady till midnight. Who's got a bonfire story to top this?", "title6"),
+        ("Fire Family", "I used to think bonfires were just about fire, but now I know it's about the people. This crew turned a simple fire into an unforgettable night.", "title7"),
+        ("Fun Activities", "We spent hours around this bonfire: singing off-key, playing silly games, and even debating whether the fire is orange or red. What's your go-to bonfire activity?", "title8"),
+        ("Stars and Fire", "Above us, the sky is dotted with stars; below us, the bonfire paints the night in warm hues. The universe feels so big, yet this little circle of fire and friends makes everything feel so close.", "title9"),
+        ("Peaceful Embers", "Embers drift up like tiny fireflies, mixing with the stars in the dark. I sit here, quiet, and let the warmth seep into my bones—this is the peace I've been craving.", "title10"),
     ]
 
     /// 情绪帖子信息列表（携带情绪标签，用于首页情绪流展示）(标题, 内容, 媒体URL, 情绪类型)
     static let moodPostsInfo_Moode: [(String, String, String, MoodType_Moode)] = [
         ("Gratitude in the Little Things",
          "Today I paused to notice the warmth of sunlight on my hands, the smell of my morning coffee, the sound of birds outside my window. These tiny moments—when you actually stop to feel them—hold such profound peace.",
-         "mood_media_1", .grateful_moode),
+         "title11", .grateful_moode),
         ("Riding the Wave of Excitement",
          "There's this buzzing energy coursing through me right now, like electricity in my fingertips. Big things are coming, and I can feel it in every heartbeat. This is what being truly alive feels like.",
-         "mood_media_2", .excited_moode),
+         "title12", .excited_moode),
         ("Wrapped in Calm",
          "The world outside is loud and fast, but here, in this quiet corner of my day, I feel still. Not numb—just peacefully present. Breathing in, breathing out. This stillness is enough.",
-         "mood_media_3", .calm_moode),
+         "title13", .calm_moode),
         ("Letting the Sadness Flow",
          "Some days feel heavier than others. Today, I'm sitting with my sadness instead of fighting it. It's okay to feel this. Sadness means something mattered. I'll let it pass through gently.",
-         "mood_media_4", .sad_moode),
+         "title14", .sad_moode),
         ("Burst of Pure Joy",
          "Unexpected laughter erupted from somewhere deep today—the kind that makes your eyes water and your stomach hurt. I don't even remember what started it. But for a few perfect minutes, nothing else existed.",
-         "mood_media_5", .joy_moode),
+         "title15", .joy_moode),
         ("Surprised by Beauty",
          "I turned a corner and the sky was this impossible shade of violet and gold, and for a moment the world just stopped. Sometimes beauty hits you so suddenly, so completely, it almost hurts.",
-         "mood_media_6", .surprised_moode),
+         "title16", .surprised_moode),
     ]
     
     /// 情绪挑战列表（官方/社区，含极简社区记录）

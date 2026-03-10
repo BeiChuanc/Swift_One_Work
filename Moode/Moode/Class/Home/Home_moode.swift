@@ -745,6 +745,10 @@ class Home_Moode: UIViewController {
         nameLabel_Moode.textColor = ColorConfig_Moode.textSecondary_Moode
         nameLabel_Moode.textAlignment = .center
         nameLabel_Moode.tag = 999
+        // 防止长文本截断：允许字号自动缩小至最小 8pt
+        nameLabel_Moode.adjustsFontSizeToFitWidth = true
+        nameLabel_Moode.minimumScaleFactor = 0.8
+        nameLabel_Moode.numberOfLines = 1
 
         let stack_Moode = UIStackView(arrangedSubviews: [emojiLabel_Moode, nameLabel_Moode])
         stack_Moode.axis = .vertical
@@ -754,10 +758,11 @@ class Home_Moode: UIViewController {
         container_Moode.addSubview(stack_Moode)
         stack_Moode.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.left.right.equalToSuperview().inset(10)
+            make.left.right.equalToSuperview().inset(6)
         }
         container_Moode.snp.makeConstraints { make in
-            make.width.equalTo(58)
+            // 宽度增大至 68pt，确保 "Anxious"/"Grateful"/"Surprised" 等长名称完整显示
+            make.width.equalTo(68)
             make.height.equalTo(52)
         }
 

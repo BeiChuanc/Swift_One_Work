@@ -79,6 +79,14 @@ class Detail_Moode: UIViewController {
         return btn
     }()
 
+    /// 送礼按钮（发送按钮左侧 10pt，使用 Assets 中的 gift_btn 图标）
+    private let giftBtn_Moode: UIButton = {
+        let btn = UIButton(type: .custom)
+        btn.setImage(UIImage(named: "gift_btn"), for: .normal)
+        btn.imageView?.contentMode = .scaleAspectFit
+        return btn
+    }()
+
     private var inputBarBottom_Moode: Constraint?
 
     // MARK: - 生命周期
@@ -125,7 +133,7 @@ class Detail_Moode: UIViewController {
             make.height.equalTo(72)
         }
 
-        // 发送按钮（先 addSubview，再 insertSublayer，确保渐变层可见）
+        // 发送按钮（最右侧）
         inputBar_Moode.addSubview(sendBtn_Moode)
         sendBtn_Moode.snp.makeConstraints { make in
             make.right.equalToSuperview().offset(-16)
@@ -134,11 +142,20 @@ class Detail_Moode: UIViewController {
         }
         sendBtn_Moode.addTarget(self, action: #selector(handleSend_Moode), for: .touchUpInside)
 
-        // 输入框（左侧直接 16pt，不再需要头像占位）
+        // 送礼按钮（发送按钮左侧 10pt，40×40）
+        inputBar_Moode.addSubview(giftBtn_Moode)
+        giftBtn_Moode.snp.makeConstraints { make in
+            make.right.equalTo(sendBtn_Moode.snp.left).offset(-10)
+            make.centerY.equalTo(sendBtn_Moode)
+            make.width.height.equalTo(40)
+        }
+        giftBtn_Moode.addTarget(self, action: #selector(handleGift_Moode), for: .touchUpInside)
+
+        // 输入框（左侧 16pt，右侧到送礼按钮左侧 10pt）
         inputBar_Moode.addSubview(commentInput_Moode)
         commentInput_Moode.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(16)
-            make.right.equalTo(sendBtn_Moode.snp.left).offset(-10)
+            make.right.equalTo(giftBtn_Moode.snp.left).offset(-10)
             make.centerY.equalToSuperview().offset(-4)
             make.height.equalTo(40)
         }
@@ -215,6 +232,15 @@ class Detail_Moode: UIViewController {
     }
 
     // MARK: - 事件
+
+    /// 点击送礼按钮，以模态方式弹出礼物页面
+    @objc private func handleGift_Moode() {
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        let giftVC = GiftView_Moode()
+        giftVC.modalPresentationStyle = .overFullScreen
+        giftVC.modalTransitionStyle   = .crossDissolve
+        present(giftVC, animated: false)
+    }
 
     @objc private func handleSend_Moode() {
         let text = commentInput_Moode.text?.trimmingCharacters(in: .whitespaces) ?? ""
