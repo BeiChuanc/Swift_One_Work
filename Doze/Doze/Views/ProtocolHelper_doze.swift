@@ -292,70 +292,112 @@ class ProtocolTextTapGesture_Doze: UITapGestureRecognizer {
 // MARK: - 协议视图控制器
 
 /// 协议视图控制器
-/// 功能：展示协议内容（支持 WebView、本地文本、本地图片）
+/// 功能：展示协议内容（支持 WebView、本地文本、Assets 图片）
+/// 设计：使用自定义导航栏（与项目其他页面一致），避免依赖系统导航栏隐显状态
 class ProtocolViewController_Doze: UIViewController {
-    
+
     // MARK: - 属性
-    
+
     private let protocolType_Doze: ProtocolHelper_Doze.ProtocolType_Doze
     private let content_Doze: String
-    
+
     private var webView_Doze: WKWebView?
-    private var scrollView_Doze: UIScrollView?
+    private var contentScrollView_Doze: UIScrollView?
     private var activityIndicator_Doze: UIActivityIndicatorView?
-    
+
     /// 是否是远程 URL
-    private var isRemoteURL_Doze: Bool {
-        return content_Doze.hasPrefix("http")
+    private var isRemoteURL_Doze: Bool { content_Doze.hasPrefix("http") }
+
+    /// 是否可作为 Assets 图片加载（有扩展名或能在 Assets 中找到）
+    private var isAssetImage_Doze: Bool {
+        let hasImgExt = content_Doze.hasSuffix(".png")
+            || content_Doze.hasSuffix(".jpg")
+            || content_Doze.hasSuffix(".jpeg")
+        return hasImgExt || UIImage(named: content_Doze) != nil
     }
-    
-    /// 是否是图片
-    private var isImage_Doze: Bool {
-        return content_Doze.hasSuffix(".png") || 
-               content_Doze.hasSuffix(".jpg") || 
-               content_Doze.hasSuffix(".jpeg")
-    }
-    
+
+    // MARK: - 自定义导航栏
+
+    private let navBar_Doze: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor(hexstring_Doze: "#F2F0F8")
+        return v
+    }()
+
+    private let backButton_Doze: UIButton = {
+        let btn = UIButton(type: .custom)
+        let cfg = UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)
+        btn.setImage(UIImage(systemName: "chevron.left", withConfiguration: cfg), for: .normal)
+        btn.tintColor = ColorConfig_Doze.textPrimary_Doze
+        btn.backgroundColor = UIColor.white.withAlphaComponent(0.7)
+        btn.layer.cornerRadius = 18
+        return btn
+    }()
+
+    private let navTitleLabel_Doze: UILabel = {
+        let lbl = UILabel()
+        lbl.font = UIFont.systemFont(ofSize: 17, weight: .bold)
+        lbl.textColor = ColorConfig_Doze.textPrimary_Doze
+        return lbl
+    }()
+
     // MARK: - 初始化
-    
+
     init(type_Doze: ProtocolHelper_Doze.ProtocolType_Doze, content_Doze: String) {
         self.protocolType_Doze = type_Doze
         self.content_Doze = content_Doze
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - 生命周期
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI_Doze()
+        view.backgroundColor = UIColor(hexstring_Doze: "#F2F0F8")
+        setupNavBar_Doze()
+        setupContentArea_Doze()
         loadContent_Doze()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: true)
+        // 使用自定义导航栏，始终隐藏系统导航栏
+        navigationController?.navigationBar.isHidden = true
     }
-    
-    // MARK: - UI设置
-    
-    private func setupUI_Doze() {
-        view.backgroundColor = .white
-        title = protocolType_Doze.title_Doze
-        
-        // 设置返回按钮
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "arrow.left"),
-            style: .plain,
-            target: self,
-            action: #selector(backTapped_Doze)
-        )
-        navigationItem.leftBarButtonItem?.tintColor = .black
-        
+
+    // MARK: - 自定义导航栏搭建
+
+    private func setupNavBar_Doze() {
+        navTitleLabel_Doze.text = protocolType_Doze.title_Doze
+
+        view.addSubview(navBar_Doze)
+        navBar_Doze.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(56)
+            make.left.right.equalToSuperview()
+            make.height.equalTo(50)
+        }
+
+        navBar_Doze.addSubview(backButton_Doze)
+        backButton_Doze.snp.makeConstraints { make in
+            make.left.equalToSuperview().offset(16)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(36)
+        }
+        backButton_Doze.addTarget(self, action: #selector(backTapped_Doze), for: .touchUpInside)
+
+        navBar_Doze.addSubview(navTitleLabel_Doze)
+        navTitleLabel_Doze.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+    }
+
+    // MARK: - 内容区域搭建
+
+    private func setupContentArea_Doze() {
         if isRemoteURL_Doze {
             setupWebView_Doze()
             setupActivityIndicator_Doze()
@@ -363,84 +405,85 @@ class ProtocolViewController_Doze: UIViewController {
             setupScrollView_Doze()
         }
     }
-    
-    /// 设置 WebView
+
+    /// 设置 WebView（远程 URL）
     private func setupWebView_Doze() {
         let webView_Doze = WKWebView()
         webView_Doze.navigationDelegate = self
+        webView_Doze.backgroundColor = .white
         view.addSubview(webView_Doze)
-        
         webView_Doze.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalTo(navBar_Doze.snp.bottom)
+            make.left.right.bottom.equalToSuperview()
         }
-        
         self.webView_Doze = webView_Doze
     }
-    
-    /// 设置 ScrollView（用于文本和图片）
+
+    /// 设置 ScrollView（本地图片 / 文本）
     private func setupScrollView_Doze() {
-        let scrollView_Doze = UIScrollView()
-        scrollView_Doze.showsVerticalScrollIndicator = true
-        scrollView_Doze.alwaysBounceVertical = true
-        view.addSubview(scrollView_Doze)
-        
-        scrollView_Doze.snp.makeConstraints { make in
-            make.edges.equalTo(view.safeAreaLayoutGuide)
+        let sv = UIScrollView()
+        sv.backgroundColor = .white
+        sv.showsVerticalScrollIndicator = true
+        sv.alwaysBounceVertical = true
+        sv.layer.cornerRadius = 16
+        sv.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        view.addSubview(sv)
+        sv.snp.makeConstraints { make in
+            make.top.equalTo(navBar_Doze.snp.bottom).offset(8)
+            make.left.right.equalToSuperview().inset(0)
+            make.bottom.equalToSuperview()
         }
-        
-        self.scrollView_Doze = scrollView_Doze
+        self.contentScrollView_Doze = sv
     }
-    
+
     /// 设置加载指示器
     private func setupActivityIndicator_Doze() {
         let indicator_Doze = UIActivityIndicatorView(style: .large)
-        indicator_Doze.color = .gray
+        indicator_Doze.color = ColorConfig_Doze.primaryGradientStart_Doze
         view.addSubview(indicator_Doze)
-        
-        indicator_Doze.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
-        
+        indicator_Doze.snp.makeConstraints { make in make.center.equalToSuperview() }
         self.activityIndicator_Doze = indicator_Doze
     }
-    
+
     // MARK: - 加载内容
-    
+
     private func loadContent_Doze() {
         if isRemoteURL_Doze {
             loadWebContent_Doze()
-        } else if isImage_Doze {
+        } else if isAssetImage_Doze {
+            // Assets 图片（有扩展名或能被 UIImage(named:) 找到）
             loadImageContent_Doze()
         } else {
             loadTextContent_Doze()
         }
     }
-    
+
     /// 加载网页内容
     private func loadWebContent_Doze() {
         guard let url_Doze = URL(string: content_Doze) else { return }
-        
         activityIndicator_Doze?.startAnimating()
-        
-        let request_Doze = URLRequest(url: url_Doze)
-        webView_Doze?.load(request_Doze)
+        webView_Doze?.load(URLRequest(url: url_Doze))
     }
-    
-    /// 加载图片内容
+
+    /// 加载 Assets 图片内容
     private func loadImageContent_Doze() {
-        guard let scrollView_Doze = scrollView_Doze,
-              let image_Doze = UIImage(named: content_Doze) else { return }
-        
+        guard let sv = contentScrollView_Doze,
+              let image_Doze = UIImage(named: content_Doze) else {
+            // 图片不存在时退回文本显示
+            loadTextContent_Doze()
+            return
+        }
+
         let imageView_Doze = UIImageView()
         imageView_Doze.contentMode = .scaleAspectFit
         imageView_Doze.image = image_Doze
-        scrollView_Doze.addSubview(imageView_Doze)
-        
-        // 计算图片显示高度（按屏幕宽度缩放）
-        let screenWidth_Doze = view.bounds.width
-        let imageRatio_Doze = image_Doze.size.height / image_Doze.size.width
-        let displayHeight_Doze = screenWidth_Doze * imageRatio_Doze
-        
+        sv.addSubview(imageView_Doze)
+
+        // 按屏幕宽度缩放，保持图片原始比例
+        let screenWidth_Doze = UIScreen.main.bounds.width
+        let ratio_Doze = image_Doze.size.height / max(image_Doze.size.width, 1)
+        let displayHeight_Doze = screenWidth_Doze * ratio_Doze
+
         imageView_Doze.snp.makeConstraints { make in
             make.top.left.right.equalToSuperview()
             make.width.equalTo(screenWidth_Doze)
@@ -448,28 +491,29 @@ class ProtocolViewController_Doze: UIViewController {
             make.bottom.equalToSuperview()
         }
     }
-    
-    /// 加载文本内容
+
+    /// 加载纯文本内容
     private func loadTextContent_Doze() {
-        guard let scrollView_Doze = scrollView_Doze else { return }
-        
+        guard let sv = contentScrollView_Doze else { return }
+
         let textLabel_Doze = UILabel()
         textLabel_Doze.text = content_Doze
-        textLabel_Doze.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        textLabel_Doze.textColor = .black
+        textLabel_Doze.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+        textLabel_Doze.textColor = ColorConfig_Doze.textPrimary_Doze
         textLabel_Doze.numberOfLines = 0
-        scrollView_Doze.addSubview(textLabel_Doze)
-        
+        sv.addSubview(textLabel_Doze)
+
         textLabel_Doze.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(20)
             make.width.equalTo(view.snp.width).offset(-40)
         }
     }
-    
+
     // MARK: - 事件处理
-    
+
     @objc private func backTapped_Doze() {
-        navigationController?.popViewController(animated: true)
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        Navigation_Doze.pop_Doze()
     }
 }
 

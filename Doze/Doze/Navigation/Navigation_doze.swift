@@ -253,8 +253,24 @@ class Navigation_Doze: NSObject {
         navigate_Doze(to: detailVC_doze, style_doze: style_doze, animated_doze: animated_doze)
     }
     
+    // MARK: - 睡眠相册相关
+
+    /// 跳转到新建睡眠相册页
+    static func toSleepAlbumCreate_Doze(
+        style_doze: NavigationStyle_Doze = .present_doze,
+        animated_doze: Bool = true,
+        completion_doze: (() -> Void)? = nil
+    ) {
+        navigate_Doze(
+            to: SleepAlbumCreate_Doze(),
+            style_doze: style_doze,
+            animated_doze: animated_doze,
+            completion_doze: completion_doze
+        )
+    }
+
     // MARK: - 发布相关
-    
+
     /// 跳转到发布页
     static func toRelease_Doze(
         style_doze: NavigationStyle_Doze = .present_doze,

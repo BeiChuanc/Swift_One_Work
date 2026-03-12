@@ -50,118 +50,172 @@ class TabBar_Doze: UITabBarController {
     }
     
     // MARK: - UI设置
+
     private func setupUI_Doze() {
-        // 配置黄色背景视图
-        tabBgView_Doze.backgroundColor = UIColor(hexstring_Doze: "#FFD700")
+        // 背景视图
+        tabBgView_Doze.backgroundColor = UIColor(hexstring_Doze: "#07152A")
         tabBgView_Doze.layer.masksToBounds = true
         view.addSubview(tabBgView_Doze)
-        
-        // 配置StackView
+
+        // StackView
         tabStackView_Doze.axis = .horizontal
         tabStackView_Doze.distribution = .equalSpacing
         tabStackView_Doze.alignment = .center
-        tabStackView_Doze.spacing = 20
+        tabStackView_Doze.spacing = 0
         view.addSubview(tabStackView_Doze)
-        
-        // 配置首页按钮
-        btnHome_Doze.setImage(UIImage(named: "front_select"), for: .selected)
-        btnHome_Doze.setImage(UIImage(named: "front_select")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        btnHome_Doze.tintColor = .gray
-        btnHome_Doze.tag = 0
-        btnHome_Doze.addTarget(self, action: #selector(tabButtonTapped_Doze(_:)), for: .touchUpInside)
-        tabStackView_Doze.addArrangedSubview(btnHome_Doze)
-        
+
+        // 选中色
+        let selectedColor_Doze = UIColor(hexstring_Doze: "#BE92FD")
+
+        // 配置首页按钮（normal: 原图，selected: 主题色着色）
+        configTabButton_Doze(
+            btnHome_Doze,
+            imageName_Doze: "home",
+            tag_Doze: 0,
+            selectedColor_Doze: selectedColor_Doze
+        )
+
         // 配置发现页按钮
-        btnDiscover_Doze.setImage(UIImage(named: "pu_select"), for: .selected)
-        btnDiscover_Doze.setImage(UIImage(named: "pu_select")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        btnDiscover_Doze.tintColor = .gray
-        btnDiscover_Doze.tag = 1
-        btnDiscover_Doze.addTarget(self, action: #selector(tabButtonTapped_Doze(_:)), for: .touchUpInside)
-        tabStackView_Doze.addArrangedSubview(btnDiscover_Doze)
-        
-        // 配置发布按钮
-        btnRelease_Doze.setImage(UIImage(named: "publish"), for: .normal)
+        configTabButton_Doze(
+            btnDiscover_Doze,
+            imageName_Doze: "discover",
+            tag_Doze: 1,
+            selectedColor_Doze: selectedColor_Doze
+        )
+
+        // 配置发布按钮（始终使用原图，无选中着色）
+        btnRelease_Doze.setImage(
+            UIImage(named: "publish")?.withRenderingMode(.alwaysOriginal),
+            for: .normal
+        )
+        btnRelease_Doze.setImage(
+            UIImage(named: "publish")?.withRenderingMode(.alwaysOriginal),
+            for: .selected
+        )
         btnRelease_Doze.tag = 2
         btnRelease_Doze.addTarget(self, action: #selector(tabButtonTapped_Doze(_:)), for: .touchUpInside)
         tabStackView_Doze.addArrangedSubview(btnRelease_Doze)
-        
+
         // 配置消息按钮
-        btnMessage_Doze.setImage(UIImage(named: "mes_select"), for: .selected)
-        btnMessage_Doze.setImage(UIImage(named: "mes_select")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        btnMessage_Doze.tintColor = .gray
-        btnMessage_Doze.tag = 3
-        btnMessage_Doze.addTarget(self, action: #selector(tabButtonTapped_Doze(_:)), for: .touchUpInside)
-        tabStackView_Doze.addArrangedSubview(btnMessage_Doze)
-        
+        configTabButton_Doze(
+            btnMessage_Doze,
+            imageName_Doze: "message",
+            tag_Doze: 3,
+            selectedColor_Doze: selectedColor_Doze
+        )
+
         // 配置我的按钮
-        btnMe_Doze.setImage(UIImage(named: "me_select"), for: .selected)
-        btnMe_Doze.setImage(UIImage(named: "me_select")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        btnMe_Doze.tintColor = .gray
-        btnMe_Doze.tag = 4
-        btnMe_Doze.addTarget(self, action: #selector(tabButtonTapped_Doze(_:)), for: .touchUpInside)
-        tabStackView_Doze.addArrangedSubview(btnMe_Doze)
-        
-        // 设置初始选中状态
-        btnHome_Doze.isSelected = true
+        configTabButton_Doze(
+            btnMe_Doze,
+            imageName_Doze: "me",
+            tag_Doze: 4,
+            selectedColor_Doze: selectedColor_Doze
+        )
+
+        // 初始选中首页
+        updateSelection_Doze(index_Doze: 0)
     }
-    
+
+    /// 统一配置普通 Tab 按钮
+    /// - Parameters:
+    ///   - button_Doze: 目标按钮
+    ///   - imageName_Doze: Assets 图标名称
+    ///   - tag_Doze: 按钮标识
+    ///   - selectedColor_Doze: 选中时着色颜色
+    private func configTabButton_Doze(
+        _ button_Doze: UIButton,
+        imageName_Doze: String,
+        tag_Doze: Int,
+        selectedColor_Doze: UIColor
+    ) {
+        // 普通状态：原图显示
+        button_Doze.setImage(
+            UIImage(named: imageName_Doze)?.withRenderingMode(.alwaysOriginal),
+            for: .normal
+        )
+        // 选中状态：用主题色对原图着色
+        button_Doze.setImage(
+            tintedImage_Doze(named_Doze: imageName_Doze, color_Doze: selectedColor_Doze),
+            for: .selected
+        )
+        button_Doze.tag = tag_Doze
+        button_Doze.addTarget(self, action: #selector(tabButtonTapped_Doze(_:)), for: .touchUpInside)
+        tabStackView_Doze.addArrangedSubview(button_Doze)
+    }
+
+    /// 对 Assets 图片应用纯色着色，返回着色后的图片
+    /// - Parameters:
+    ///   - named_Doze: 图片名称
+    ///   - color_Doze: 着色颜色
+    /// - Returns: 着色后的 UIImage，图片不存在时返回 nil
+    private func tintedImage_Doze(named_Doze: String, color_Doze: UIColor) -> UIImage? {
+        guard let original_Doze = UIImage(named: named_Doze) else { return nil }
+        let renderer_Doze = UIGraphicsImageRenderer(size: original_Doze.size)
+        return renderer_Doze.image { ctx_Doze in
+            color_Doze.setFill()
+            ctx_Doze.fill(CGRect(origin: .zero, size: original_Doze.size))
+            original_Doze.draw(at: .zero, blendMode: .destinationIn, alpha: 1)
+        }
+    }
+
     /// 设置约束布局
     private func setupConstraints_Doze() {
-        // StackView约束
-        tabStackView_Doze.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.leading.equalToSuperview().offset(30)
-            make.trailing.equalToSuperview().offset(-30)
-            make.bottom.equalToSuperview().offset(-50)
-            make.height.equalTo(50)
-        }
-        
-        // 按钮尺寸约束
-        btnHome_Doze.snp.makeConstraints { make in
-            make.width.height.equalTo(40)
-        }
-        
-        btnDiscover_Doze.snp.makeConstraints { make in
-            make.width.height.equalTo(40)
-        }
-        
-        btnRelease_Doze.snp.makeConstraints { make in
-            make.width.height.equalTo(45)
-        }
-        
-        btnMessage_Doze.snp.makeConstraints { make in
-            make.width.height.equalTo(40)
-        }
-        
-        btnMe_Doze.snp.makeConstraints { make in
-            make.width.height.equalTo(40)
-        }
-        
-        // 黄色背景视图约束（上下各距离StackView 15）
+        // 背景视图：直接对屏幕留边距，与屏幕左右各距 20pt，底部距屏幕底 24pt
         tabBgView_Doze.snp.makeConstraints { make in
-            make.leading.trailing.equalTo(tabStackView_Doze)
-            make.top.equalTo(tabStackView_Doze).offset(-15)
-            make.bottom.equalTo(tabStackView_Doze).offset(15)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+            make.bottom.equalToSuperview().offset(-24)
+            make.height.equalTo(84)
         }
-        
-        // 设置圆角为高度的一半
-        tabBgView_Doze.layoutIfNeeded()
-        let bgHeight = 50 + 30 // StackView高度50 + 上下各15
-        tabBgView_Doze.layer.cornerRadius = CGFloat(bgHeight) / 2.0
+
+        // 圆角为高度一半（胶囊形）
+        tabBgView_Doze.layer.cornerRadius = 42
+
+        // StackView：在背景视图内部左右各留 24pt 内边距，垂直居中
+        tabStackView_Doze.snp.makeConstraints { make in
+            make.centerY.equalTo(tabBgView_Doze)
+            make.leading.equalTo(tabBgView_Doze).offset(24)
+            make.trailing.equalTo(tabBgView_Doze).offset(-24)
+            make.height.equalTo(56)
+        }
+
+        // 普通 Tab 图标：24x24
+        [btnHome_Doze, btnDiscover_Doze, btnMessage_Doze, btnMe_Doze].forEach { btn in
+            btn.snp.makeConstraints { make in
+                make.width.height.equalTo(24)
+            }
+        }
+
+        // 发布按钮：44x44
+        btnRelease_Doze.snp.makeConstraints { make in
+            make.width.height.equalTo(44)
+        }
+    }
+
+    /// 统一更新所有按钮选中状态
+    private func updateSelection_Doze(index_Doze: Int) {
+        let allBtns_Doze = [btnHome_Doze, btnDiscover_Doze, btnRelease_Doze, btnMessage_Doze, btnMe_Doze]
+        allBtns_Doze.enumerated().forEach { i_Doze, btn_Doze in
+            btn_Doze.isSelected = (i_Doze == index_Doze)
+        }
     }
     
     @objc private func tabButtonTapped_Doze(_ sender: UIButton) {
-        let index = sender.tag
-        
-        // 更新选中状态
-        currentIndex_Doze = index
-        selectedIndex = index
-        
-        // 更新所有按钮的选中状态
-        btnHome_Doze.isSelected = (index == 0)
-        btnDiscover_Doze.isSelected = (index == 1)
-        btnRelease_Doze.isSelected = (index == 2)
-        btnMessage_Doze.isSelected = (index == 3)
-        btnMe_Doze.isSelected = (index == 4)
+        let index_Doze = sender.tag
+        currentIndex_Doze = index_Doze
+        selectedIndex = index_Doze
+        updateSelection_Doze(index_Doze: index_Doze)
+    }
+
+    // MARK: - 外部切换接口
+
+    /// 切换到指定标签页，并同步更新底部按钮选中状态
+    /// - Parameter index_Doze: 目标标签索引（0:首页 1:发现 2:发布 3:消息 4:我的）
+    func switchToTab_Doze(index_Doze: Int) {
+        guard index_Doze >= 0, index_Doze < (viewControllers?.count ?? 0) else { return }
+        currentIndex_Doze = index_Doze
+        selectedIndex = index_Doze
+        updateSelection_Doze(index_Doze: index_Doze)
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
 }

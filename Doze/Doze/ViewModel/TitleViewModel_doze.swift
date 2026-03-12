@@ -163,11 +163,6 @@ class TitleViewModel_Doze {
             posts_Doze[index_doze].reviews_Doze.append(newComment_doze)
         }
         
-        Utils_Doze.showSuccess_Doze(
-            message_Doze: "Comment posted",
-            image_Doze: UIImage(systemName: "bubble.left.fill")
-        )
-        
         notifyStateChange_Doze()
     }
     

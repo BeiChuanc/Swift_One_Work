@@ -51,44 +51,73 @@ class LocalData_Doze {
 
 // MARK: - 静态数据源
 
-/// 静态数据源类
+/// 静态数据源类（宠物睡眠观察主题）
 private struct DataSource_Doze {
     
     /// 用户信息列表 (用户名, 简介, 头像URL, 相册URL)
     static let usersInfo_Doze: [(String, String, String, String)] = [
-        ("EmberSeeker", "Love exploring around bonfires", "user_head_1", "user_album_1"),
-        ("ForestWhisper", "Nature enthusiast and storyteller", "user_head_2", "user_album_2"),
-        ("FlameJumper", "Adventure seeker and fire dancer", "user_head_3", "user_album_3"),
-        ("AshesToArt", "Turning moments into memories", "user_head_4", "user_album_4"),
-        ("NightGlow", "Capturing the magic of firelight", "user_head_5", "user_album_5"),
+        ("PawKeeper", "Dedicated cat parent tracking Luna's every snooze", "head1", "head1"),
+        ("DreamyTails", "Dog mom obsessed with sleep patterns and cozy naps", "head2", "head2"),
+        ("WhiskerWatch", "Certified crazy cat person & amateur sleep scientist", "head3", "head3"),
+        ("NapGuardian", "Bunny dad who monitors every twitch and flop", "head4", "head4"),
+        ("ZzzzLogger", "Bird owner fascinated by feathered sleep rituals", "head5", "head5"),
     ]
     
-    /// 帖子信息列表 (标题, 内容, 媒体URL)
-    static let postsInfo_Doze: [(String, String, String)] = [
-        ("Perfect Bonfire Night", "The bonfire crackles softly, wrapping every face in warm light; we pass around s'mores, and stories flow as freely as the laughter. This is the kind of night that stays with you long after the embers fade.", "post_media_1"),
-        ("Magical Firelight", "There's something magical about firelight—it turns ordinary moments into treasures. Sitting here, feeling the warmth on my hands and listening to friends chat, I realize happiness is just this simple.", "post_media_2"),
-        ("Dancing Flames", "The flames dance and flicker, casting gentle shadows on the grass. No loud noises, no rush—just the glow of fire, the breeze, and people who make the night feel like home.", "post_media_3"),
-        ("Warm Hearts", "As the night grows darker, the bonfire burns brighter. It's not just the fire that warms us, but the company, the shared smiles, and the quiet connection between every heart here.", "post_media_4"),
-        ("Glowing Memories", "Look at this glowing fire and the grinning faces around it—this is what good nights are made of! Tag the person you'd drag to sit with you by such a bonfire.", "post_media_5"),
-        ("Absolute Perfection", "Last night's bonfire was absolute perfection: great friends, crispy marshmallows, and a fire that burned steady till midnight. Who's got a bonfire story to top this?", "post_media_6"),
-        ("Fire Family", "I used to think bonfires were just about fire, but now I know it's about the people. This crew turned a simple fire into an unforgettable night.", "post_media_7"),
-        ("Fun Activities", "We spent hours around this bonfire: singing off-key, playing silly games, and even debating whether the fire is orange or red. What's your go-to bonfire activity?", "post_media_8"),
-        ("Stars and Fire", "Above us, the sky is dotted with stars; below us, the bonfire paints the night in warm hues. The universe feels so big, yet this little circle of fire and friends makes everything feel so close.", "post_media_9"),
-        ("Peaceful Embers", "Embers drift up like tiny fireflies, mixing with the stars in the dark. I sit here, quiet, and let the warmth seep into my bones—this is the peace I've been craving.", "post_media_10"),
+    /// 帖子信息列表 (标题, 内容, 媒体URL, 宠物类别)
+    static let postsInfo_Doze: [(String, String, String, PetCategory_Doze)] = [
+        ("Luna's Deep Sleep Mode",
+         "Luna has been in deep sleep for 3 hours straight—paws tucked in, barely moving, breathing so softly I had to double-check she was okay. Her sleep quality tracker shows 94% deep sleep. Honestly, I'm a little jealous.",
+         "title1", .cat_doze),
+        
+        ("Buddy's Midday Nap Ritual",
+         "Every day at 2 PM, Buddy finds the sunniest patch on the floor and flops down for his nap. Today I timed it: 47 minutes of blissful, twitchy-leg dog sleep. He must be chasing squirrels in his dreams again.",
+         "title2", .dog_doze),
+        
+        ("Mochi's Sleep Flop",
+         "Mochi did the full dead-bunny flop today—just toppled sideways mid-groom and was out cold. First time owners panic when bunnies do this, but it means they feel totally safe and relaxed. Pure trust.",
+         "title3", .rabbit_doze),
+        
+        ("Kiwi's One-Legged Snooze",
+         "Caught Kiwi sleeping on one leg again, head tucked deep into his feathers. Bird sleep is fascinating—one brain hemisphere stays alert while the other rests. Half asleep, fully adorable.",
+         "title4", .bird_doze),
+        
+        ("Whisker's 5-Hour Marathon",
+         "Whisker broke her personal record today: 5 hours 12 minutes of uninterrupted sleep. She shifted positions exactly three times and produced the loudest purr at hour two. Sleep quality: legendary.",
+         "title5", .cat_doze),
+        
+        ("Max's Post-Walk Knockout",
+         "After our morning hike, Max came home and didn't even make it to his bed—just crashed on the mat by the door and was snoring within 60 seconds. Sleep efficiency rating: 10/10.",
+         "title6", .dog_doze),
+        
+        ("Coco's Synchronized Nap",
+         "Coco actually fell asleep in perfect sync with me during my afternoon rest. We both woke up 20 minutes later. I think my rabbit has developed a sense of my sleep schedule. Truly bonded.",
+         "title7", .rabbit_doze),
+        
+        ("Sunny's Midnight Lullaby",
+         "At 11 PM, Sunny starts his pre-sleep routine: soft chirps, feather fluffing, then silence. By 11:15 he's completely out. I've started going to bed earlier just to match his schedule.",
+         "title8", .bird_doze),
+        
+        ("Nala's Healing Purr Session",
+         "Nala slept on my chest for two hours straight. Her purring measured 25 Hz—right in the healing frequency range. My back pain feels better. Science says cat purrs can reduce stress and promote healing.",
+         "title9", .cat_doze),
+        
+        ("Bear's Thunderstorm Sleep",
+         "A huge thunderstorm rolled through last night. Bear, my normally anxious husky, crawled under the covers, pressed against my legs, and slept deeply through the whole thing. Best night ever logged.",
+         "title10", .dog_doze),
     ]
     
     /// 评论列表 (评论1, 评论2)
     static let comments_Doze: [(String, String)] = [
-        ("This looks absolutely magical! Nothing beats a bonfire with good friends", "S'mores and stories by the fire—that's the perfect night right there!"),
-        ("You captured the essence of what makes bonfires special! Love this vibe", "The simplicity of firelight and friendship is truly magical. Beautiful moment!"),
-        ("Those dancing flames and peaceful vibes—I can feel the warmth through the screen!", "This is exactly what I needed to see today. Time to plan a bonfire night!"),
-        ("The connection between hearts around a fire is something special. Beautifully said!", "Love how you describe the warmth coming from both the fire and the company"),
-        ("Already know who I'd tag for this! Nothing beats bonfire nights with the right people", "First thing I'd share? Probably my terrible ghost stories! Who's with me?"),
-        ("Our bonfire story: We accidentally used green wood and it wouldn't stop smoking!", "Crispy marshmallows till midnight sounds perfect! Need to organize one soon"),
-        ("Your fire family sounds amazing! Count me in for round two", "It really is all about the people. The fire is just an excuse to gather!"),
-        ("Off-key singing is mandatory at our bonfires too! Also love the fire color debate", "My go-to activity: trying to roast the perfect marshmallow"),
-        ("The stars above and fire below—this is poetry in real life!", "That feeling of the universe being big yet feeling so close... perfectly captured!"),
-        ("The embers mixing with stars is such a beautiful image. Pure peace", "Sometimes we just need warmth seeping into our bones and quiet moments"),
+        ("Luna's sleep stats are incredible! My cat barely manages 2 hours before zooming", "94% deep sleep? That's better than any human I know. Teach us your ways, Luna"),
+        ("Buddy's nap schedule is more consistent than my work calendar honestly", "The twitchy legs during naps are the cutest thing. Definitely chasing squirrels!"),
+        ("The dead flop scared me so much the first time. Now I know it means pure happiness", "Mochi looks so peaceful. Flopped bunnies are the ultimate sign of trust and safety"),
+        ("Bird sleep is genuinely fascinating! Half the brain awake is such a cool adaptation", "Kiwi's one-leg pose is iconic. My parakeet does the same thing every evening"),
+        ("5 hours 12 minutes! Whisker is living her best life. Goals honestly", "The record-breaking purr at hour two is hilarious. She was dreaming of something good"),
+        ("Max's doormat crash is peak tired dog energy. So relatable after a long hike!", "60 seconds from walk to snore is impressive. Must be some kind of talent"),
+        ("Synchronized napping with your pet is the ultimate bond. This is so wholesome!", "Coco matching your schedule is honestly the sweetest thing I've read all week"),
+        ("Sunny's 11 PM routine is so structured! My bird has zero concept of bedtime", "Going to bed earlier to match your bird's sleep schedule is completely valid and cute"),
+        ("Healing purr frequencies are real! Cat ownership is basically free therapy", "25 Hz purrs are scientifically proven to reduce anxiety. Nala is literally medicinal"),
+        ("Bear sleeping through a thunderstorm pressed against you is the absolute dream", "Anxious dog + thunderstorm + cozy sleep is the character development arc we needed"),
     ]
 }
 
@@ -162,7 +191,7 @@ class DataGenerator_Doze {
         dataLocal_doze.titleList_Doze.removeAll()
         
         for (index_doze, postInfo_doze) in DataSource_Doze.postsInfo_Doze.enumerated() {
-            let (title_doze, content_doze, media_doze) = postInfo_doze
+            let (title_doze, content_doze, media_doze, category_doze) = postInfo_doze
             
             // 循环分配作者
             let authorIndex_doze = index_doze % dataLocal_doze.userList_Doze.count
@@ -175,7 +204,7 @@ class DataGenerator_Doze {
                 postAuthorUserId_doze: author_doze.userId_Doze ?? 0
             )
             
-            // 创建帖子
+            // 创建帖子（附带宠物类别）
             let post_doze = TitleModel_Doze(
                 titleId_Doze: index_doze + DataConfig_Doze.postIdStart_Doze,
                 titleUserId_Doze: author_doze.userId_Doze ?? 0,
@@ -184,7 +213,8 @@ class DataGenerator_Doze {
                 title_Doze: title_doze,
                 titleContent_Doze: content_doze,
                 reviews_Doze: comments_doze,
-                likes_Doze: RandomUtil_Doze.nextInt_Doze(min_doze: 10, range_doze: 150)
+                likes_Doze: RandomUtil_Doze.nextInt_Doze(min_doze: 10, range_doze: 150),
+                petCategory_Doze: category_doze
             )
             
             dataLocal_doze.titleList_Doze.append(post_doze)

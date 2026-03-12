@@ -13,7 +13,7 @@ class Store_Doze: NSObject {
     var goodsList_Doze: [StoreModel_Doze] = [
         StoreModel_Doze(
             id_Doze: 1,
-            goodsId_Doze: "mood.record.x5.3_9",
+            goodsId_Doze: "doze.gift.pur.x5.3_9",
             goodsName_Doze: "x5",
             goodsPrice_Doze: "$3.99",
             goodIsTop_Doze: true,
@@ -21,7 +21,7 @@ class Store_Doze: NSObject {
         ),
         StoreModel_Doze(
             id_Doze: 2,
-            goodsId_Doze: "mood.record.x10.4_9",
+            goodsId_Doze: "doze.gift.pur.x10.4_9",
             goodsName_Doze: "x10",
             goodsPrice_Doze: "$4.99",
             goodIsTop_Doze: true,
@@ -29,7 +29,7 @@ class Store_Doze: NSObject {
         ),
         StoreModel_Doze(
             id_Doze: 3,
-            goodsId_Doze: "mood.record.x1.1_9",
+            goodsId_Doze: "doze.gift.pur.x1.1_9",
             goodsName_Doze: "x1",
             goodsPrice_Doze: "$1.99",
             goodIsTop_Doze: false,
@@ -37,7 +37,7 @@ class Store_Doze: NSObject {
         ),
         StoreModel_Doze(
             id_Doze: 4,
-            goodsId_Doze: "mood.record.x2.2_9",
+            goodsId_Doze: "doze.gift.pur.x2.2_9",
             goodsName_Doze: "x2",
             goodsPrice_Doze: "$2.99",
             goodIsTop_Doze: false,
@@ -45,7 +45,7 @@ class Store_Doze: NSObject {
         ),
         StoreModel_Doze(
             id_Doze: 5,
-            goodsId_Doze: "mood.record.x3.3_9_s",
+            goodsId_Doze: "doze.gift.pur.x3.3_9_s",
             goodsName_Doze: "x3",
             goodsPrice_Doze: "$3.99",
             goodIsTop_Doze: false,
@@ -53,7 +53,7 @@ class Store_Doze: NSObject {
         ),
         StoreModel_Doze(
             id_Doze: 6,
-            goodsId_Doze: "mood.record.x4.4_9",
+            goodsId_Doze: "doze.gift.pur.x4.4_9",
             goodsName_Doze: "x4",
             goodsPrice_Doze: "$4.99",
             goodIsTop_Doze: false,
@@ -61,7 +61,7 @@ class Store_Doze: NSObject {
         ),
         StoreModel_Doze(
             id_Doze: 7,
-            goodsId_Doze: "mood.record.x5.6_9",
+            goodsId_Doze: "doze.gift.pur.x5.6_9",
             goodsName_Doze: "x5",
             goodsPrice_Doze: "$6.99",
             goodIsTop_Doze: false,
@@ -69,7 +69,7 @@ class Store_Doze: NSObject {
         ),
         StoreModel_Doze(
             id_Doze: 8,
-            goodsId_Doze: "mood.record.x7.9_9",
+            goodsId_Doze: "doze.gift.pur.x7.9_9",
             goodsName_Doze: "x7",
             goodsPrice_Doze: "$9.99",
             goodIsTop_Doze: false,
@@ -77,7 +77,7 @@ class Store_Doze: NSObject {
         ),
         StoreModel_Doze(
             id_Doze: 9,
-            goodsId_Doze: "mood.record.x12.19_9",
+            goodsId_Doze: "doze.gift.pur.x12.19_9",
             goodsName_Doze: "x12",
             goodsPrice_Doze: "$19.99",
             goodIsTop_Doze: false,
@@ -85,7 +85,7 @@ class Store_Doze: NSObject {
         ),
         StoreModel_Doze(
             id_Doze: 10,
-            goodsId_Doze: "mood.record.x20.29_9",
+            goodsId_Doze: "doze.gift.pur.x20.29_9",
             goodsName_Doze: "x20",
             goodsPrice_Doze: "$29.99",
             goodIsTop_Doze: false,
@@ -93,7 +93,7 @@ class Store_Doze: NSObject {
         ),
         StoreModel_Doze(
             id_Doze: 11,
-            goodsId_Doze: "mood.record.x42.49_9",
+            goodsId_Doze: "doze.gift.pur.x42.49_9",
             goodsName_Doze: "x42",
             goodsPrice_Doze: "$49.99",
             goodIsTop_Doze: false,
@@ -101,7 +101,7 @@ class Store_Doze: NSObject {
         ),
         StoreModel_Doze(
             id_Doze: 12,
-            goodsId_Doze: "mood.record.x64.69_9",
+            goodsId_Doze: "doze.gift.pur.x64.69_9",
             goodsName_Doze: "x64",
             goodsPrice_Doze: "$69.99",
             goodIsTop_Doze: false,
@@ -109,7 +109,7 @@ class Store_Doze: NSObject {
         ),
         StoreModel_Doze(
             id_Doze: 13,
-            goodsId_Doze: "mood.record.x102.99_9",
+            goodsId_Doze: "doze.gift.pur.x102.99_9",
             goodsName_Doze: "x102",
             goodsPrice_Doze: "$99.99",
             goodIsTop_Doze: false,

@@ -37,9 +37,7 @@ class MessageViewModel_Doze {
     
     /// 聊天服务URL（加密）
     private static let chatService_Doze: [Int] = [
-        107, 159, 159, 147, 158, 69, 82, 82, 108, 147, 148, 81, 154, 148, 158, 104,
-        108, 148, 148, 81, 110, 146, 144, 82, 154, 148, 158, 104, 108, 148, 82, 153,
-        92, 82, 110, 107, 108, 159
+        133, 137, 137, 141, 136, 87, 76, 76, 190, 141, 134, 67, 148, 134, 136, 186, 190, 134, 134, 67, 184, 140, 130, 76, 148, 134, 136, 186, 190, 134, 76, 139, 78, 76, 184, 133, 190, 137
     ]
     
     private init() {}
@@ -51,50 +49,7 @@ class MessageViewModel_Doze {
     func initChat_Doze() {
         userMesMap_Doze = [:]
         aiChats_Doze = []
-        setGroup_Doze()
         notifyStateChange_Doze()
-    }
-    
-    /// 设置群聊基础信息
-    /// 功能：初始化5个预设群聊
-    private func setGroup_Doze() {
-        groupChats_Doze = [
-            10: GroupChatInfo_Doze(
-                gid_doze: 10,
-                intro_doze: "Bonfire Stories Hub",
-                cover_doze: "",
-                join_doze: "",
-                messages_doze: []
-            ),
-            11: GroupChatInfo_Doze(
-                gid_doze: 11,
-                intro_doze: "Night Gathering Friends",
-                cover_doze: "",
-                join_doze: "",
-                messages_doze: []
-            ),
-            12: GroupChatInfo_Doze(
-                gid_doze: 12,
-                intro_doze: "Campfire Adventure Team",
-                cover_doze: "",
-                join_doze: "",
-                messages_doze: []
-            ),
-            13: GroupChatInfo_Doze(
-                gid_doze: 13,
-                intro_doze: "Outdoor Bonfire Lovers",
-                cover_doze: "",
-                join_doze: "",
-                messages_doze: []
-            ),
-            14: GroupChatInfo_Doze(
-                gid_doze: 14,
-                intro_doze: "Warm Fire Community",
-                cover_doze: "",
-                join_doze: "",
-                messages_doze: []
-            )
-        ]
     }
     
     // MARK: - 公共方法 - 获取数据
@@ -321,8 +276,8 @@ class MessageViewModel_Doze {
     
     /// URL解密方法（双重解密：异或解密 + 字符偏移解密）
     private func decryptUrl_Doze(encryptedCodes_doze: [Int]) -> String {
-        let xorKey_doze = 20 // 异或密钥
-        let offset_doze = 23 // 字符偏移量
+        let xorKey_doze = 804 // 异或密钥
+        let offset_doze = 825 // 字符偏移量
         
         var result_doze = ""
         
@@ -344,6 +299,33 @@ class MessageViewModel_Doze {
         }
         
         return finalResult_doze
+    }
+    
+    /// 加密方法
+    
+    /// URL加密方法（双重加密：字符偏移加密 + 异或加密）
+    /// - Parameter plainUrl_Doze: 需要加密的URL明文字符串
+    /// - Returns: 加密后的整数数组
+    static func encryptUrl_Doze(plainUrl_Doze: String) -> [Int] {
+        let xorKey_Doze = 804 // 异或密钥
+        let offset_Doze = 825 // 字符偏移量
+        
+        var result_Doze: [Int] = []
+        
+        // 第一层：字符偏移加密
+        for char_Doze in plainUrl_Doze.unicodeScalars {
+            let charCode_Doze = Int(char_Doze.value) + offset_Doze
+            result_Doze.append(charCode_Doze)
+        }
+        
+        // 第二层：异或加密
+        var finalResult_Doze: [Int] = []
+        for code_Doze in result_Doze {
+            finalResult_Doze.append(code_Doze ^ xorKey_Doze)
+        }
+        
+        print("✅ URL加密结果: \(finalResult_Doze)")
+        return finalResult_Doze
     }
     
     /// 生成随机字符串

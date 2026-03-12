@@ -155,6 +155,14 @@ class UserViewModel_Doze {
         Utils_Doze.showSuccess_Doze(message_Doze: "Name updated successfully")
         notifyStateChange_Doze()
     }
+
+    /// 更新用户简介
+    func updateIntroduce_Doze(introduce_doze: String) {
+        guard let user_doze = loggedUser_Doze else { return }
+        user_doze.userIntroduce_Doze = introduce_doze
+        loggedUser_Doze = user_doze
+        notifyStateChange_Doze()
+    }
     
     /// 上传用户封面
     func uploadCover_Doze(coverUrl_doze: String) {
@@ -191,9 +199,12 @@ class UserViewModel_Doze {
     // MARK: - 关注功能
     
     /// 判断是否关注指定用户
+    /// - Parameter user_doze: 目标用户
+    /// - Returns: 已关注返回 true，否则 false
     func isFollowing_Doze(user_doze: PrewUserModel_Doze) -> Bool {
-        guard let user_doze = loggedUser_Doze else { return false }
-        return user_doze.userFollow_Doze.contains(where: { $0.userId_Doze == user_doze.userId_Doze })
+        // 注意：避免用 user_doze 作为 guard 绑定名，防止遮蔽同名参数
+        guard let currentUser_doze = loggedUser_Doze else { return false }
+        return currentUser_doze.userFollow_Doze.contains(where: { $0.userId_Doze == user_doze.userId_Doze })
     }
     
     /// 关注/取消关注用户
@@ -220,9 +231,6 @@ class UserViewModel_Doze {
     func reportUser_Doze(user_doze: PrewUserModel_Doze) {
         guard let userId_doze = user_doze.userId_Doze else { return }
         
-        // 显示加载动画
-        Utils_Doze.showLoading_Doze(message_Doze: "Processing...")
-        
         // 取消关注
         // 从关注列表中移除（需要实现）
         
@@ -242,7 +250,6 @@ class UserViewModel_Doze {
         // 延迟显示成功提示
         Task {
             try? await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
-            Utils_Doze.dismissLoading_Doze()
             Utils_Doze.showSuccess_Doze(
                 message_Doze: "This user will no longer appear.",
                 delay_Doze: 2.0
@@ -338,6 +345,28 @@ class UserViewModel_Doze {
         )
     }
     
+    // MARK: - 睡眠相册统计同步
+
+    /// 将从相册数据聚合的统计结果写入当前用户模型
+    /// - Parameters:
+    ///   - albumCount_doze: 相册总数量
+    ///   - totalLogs_doze: 日志（帖子）总数
+    ///   - avgQualityPct_doze: 平均睡眠质量百分比（0~100）
+    ///   - totalDuration_doze: 总睡眠时长格式化字符串（如 "7h 30m"）
+    func updateSleepStats_Doze(albumCount_doze: Int, totalLogs_doze: Int,
+                               avgQualityPct_doze: Int, totalDuration_doze: String) {
+        // 更新当前登录用户
+        loggedUser_Doze?.sleepAlbumCount_Doze = albumCount_doze
+        loggedUser_Doze?.totalSleepLogs_Doze = totalLogs_doze
+        loggedUser_Doze?.avgSleepQualityPct_Doze = avgQualityPct_doze
+        loggedUser_Doze?.totalSleepDuration_Doze = totalDuration_doze
+        // 同步到默认用户（游客回退保持一致）
+        defaultUser_Doze.sleepAlbumCount_Doze = albumCount_doze
+        defaultUser_Doze.totalSleepLogs_Doze = totalLogs_doze
+        defaultUser_Doze.avgSleepQualityPct_Doze = avgQualityPct_doze
+        defaultUser_Doze.totalSleepDuration_Doze = totalDuration_doze
+    }
+
     /// 显示登录提示
     private func showLoginPrompt_Doze() {
         Task {

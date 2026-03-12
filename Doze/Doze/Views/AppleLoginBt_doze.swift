@@ -42,6 +42,16 @@ class AppleLoginBt_Doze: UIView {
         label_Doze.textAlignment = .center
         return label_Doze
     }()
+
+    /// 图标+文字水平居中容器
+    private let contentStack_Doze: UIStackView = {
+        let stack_Doze = UIStackView()
+        stack_Doze.axis = .horizontal
+        stack_Doze.alignment = .center
+        stack_Doze.spacing = 10
+        stack_Doze.isUserInteractionEnabled = false
+        return stack_Doze
+    }()
     
     // MARK: - 初始化
     
@@ -62,26 +72,23 @@ class AppleLoginBt_Doze: UIView {
     /// 设置UI
     private func setupUI_Doze() {
         addSubview(containerView_Doze)
-        containerView_Doze.addSubview(appleIconView_Doze)
-        containerView_Doze.addSubview(titleLabel_Doze)
-        
-        // 容器视图约束
         containerView_Doze.snp.makeConstraints { make in
             make.edges.equalToSuperview()
             make.height.equalTo(50)
         }
-        
-        // 苹果图标约束
+
+        // 图标固定尺寸
         appleIconView_Doze.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.centerX.equalToSuperview().offset(-30)
             make.width.height.equalTo(22)
         }
-        
-        // 文字标签约束
-        titleLabel_Doze.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.left.equalTo(appleIconView_Doze.snp.right).offset(10)
+
+        // 将图标与文字放入 StackView，整体居中
+        contentStack_Doze.addArrangedSubview(appleIconView_Doze)
+        contentStack_Doze.addArrangedSubview(titleLabel_Doze)
+
+        containerView_Doze.addSubview(contentStack_Doze)
+        contentStack_Doze.snp.makeConstraints { make in
+            make.center.equalToSuperview()
         }
     }
     
