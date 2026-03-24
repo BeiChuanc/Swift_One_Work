@@ -163,11 +163,6 @@ class TitleViewModel_Base_one {
             posts_Base_one[index_base_one].reviews_Base_one.append(newComment_base_one)
         }
         
-        Utils_Base_one.showSuccess_Base_one(
-            message_Base_one: "Comment posted",
-            image_Base_one: UIImage(systemName: "bubble.left.fill")
-        )
-        
         notifyStateChange_Base_one()
     }
     
@@ -240,14 +235,8 @@ class TitleViewModel_Base_one {
     
     /// 显示登录提示
     private func showLoginPrompt_Base_one() {
-        Utils_Base_one.showWarning_Base_one(
-            message_Base_one: "Please login first.",
-            delay_Base_one: 1.5
-        )
-        
-        // 延迟跳转到登录页面
         Task {
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒
+            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
             Navigation_Base_one.toLogin_Base_one(style_base_one: .present_base_one)
         }
     }

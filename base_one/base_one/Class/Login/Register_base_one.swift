@@ -6,7 +6,7 @@ import SnapKit
 
 /// 注册页面
 /// 核心功能：提供用户注册功能
-/// 设计思路：支持手机号或邮箱注册
+/// 设计思路：邮箱注册
 class Register_Base_one: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {

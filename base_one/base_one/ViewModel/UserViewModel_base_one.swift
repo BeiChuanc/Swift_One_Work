@@ -104,9 +104,6 @@ class UserViewModel_Base_one {
             return
         }
         
-        // 显示加载动画
-        Utils_Base_one.showLoading_Base_one(message_Base_one: "Logging out...")
-        
         // 重置为游客状态
         loggedUser_Base_one = defaultUser_Base_one
         
@@ -119,14 +116,12 @@ class UserViewModel_Base_one {
         notifyStateChange_Base_one()
         
         // 跳转到首页
-         Navigation_Base_one.toHome_Base_one()
+         Navigation_Base_one.switchToTabbar_Base_one()
         
         // 延迟显示提示
         Task {
             try? await Task.sleep(nanoseconds: 1_200_000_000)
             
-            // 关闭加载动画
-            Utils_Base_one.dismissLoading_Base_one()
             
             if logoutType_base_one == .delete_base_one {
                 Utils_Base_one.showInfo_Base_one(
@@ -223,9 +218,6 @@ class UserViewModel_Base_one {
     func reportUser_Base_one(user_base_one: PrewUserModel_Base_one) {
         guard let userId_base_one = user_base_one.userId_Base_one else { return }
         
-        // 显示加载动画
-        Utils_Base_one.showLoading_Base_one(message_Base_one: "Processing...")
-        
         // 取消关注
         // 从关注列表中移除（需要实现）
         
@@ -245,7 +237,6 @@ class UserViewModel_Base_one {
         // 延迟显示成功提示
         Task {
             try? await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
-            Utils_Base_one.dismissLoading_Base_one()
             Utils_Base_one.showSuccess_Base_one(
                 message_Base_one: "This user will no longer appear.",
                 delay_Base_one: 2.0
@@ -343,14 +334,8 @@ class UserViewModel_Base_one {
     
     /// 显示登录提示
     private func showLoginPrompt_Base_one() {
-        Utils_Base_one.showWarning_Base_one(
-            message_Base_one: "Please login first.",
-            delay_Base_one: 1.5
-        )
-        
-        // 延迟跳转到登录页面
-        Task {
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒
+       Task {
+            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
             Navigation_Base_one.toLogin_Base_one(style_base_one: .present_base_one)
         }
     }

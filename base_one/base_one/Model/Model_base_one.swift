@@ -202,3 +202,45 @@ class Comment_Base_one: NSObject, Codable {
         self.commentContent_Base_one = commentContent_Base_one
     }
 }
+
+/// 商店模型
+class StoreModel_Base_one: NSObject {
+    
+    /// ID编号
+    var id_Base_one: Int?
+    
+    /// 商品ID
+    var goodsId_Base_one: String?
+    
+    /// 商品名字
+    var goodsName_Base_one: String?
+    
+    /// 商品价格
+    var goodsPrice_Base_one: String?
+    
+    /// 是否顶部商品
+    var goodIsTop_Base_one: Bool?
+    
+    /// 是否特殊商品
+    var goodIsSpecial_Base_one: Bool?
+    
+    /// 是否VIP商品
+    var goodIsVIP_Base_one: Bool?
+    
+    init(id_Base_one: Int? = nil,
+         goodsId_Base_one: String? = nil,
+         goodsName_Base_one: String? = nil,
+         goodsPrice_Base_one: String? = nil,
+         goodIsTop_Base_one: Bool? = false,
+         goodIsLimit_Base_one: Bool? = false,
+         goodIsVIP_Base_one: Bool? = false) {
+        self.id_Base_one = id_Base_one
+        self.goodsId_Base_one = goodsId_Base_one
+        self.goodsName_Base_one = goodsName_Base_one
+        self.goodsPrice_Base_one = goodsPrice_Base_one
+        self.goodIsTop_Base_one = goodIsTop_Base_one
+        self.goodIsSpecial_Base_one = goodIsLimit_Base_one
+        self.goodIsVIP_Base_one = goodIsVIP_Base_one
+        super.init()
+    }
+}

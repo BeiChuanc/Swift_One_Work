@@ -349,36 +349,6 @@ class Navigation_Base_one: NSObject {
     ) {
         navigate_Base_one(to: Setting_Base_one(), style_base_one: style_base_one, animated_base_one: animated_base_one)
     }
-    
-    // MARK: - 枚举导航方法
-    
-    /// 根据导航类型枚举跳转
-    static func navigateByType_Base_one(
-        to type_base_one: NavigationType_Base_one,
-        style_base_one: NavigationStyle_Base_one = .push_base_one,
-        animated_base_one: Bool = true
-    ) {
-        switch type_base_one {
-        case .home:
-            toHome_Base_one(style_base_one: style_base_one, animated_base_one: animated_base_one)
-        case .discover:
-            toDiscover_Base_one(style_base_one: style_base_one, animated_base_one: animated_base_one)
-        case .release:
-            toRelease_Base_one(style_base_one: style_base_one, animated_base_one: animated_base_one)
-        case .messageList:
-            toMessageList_Base_one(style_base_one: style_base_one, animated_base_one: animated_base_one)
-        case .me:
-            toMe_Base_one(style_base_one: style_base_one, animated_base_one: animated_base_one)
-        case .editInfo:
-            toEditInfo_Base_one(style_base_one: style_base_one, animated_base_one: animated_base_one)
-        case .setting:
-            toSetting_Base_one(style_base_one: style_base_one, animated_base_one: animated_base_one)
-        case .login:
-            toLogin_Base_one(style_base_one: style_base_one, animated_base_one: animated_base_one)
-        case .register:
-            toRegister_Base_one(style_base_one: style_base_one, animated_base_one: animated_base_one)
-        }
-    }
 }
 
 // MARK: - 导航类型枚举
