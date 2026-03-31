@@ -172,9 +172,14 @@ class MediaPlayerPage_Base_one: UIViewController {
         loadMedia_Base_one()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // 进场前预设透明，由 viewDidAppear 统一淡入，避免与系统转场动画叠加导致闪烁
+        view.alpha = 0
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        view.alpha = 0
         UIView.animate(withDuration: 0.25) { self.view.alpha = 1 }
     }
 
