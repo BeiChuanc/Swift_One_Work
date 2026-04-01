@@ -59,9 +59,6 @@ class Detail_Flick: UIViewController {
             guard let post = self?.currentPost_Flick else { return }
             TitleViewModel_Flick.shared_Flick.releaseComment_Flick(post_flick: post, content_flick: text)
         }
-        v.onGiftTapped_Flick = { [weak self] in
-            self?.presentGiftSheet_Flick()
-        }
         return v
     }()
 
@@ -185,14 +182,6 @@ class Detail_Flick: UIViewController {
         let iconName = isOwner ? "trash" : "ellipsis"
         let cfg = UIImage.SymbolConfiguration(pointSize: 15, weight: .semibold)
         actionBtn_Flick.setImage(UIImage(systemName: iconName, withConfiguration: cfg), for: .normal)
-    }
-
-    /// 弹出送礼面板（GiftView_Flick）
-    private func presentGiftSheet_Flick() {
-        let giftVC_Flick = GiftView_Flick()
-        giftVC_Flick.modalPresentationStyle = .overFullScreen
-        giftVC_Flick.modalTransitionStyle = .crossDissolve
-        Navigation_Flick.present_Flick(viewController: giftVC_Flick, from: self)
     }
 
     /// 全屏打开媒体浏览（MediaPlayerPage_Flick，内部以 dismiss 关闭）
@@ -780,15 +769,12 @@ private class DetailPostHeaderView_Flick: UIView, UIGestureRecognizerDelegate {
 // MARK: - 内嵌评论输入视图
 
 /// 评论输入视图（可作 tableFooterView 随列表滚动，或挑战详情等场景底部固定）
-/// 功能：输入框 + 送礼（gift_btn 40×40，距发送钮左侧 10）+ 渐变发送按钮；
+/// 功能：输入框 + 渐变发送按钮；
 /// challengeStyleBottomFlush_Flick 时底栏与白卡片同色铺满、输入区用线框区分，避免「灰底+白卡片+灰输入」三层嵌套观感
 class DetailCommentInputView_Flick: UIView {
 
     /// 发送回调（参数为去除首尾空白后的评论内容）
     var onSend_Flick: ((String) -> Void)?
-
-    /// 点击送礼按钮回调（由详情页 present GiftView_Flick）
-    var onGiftTapped_Flick: (() -> Void)?
 
     /// 自定义 placeholder 文案
     var placeholder_Flick: String = "Write a comment..." {
@@ -827,17 +813,6 @@ class DetailCommentInputView_Flick: UIView {
         tf.leftViewMode = .always
         tf.returnKeyType = .send
         return tf
-    }()
-
-    /// 送礼按钮（Assets gift_btn，40×40，原图）
-    private let giftBtn_Flick: UIButton = {
-        let btn = UIButton(type: .custom)
-        if let img_flick = UIImage(named: "gift_btn") {
-            btn.setImage(img_flick.withRenderingMode(.alwaysOriginal), for: .normal)
-        }
-        btn.imageView?.contentMode = .scaleAspectFit
-        btn.adjustsImageWhenHighlighted = false
-        return btn
     }()
 
     private let sendBtn_Flick: UIButton = {
@@ -887,18 +862,10 @@ class DetailCommentInputView_Flick: UIView {
         }
         sendBtn_Flick.addTarget(self, action: #selector(sendTapped_Flick), for: .touchUpInside)
 
-        containerCard_Flick.addSubview(giftBtn_Flick)
-        giftBtn_Flick.snp.makeConstraints { make in
-            make.right.equalTo(sendBtn_Flick.snp.left).offset(-10)
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(40)
-        }
-        giftBtn_Flick.addTarget(self, action: #selector(giftTapped_Flick), for: .touchUpInside)
-
-        // 输入框较矮、相对白卡片垂直居中；右侧止于送礼按钮左侧
+        // 输入框较矮、相对白卡片垂直居中；右侧止于发送按钮左侧
         inputField_Flick.snp.makeConstraints { make in
             make.left.equalToSuperview().inset(10)
-            make.right.equalTo(giftBtn_Flick.snp.left).offset(-8)
+            make.right.equalTo(sendBtn_Flick.snp.left).offset(-8)
             make.height.equalTo(34)
             make.centerY.equalToSuperview()
         }
@@ -958,11 +925,6 @@ class DetailCommentInputView_Flick: UIView {
         inputField_Flick.resignFirstResponder()
     }
 
-    /// 送礼按钮：交由宿主弹出 GiftView_Flick
-    @objc private func giftTapped_Flick() {
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        onGiftTapped_Flick?()
-    }
 }
 
 extension DetailCommentInputView_Flick: UITextFieldDelegate {

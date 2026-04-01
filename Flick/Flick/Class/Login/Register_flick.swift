@@ -304,9 +304,9 @@ class Register_Flick: UIViewController {
 
         cardView_Flick.addSubview(protocolLabel_Flick)
         protocolLabel_Flick.snp.makeConstraints { make in
-            make.top.equalTo(stack.snp.bottom).offset(18)
+            make.top.equalTo(stack.snp.bottom).offset(30)
             make.left.right.equalToSuperview().inset(12)
-            make.bottom.equalToSuperview().inset(20)
+            make.bottom.equalToSuperview().inset(30)
         }
 
         contentView_Flick.snp.makeConstraints { make in

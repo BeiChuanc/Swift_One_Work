@@ -592,11 +592,65 @@ class UserInfo_Sprig: UIViewController {
         UserViewModel_Sprig.shared_Sprig.followUser_Sprig(user_sprig: user_sprig)
     }
 
-    /// 进入聊天页（Replace 方式，替换当前用户中心页）
+    /// 点击消息按钮：
+    /// - 已关注该用户 → 弹出确认弹框，确认后进入聊天页
+    /// - 未关注该用户 → 弹出提示弹框，提示先关注；提供快捷关注操作
     @objc private func onChatTapped_Sprig() {
         guard let user_sprig = userModel_Sprig else { return }
         chatButton_Sprig.animatePulse_Sprig()
-        Navigation_Sprig.toMessageUser_Sprig(with: user_sprig, style_sprig: .replace_sprig)
+
+        let isFollowing_sprig = UserViewModel_Sprig.shared_Sprig.isFollowing_Sprig(user_sprig: user_sprig)
+        let userName_sprig = user_sprig.userName_Sprig ?? "this user"
+
+        if isFollowing_sprig {
+            // 已关注：弹出进入聊天确认框
+            showChatConfirmAlert_Sprig(userName_sprig: userName_sprig, user_sprig: user_sprig)
+        } else {
+            // 未关注：弹出提示框，引导先关注
+            showFollowFirstAlert_Sprig(userName_sprig: userName_sprig, user_sprig: user_sprig)
+        }
+    }
+
+    /// 已关注时：弹出确认弹框
+    /// - Parameters:
+    ///   - userName_sprig: 目标用户昵称（用于展示文案）
+    ///   - user_sprig: 目标用户模型
+    private func showChatConfirmAlert_Sprig(
+        userName_sprig: String,
+        user_sprig: PrewUserModel_Sprig
+    ) {
+        let alert_sprig = UIAlertController(
+            title: "Message \(userName_sprig)",
+            message: "Start a conversation with \(userName_sprig)?",
+            preferredStyle: .alert
+        )
+        alert_sprig.addAction(UIAlertAction(title: "Chat Now", style: .default) { [weak self] _ in
+            Navigation_Sprig.toMessageUser_Sprig(with: user_sprig, style_sprig: .replace_sprig)
+        })
+        alert_sprig.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(alert_sprig, animated: true)
+    }
+
+    /// 未关注时：弹出提示弹框，提供快捷关注操作
+    /// - Parameters:
+    ///   - userName_sprig: 目标用户昵称（用于展示文案）
+    ///   - user_sprig: 目标用户模型
+    private func showFollowFirstAlert_Sprig(
+        userName_sprig: String,
+        user_sprig: PrewUserModel_Sprig
+    ) {
+        let alert_sprig = UIAlertController(
+            title: "Not Following",
+            message: "You need to follow \(userName_sprig) before you can send a message.",
+            preferredStyle: .alert
+        )
+        // 快捷关注：点击后触发关注逻辑并刷新按钮状态
+        alert_sprig.addAction(UIAlertAction(title: "Follow Now", style: .default) { [weak self] _ in
+            guard let self else { return }
+            UserViewModel_Sprig.shared_Sprig.followUser_Sprig(user_sprig: user_sprig)
+        })
+        alert_sprig.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(alert_sprig, animated: true)
     }
 
     // MARK: - 私有工具方法

@@ -177,6 +177,27 @@ class UserInfo_Flick: UIViewController {
 
     // MARK: - 事件处理
 
+    /// 聊天按钮逻辑：已关注则进入聊天页，未关注则弹出提示弹框
+    /// - Parameter user_flick: 目标用户模型
+    private func handleChatBtnTapped_Flick(user_flick: PrewUserModel_Flick) {
+        let isFollowing_flick = UserViewModel_Flick.shared_Flick.isFollowing_Flick(user_flick: user_flick)
+        if isFollowing_flick {
+            // 已关注：Replace 方式进入聊天页，避免导航栈叠加
+            let chatVC_flick = MessageUser_Flick()
+            chatVC_flick.userModel_Flick = user_flick
+            Navigation_Flick.replace_Flick(to: chatVC_flick, from: self)
+        } else {
+            // 未关注：弹出提示弹框
+            let alert_flick = UIAlertController(
+                title: "Follow First",
+                message: "Please follow this user before sending a message.",
+                preferredStyle: .alert
+            )
+            alert_flick.addAction(UIAlertAction(title: "OK", style: .default))
+            Navigation_Flick.present_Flick(viewController: alert_flick, from: self)
+        }
+    }
+
     /// 举报/拉黑用户，完成后返回上一页
     @objc private func reportBtnTapped_Flick() {
         guard let user = userModel_Flick else { return }
@@ -206,6 +227,9 @@ extension UserInfo_Flick: UICollectionViewDataSource, UICollectionViewDelegate {
             ) as! UserInfoHeaderCell_Flick
             if let user = userModel_Flick {
                 cell.configure_Flick(user: user, from: self)
+                cell.onChatTapped_Flick = { [weak self] targetUser_flick in
+                    self?.handleChatBtnTapped_Flick(user_flick: targetUser_flick)
+                }
             }
             return cell
         }
@@ -353,6 +377,9 @@ private class UserInfoHeaderCell_Flick: UICollectionViewCell {
 
     private weak var vcRef_Flick: UIViewController?
     private var userRef_Flick: PrewUserModel_Flick?
+
+    /// 聊天按钮点击回调（逻辑由宿主 VC 处理：关注检测 + 弹框/跳转）
+    var onChatTapped_Flick: ((PrewUserModel_Flick) -> Void)?
 
     // MARK: - 初始化
 
@@ -651,12 +678,10 @@ private class UserInfoHeaderCell_Flick: UICollectionViewCell {
         layoutIfNeeded()
     }
 
-    /// 进入聊天（Replace 方式替换当前页，避免导航栈叠加）
+    /// 聊天按钮：触发回调，由宿主 VC 决定是否跳转或弹出提示
     @objc private func chatBtnTapped_Flick() {
-        guard let user = userRef_Flick, let vc = vcRef_Flick else { return }
+        guard let user = userRef_Flick else { return }
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        let chatVC = MessageUser_Flick()
-        chatVC.userModel_Flick = user
-        Navigation_Flick.replace_Flick(to: chatVC, from: vc)
+        onChatTapped_Flick?(user)
     }
 }

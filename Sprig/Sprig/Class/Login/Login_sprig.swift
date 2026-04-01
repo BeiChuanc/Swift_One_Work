@@ -29,9 +29,6 @@ class Login_Sprig: UIViewController {
     /// 登录按钮（渐变层更新 + 点击动画）
     private let loginButton_Sprig = UIButton(type: .system)
 
-    /// Apple 登录管理器（强引用，防止授权流程中被释放）
-    private var appleManager_Sprig: AppleLoginManager_Sprig?
-
     // MARK: - 生命周期
     
     override func viewWillAppear(_ animated: Bool) {
@@ -400,20 +397,6 @@ class Login_Sprig: UIViewController {
             make.centerX.equalToSuperview()
         }
 
-        // "or" 胶囊分割线
-        let orRow_Sprig = buildOrSeparator_Sprig(parent_Sprig: cv_Sprig, below_Sprig: noAccountLabel_Sprig.snp.bottom)
-
-        // Apple 登录按钮
-        let appleBtn_Sprig = AppleLoginBt_Sprig { [weak self] in
-            self?.handleAppleLogin_Sprig()
-        }
-        cv_Sprig.addSubview(appleBtn_Sprig)
-        appleBtn_Sprig.snp.makeConstraints { make in
-            make.top.equalTo(orRow_Sprig.snp.bottom).offset(12)
-            make.left.right.equalToSuperview().inset(24)
-            make.height.equalTo(52)
-        }
-
         // 协议文本
         let protocolLabel_Sprig = ProtocolHelper_Sprig.createProtocolTextLabel_Sprig(
             firstContent_Sprig: "terms_sprig.png",
@@ -423,7 +406,7 @@ class Login_Sprig: UIViewController {
         )
         cv_Sprig.addSubview(protocolLabel_Sprig)
         protocolLabel_Sprig.snp.makeConstraints { make in
-            make.top.equalTo(appleBtn_Sprig.snp.bottom).offset(12)
+            make.top.equalTo(noAccountLabel_Sprig.snp.bottom).offset(60)
             make.left.right.equalToSuperview().inset(24)
             make.bottom.equalToSuperview().offset(-34)
         }
@@ -574,64 +557,6 @@ class Login_Sprig: UIViewController {
         }
     }
 
-    /// 搭建 OR 胶囊分割线（两侧细线 + 中间 "OR" pill）
-    /// - Returns: 整行容器视图（用于后续约束锚点）
-    @discardableResult
-    private func buildOrSeparator_Sprig(parent_Sprig: UIView, below_Sprig: ConstraintItem) -> UIView {
-        let container_Sprig = UIView()
-        parent_Sprig.addSubview(container_Sprig)
-        container_Sprig.snp.makeConstraints { make in
-            make.top.equalTo(below_Sprig).offset(14)
-            make.left.right.equalToSuperview().inset(24)
-            make.height.equalTo(24)
-        }
-
-        // 中间 OR 胶囊
-        let orPill_Sprig = UILabel()
-        orPill_Sprig.attributedText = NSAttributedString(
-            string: " OR ",
-            attributes: [
-                .font: UIFont.systemFont(ofSize: 10, weight: .semibold),
-                .foregroundColor: ColorConfig_Sprig.textPlaceholder_Sprig,
-                .kern: 0.5
-            ]
-        )
-        orPill_Sprig.textAlignment = .center
-        orPill_Sprig.backgroundColor = ColorConfig_Sprig.backgroundPrimary_Sprig
-        orPill_Sprig.layer.cornerRadius = 10
-        orPill_Sprig.layer.borderWidth = 1
-        orPill_Sprig.layer.borderColor = ColorConfig_Sprig.divider_Sprig.cgColor
-        orPill_Sprig.clipsToBounds = true
-        container_Sprig.addSubview(orPill_Sprig)
-        orPill_Sprig.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.height.equalTo(22)
-            make.width.equalTo(38)
-        }
-
-        let leftLine_Sprig = UIView()
-        leftLine_Sprig.backgroundColor = ColorConfig_Sprig.divider_Sprig
-        container_Sprig.addSubview(leftLine_Sprig)
-        leftLine_Sprig.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.left.equalToSuperview()
-            make.right.equalTo(orPill_Sprig.snp.left).offset(-10)
-            make.height.equalTo(0.5)
-        }
-
-        let rightLine_Sprig = UIView()
-        rightLine_Sprig.backgroundColor = ColorConfig_Sprig.divider_Sprig
-        container_Sprig.addSubview(rightLine_Sprig)
-        rightLine_Sprig.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.right.equalToSuperview()
-            make.left.equalTo(orPill_Sprig.snp.right).offset(10)
-            make.height.equalTo(0.5)
-        }
-
-        return container_Sprig
-    }
-
     /// 创建装饰圆（实填或描边）
     /// - Parameters:
     ///   - radius: 圆角半径（= 直径 / 2）
@@ -730,19 +655,6 @@ class Login_Sprig: UIViewController {
             $0.userName_Sprig?.lowercased() == username_Sprig.lowercased()
         }
         UserViewModel_Sprig.shared_Sprig.loginById_Sprig(userId_sprig: matched_Sprig?.userId_Sprig ?? 1)
-    }
-
-    /// 处理 Apple 登录授权流程
-    private func handleAppleLogin_Sprig() {
-        appleManager_Sprig = AppleLoginManager_Sprig(viewController_Sprig: self)
-        appleManager_Sprig?.startAppleLogin_Sprig(
-            success_Sprig: { _ in
-                UserViewModel_Sprig.shared_Sprig.loginById_Sprig(userId_sprig: 1)
-            },
-            failure_Sprig: { msg_Sprig in
-                Utils_Sprig.showError_Sprig(message_Sprig: msg_Sprig)
-            }
-        )
     }
 
     /// 输入卡片校验失败抖动 + 边框短暂变红

@@ -12,8 +12,6 @@ class Login_Flick: UIViewController {
     // MARK: - 私有属性
 
     private let gradientLayer_Flick = CAGradientLayer()
-    private var appleManager_Flick: AppleLoginManager_Flick?
-
     /// 协议正文占位（本地文本演示）
     private let termsBody_Flick = "Flick Terms of Service (demo). By using the app you agree to these terms."
     private let privacyBody_Flick = "Flick Privacy Policy (demo). We respect your data and use it only to improve the experience."
@@ -117,10 +115,6 @@ class Login_Flick: UIViewController {
     }()
 
     private var loginBtnGradient_Flick: CAGradientLayer?
-
-    private lazy var appleLoginView_Flick = AppleLoginBt_Flick(onTap_Flick: { [weak self] in
-        self?.startAppleLogin_Flick()
-    })
 
     private lazy var protocolLabel_Flick: UILabel = {
         var cfg = ProtocolHelper_Flick.ProtocolTextConfig_Flick.light_Flick()
@@ -300,8 +294,7 @@ class Login_Flick: UIViewController {
             userNameCredential_Flick.container_flick,
             passwordCredential_Flick.container_flick,
             signUpHintBtn_Flick,
-            loginBtn_Flick,
-            appleLoginView_Flick
+            loginBtn_Flick
         ])
         stack.axis = .vertical
         stack.spacing = 16
@@ -320,9 +313,9 @@ class Login_Flick: UIViewController {
 
         cardView_Flick.addSubview(protocolLabel_Flick)
         protocolLabel_Flick.snp.makeConstraints { make in
-            make.top.equalTo(stack.snp.bottom).offset(18)
+            make.top.equalTo(stack.snp.bottom).offset(30)
             make.left.right.equalToSuperview().inset(12)
-            make.bottom.equalToSuperview().inset(20)
+            make.bottom.equalToSuperview().inset(30)
         }
 
         contentView_Flick.snp.makeConstraints { make in
@@ -371,20 +364,4 @@ class Login_Flick: UIViewController {
         UserViewModel_Flick.shared_Flick.loginById_Flick(userId_flick: 845418)
     }
 
-    /// 发起 Sign in with Apple，成功后统一走 loginById 链路
-    private func startAppleLogin_Flick() {
-        let mgr_flick = AppleLoginManager_Flick(viewController_Flick: self)
-        appleManager_Flick = mgr_flick
-        mgr_flick.startAppleLogin_Flick(
-            success_Flick: { [weak self] id_flick in
-                UserViewModel_Flick.shared_Flick.loginById_Flick(userId_flick: 99999)
-                self?.appleManager_Flick = nil
-            },
-            failure_Flick: { [weak self] err_flick in
-                self?.appleManager_Flick = nil
-                if err_flick.lowercased().contains("cancel") { return }
-                Utils_Flick.showError_Flick(message_Flick: err_flick)
-            }
-        )
-    }
 }

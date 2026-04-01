@@ -7,13 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		041A14952F738415001DE1E7 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 041A14942F738415001DE1E7 /* StoreKit.framework */; };
 		F9064FCA6772BCC1AEFE5335 /* Pods_Sprig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EB5D2D5D81EE0C4F565E62 /* Pods_Sprig.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		041A147A2F7383DB001DE1E7 /* Sprig.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sprig.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		041A14942F738415001DE1E7 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		1CF959AB6FD1A3B9547F0DA5 /* Pods-Sprig.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sprig.release.xcconfig"; path = "Target Support Files/Pods-Sprig/Pods-Sprig.release.xcconfig"; sourceTree = "<group>"; };
 		84EB70DB4339F0D8434417BF /* Pods-Sprig.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sprig.debug.xcconfig"; path = "Target Support Files/Pods-Sprig/Pods-Sprig.debug.xcconfig"; sourceTree = "<group>"; };
 		91EB5D2D5D81EE0C4F565E62 /* Pods_Sprig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Sprig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -45,7 +43,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				041A14952F738415001DE1E7 /* StoreKit.framework in Frameworks */,
 				F9064FCA6772BCC1AEFE5335 /* Pods_Sprig.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -74,7 +71,6 @@
 		041A14932F738415001DE1E7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				041A14942F738415001DE1E7 /* StoreKit.framework */,
 				91EB5D2D5D81EE0C4F565E62 /* Pods_Sprig.framework */,
 			);
 			name = Frameworks;
@@ -168,13 +164,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Sprig/Pods-Sprig-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Sprig/Pods-Sprig-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -189,13 +181,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Sprig/Pods-Sprig-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Sprig/Pods-Sprig-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -251,9 +239,6 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Sprig/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Sprig needs your consent to access the camera to shoot personal works/personal portraits. If prohibited, you will not be able to take photos or update information.";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Sprig requires your consent to obtain location information when using it in order to upload photos or update avatars. If prohibited, you will not be able to publish works/update avatars.";
-				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Sprig requires your consent to obtain location information when using it in order to upload photos or update avatars. If prohibited, you will not be able to publish works/update avatars.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Sprig requires your consent to obtain location information when using it in order to upload photos or update avatars. If prohibited, you will not be able to publish works/update avatars.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Sprig needs your permission to access the microphone. If blocked, you will not be able to send audio messages to users.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Sprig needs your consent to access the album in order to save the work. If it is prohibited, you will not be able to save your work to the album.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Sprig needs your consent to access the album to select photos to upload/publish works/update avatars. If prohibited, you will not be able to upload selected photos to upload/publish works/update avatars.";
@@ -299,9 +284,6 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Sprig/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Sprig needs your consent to access the camera to shoot personal works/personal portraits. If prohibited, you will not be able to take photos or update information.";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Sprig requires your consent to obtain location information when using it in order to upload photos or update avatars. If prohibited, you will not be able to publish works/update avatars.";
-				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Sprig requires your consent to obtain location information when using it in order to upload photos or update avatars. If prohibited, you will not be able to publish works/update avatars.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Sprig requires your consent to obtain location information when using it in order to upload photos or update avatars. If prohibited, you will not be able to publish works/update avatars.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Sprig needs your permission to access the microphone. If blocked, you will not be able to send audio messages to users.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Sprig needs your consent to access the album in order to save the work. If it is prohibited, you will not be able to save your work to the album.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Sprig needs your consent to access the album to select photos to upload/publish works/update avatars. If prohibited, you will not be able to upload selected photos to upload/publish works/update avatars.";

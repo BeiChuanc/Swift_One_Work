@@ -83,17 +83,17 @@ class VideoChat_Flick: UIViewController {
         return label_Flick
     }()
     
-    /// 挂断按钮
+    /// 挂断按钮 — 标准圆形红色挂断风格，搭配发光阴影
     private let hangUpButton_Flick: UIButton = {
         let button_Flick = UIButton(type: .system)
-        button_Flick.backgroundColor = UIColor(hexstring_Flick: "#BE92FD")
-        button_Flick.layer.cornerRadius = 25
-        button_Flick.layer.shadowColor = UIColor(hexstring_Flick: "#FF6B9D").cgColor
-        button_Flick.layer.shadowOffset = CGSize(width: 0, height: 8)
-        button_Flick.layer.shadowOpacity = 0.4
-        button_Flick.layer.shadowRadius = 16
+        button_Flick.backgroundColor = UIColor(hexstring_Flick: "#FF3B30")
+        button_Flick.layer.cornerRadius = 36
+        button_Flick.layer.shadowColor = UIColor(hexstring_Flick: "#FF3B30").cgColor
+        button_Flick.layer.shadowOffset = CGSize(width: 0, height: 6)
+        button_Flick.layer.shadowOpacity = 0.55
+        button_Flick.layer.shadowRadius = 14
         
-        let config_Flick = UIImage.SymbolConfiguration(pointSize: 32, weight: .bold)
+        let config_Flick = UIImage.SymbolConfiguration(pointSize: 28, weight: .bold)
         let image_Flick = UIImage(systemName: "phone.down.fill", withConfiguration: config_Flick)
         button_Flick.setImage(image_Flick, for: .normal)
         button_Flick.tintColor = .white
@@ -190,7 +190,7 @@ class VideoChat_Flick: UIViewController {
     private func setupAvatarWithRipples_Flick() {
         avatarContainerView_Flick.addSubview(avatarImageView_Flick)
         
-        // 创建3个水波纹图层
+        // 创建3个填充型水波纹图层，白色半透明渐散效果
         for _ in 0..<3 {
             let rippleLayer_Flick = CAShapeLayer()
             let circlePath_Flick = UIBezierPath(
@@ -201,9 +201,9 @@ class VideoChat_Flick: UIViewController {
                 clockwise: true
             )
             rippleLayer_Flick.path = circlePath_Flick.cgPath
-            rippleLayer_Flick.strokeColor = ColorConfig_Flick.primaryGradientStart_Flick.cgColor
-            rippleLayer_Flick.fillColor = UIColor.clear.cgColor
-            rippleLayer_Flick.lineWidth = 2
+            rippleLayer_Flick.strokeColor = UIColor.clear.cgColor
+            rippleLayer_Flick.fillColor = UIColor.white.withValues(alpha: 0.18).cgColor
+            rippleLayer_Flick.lineWidth = 0
             rippleLayer_Flick.opacity = 0
             
             avatarContainerView_Flick.layer.insertSublayer(rippleLayer_Flick, at: 0)
@@ -252,12 +252,11 @@ class VideoChat_Flick: UIViewController {
             make.left.right.equalToSuperview().inset(40)
         }
         
-        // 挂断按钮
+        // 挂断按钮 — 圆形，宽高统一72
         hangUpButton_Flick.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-60)
-            make.width.equalTo(120)
-            make.height.equalTo(70)
+            make.width.height.equalTo(72)
         }
         
         // 举报按钮
@@ -306,22 +305,27 @@ class VideoChat_Flick: UIViewController {
         }
     }
     
-    /// 开始水波纹动画
+    /// 开始水波纹动画 — 填充型白色半透明扩散，节奏均匀错开
     private func startRippleAnimation_Flick() {
         for (index_Flick, layer_Flick) in rippleAnimationLayers_Flick.enumerated() {
+            // 缩放：从原始大小扩散到2.4倍
             let scaleAnimation_Flick = CABasicAnimation(keyPath: "transform.scale")
             scaleAnimation_Flick.fromValue = 1.0
-            scaleAnimation_Flick.toValue = 1.8
+            scaleAnimation_Flick.toValue = 2.4
+            scaleAnimation_Flick.timingFunction = CAMediaTimingFunction(name: .easeOut)
             
+            // 透明度：从较高可见度渐隐至0
             let opacityAnimation_Flick = CABasicAnimation(keyPath: "opacity")
-            opacityAnimation_Flick.fromValue = 0.6
+            opacityAnimation_Flick.fromValue = 0.75
             opacityAnimation_Flick.toValue = 0
+            opacityAnimation_Flick.timingFunction = CAMediaTimingFunction(name: .easeIn)
             
             let animationGroup_Flick = CAAnimationGroup()
             animationGroup_Flick.animations = [scaleAnimation_Flick, opacityAnimation_Flick]
-            animationGroup_Flick.duration = 2.0
+            animationGroup_Flick.duration = 2.4
             animationGroup_Flick.repeatCount = .infinity
-            animationGroup_Flick.beginTime = CACurrentMediaTime() + Double(index_Flick) * 0.66
+            // 每圈间隔0.8s均匀错开，形成连续扩散感
+            animationGroup_Flick.beginTime = CACurrentMediaTime() + Double(index_Flick) * 0.8
             
             layer_Flick.add(animationGroup_Flick, forKey: "ripple")
         }

@@ -199,13 +199,6 @@ class Detail_Sprig: UIViewController {
         return btn
     }()
 
-    /// 送礼按钮（位于发送按钮左侧 10pt，40×40，图标使用 Assets 中的 gift_btn）
-    private let giftButton_Sprig: UIButton = {
-        let btn = UIButton(type: .custom)
-        btn.setImage(UIImage(named: "gift_btn"), for: .normal)
-        btn.imageView?.contentMode = .scaleAspectFit
-        return btn
-    }()
     
     // MARK: - 生命周期
     
@@ -409,7 +402,6 @@ class Detail_Sprig: UIViewController {
         }
         
         inputBarView_Sprig.addSubview(commentTextField_Sprig)
-        inputBarView_Sprig.addSubview(giftButton_Sprig)
         inputBarView_Sprig.addSubview(sendButton_Sprig)
 
         // 发送按钮：最右侧，44×44
@@ -418,22 +410,15 @@ class Detail_Sprig: UIViewController {
             make.centerY.equalToSuperview()
             make.width.height.equalTo(44)
         }
-        // 送礼按钮：发送按钮左侧 10pt，40×40
-        giftButton_Sprig.snp.makeConstraints { make in
-            make.right.equalTo(sendButton_Sprig.snp.left).offset(-10)
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(40)
-        }
-        // 输入框：左边距 16，右侧紧贴礼物按钮左侧 10pt
+        // 输入框：左边距 16，右侧紧贴发送按钮左侧 10pt
         commentTextField_Sprig.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(16)
-            make.right.equalTo(giftButton_Sprig.snp.left).offset(-10)
+            make.right.equalTo(sendButton_Sprig.snp.left).offset(-10)
             make.centerY.equalToSuperview()
             make.height.equalTo(44)
         }
 
         sendButton_Sprig.addTarget(self, action: #selector(handleSendComment_Sprig), for: .touchUpInside)
-        giftButton_Sprig.addTarget(self, action: #selector(handleGiftTap_Sprig), for: .touchUpInside)
     }
     
     // MARK: - 内容填充
@@ -557,15 +542,6 @@ class Detail_Sprig: UIViewController {
     }
     
     // MARK: - 按钮响应
-
-    /// 点击送礼按钮，弹出 GiftView_Sprig 礼物面板（模态底部弹起）
-    @objc private func handleGiftTap_Sprig() {
-        giftButton_Sprig.animatePulse_Sprig()
-        let giftVC_sprig = GiftView_Sprig()
-        giftVC_sprig.modalPresentationStyle = .overFullScreen
-        giftVC_sprig.modalTransitionStyle   = .crossDissolve
-        present(giftVC_sprig, animated: true)
-    }
 
     /// 点击媒体区，打开全屏媒体浏览页（MediaPlayerPage_Sprig）
     /// 将帖子媒体路径及类型传入，由播放页自动检测图片/视频并渲染

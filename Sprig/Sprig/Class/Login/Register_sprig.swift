@@ -478,7 +478,7 @@ class Register_Sprig: UIViewController {
         )
         cv_Sprig.addSubview(protocolLabel_Sprig)
         protocolLabel_Sprig.snp.makeConstraints { make in
-            make.top.equalTo(hasAccountLabel_Sprig.snp.bottom).offset(12)
+            make.top.equalTo(hasAccountLabel_Sprig.snp.bottom).offset(60)
             make.left.right.equalToSuperview().inset(24)
             make.bottom.equalToSuperview().offset(-34)
         }

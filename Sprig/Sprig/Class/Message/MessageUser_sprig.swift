@@ -705,12 +705,18 @@ class MessageUser_Sprig: UIViewController {
         }
     }
 
-    /// 视频通话按钮点击
+    /// 视频通话按钮点击：进入 VideoChat_Sprig 视频通话界面
+    /// 以 overFullScreen + crossDissolve 方式模态展示，挂断后自动 dismiss 回本页
     private func handleVideoCallTap_Sprig() {
         videoCallButton_Sprig.animatePulse_Sprig()
         let generator_Sprig = UIImpactFeedbackGenerator(style: .medium)
         generator_Sprig.impactOccurred()
-        Utils_Sprig.showInfo_Sprig(message_Sprig: "Video call feature coming soon!")
+
+        let videoVC_Sprig = VideoChat_Sprig()
+        videoVC_Sprig.userModel_Sprig = userModel_Sprig
+        videoVC_Sprig.modalPresentationStyle = .overFullScreen
+        videoVC_Sprig.modalTransitionStyle   = .crossDissolve
+        present(videoVC_Sprig, animated: true)
     }
 
     /// 消息状态变更通知回调
