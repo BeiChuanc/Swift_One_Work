@@ -894,7 +894,7 @@ class Release_Sprig: UIViewController {
         eulaButton_Sprig.animatePulse_Sprig()
         ProtocolHelper_Sprig.showProtocol_Sprig(
             type_Sprig: .eula_Sprig,
-            content_Sprig: "terms_sprig.png",
+            content_Sprig: "eula.png",
             from: self
         )
     }

@@ -12,9 +12,6 @@ class Login_Flick: UIViewController {
     // MARK: - 私有属性
 
     private let gradientLayer_Flick = CAGradientLayer()
-    /// 协议正文占位（本地文本演示）
-    private let termsBody_Flick = "Flick Terms of Service (demo). By using the app you agree to these terms."
-    private let privacyBody_Flick = "Flick Privacy Policy (demo). We respect your data and use it only to improve the experience."
 
     // MARK: - UI
 
@@ -121,8 +118,8 @@ class Login_Flick: UIViewController {
         cfg.linkColor_Flick = ColorConfig_Flick.primaryGradientStart_Flick
         cfg.textColor_Flick = ColorConfig_Flick.textSecondary_Flick
         return ProtocolHelper_Flick.createProtocolTextLabel_Flick(
-            firstContent_Flick: termsBody_Flick,
-            secondContent_Flick: privacyBody_Flick,
+            firstContent_Flick: "terms.png",
+            secondContent_Flick: "privacy.png",
             config_Flick: cfg,
             from: self
         )

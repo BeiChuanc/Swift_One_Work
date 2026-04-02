@@ -399,8 +399,8 @@ class Login_Sprig: UIViewController {
 
         // 协议文本
         let protocolLabel_Sprig = ProtocolHelper_Sprig.createProtocolTextLabel_Sprig(
-            firstContent_Sprig: "terms_sprig.png",
-            secondContent_Sprig: "privacy_sprig.png",
+            firstContent_Sprig: "terms.png",
+            secondContent_Sprig: "privacy.png",
             config_Sprig: .light_Sprig(),
             from: self
         )
