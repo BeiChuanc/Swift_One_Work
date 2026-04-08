@@ -81,12 +81,21 @@ class HomeHeaderCell_Base_one: UICollectionViewCell {
         let v = UIView()
         v.backgroundColor = .clear
         v.layer.borderColor = UIColor.white.cgColor
-        v.layer.borderWidth = 2.5
-        v.layer.cornerRadius = 30
+        v.layer.borderWidth = 2
+        v.layer.cornerRadius = 18
+        v.isUserInteractionEnabled = true
         return v
     }()
     /// 当前用户头像视图（自动监听用户状态变化并刷新）
     private let avatarView_Base_one: CurrentUserAvatarView_Base_one = CurrentUserAvatarView_Base_one()
+
+    // MARK: 外部事件回调
+
+    /// 点击铃声按钮的回调（由外部 VC 注入，切换到消息列表 Tab）
+    var onBellTapped_Base_one: (() -> Void)?
+
+    /// 点击登录用户头像的回调（由外部 VC 注入，切换到我的 Tab）
+    var onAvatarTapped_Base_one: (() -> Void)?
 
     // MARK: 铃铛
     private let bellButton_Base_one: UIButton = {
@@ -207,18 +216,25 @@ class HomeHeaderCell_Base_one: UICollectionViewCell {
             make.width.height.equalTo(36)
         }
 
-        // 头像（CurrentUserAvatarView 内嵌于白色描边环容器）
+        // 头像（CurrentUserAvatarView 内嵌于白色描边环容器，尺寸缩小至 36×36 与铃铛按钮等高）
         avatarRing_Base_one.addSubview(avatarView_Base_one)
         contentView.addSubview(avatarRing_Base_one)
 
         avatarView_Base_one.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(4)
+            make.edges.equalToSuperview().inset(3)
         }
         avatarRing_Base_one.snp.makeConstraints { make in
-            make.trailing.equalTo(bellButton_Base_one.snp.leading).offset(-10)
-            make.top.equalTo(bellButton_Base_one)
-            make.width.height.equalTo(60)
+            make.trailing.equalTo(bellButton_Base_one.snp.leading).offset(-8)
+            make.centerY.equalTo(bellButton_Base_one)
+            make.width.height.equalTo(36)
         }
+
+        // 铃铛按钮事件
+        bellButton_Base_one.addTarget(self, action: #selector(bellTapped_Base_one), for: .touchUpInside)
+
+        // 头像点击手势
+        let avatarTap_Base_one = UITapGestureRecognizer(target: self, action: #selector(avatarTapped_Base_one))
+        avatarRing_Base_one.addGestureRecognizer(avatarTap_Base_one)
 
         // 文字
         contentView.addSubview(greetingLabel_Base_one)
@@ -288,6 +304,20 @@ class HomeHeaderCell_Base_one: UICollectionViewCell {
         let dateFmt_base_one = DateFormatter()
         dateFmt_base_one.dateFormat = "EEE · MMM d"
         dateBadgeLabel_Base_one.text = dateFmt_base_one.string(from: Date()).uppercased()
+    }
+
+    // MARK: 按钮响应
+
+    /// 铃声按钮点击 - 触发外部切换到消息列表 Tab 的回调
+    @objc private func bellTapped_Base_one() {
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        onBellTapped_Base_one?()
+    }
+
+    /// 头像点击 - 触发外部切换到我的 Tab 的回调
+    @objc private func avatarTapped_Base_one() {
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        onAvatarTapped_Base_one?()
     }
 }
 
@@ -1282,6 +1312,14 @@ extension Home_Base_one: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: idHeader_Base_one, for: indexPath) as! HomeHeaderCell_Base_one
             let user = UserViewModel_Base_one.shared_Base_one.getCurrentUser_Base_one()
             cell.configure_Base_one(userName_base_one: user.userName_Base_one ?? "Welcome")
+            /// 铃声按钮 → 切换到消息列表 Tab（index 3）
+            cell.onBellTapped_Base_one = { [weak self] in
+                (self?.tabBarController as? TabBar_Base_one)?.switchTab_Base_one(to: 3)
+            }
+            /// 用户头像 → 切换到我的 Tab（index 4）
+            cell.onAvatarTapped_Base_one = { [weak self] in
+                (self?.tabBarController as? TabBar_Base_one)?.switchTab_Base_one(to: 4)
+            }
             return cell
 
         // Banner 轮播

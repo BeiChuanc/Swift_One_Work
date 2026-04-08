@@ -26,4 +26,11 @@ extension UIColor {
         
         self.init(red: r_Base_one, green: g_Base_one, blue: b_Base_one, alpha: alpha_Base_one)
     }
+
+    /// 返回指定透明度的颜色副本
+    /// - Parameter alpha: 透明度，取值范围 0.0（完全透明）~ 1.0（完全不透明）
+    /// - Returns: 应用透明度后的 UIColor
+    func withValues(alpha: CGFloat) -> UIColor {
+        return withAlphaComponent(alpha)
+    }
 }

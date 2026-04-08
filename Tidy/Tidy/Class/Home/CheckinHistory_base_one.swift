@@ -236,7 +236,11 @@ class CheckinDayCell_Base_one: UICollectionViewCell {
         _isChecked_base_one = isChecked_base_one
         _isToday_base_one   = isToday_base_one
         dayLabel_Base_one.text = day_base_one
-        setNeedsLayout()
+        applyVisualState_Base_one()
+        /// 延迟一个 RunLoop 再次应用，保证渐变图层在 bounds 确定后正确渲染
+        DispatchQueue.main.async { [weak self] in
+            self?.applyVisualState_Base_one()
+        }
     }
 
     override func prepareForReuse() {
@@ -245,17 +249,28 @@ class CheckinDayCell_Base_one: UICollectionViewCell {
         _isChecked_base_one = false
         _isToday_base_one   = false
         dayLabel_Base_one.text = ""
+        gradLayer_Base_one?.removeFromSuperlayer()
+        gradLayer_Base_one = nil
+        circleView_Base_one.backgroundColor = .clear
+        circleView_Base_one.layer.borderWidth = 0
+        dayLabel_Base_one.textColor = UIColor(hexstring_Base_one: "#718096")
+        glowView_Base_one.layer.shadowOpacity = 0
     }
 
-    /// bounds 已确定，在此应用渐变 / 描边 / 普通三种视觉状态
     override func layoutSubviews() {
         super.layoutSubviews()
-        applyVisualState_Base_one()
+        /// 尺寸变化时同步渐变图层帧
+        if let grad = gradLayer_Base_one {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            grad.frame = circleView_Base_one.bounds
+            CATransaction.commit()
+        }
     }
 
     /// 根据缓存状态刷新圆圈样式
     private func applyVisualState_Base_one() {
-        // 清除旧状态
+        // 清除旧渐变图层
         gradLayer_Base_one?.removeFromSuperlayer()
         gradLayer_Base_one = nil
         circleView_Base_one.backgroundColor = .clear
@@ -269,29 +284,38 @@ class CheckinDayCell_Base_one: UICollectionViewCell {
         }
 
         if _isChecked_base_one {
-            // 已打卡：薄荷 → 深蓝渐变圆 + 外发光
-            let grad = CAGradientLayer()
-            grad.colors     = [ColorConfig_Base_one.tidyMint_Base_one.cgColor,
-                               UIColor(hexstring_Base_one: "#2D7DD2").cgColor]
-            grad.startPoint = CGPoint(x: 0, y: 0)
-            grad.endPoint   = CGPoint(x: 1, y: 1)
-            grad.cornerRadius = 15
-            grad.frame = circleView_Base_one.bounds  // bounds 已确定，frame 正确
-            circleView_Base_one.layer.insertSublayer(grad, at: 0)
-            gradLayer_Base_one = grad
+            /// 已打卡：薄荷实色圆 + 外发光
+            /// 使用 backgroundColor 代替渐变图层，避免 CAGradientLayer frame 时序问题
+            circleView_Base_one.backgroundColor = ColorConfig_Base_one.tidyMint_Base_one
             dayLabel_Base_one.textColor = .white
             glowView_Base_one.layer.shadowColor   = ColorConfig_Base_one.tidyMint_Base_one.cgColor
             glowView_Base_one.layer.shadowOffset  = .zero
             glowView_Base_one.layer.shadowRadius  = 8
             glowView_Base_one.layer.shadowOpacity = 0.45
+
+            /// 叠加渐变光泽：仅在 bounds 确定后（宽度 > 0）创建，避免零尺寸图层
+            if circleView_Base_one.bounds.width > 0 {
+                let grad = CAGradientLayer()
+                grad.colors     = [UIColor.white.withValues(alpha: 0.35).cgColor,
+                                   UIColor.clear.cgColor]
+                grad.startPoint = CGPoint(x: 0, y: 0)
+                grad.endPoint   = CGPoint(x: 1, y: 1)
+                grad.cornerRadius = 15
+                CATransaction.begin()
+                CATransaction.setDisableActions(true)
+                grad.frame = circleView_Base_one.bounds
+                circleView_Base_one.layer.insertSublayer(grad, at: 0)
+                CATransaction.commit()
+                gradLayer_Base_one = grad
+            }
         } else if _isToday_base_one {
-            // 今日未打卡：薄荷底色 + 描边
-            circleView_Base_one.backgroundColor = ColorConfig_Base_one.tidyMint_Base_one.withAlphaComponent(0.12)
+            /// 今日未打卡：薄荷淡底色 + 描边
+            circleView_Base_one.backgroundColor = ColorConfig_Base_one.tidyMint_Base_one.withValues(alpha: 0.12)
             circleView_Base_one.layer.borderWidth = 1.5
             circleView_Base_one.layer.borderColor = ColorConfig_Base_one.tidyMint_Base_one.cgColor
             dayLabel_Base_one.textColor = ColorConfig_Base_one.tidyMint_Base_one
         } else {
-            // 普通未打卡
+            /// 普通未打卡
             dayLabel_Base_one.textColor = UIColor(hexstring_Base_one: "#718096")
         }
     }

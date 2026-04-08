@@ -46,7 +46,6 @@ extension UIAlertController {
         reportAlter_Base_one.addAction(report3_Base_one)
         reportAlter_Base_one.addAction(report4_Base_one)
         reportAlter_Base_one.addAction(cancel_Base_one)
-        reportAlter_Base_one.modalPresentationStyle = .overFullScreen
         UIViewController.currentViewController_Base_one()?.present(reportAlter_Base_one, animated: true, completion: nil)
     }
 }

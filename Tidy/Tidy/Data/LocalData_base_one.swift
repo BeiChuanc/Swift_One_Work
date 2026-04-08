@@ -124,13 +124,13 @@ private struct DataSource_Base_one {
         (
             "Kids Room Tidy Hacks",
             "Created a toy rotation system that keeps the bedroom from being overwhelmed. Only one bin of toys accessible at a time — rotate weekly. Used pegboards for art supplies and low hooks for bags and jackets. Kids actually maintain it themselves now!",
-            "title9",
+            "media_one",
             "bedroom"
         ),
         (
             "Entry Hall Declutter",
             "The entry hall sets the tone for the whole home. Added a wall-mounted key holder, a shoe rack that fits exactly four pairs per family member, and a small basket for incoming mail. The 'one in, one out' rule keeps it permanently tidy.",
-            "title10",
+            "media_two",
             "living_room"
         ),
     ]

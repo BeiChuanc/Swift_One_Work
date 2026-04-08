@@ -152,7 +152,10 @@ class VIPSubscription_Base_one: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+        // 只有被 pop 出栈时才恢复导航栏，避免 modal 弹出时错误地改变导航栏状态
+        if isMovingFromParent {
+            navigationController?.setNavigationBarHidden(false, animated: animated)
+        }
     }
 
     override func viewDidLayoutSubviews() {

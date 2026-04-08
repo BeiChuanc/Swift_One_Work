@@ -235,12 +235,17 @@ class UserInfo_Base_one: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // 无论是初始 push 进来还是从 modal 返回，都保持导航栏隐藏
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+        // iOS 13+ 非全屏 modal 弹出时也会触发 viewWillDisappear
+        // 只有当页面真正从导航栈 pop 走时才恢复导航栏，避免 alert 弹出导致导航栏状态错乱
+        if isMovingFromParent {
+            navigationController?.setNavigationBarHidden(false, animated: animated)
+        }
     }
 
     override func viewDidLoad() {
@@ -636,7 +641,9 @@ class UserInfo_Base_one: UIViewController {
     }
 
     @objc private func onUserChanged_Base_one() {
+        // 关注状态变化时同步刷新按钮样式与统计数字（粉丝数随之变化）
         updateFollowButton_Base_one()
+        updateStatsLabels_Base_one()
     }
 
     // MARK: - 事件处理
@@ -650,8 +657,12 @@ class UserInfo_Base_one: UIViewController {
         }, completion: { _ in
             UIView.animate(withDuration: 0.1) { self.reportBtn_Base_one.transform = .identity }
         })
-        ReportDeleteHelper_Base_one.block_Base_one(user_Base_one: user_Base_one, from: self) {
-            Navigation_Base_one.pop_Base_one()
+        // 等待 ActionSheet dismiss 动画完成（约 0.3s）后再 pop，
+        // 避免 pop 与 modal 收起动画并发导致生命周期乱序、导航栏状态异常
+        ReportDeleteHelper_Base_one.block_Base_one(user_Base_one: user_Base_one, from: self) { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                self?.navigationController?.popViewController(animated: true)
+            }
         }
     }
 
@@ -668,16 +679,48 @@ class UserInfo_Base_one: UIViewController {
         updateFollowButton_Base_one()
     }
 
-    /// 点击聊天按钮（Replace 方式进入聊天页）
+    /// 点击聊天按钮
+    /// 流程：未登录 → 跳转登录页；未关注 → 提示先关注；已关注 → 弹出确认底部弹窗
     @objc private func chatTapped_Base_one() {
         guard let user_Base_one = userModel_Base_one else { return }
+
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
         UIView.animate(withDuration: 0.1, animations: {
             self.chatBtn_Base_one.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
         }, completion: { _ in
             UIView.animate(withDuration: 0.1) { self.chatBtn_Base_one.transform = .identity }
         })
-        Navigation_Base_one.toMessageUser_Base_one(with: user_Base_one, style_base_one: .replace_base_one)
+
+        // 第一步：检查是否已登录
+        guard UserViewModel_Base_one.shared_Base_one.isLoggedIn_Base_one else {
+            Navigation_Base_one.toLogin_Base_one()
+            return
+        }
+
+        // 第二步：检查是否已关注该用户
+        let isFollowing_Base_one = UserViewModel_Base_one.shared_Base_one.isFollowing_Base_one(user_base_one: user_Base_one)
+        guard isFollowing_Base_one else {
+            Utils_Base_one.showBanner_Base_one(
+                title_Base_one: "Follow Required",
+                message_Base_one: "Please follow this user before starting a chat"
+            )
+            return
+        }
+
+        // 第三步：弹出确认底部弹窗，确认后进入聊天页
+        showChatConfirmSheet_Base_one(user_Base_one: user_Base_one)
+    }
+
+    /// 展示聊天确认底部弹窗
+    /// - Parameter user_Base_one: 目标用户模型
+    private func showChatConfirmSheet_Base_one(user_Base_one: PrewUserModel_Base_one) {
+        guard let window_Base_one = view.window else { return }
+        let sheet_Base_one = ChatConfirmSheet_Base_one(userModel_Base_one: user_Base_one)
+        sheet_Base_one.onConfirm_Base_one = { [weak self] in
+            guard self != nil else { return }
+            Navigation_Base_one.toMessageUser_Base_one(with: user_Base_one, style_base_one: .replace_base_one)
+        }
+        sheet_Base_one.present_Base_one(in: window_Base_one)
     }
 
     /// 分段切换

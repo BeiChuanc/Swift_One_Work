@@ -149,7 +149,8 @@ class Navigation_Base_one: NSObject {
         
         let tabbar_base_one = TabBar_Base_one()
         let nav_base_one = UINavigationController(rootViewController: tabbar_base_one)
-        nav_base_one.navigationBar.isHidden = true
+        // 使用 setNavigationBarHidden 而非直接赋值，保证内部状态一致
+        nav_base_one.setNavigationBarHidden(true, animated: false)
         
         validWindow_base_one.rootViewController = nav_base_one
         validWindow_base_one.makeKeyAndVisible()

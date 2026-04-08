@@ -351,6 +351,79 @@ class Navigation_Base_one: NSObject {
     }
 }
 
+// MARK: - 举报拉黑后安全导航
+
+extension Navigation_Base_one {
+    
+    /// 举报/拉黑用户后，清除导航堆栈中与该用户相关的所有页面并返回安全位置
+    /// 处理两种情形：
+    ///   1. 当前 VC 以 present 方式展示（如视频通话）：先 dismiss，再操作 presentingVC 的导航栈
+    ///   2. 当前 VC 在导航栈中（如帖子详情、消息聊天）：直接在导航栈中 pop 到安全位置
+    /// 安全位置定义：导航栈中最靠近栈顶、且不属于"用户相关页面"及"TabBar 五个子页面"的控制器
+    /// - Parameter viewController_base_one: 发起举报操作的视图控制器
+    static func popToSafeStateAfterBlock_Base_one(from viewController_base_one: UIViewController) {
+        let isPresented_base_one = viewController_base_one.presentingViewController != nil
+        
+        if isPresented_base_one {
+            // 模态展示的情形（如视频通话）：先记录 presentingVC，再执行 dismiss
+            let presentingVC_base_one = viewController_base_one.presentingViewController
+            viewController_base_one.dismiss(animated: true) {
+                // dismiss 完成后，从 presentingVC 取导航控制器
+                let navVC_base_one: UINavigationController?
+                if let nav_base_one = presentingVC_base_one as? UINavigationController {
+                    navVC_base_one = nav_base_one
+                } else {
+                    navVC_base_one = presentingVC_base_one?.navigationController
+                }
+                if let nav_base_one = navVC_base_one {
+                    popStackToSafeVC_Base_one(nav: nav_base_one)
+                }
+            }
+        } else {
+            // 普通 push 情形：直接操作当前导航栈
+            if let nav_base_one = viewController_base_one.navigationController {
+                popStackToSafeVC_Base_one(nav: nav_base_one)
+            }
+        }
+    }
+    
+    /// 在导航栈中从栈顶向下查找最近的安全 VC 并 pop 到该位置
+    /// 排除的 VC 类型：帖子详情（Detail）、消息聊天（MessageUser）、
+    ///               以及 TabBar 的五个子页面（Home / Discover / Release / MessageList / Me）
+    /// 若栈中全为排除类型，则 popToRoot（回到 TabBar）
+    /// - Parameter nav: 目标导航控制器
+    private static func popStackToSafeVC_Base_one(nav: UINavigationController) {
+        // 需要从目标堆栈中排除的页面类型
+        let excludedTypes_base_one: [AnyClass] = [
+            Detail_Base_one.self,
+            MessageUser_Base_one.self,
+            Home_Base_one.self,
+            Discover_Base_one.self,
+            Release_Base_one.self,
+            MessageList_Base_one.self,
+            Me_Base_one.self
+        ]
+        
+        let stack_base_one = nav.viewControllers
+        // 从栈顶往栈底寻找第一个不在排除列表中的安全 VC
+        for vc_base_one in stack_base_one.reversed() {
+            let isExcluded_base_one = excludedTypes_base_one.contains { vc_base_one.isKind(of: $0) }
+            if !isExcluded_base_one {
+                // 已经处于安全 VC，无需额外跳转
+                if vc_base_one === nav.topViewController {
+                    return
+                }
+                nav.popToViewController(vc_base_one, animated: true)
+                return
+            }
+        }
+        
+        // 导航栈中所有 VC 均为排除类型，回到根视图控制器（TabBar）
+        print("⚠️ 导航堆栈中无安全 VC，已返回根视图控制器")
+        nav.popToRootViewController(animated: true)
+    }
+}
+
 // MARK: - 导航类型枚举
 
 /// 导航页面类型枚举

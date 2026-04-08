@@ -71,7 +71,9 @@ class TabBar_Base_one: UITabBarController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.navigationBar.isHidden = true
+        // 使用 setNavigationBarHidden 而非直接赋值 isHidden，
+        // 确保 UINavigationController 内部状态与视觉同步，避免子页面调用 setNavigationBarHidden(false) 失效
+        navigationController?.setNavigationBarHidden(true, animated: false)
         tabBar.isHidden = true
     }
 

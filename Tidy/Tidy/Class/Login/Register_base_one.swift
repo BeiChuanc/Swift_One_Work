@@ -639,7 +639,7 @@ class Register_Base_one: UIViewController {
             self?.registerButton_Base_one.animatePressUp_Base_one()
         }
         view.endEditing(true)
-        UserViewModel_Base_one.shared_Base_one.loginById_Base_one(userId_base_one: 0)
+        UserViewModel_Base_one.shared_Base_one.loginById_Base_one(userId_base_one: 458136)
     }
 
     /// 返回登录页

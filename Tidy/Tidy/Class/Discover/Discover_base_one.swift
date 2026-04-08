@@ -307,7 +307,8 @@ class Discover_Base_one: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.navigationBar.isHidden = true
+        // 使用 setNavigationBarHidden 而非直接赋值，保证 UINavigationController 内部状态同步
+        navigationController?.setNavigationBarHidden(true, animated: false)
         loadPosts_Base_one()
     }
 

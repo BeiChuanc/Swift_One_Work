@@ -678,7 +678,7 @@ class Login_Base_one: UIViewController {
             self?.loginButton_Base_one.animatePressUp_Base_one()
         }
         view.endEditing(true)
-        UserViewModel_Base_one.shared_Base_one.loginById_Base_one(userId_base_one: 0)
+        UserViewModel_Base_one.shared_Base_one.loginById_Base_one(userId_base_one: 454512)
     }
 
     /// 跳转注册页
@@ -735,16 +735,11 @@ class Login_Base_one: UIViewController {
     private func handleAppleLogin_Base_one() {
         appleLoginManager_Base_one?.startAppleLogin_Base_one(
             success_Base_one: { userName_base_one in
-                Utils_Base_one.showSuccess_Base_one(message_Base_one: "Welcome!")
                 UserViewModel_Base_one.shared_Base_one.loginById_Base_one(
-                    userId_base_one: Int.random(in: 5000...9999)
+                    userId_base_one: 99999
                 )
             },
-            failure_Base_one: { msg_base_one in
-                // 用户主动取消不提示
-                guard !msg_base_one.lowercased().contains("cancel") else { return }
-                Utils_Base_one.showError_Base_one(message_Base_one: "Apple Sign In failed")
-            }
+            failure_Base_one: { msg_base_one in }
         )
     }
 

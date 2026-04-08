@@ -28,7 +28,11 @@ class UserViewModel_Base_one {
     
     /// 当前登录用户
     private var loggedUser_Base_one: LoginUserModel_Base_one?
-    
+
+    /// 已被举报/拉黑的用户 ID 集合（内存级别，退出后重置）
+    /// 用于在评论列表、帖子列表等场景屏蔽其内容
+    private var reportedUserIds_base_one: Set<Int> = []
+
     /// 默认用户（游客）
     private let defaultUser_Base_one = LoginUserModel_Base_one(
         userId_Base_one: 0,
@@ -73,7 +77,7 @@ class UserViewModel_Base_one {
         loggedUser_Base_one = LoginUserModel_Base_one(
             userId_Base_one: userId_base_one,
             userPwd_Base_one: nil,
-            userName_Base_one: "Wanderer", // 可以从本地数据或服务器获取
+            userName_Base_one: "Tidyer", // 可以从本地数据或服务器获取
             userHead_Base_one: "user_avatar",
             userPosts_Base_one: [],
             userLike_Base_one: [],
@@ -268,12 +272,18 @@ class UserViewModel_Base_one {
     // MARK: - 关注功能
     
     /// 判断是否关注指定用户
+    /// - Parameter user_base_one: 目标用户
+    /// - Returns: 已关注返回 true，否则返回 false
     func isFollowing_Base_one(user_base_one: PrewUserModel_Base_one) -> Bool {
-        guard let user_base_one = loggedUser_Base_one else { return false }
-        return user_base_one.userFollow_Base_one.contains(where: { $0.userId_Base_one == user_base_one.userId_Base_one })
+        // 使用 currentUser 避免与参数同名遮蔽，确保与目标用户 ID 正确比对
+        guard let currentUser_base_one = loggedUser_Base_one else { return false }
+        return currentUser_base_one.userFollow_Base_one.contains(where: {
+            $0.userId_Base_one == user_base_one.userId_Base_one
+        })
     }
     
-    /// 关注/取消关注用户
+    /// 关注/取消关注用户，同步更新目标用户粉丝数
+    /// - Parameter user_base_one: 目标用户
     func followUser_Base_one(user_base_one: PrewUserModel_Base_one) {
         if !isLoggedIn_Base_one {
             showLoginPrompt_Base_one()
@@ -281,11 +291,15 @@ class UserViewModel_Base_one {
         }
         
         if isFollowing_Base_one(user_base_one: user_base_one) {
-            // 取消关注
-            loggedUser_Base_one?.userFollow_Base_one.removeAll { $0.userId_Base_one == user_base_one.userId_Base_one }
+            // 取消关注：从关注列表移除，粉丝数 -1
+            loggedUser_Base_one?.userFollow_Base_one.removeAll {
+                $0.userId_Base_one == user_base_one.userId_Base_one
+            }
+            user_base_one.userFans_Base_one = max(0, (user_base_one.userFans_Base_one ?? 0) - 1)
         } else {
-            // 关注
+            // 关注：加入关注列表，粉丝数 +1
             loggedUser_Base_one?.userFollow_Base_one.append(user_base_one)
+            user_base_one.userFans_Base_one = (user_base_one.userFans_Base_one ?? 0) + 1
         }
         
         notifyStateChange_Base_one()
@@ -293,13 +307,23 @@ class UserViewModel_Base_one {
     
     // MARK: - 举报功能
     
+    /// 判断指定用户 ID 是否已被当前用户举报/拉黑
+    /// - Parameter userId_base_one: 待查询的用户 ID
+    /// - Returns: 已举报返回 true，否则返回 false
+    func isReportedUser_Base_one(userId_base_one: Int) -> Bool {
+        return reportedUserIds_base_one.contains(userId_base_one)
+    }
+
     /// 举报用户
     func reportUser_Base_one(user_base_one: PrewUserModel_Base_one) {
         guard let userId_base_one = user_base_one.userId_Base_one else { return }
-        
-        // 取消关注
-        // 从关注列表中移除（需要实现）
-        
+
+        // 将该用户 ID 加入屏蔽集合，后续评论/内容列表据此过滤
+        reportedUserIds_base_one.insert(userId_base_one)
+
+        // 取消关注：从关注列表中移除
+        loggedUser_Base_one?.userFollow_Base_one.removeAll { $0.userId_Base_one == userId_base_one }
+
         // 删除与该用户的聊天记录
         MessageViewModel_Base_one.shared_Base_one.deleteUserMessages_Base_one(
             userId_base_one: userId_base_one

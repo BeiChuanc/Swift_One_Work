@@ -240,12 +240,14 @@ class Detail_Base_one: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
+        print("触发1")
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
         view.endEditing(true)
+        print("触发2")
     }
 
     override func viewDidLayoutSubviews() {
@@ -628,7 +630,12 @@ class Detail_Base_one: UIViewController {
 
     private func refreshComments_base_one(post: TitleModel_Base_one) {
         commentsStack_base_one.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        let comments = post.reviews_Base_one
+        // 过滤掉已被举报/拉黑用户发布的评论
+        let comments = post.reviews_Base_one.filter { comment in
+            !UserViewModel_Base_one.shared_Base_one.isReportedUser_Base_one(
+                userId_base_one: comment.commentUserId_Base_one
+            )
+        }
         commentsTitleLabel_base_one.text = "Comments (\(comments.count))"
         emptyCommentLabel_base_one.isHidden = !comments.isEmpty
         comments.enumerated().forEach { idx, comment in

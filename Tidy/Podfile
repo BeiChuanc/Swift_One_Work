@@ -5,7 +5,7 @@ target 'Tidy' do
   use_frameworks!
 
   pod 'SnapKit', '~> 5.7.0'
-  pod 'Moya', '~> 13.0.1'
+  pod 'Moya'
   pod 'ProgressHUD'
   pod 'IQKeyboardManager'
   pod 'AppsFlyerFramework', '6.14.4'

@@ -473,8 +473,12 @@ class MessageUser_Base_one: UIViewController {
         reportBtn_Base_one.animatePressDown_Base_one {
             self.reportBtn_Base_one.animatePressUp_Base_one()
         }
-        ReportDeleteHelper_Base_one.block_Base_one(user_Base_one: user, from: self) {
-            Navigation_Base_one.pop_Base_one()
+        // 等待 ActionSheet dismiss 动画完成（约 0.3s）后再 pop，
+        // 避免 pop 与 modal 收起动画并发导致生命周期乱序、导航栏状态异常
+        ReportDeleteHelper_Base_one.block_Base_one(user_Base_one: user, from: self) { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                self?.navigationController?.popViewController(animated: true)
+            }
         }
     }
 
@@ -586,6 +590,9 @@ class MessageBubbleCell_Base_one: UITableViewCell {
     /// 气泡渐变图层（我发送时显示）
     private var bubbleGradient_Base_one: CAGradientLayer?
 
+    /// 标记当前气泡是否为"我发送"样式，供 layoutSubviews 按需创建/隐藏渐变图层
+    private var isMineStyle_Base_one: Bool = false
+
     /// 消息内容文本
     private let messageLabel_Base_one: UILabel = {
         let l = UILabel()
@@ -688,7 +695,11 @@ class MessageBubbleCell_Base_one: UITableViewCell {
     // MARK: - 气泡样式切换
 
     /// 切换为我发送的气泡样式（渐变背景，右对齐）
+    /// 渐变图层通过 DispatchQueue.main.async 延迟到当前 RunLoop 结束后创建，
+    /// 此时 TableView 已完成 Cell 布局，bubbleView bounds 必然为非零值
     private func applyMineBubbleStyle_Base_one() {
+        isMineStyle_Base_one = true
+
         avatarLeading_Base_one?.deactivate()
         avatarTrailing_Base_one?.activate()
         bubbleLeading_Base_one?.deactivate()
@@ -696,21 +707,49 @@ class MessageBubbleCell_Base_one: UITableViewCell {
         timeLeading_Base_one?.deactivate()
         timeTrailing_Base_one?.activate()
 
-        /// 渐变气泡背景
         bubbleView_Base_one.backgroundColor = .clear
         bubbleView_Base_one.layer.shadowOpacity = 0
         messageLabel_Base_one.textColor = .white
 
+        /// 若渐变图层已存在（复用场景），同步帧并直接显示
+        if let grad = bubbleGradient_Base_one {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            grad.frame = bubbleView_Base_one.bounds
+            grad.isHidden = false
+            CATransaction.commit()
+            return
+        }
+
+        /// 首次创建：延迟到下一个 RunLoop，保证 bounds 已由 TableView 确定
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self, self.isMineStyle_Base_one else { return }
+            self.createBubbleGradientIfNeeded_Base_one()
+        }
+    }
+
+    /// 创建并显示气泡渐变图层（确保 bounds 非零时调用）
+    private func createBubbleGradientIfNeeded_Base_one() {
+        guard bubbleView_Base_one.bounds.width > 0 else { return }
         if bubbleGradient_Base_one == nil {
             let grad = UIColor.createPrimaryGradientLayer_Base_one(frame_Base_one: bubbleView_Base_one.bounds)
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
             bubbleView_Base_one.layer.insertSublayer(grad, at: 0)
+            CATransaction.commit()
             bubbleGradient_Base_one = grad
         }
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        bubbleGradient_Base_one?.frame = bubbleView_Base_one.bounds
         bubbleGradient_Base_one?.isHidden = false
+        CATransaction.commit()
     }
 
     /// 切换为对方发送的气泡样式（白色卡片，左对齐）
     private func applyTheirBubbleStyle_Base_one() {
+        isMineStyle_Base_one = false
+
         avatarLeading_Base_one?.activate()
         avatarTrailing_Base_one?.deactivate()
         bubbleLeading_Base_one?.activate()
@@ -718,7 +757,6 @@ class MessageBubbleCell_Base_one: UITableViewCell {
         timeLeading_Base_one?.activate()
         timeTrailing_Base_one?.deactivate()
 
-        /// 白色卡片气泡
         bubbleView_Base_one.backgroundColor = .white
         bubbleView_Base_one.layer.shadowColor = UIColor.black.withAlphaComponent(0.07).cgColor
         bubbleView_Base_one.layer.shadowOffset = CGSize(width: 0, height: 3)
@@ -730,11 +768,18 @@ class MessageBubbleCell_Base_one: UITableViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        bubbleGradient_Base_one?.frame = bubbleView_Base_one.bounds
+        /// 屏幕旋转或尺寸变化时同步渐变帧
+        guard isMineStyle_Base_one, let grad = bubbleGradient_Base_one,
+              bubbleView_Base_one.bounds.width > 0 else { return }
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        grad.frame = bubbleView_Base_one.bounds
+        CATransaction.commit()
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
+        isMineStyle_Base_one = false
         bubbleGradient_Base_one?.isHidden = true
         avatarView_Base_one.isHidden = false
         /// 重置为左侧布局（对方消息），避免复用错位
