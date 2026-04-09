@@ -19,56 +19,56 @@ class Store_Somnia: NSObject {
     var goodsList_Somnia: [StoreModel_Somnia] = [
         StoreModel_Somnia(
             id_Somnia: 1,
-            goodsId_Somnia: "tify.gift.4_9",
+            goodsId_Somnia: "somnia.pur.4_9",
             goodsName_Somnia: "x1",
             goodsPrice_Somnia: "$4.99",
             goodIsTop_Somnia: true
         ),
         StoreModel_Somnia(
             id_Somnia: 2,
-            goodsId_Somnia: "tify.gift.x1.4_9",
+            goodsId_Somnia: "somnia.pur.x1.4_9",
             goodsName_Somnia: "x1",
             goodsPrice_Somnia: "$4.99",
         ),
         StoreModel_Somnia(
             id_Somnia: 3,
-            goodsId_Somnia: "tify.gift.x5.14_9",
+            goodsId_Somnia: "somnia.pur.x5.14_9",
             goodsName_Somnia: "x5",
             goodsPrice_Somnia: "$14.99",
         ),
         StoreModel_Somnia(
             id_Somnia: 4,
-            goodsId_Somnia: "tify.gift.x10.19_9",
+            goodsId_Somnia: "somnia.pur.x10.19_9",
             goodsName_Somnia: "x10",
             goodsPrice_Somnia: "$19.99",
         ),
         StoreModel_Somnia(
             id_Somnia: 5,
-            goodsId_Somnia: "tify.gift.x30.49_9",
+            goodsId_Somnia: "somnia.pur.x30.49_9",
             goodsName_Somnia: "x30",
             goodsPrice_Somnia: "$49.99",
         ),
         StoreModel_Somnia(
             id_Somnia: 6,
-            goodsId_Somnia: "tify.gift.x1.6_9",
+            goodsId_Somnia: "somnia.pur.x1.6_9",
             goodsName_Somnia: "x1",
             goodsPrice_Somnia: "$6.99",
         ),
         StoreModel_Somnia(
             id_Somnia: 7,
-            goodsId_Somnia: "tify.gift.x5.19_9",
+            goodsId_Somnia: "somnia.pur.x5.19_9",
             goodsName_Somnia: "x5",
             goodsPrice_Somnia: "$19.99",
         ),
         StoreModel_Somnia(
             id_Somnia: 8,
-            goodsId_Somnia: "tify.gift.x10.29_9",
+            goodsId_Somnia: "somnia.pur.x10.29_9",
             goodsName_Somnia: "x10",
             goodsPrice_Somnia: "$29.99",
         ),
         StoreModel_Somnia(
             id_Somnia: 9,
-            goodsId_Somnia: "tify.gift.x30.79_9",
+            goodsId_Somnia: "somnia.pur.x30.79_9",
             goodsName_Somnia: "x30",
             goodsPrice_Somnia: "$79.99",
         ),
@@ -77,28 +77,28 @@ class Store_Somnia: NSObject {
         
         StoreModel_Somnia(
             id_Somnia: 9,
-            goodsId_Somnia: "tify.vip.1w.9_9",
+            goodsId_Somnia: "somnia.sub.1w.9_9",
             goodsName_Somnia: "Week",
             goodsPrice_Somnia: "$9.99",
             goodIsVIP_Somnia: true
         ),
         StoreModel_Somnia(
             id_Somnia: 10,
-            goodsId_Somnia: "tify.vip.1m.19_9",
+            goodsId_Somnia: "somnia.sub.1m.19_9",
             goodsName_Somnia: "Month",
             goodsPrice_Somnia: "$19.99",
             goodIsVIP_Somnia: true
         ),
         StoreModel_Somnia(
             id_Somnia: 11,
-            goodsId_Somnia: "tify.vip.3m.29_9",
+            goodsId_Somnia: "somnia.sub.3m.29_9",
             goodsName_Somnia: "Months",
             goodsPrice_Somnia: "$29.99",
             goodIsVIP_Somnia: true
         ),
         StoreModel_Somnia(
             id_Somnia: 12,
-            goodsId_Somnia: "tify.vip.1y.69_9",
+            goodsId_Somnia: "somnia.sub.1y.69_9",
             goodsName_Somnia: "Year",
             goodsPrice_Somnia: "$69.99",
             goodIsVIP_Somnia: true
@@ -125,7 +125,7 @@ extension Store_Somnia {
                     print("支付成功")
                     Utils_Somnia.showSuccess_Somnia(message_Somnia: "Payment successful")
                     
-                    if (gid_Somnia.contains("tify.gift.x5.3_9")) {
+                    if (gid_Somnia.contains("somnia.pur.x5.3_9")) {
                         self.isPur_Somnia = true
                     }
                     
