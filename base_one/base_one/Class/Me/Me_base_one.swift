@@ -2,9 +2,8 @@ import Foundation
 import UIKit
 import SnapKit
 
-// MARK: 我的
+// MARK: 我的页面
 
-/// 我的页面
 class Me_Base_one: UIViewController {
     
     var meModel_Base_one: LoginUserModel_Base_one?

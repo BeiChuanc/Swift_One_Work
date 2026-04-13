@@ -3,9 +3,8 @@ import Foundation
 import UIKit
 import SnapKit
 
-// MARK: 详情
+// MARK: 帖子展示详情页面
 
-/// 详情页面
 class Detail_Base_one: UIViewController {
 
     var titleModel_Base_one: TitleModel_Base_one?

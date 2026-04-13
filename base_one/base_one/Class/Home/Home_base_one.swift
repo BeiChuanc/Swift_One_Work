@@ -4,7 +4,6 @@ import SnapKit
 
 // MARK: 首页
 
-/// 首页页面
 class Home_Base_one: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {

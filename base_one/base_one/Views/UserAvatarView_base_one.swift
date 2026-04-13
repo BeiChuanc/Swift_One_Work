@@ -105,7 +105,7 @@ class UserAvatarView_Base_one: UIView {
     
     /// 加载其他用户头像
     private func loadOtherUserAvatar_Base_one(userId_Base_one: Int) {
-        let userInfo_Base_one = UserViewModel_Base_one.shared_Base_one.getUserById_Base_one(userId_base_one: userId_Base_one)
+        let userInfo_Base_one = UserViewModel_Base_one.shared_Base_one.getUserById_Base_one(userId_Base_one: userId_Base_one)
         let color_Base_one = Self.defaultAvatarColors_Base_one[userId_Base_one % Self.defaultAvatarColors_Base_one.count]
         
         guard let headPath_Base_one = userInfo_Base_one.userHead_Base_one, !headPath_Base_one.isEmpty else {
@@ -198,28 +198,9 @@ class UserAvatarView_Base_one: UIView {
 
 /// 登录用户头像组件
 class CurrentUserAvatarView_Base_one: UserAvatarView_Base_one {
-    
-    // MARK: - UI组件
-    
-    /// 编辑按钮（可选）
-    private let editButton_Base_one: UIButton = {
-        let button_Base_one = UIButton(type: .custom)
-        button_Base_one.setImage(UIImage(systemName: "pencil.circle.fill"), for: .normal)
-        button_Base_one.tintColor = ColorConfig_Base_one.primaryGradientStart_Base_one
-        button_Base_one.backgroundColor = .white
-        button_Base_one.isHidden = true
-        return button_Base_one
-    }()
-    
+
     // MARK: - 属性
-    
-    /// 是否显示编辑按钮
-    var showEditButton_Base_one: Bool = false {
-        didSet {
-            editButton_Base_one.isHidden = !showEditButton_Base_one
-        }
-    }
-    
+
     /// 点击回调
     var onTapped_Base_one: (() -> Void)?
     
@@ -234,32 +215,20 @@ class CurrentUserAvatarView_Base_one: UserAvatarView_Base_one {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        // 设置编辑按钮圆形
-        editButton_Base_one.layer.cornerRadius = editButton_Base_one.bounds.width / 2
-    }
-    
     // MARK: - UI设置（重写）
     
     override func setupUI_Base_one() {
         super.setupUI_Base_one()
         
         // 启用用户交互
+        isUserInteractionEnabled = true
         imageView_Base_one.isUserInteractionEnabled = true
-        
-        // 添加编辑按钮
-        addSubview(editButton_Base_one)
-        editButton_Base_one.snp.makeConstraints { make in
-            make.right.bottom.equalToSuperview().offset(2)
-            make.width.height.equalTo(28)
-        }
-        
-        // 添加点击手势
+
+        // 添加点击手势（绑定到整个头像组件，避免局部区域点击失效）
+        let tapSelfGesture_Base_one = UITapGestureRecognizer(target: self, action: #selector(handleTap_Base_one))
+        addGestureRecognizer(tapSelfGesture_Base_one)
         let tapGesture_Base_one = UITapGestureRecognizer(target: self, action: #selector(handleTap_Base_one))
         imageView_Base_one.addGestureRecognizer(tapGesture_Base_one)
-        
-        editButton_Base_one.addTarget(self, action: #selector(handleEditTap_Base_one), for: .touchUpInside)
     }
     
     // MARK: - 加载头像
@@ -326,16 +295,6 @@ class CurrentUserAvatarView_Base_one: UserAvatarView_Base_one {
         
         // 触发回调
         onTapped_Base_one?()
-    }
-    
-    /// 处理编辑按钮点击事件
-    @objc private func handleEditTap_Base_one() {
-        // 触发回调（可用于打开相册选择）
-        onTapped_Base_one?()
-        
-        // 触觉反馈
-        let generator_Base_one = UIImpactFeedbackGenerator(style: .medium)
-        generator_Base_one.impactOccurred()
     }
     
     /// 重写用户状态变化处理（重新加载当前用户头像）

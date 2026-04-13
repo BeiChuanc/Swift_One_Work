@@ -2,9 +2,8 @@ import Foundation
 import UIKit
 import SnapKit
 
-// MARK: 修改我的信息
+// MARK: 修改用户信息页面
 
-/// 修改我的信息页面
 class EditInfo_Base_one: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {

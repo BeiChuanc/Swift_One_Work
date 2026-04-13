@@ -2,9 +2,8 @@ import Foundation
 import UIKit
 import SnapKit
 
-// MARK: 与用户聊天
+// MARK: 与用户聊天页面
 
-/// 与用户聊天页面
 class MessageUser_Base_one: UIViewController {
     
     /// 聊天用户
