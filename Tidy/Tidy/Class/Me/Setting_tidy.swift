@@ -102,7 +102,7 @@ class Setting_Tidy: UIViewController {
         icon: "doc.text.fill",
         title: "Terms of Service",
         subtitle: "Read our terms and conditions",
-        iconBgColor: UIColor(hexstring_Tidy: "#B794F6")
+        iconBgColor: ColorConfig_Tidy.primaryGradientStart_Tidy
     )
 
     private let legalDivider_Tidy = Setting_Tidy.makeDivider_Tidy()
@@ -111,7 +111,7 @@ class Setting_Tidy: UIViewController {
         icon: "lock.shield.fill",
         title: "Privacy Policy",
         subtitle: "How we handle your data",
-        iconBgColor: UIColor(hexstring_Tidy: "#90CDF4")
+        iconBgColor: ColorConfig_Tidy.primaryGradientEnd_Tidy
     )
 
     // MARK: - 账号操作区
@@ -123,7 +123,7 @@ class Setting_Tidy: UIViewController {
         icon: "arrow.right.square.fill",
         title: "Log Out",
         subtitle: "Sign out of your account",
-        iconBgColor: UIColor(hexstring_Tidy: "#F6AD55"),
+        iconBgColor: ColorConfig_Tidy.tidyGold_Tidy,
         titleColor: ColorConfig_Tidy.textPrimary_Tidy
     )
 
@@ -133,7 +133,7 @@ class Setting_Tidy: UIViewController {
         icon: "trash.fill",
         title: "Delete Account",
         subtitle: "Permanently remove your account",
-        iconBgColor: UIColor(hexstring_Tidy: "#FC8181"),
+        iconBgColor: ColorConfig_Tidy.tidyWarm_Tidy,
         titleColor: UIColor(hexstring_Tidy: "#E53E3E")
     )
 

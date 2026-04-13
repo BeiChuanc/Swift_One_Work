@@ -57,7 +57,7 @@ class Login_Tidy: UIViewController {
     private let brandIconView_Tidy: UIImageView = {
         let iv = UIImageView()
         let cfg = UIImage.SymbolConfiguration(pointSize: 26, weight: .medium)
-        iv.image = UIImage(systemName: "house.fill", withConfiguration: cfg)
+        iv.image = UIImage(systemName: "camera.aperture", withConfiguration: cfg)
         iv.tintColor = .white
         iv.contentMode = .scaleAspectFit
         return iv
@@ -66,7 +66,7 @@ class Login_Tidy: UIViewController {
     /// App 名称
     private let brandNameLabel_Tidy: UILabel = {
         let lb = UILabel()
-        lb.text = "Tidy"
+        lb.text = "Praise"
         lb.font = UIFont.systemFont(ofSize: 44, weight: .heavy)
         lb.textColor = .white
         return lb
@@ -75,7 +75,7 @@ class Login_Tidy: UIViewController {
     /// 品牌标语
     private let brandTaglineLabel_Tidy: UILabel = {
         let lb = UILabel()
-        lb.text = "Organize · Inspire · Live Better ✨"
+        lb.text = "Shoot · Style · Shine Better ✨"
         lb.font = UIFont.systemFont(ofSize: 13, weight: .medium)
         lb.textColor = UIColor.white.withAlphaComponent(0.82)
         return lb
@@ -306,9 +306,9 @@ class Login_Tidy: UIViewController {
         // 三色对角渐变背景
         let grad = CAGradientLayer()
         grad.colors = [
-            ColorConfig_Tidy.tidyMint_Tidy.cgColor,
-            UIColor(hexstring_Tidy: "#2C9E96").cgColor,
-            UIColor(hexstring_Tidy: "#2D7DD2").cgColor
+            ColorConfig_Tidy.primaryGradientStart_Tidy.cgColor,
+            ColorConfig_Tidy.tidyMintDeep_Tidy.cgColor,
+            ColorConfig_Tidy.primaryGradientEnd_Tidy.cgColor
         ]
         grad.locations  = [0, 0.55, 1.0]
         grad.startPoint = CGPoint(x: 0, y: 0)
@@ -562,7 +562,7 @@ class Login_Tidy: UIViewController {
         let grad_tidy = CAGradientLayer()
         grad_tidy.colors = [
             ColorConfig_Tidy.tidyMint_Tidy.cgColor,
-            UIColor(hexstring_Tidy: "#2C9E96").cgColor
+            ColorConfig_Tidy.tidyMintDeep_Tidy.cgColor
         ]
         grad_tidy.startPoint = CGPoint(x: 0, y: 0.5)
         grad_tidy.endPoint   = CGPoint(x: 1, y: 0.5)

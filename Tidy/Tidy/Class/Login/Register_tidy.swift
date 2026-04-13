@@ -64,7 +64,7 @@ class Register_Tidy: UIViewController {
     private let brandIconView_Tidy: UIImageView = {
         let iv = UIImageView()
         let cfg = UIImage.SymbolConfiguration(pointSize: 22, weight: .medium)
-        iv.image = UIImage(systemName: "house.fill", withConfiguration: cfg)
+        iv.image = UIImage(systemName: "camera.aperture", withConfiguration: cfg)
         iv.tintColor = .white
         iv.contentMode = .scaleAspectFit
         return iv
@@ -72,7 +72,7 @@ class Register_Tidy: UIViewController {
 
     private let brandNameLabel_Tidy: UILabel = {
         let lb = UILabel()
-        lb.text = "Join Tidy"
+        lb.text = "Join Praise"
         lb.font = UIFont.systemFont(ofSize: 34, weight: .heavy)
         lb.textColor = .white
         return lb
@@ -80,7 +80,7 @@ class Register_Tidy: UIViewController {
 
     private let brandTaglineLabel_Tidy: UILabel = {
         let lb = UILabel()
-        lb.text = "Start your tidy home journey today 🏡"
+        lb.text = "Start your photo glow-up journey today 📸"
         lb.font = UIFont.systemFont(ofSize: 13, weight: .medium)
         lb.textColor = UIColor.white.withAlphaComponent(0.82)
         return lb
@@ -292,12 +292,12 @@ class Register_Tidy: UIViewController {
 
     // MARK: - 背景搭建
 
-    /// 搭建薰衣草紫→天空蓝对角渐变背景（与登录页绿色调形成区分）和装饰圆
+    /// 搭建暮光紫→镜头蓝对角渐变背景和装饰圆
     private func setupBackground_Tidy() {
         let grad = CAGradientLayer()
         grad.colors = [
             ColorConfig_Tidy.primaryGradientStart_Tidy.cgColor,
-            UIColor(hexstring_Tidy: "#A78BFA").cgColor,
+            ColorConfig_Tidy.tidyMintDeep_Tidy.cgColor,
             ColorConfig_Tidy.primaryGradientEnd_Tidy.cgColor
         ]
         grad.locations  = [0, 0.50, 1.0]
@@ -551,12 +551,12 @@ class Register_Tidy: UIViewController {
         textField.addTarget(self, action: #selector(onFieldEndEdit_Tidy(_:)), for: .editingDidEnd)
     }
 
-    /// 构建注册按钮（紫色渐变背景 + 投影）
+    /// 构建注册按钮（品牌渐变背景 + 投影）
     private func buildRegisterButton_Tidy() {
         let grad_tidy = CAGradientLayer()
         grad_tidy.colors = [
             ColorConfig_Tidy.primaryGradientStart_Tidy.cgColor,
-            UIColor(hexstring_Tidy: "#A78BFA").cgColor
+            ColorConfig_Tidy.primaryGradientEnd_Tidy.cgColor
         ]
         grad_tidy.startPoint = CGPoint(x: 0, y: 0.5)
         grad_tidy.endPoint   = CGPoint(x: 1, y: 0.5)
@@ -564,7 +564,7 @@ class Register_Tidy: UIViewController {
         registerButton_Tidy.layer.insertSublayer(grad_tidy, at: 0)
         regBtnGradLayer_Tidy = grad_tidy
 
-        // 紫色投影
+        // 品牌色投影
         registerButton_Tidy.layer.shadowColor = ColorConfig_Tidy.primaryGradientStart_Tidy.withAlphaComponent(0.40).cgColor
         registerButton_Tidy.layer.shadowOffset = CGSize(width: 0, height: 6)
         registerButton_Tidy.layer.shadowRadius = 12

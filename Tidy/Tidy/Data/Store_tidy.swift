@@ -19,56 +19,56 @@ class Store_Tidy: NSObject {
     var goodsList_Tidy: [StoreModel_Tidy] = [
         StoreModel_Tidy(
             id_Tidy: 1,
-            goodsId_Tidy: "tify.gift.4_9",
+            goodsId_Tidy: "praise.gift.4_9",
             goodsName_Tidy: "x1",
             goodsPrice_Tidy: "$4.99",
             goodIsTop_Tidy: true
         ),
         StoreModel_Tidy(
             id_Tidy: 2,
-            goodsId_Tidy: "tify.gift.x1.4_9",
+            goodsId_Tidy: "praise.gift.x1.4_9",
             goodsName_Tidy: "x1",
             goodsPrice_Tidy: "$4.99",
         ),
         StoreModel_Tidy(
             id_Tidy: 3,
-            goodsId_Tidy: "tify.gift.x5.14_9",
+            goodsId_Tidy: "praise.gift.x5.14_9",
             goodsName_Tidy: "x5",
             goodsPrice_Tidy: "$14.99",
         ),
         StoreModel_Tidy(
             id_Tidy: 4,
-            goodsId_Tidy: "tify.gift.x10.19_9",
+            goodsId_Tidy: "praise.gift.x10.19_9",
             goodsName_Tidy: "x10",
             goodsPrice_Tidy: "$19.99",
         ),
         StoreModel_Tidy(
             id_Tidy: 5,
-            goodsId_Tidy: "tify.gift.x30.49_9",
+            goodsId_Tidy: "praise.gift.x30.49_9",
             goodsName_Tidy: "x30",
             goodsPrice_Tidy: "$49.99",
         ),
         StoreModel_Tidy(
             id_Tidy: 6,
-            goodsId_Tidy: "tify.gift.x1.6_9",
+            goodsId_Tidy: "praise.gift.x1.6_9",
             goodsName_Tidy: "x1",
             goodsPrice_Tidy: "$6.99",
         ),
         StoreModel_Tidy(
             id_Tidy: 7,
-            goodsId_Tidy: "tify.gift.x5.19_9",
+            goodsId_Tidy: "praise.gift.x5.19_9",
             goodsName_Tidy: "x5",
             goodsPrice_Tidy: "$19.99",
         ),
         StoreModel_Tidy(
             id_Tidy: 8,
-            goodsId_Tidy: "tify.gift.x10.29_9",
+            goodsId_Tidy: "praise.gift.x10.29_9",
             goodsName_Tidy: "x10",
             goodsPrice_Tidy: "$29.99",
         ),
         StoreModel_Tidy(
             id_Tidy: 9,
-            goodsId_Tidy: "tify.gift.x30.79_9",
+            goodsId_Tidy: "praise.gift.x30.79_9",
             goodsName_Tidy: "x30",
             goodsPrice_Tidy: "$79.99",
         ),
@@ -77,29 +77,29 @@ class Store_Tidy: NSObject {
         
         StoreModel_Tidy(
             id_Tidy: 9,
-            goodsId_Tidy: "tify.vip.1w.9_9",
-            goodsName_Tidy: "One Week",
+            goodsId_Tidy: "praise.sub.1w.9_9",
+            goodsName_Tidy: "Premium (1w.)",
             goodsPrice_Tidy: "$9.99",
             goodIsVIP_Tidy: true
         ),
         StoreModel_Tidy(
             id_Tidy: 10,
-            goodsId_Tidy: "tify.vip.1m.19_9",
-            goodsName_Tidy: "One Months",
+            goodsId_Tidy: "praise.sub.1m.19_9",
+            goodsName_Tidy: "Premium (1m.)",
             goodsPrice_Tidy: "$19.99",
             goodIsVIP_Tidy: true
         ),
         StoreModel_Tidy(
             id_Tidy: 11,
-            goodsId_Tidy: "tify.vip.3m.29_9",
-            goodsName_Tidy: "Three Months",
+            goodsId_Tidy: "praise.sub.3m.29_9",
+            goodsName_Tidy: "Premium (3m.)",
             goodsPrice_Tidy: "$29.99",
             goodIsVIP_Tidy: true
         ),
         StoreModel_Tidy(
             id_Tidy: 12,
-            goodsId_Tidy: "tify.vip.1y.69_9",
-            goodsName_Tidy: "One Year",
+            goodsId_Tidy: "praise.sub.1y.69_9",
+            goodsName_Tidy: "Premium (1y.)",
             goodsPrice_Tidy: "$69.99",
             goodIsVIP_Tidy: true
         )
@@ -125,7 +125,7 @@ extension Store_Tidy {
                     print("支付成功")
                     Utils_Tidy.showSuccess_Tidy(message_Tidy: "Payment successful")
                     
-                    if (gid_Tidy.contains("tify.gift.x5.3_9")) {
+                    if (gid_Tidy.contains("praise.gift.x5.3_9")) {
                         self.isPur_Tidy = true
                     }
                     

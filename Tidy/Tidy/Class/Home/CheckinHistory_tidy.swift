@@ -88,7 +88,7 @@ private class CheckinMonthHeaderView_Tidy: UICollectionReusableView {
         // 进度填充渐变
         let grad = CAGradientLayer()
         grad.colors = [ColorConfig_Tidy.tidyMint_Tidy.cgColor,
-                       UIColor(hexstring_Tidy: "#2D7DD2").cgColor]
+                       ColorConfig_Tidy.primaryGradientStart_Tidy.cgColor]
         grad.startPoint = CGPoint(x: 0, y: 0.5)
         grad.endPoint   = CGPoint(x: 1, y: 0.5)
         grad.cornerRadius = 3
@@ -154,7 +154,7 @@ private class CheckinMonthHeaderView_Tidy: UICollectionReusableView {
         switch rate {
         case 80...: badgeColor = ColorConfig_Tidy.tidyMint_Tidy
         case 50..<80: badgeColor = ColorConfig_Tidy.tidyGold_Tidy
-        default:     badgeColor = UIColor(hexstring_Tidy: "#FC8181")
+        default:     badgeColor = ColorConfig_Tidy.tidyWarm_Tidy
         }
         rateBadge_Tidy.backgroundColor = badgeColor
 
@@ -471,17 +471,17 @@ class CheckinHistory_Tidy: UIViewController {
     private lazy var cardTotal_Tidy = StatMiniCard_Tidy(
         icon_tidy: "📅",
         gradColors_tidy: [ColorConfig_Tidy.tidyMint_Tidy,
-                               UIColor(hexstring_Tidy: "#2D7DD2")]
+                               ColorConfig_Tidy.primaryGradientStart_Tidy]
     )
     private lazy var cardStreak_Tidy = StatMiniCard_Tidy(
         icon_tidy: "🔥",
-        gradColors_tidy: [UIColor(hexstring_Tidy: "#FF6B6B"),
-                               UIColor(hexstring_Tidy: "#FF8E53")]
+        gradColors_tidy: [ColorConfig_Tidy.tidyWarm_Tidy,
+                               ColorConfig_Tidy.secondaryGradientEnd_Tidy]
     )
     private lazy var cardMonth_Tidy = StatMiniCard_Tidy(
         icon_tidy: "🌿",
-        gradColors_tidy: [UIColor(hexstring_Tidy: "#9F7AEA"),
-                               UIColor(hexstring_Tidy: "#B794F6")]
+        gradColors_tidy: [ColorConfig_Tidy.primaryGradientStart_Tidy,
+                               ColorConfig_Tidy.primaryGradientEnd_Tidy]
     )
 
     // MARK: 月历 CollectionView
@@ -575,10 +575,10 @@ class CheckinHistory_Tidy: UIViewController {
             make.height.equalTo(220)
         }
 
-        // 渐变背景（薄荷 → 深蓝）
+        // 渐变背景（镜头蓝 → 暮光紫）
         let grad = CAGradientLayer()
         grad.colors = [ColorConfig_Tidy.tidyMint_Tidy.cgColor,
-                       UIColor(hexstring_Tidy: "#1A5276").cgColor]
+                       ColorConfig_Tidy.primaryGradientStart_Tidy.cgColor]
         grad.startPoint = CGPoint(x: 0, y: 0)
         grad.endPoint   = CGPoint(x: 1, y: 1)
         bannerView_Tidy.layer.insertSublayer(grad, at: 0)

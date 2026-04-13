@@ -72,7 +72,7 @@ class EditInfo_Tidy: UIViewController {
     /// 相机图标徽章（头像右下角，提示可编辑）
     private let cameraBadge_Tidy: UIView = {
         let v = UIView()
-        v.backgroundColor = UIColor(hexstring_Tidy: "#B794F6")
+        v.backgroundColor = ColorConfig_Tidy.primaryGradientStart_Tidy
         v.layer.cornerRadius = 14
         v.layer.borderWidth = 2.5
         v.layer.borderColor = UIColor.white.cgColor
@@ -134,7 +134,7 @@ class EditInfo_Tidy: UIViewController {
     /// 用户名字段图标容器
     private let nameIconView_Tidy = EditInfo_Tidy.makeFieldIcon_Tidy(
         systemName: "person.fill",
-        color: UIColor(hexstring_Tidy: "#B794F6")
+        color: ColorConfig_Tidy.primaryGradientStart_Tidy
     )
 
     private let nameSectionLabel_Tidy = EditInfo_Tidy.makeFieldLabel_Tidy(text: "Username")
@@ -164,7 +164,7 @@ class EditInfo_Tidy: UIViewController {
     /// 简介字段图标容器
     private let bioIconView_Tidy = EditInfo_Tidy.makeFieldIcon_Tidy(
         systemName: "text.bubble.fill",
-        color: UIColor(hexstring_Tidy: "#90CDF4")
+        color: ColorConfig_Tidy.primaryGradientEnd_Tidy
     )
 
     private let bioSectionLabel_Tidy = EditInfo_Tidy.makeFieldLabel_Tidy(text: "Bio")
@@ -225,7 +225,7 @@ class EditInfo_Tidy: UIViewController {
         button_Tidy.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         button_Tidy.setTitleColor(.white, for: .normal)
         button_Tidy.layer.cornerRadius = 26
-        button_Tidy.layer.shadowColor = UIColor(hexstring_Tidy: "#B794F6").cgColor
+        button_Tidy.layer.shadowColor = ColorConfig_Tidy.primaryGradientStart_Tidy.cgColor
         button_Tidy.layer.shadowOffset = CGSize(width: 0, height: 8)
         button_Tidy.layer.shadowOpacity = 0.30
         button_Tidy.layer.shadowRadius = 12
@@ -637,7 +637,7 @@ class EditInfo_Tidy: UIViewController {
         let count_Tidy = text_Tidy.count
         charCountLabel_Tidy.text = "\(count_Tidy) / 80"
         charCountLabel_Tidy.textColor = count_Tidy > 70
-            ? UIColor(hexstring_Tidy: "#FC8181")
+            ? ColorConfig_Tidy.tidyWarm_Tidy
             : ColorConfig_Tidy.textPlaceholder_Tidy
 
         // 更新进度条宽度（相对于背景宽度）
@@ -652,7 +652,7 @@ class EditInfo_Tidy: UIViewController {
 
         // 进度条颜色：超过 70% 变红
         charProgressFill_Tidy.backgroundColor = count_Tidy > 56
-            ? UIColor(hexstring_Tidy: "#FC8181")
+            ? ColorConfig_Tidy.tidyWarm_Tidy
             : ColorConfig_Tidy.primaryGradientStart_Tidy
     }
 
@@ -735,14 +735,14 @@ extension EditInfo_Tidy: UITextViewDelegate {
 
     func textViewDidBeginEditing(_ textView: UITextView) {
         UIView.animate(withDuration: 0.2) {
-            self.bioIconView_Tidy.backgroundColor = UIColor(hexstring_Tidy: "#90CDF4").withAlphaComponent(0.25)
+            self.bioIconView_Tidy.backgroundColor = ColorConfig_Tidy.primaryGradientEnd_Tidy.withAlphaComponent(0.25)
             self.bioIconView_Tidy.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
         }
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
         UIView.animate(withDuration: 0.2) {
-            self.bioIconView_Tidy.backgroundColor = UIColor(hexstring_Tidy: "#90CDF4").withAlphaComponent(0.12)
+            self.bioIconView_Tidy.backgroundColor = ColorConfig_Tidy.primaryGradientEnd_Tidy.withAlphaComponent(0.12)
             self.bioIconView_Tidy.transform = .identity
         }
     }

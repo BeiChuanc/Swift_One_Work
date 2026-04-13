@@ -98,9 +98,22 @@ class MessageUser_Tidy: UIViewController {
     private let navTextStack_Tidy: UIStackView = {
         let sv = UIStackView()
         sv.axis = .vertical
-        sv.spacing = 2
+        sv.spacing = 4
         sv.alignment = .leading
         return sv
+    }()
+
+    /// 联系状态徽章
+    private let navStatusBadge_Tidy: UILabel = {
+        let l = UILabel()
+        l.text = "ACTIVE NOW"
+        l.font = UIFont.systemFont(ofSize: 10, weight: .bold)
+        l.textColor = ColorConfig_Tidy.primaryGradientStart_Tidy
+        l.backgroundColor = UIColor(hexstring_Tidy: "#F4F7FF")
+        l.textAlignment = .center
+        l.layer.cornerRadius = 10
+        l.clipsToBounds = true
+        return l
     }()
 
     /// 举报按钮（右上角）
@@ -119,6 +132,63 @@ class MessageUser_Tidy: UIViewController {
         v.backgroundColor = ColorConfig_Tidy.backgroundPrimary_Tidy
         return v
     }()
+    /// 顶部左侧柔光装饰
+    private let msgGlowTop_Tidy: UIView = {
+        let v = UIView()
+        v.backgroundColor = ColorConfig_Tidy.primaryGradientStart_Tidy.withAlphaComponent(0.10)
+        v.layer.cornerRadius = 110
+        return v
+    }()
+    /// 底部右侧柔光装饰
+    private let msgGlowBottom_Tidy: UIView = {
+        let v = UIView()
+        v.backgroundColor = ColorConfig_Tidy.tidyMint_Tidy.withAlphaComponent(0.10)
+        v.layer.cornerRadius = 140
+        return v
+    }()
+
+    /// 会话舞台卡片，承载引导信息和消息列表
+    private let chatPanelView_Tidy: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor.white.withAlphaComponent(0.88)
+        v.layer.cornerRadius = 30
+        v.layer.shadowColor = UIColor.black.withAlphaComponent(0.06).cgColor
+        v.layer.shadowOffset = CGSize(width: 0, height: 10)
+        v.layer.shadowRadius = 26
+        v.layer.shadowOpacity = 1
+        return v
+    }()
+    /// 会话引导卡片
+    private let chatGuideCard_Tidy: UIView = {
+        let v = UIView()
+        v.layer.cornerRadius = 22
+        v.clipsToBounds = true
+        return v
+    }()
+    private var chatGuideGradient_Tidy: CAGradientLayer?
+    private let chatGuideBadge_Tidy: UILabel = {
+        let l = UILabel()
+        l.text = "DIRECT MESSAGE"
+        l.font = UIFont.systemFont(ofSize: 10, weight: .bold)
+        l.textColor = .white
+        return l
+    }()
+    private let chatGuideTitleLabel_Tidy: UILabel = {
+        let l = UILabel()
+        l.text = "Keep the creative flow going."
+        l.font = UIFont.systemFont(ofSize: 18, weight: .heavy)
+        l.textColor = .white
+        l.numberOfLines = 2
+        return l
+    }()
+    private let chatGuideDescLabel_Tidy: UILabel = {
+        let l = UILabel()
+        l.text = "Share pose tweaks, lighting notes, and quick feedback in one smooth thread."
+        l.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        l.textColor = UIColor.white.withAlphaComponent(0.82)
+        l.numberOfLines = 2
+        return l
+    }()
 
     // MARK: - UI组件 - 消息气泡列表
 
@@ -128,7 +198,7 @@ class MessageUser_Tidy: UIViewController {
         tv.register(MessageBubbleCell_Tidy.self, forCellReuseIdentifier: MessageBubbleCell_Tidy.reuseId_Tidy)
         tv.separatorStyle = .none
         tv.backgroundColor = .clear
-        tv.contentInset = UIEdgeInsets(top: 16, left: 0, bottom: 16, right: 0)
+        tv.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 18, right: 0)
         tv.keyboardDismissMode = .interactive
         return tv
     }()
@@ -138,14 +208,29 @@ class MessageUser_Tidy: UIViewController {
     /// 输入栏主容器（白色，顶部圆角）
     private let inputBarView_Tidy: UIView = {
         let v = UIView()
-        v.backgroundColor = .white
+        v.backgroundColor = UIColor.white.withAlphaComponent(0.94)
         v.layer.cornerRadius = 28
-        v.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         v.layer.shadowColor = UIColor.black.withAlphaComponent(0.08).cgColor
-        v.layer.shadowOffset = CGSize(width: 0, height: -4)
-        v.layer.shadowRadius = 12
+        v.layer.shadowOffset = CGSize(width: 0, height: 10)
+        v.layer.shadowRadius = 22
         v.layer.shadowOpacity = 1
         return v
+    }()
+    /// 输入栏模式标题
+    private let inputModeLabel_Tidy: UILabel = {
+        let l = UILabel()
+        l.text = "MESSAGE LAB"
+        l.font = UIFont.systemFont(ofSize: 10, weight: .bold)
+        l.textColor = ColorConfig_Tidy.primaryGradientStart_Tidy
+        return l
+    }()
+    /// 输入栏辅助说明
+    private let inputHelperLabel_Tidy: UILabel = {
+        let l = UILabel()
+        l.text = "Send a quick note"
+        l.font = UIFont.systemFont(ofSize: 11, weight: .medium)
+        l.textColor = ColorConfig_Tidy.textSecondary_Tidy
+        return l
     }()
 
     /// 输入框胶囊背景
@@ -176,7 +261,6 @@ class MessageUser_Tidy: UIViewController {
     private let sendBtn_Tidy: UIButton = {
         let btn = UIButton(type: .custom)
         btn.layer.cornerRadius = 24
-        btn.clipsToBounds = true
         let config = UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)
         btn.setImage(UIImage(systemName: "arrow.up", withConfiguration: config), for: .normal)
         btn.tintColor = .white
@@ -213,23 +297,54 @@ class MessageUser_Tidy: UIViewController {
         super.viewDidLayoutSubviews()
         updateButtonGradients_Tidy()
         updateNavAvatarRing_Tidy()
+        updateChatGuideGradient_Tidy()
     }
 
     // MARK: - UI搭建
 
     private func setupUI_Tidy() {
         view.backgroundColor = ColorConfig_Tidy.backgroundPrimary_Tidy
+        navBarView_Tidy.backgroundColor = .clear
+        navCenterView_Tidy.backgroundColor = UIColor.white.withAlphaComponent(0.96)
+        navCenterView_Tidy.layer.cornerRadius = 30
+        navCenterView_Tidy.layer.shadowColor = UIColor.black.withAlphaComponent(0.08).cgColor
+        navCenterView_Tidy.layer.shadowOffset = CGSize(width: 0, height: 8)
+        navCenterView_Tidy.layer.shadowRadius = 18
+        navCenterView_Tidy.layer.shadowOpacity = 1
+        chatPanelView_Tidy.layer.borderWidth = 1
+        chatPanelView_Tidy.layer.borderColor = UIColor.white.withAlphaComponent(0.65).cgColor
+        inputContainer_Tidy.backgroundColor = UIColor(hexstring_Tidy: "#F7F9FF")
+        inputContainer_Tidy.layer.cornerRadius = 22
+        inputContainer_Tidy.layer.borderColor = ColorConfig_Tidy.border_Tidy.cgColor
+        sendBtn_Tidy.layer.shadowColor = ColorConfig_Tidy.primaryGradientStart_Tidy.withAlphaComponent(0.34).cgColor
+        sendBtn_Tidy.layer.shadowOffset = CGSize(width: 0, height: 8)
+        sendBtn_Tidy.layer.shadowRadius = 16
+        sendBtn_Tidy.layer.shadowOpacity = 1
+        inputBarView_Tidy.layer.borderWidth = 1
+        inputBarView_Tidy.layer.borderColor = UIColor.white.withAlphaComponent(0.72).cgColor
+        msgBgView_Tidy.backgroundColor = UIColor(hexstring_Tidy: "#F5F7FE")
 
         /// 消息背景
         view.addSubview(msgBgView_Tidy)
+        msgBgView_Tidy.addSubview(msgGlowTop_Tidy)
+        msgBgView_Tidy.addSubview(msgGlowBottom_Tidy)
+
+        /// 会话舞台
+        view.addSubview(chatPanelView_Tidy)
+        chatPanelView_Tidy.addSubview(chatGuideCard_Tidy)
+        chatGuideCard_Tidy.addSubview(chatGuideBadge_Tidy)
+        chatGuideCard_Tidy.addSubview(chatGuideTitleLabel_Tidy)
+        chatGuideCard_Tidy.addSubview(chatGuideDescLabel_Tidy)
 
         /// 消息列表
-        view.addSubview(tableView_Tidy)
+        chatPanelView_Tidy.addSubview(tableView_Tidy)
         tableView_Tidy.delegate = self
         tableView_Tidy.dataSource = self
 
         /// 输入栏
         view.addSubview(inputBarView_Tidy)
+        inputBarView_Tidy.addSubview(inputModeLabel_Tidy)
+        inputBarView_Tidy.addSubview(inputHelperLabel_Tidy)
         inputBarView_Tidy.addSubview(inputContainer_Tidy)
         inputContainer_Tidy.addSubview(inputTextField_Tidy)
         inputBarView_Tidy.addSubview(sendBtn_Tidy)
@@ -247,6 +362,7 @@ class MessageUser_Tidy: UIViewController {
         navTextStack_Tidy.addArrangedSubview(navNameLabel_Tidy)
         navTextStack_Tidy.addArrangedSubview(navBioLabel_Tidy)
         navCenterView_Tidy.addSubview(navTextStack_Tidy)
+        navCenterView_Tidy.addSubview(navStatusBadge_Tidy)
 
         navBarView_Tidy.addSubview(reportBtn_Tidy)
         navBarView_Tidy.addSubview(navShadowLine_Tidy)
@@ -262,36 +378,45 @@ class MessageUser_Tidy: UIViewController {
         msgBgView_Tidy.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        msgGlowTop_Tidy.snp.makeConstraints { make in
+            make.width.height.equalTo(220)
+            make.leading.equalToSuperview().offset(-90)
+            make.top.equalToSuperview().offset(safeTop + 30)
+        }
+        msgGlowBottom_Tidy.snp.makeConstraints { make in
+            make.width.height.equalTo(280)
+            make.trailing.equalToSuperview().offset(120)
+            make.bottom.equalToSuperview().offset(120)
+        }
 
         /// 导航栏
         navBarView_Tidy.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(safeTop + 64)
+            make.height.equalTo(safeTop + 108)
         }
 
         backBtn_Tidy.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(14)
-            make.bottom.equalToSuperview().offset(-12)
+            make.top.equalToSuperview().offset(safeTop + 10)
             make.width.height.equalTo(44)
         }
 
         reportBtn_Tidy.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-14)
-            make.bottom.equalToSuperview().offset(-12)
+            make.centerY.equalTo(backBtn_Tidy)
             make.width.height.equalTo(38)
         }
 
         /// 导航中心视图（水平布局：头像 + 文字）
-        /// centerY 与返回按钮对齐，保证用户信息和返回/举报按钮处于同一水平线
         navCenterView_Tidy.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
+            make.leading.equalTo(backBtn_Tidy.snp.trailing).offset(10)
+            make.trailing.equalTo(reportBtn_Tidy.snp.leading).offset(-10)
             make.centerY.equalTo(backBtn_Tidy)
-            make.leading.greaterThanOrEqualTo(backBtn_Tidy.snp.trailing).offset(6)
-            make.trailing.lessThanOrEqualTo(reportBtn_Tidy.snp.leading).offset(-6)
+            make.height.equalTo(62)
         }
 
         navAvatarRing_Tidy.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
+            make.leading.equalToSuperview().offset(8)
             make.centerY.equalToSuperview()
             make.width.height.equalTo(50)
         }
@@ -309,7 +434,14 @@ class MessageUser_Tidy: UIViewController {
         navTextStack_Tidy.snp.makeConstraints { make in
             make.leading.equalTo(navAvatarRing_Tidy.snp.trailing).offset(10)
             make.centerY.equalToSuperview()
-            make.trailing.equalToSuperview()
+            make.trailing.lessThanOrEqualTo(navStatusBadge_Tidy.snp.leading).offset(-8)
+        }
+
+        navStatusBadge_Tidy.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-12)
+            make.centerY.equalToSuperview()
+            make.height.equalTo(20)
+            make.width.greaterThanOrEqualTo(74)
         }
 
         navShadowLine_Tidy.snp.makeConstraints { make in
@@ -317,31 +449,67 @@ class MessageUser_Tidy: UIViewController {
             make.height.equalTo(0.5)
         }
 
+        /// 会话舞台
+        chatPanelView_Tidy.snp.makeConstraints { make in
+            make.top.equalTo(navBarView_Tidy.snp.bottom).offset(-4)
+            make.leading.trailing.equalToSuperview().inset(12)
+            make.bottom.equalTo(inputBarView_Tidy.snp.top).offset(-12)
+        }
+
+        chatGuideCard_Tidy.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(14)
+            make.leading.trailing.equalToSuperview().inset(14)
+            make.height.equalTo(108)
+        }
+
+        chatGuideBadge_Tidy.snp.makeConstraints { make in
+            make.leading.top.equalToSuperview().offset(16)
+        }
+
+        chatGuideTitleLabel_Tidy.snp.makeConstraints { make in
+            make.leading.equalTo(chatGuideBadge_Tidy)
+            make.trailing.equalToSuperview().offset(-16)
+            make.top.equalTo(chatGuideBadge_Tidy.snp.bottom).offset(10)
+        }
+
+        chatGuideDescLabel_Tidy.snp.makeConstraints { make in
+            make.leading.equalTo(chatGuideTitleLabel_Tidy)
+            make.trailing.equalTo(chatGuideTitleLabel_Tidy)
+            make.top.equalTo(chatGuideTitleLabel_Tidy.snp.bottom).offset(6)
+        }
+
         /// 消息列表
         tableView_Tidy.snp.makeConstraints { make in
-            make.top.equalTo(navBarView_Tidy.snp.bottom)
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(inputBarView_Tidy.snp.top)
+            make.top.equalTo(chatGuideCard_Tidy.snp.bottom).offset(8)
+            make.leading.trailing.bottom.equalToSuperview()
         }
 
         /// 底部输入栏
         inputBarView_Tidy.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            inputBarBottomConstraint_Tidy = make.bottom.equalToSuperview().constraint
+            make.leading.trailing.equalToSuperview().inset(12)
+            inputBarBottomConstraint_Tidy = make.bottom.equalToSuperview().offset(-(safeBottom + 8)).constraint
+        }
+        inputModeLabel_Tidy.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.top.equalToSuperview().offset(12)
+        }
+        inputHelperLabel_Tidy.snp.makeConstraints { make in
+            make.leading.equalTo(inputModeLabel_Tidy)
+            make.top.equalTo(inputModeLabel_Tidy.snp.bottom).offset(2)
         }
 
         sendBtn_Tidy.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-16)
-            make.top.equalToSuperview().offset(12)
-            make.bottom.equalToSuperview().offset(-(12 + safeBottom))
+            make.top.equalToSuperview().offset(16)
+            make.bottom.equalToSuperview().offset(-16)
             make.width.height.equalTo(48)
         }
 
         inputContainer_Tidy.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
             make.trailing.equalTo(sendBtn_Tidy.snp.leading).offset(-10)
-            make.top.equalToSuperview().offset(12)
-            make.bottom.equalToSuperview().offset(-(12 + safeBottom))
+            make.top.equalTo(inputHelperLabel_Tidy.snp.bottom).offset(12)
+            make.bottom.equalToSuperview().offset(-16)
             make.height.greaterThanOrEqualTo(48)
         }
 
@@ -393,7 +561,8 @@ class MessageUser_Tidy: UIViewController {
 
     @objc private func keyboardWillHide_Tidy(_ notification: Notification) {
         guard let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else { return }
-        inputBarBottomConstraint_Tidy?.update(offset: 0)
+        let safeBottom = UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 34
+        inputBarBottomConstraint_Tidy?.update(offset: -(safeBottom + 8))
         UIView.animate(withDuration: duration) { self.view.layoutIfNeeded() }
     }
 
@@ -403,7 +572,8 @@ class MessageUser_Tidy: UIViewController {
     private func configureUserInfo_Tidy() {
         guard let user = userModel_Tidy else { return }
         navNameLabel_Tidy.text = user.userName_Tidy ?? "User"
-        navBioLabel_Tidy.text = user.userIntroduce_Tidy ?? "Online"
+        navBioLabel_Tidy.text = user.userIntroduce_Tidy ?? "Creative chat is open"
+        navStatusBadge_Tidy.text = " ACTIVE "
         if let userId = user.userId_Tidy {
             navAvatarView_Tidy.configure_Tidy(userId_Tidy: userId)
         }
@@ -415,10 +585,12 @@ class MessageUser_Tidy: UIViewController {
     private func updateButtonGradients_Tidy() {
         if sendGradient_Tidy == nil && sendBtn_Tidy.bounds.width > 0 {
             let grad = UIColor.createPrimaryGradientLayer_Tidy(frame_Tidy: sendBtn_Tidy.bounds)
+            grad.cornerRadius = sendBtn_Tidy.layer.cornerRadius
             sendBtn_Tidy.layer.insertSublayer(grad, at: 0)
             sendGradient_Tidy = grad
         } else {
             sendGradient_Tidy?.frame = sendBtn_Tidy.bounds
+            sendGradient_Tidy?.cornerRadius = sendBtn_Tidy.layer.cornerRadius
         }
     }
 
@@ -430,6 +602,28 @@ class MessageUser_Tidy: UIViewController {
         grad.cornerRadius = 25
         navAvatarRing_Tidy.layer.insertSublayer(grad, at: 0)
         navAvatarRingGradient_Tidy = grad
+    }
+
+    /// 更新会话引导卡片渐变
+    /// 功能：在布局完成后给引导卡片铺设柔和渐变，增强聊天页层次与品牌氛围
+    /// 参数：无
+    /// 返回值：无
+    private func updateChatGuideGradient_Tidy() {
+        guard chatGuideCard_Tidy.bounds.width > 0 else { return }
+        if chatGuideGradient_Tidy == nil {
+            let grad = CAGradientLayer()
+            grad.colors = [
+                ColorConfig_Tidy.primaryGradientStart_Tidy.cgColor,
+                ColorConfig_Tidy.tidyMintDeep_Tidy.cgColor,
+                ColorConfig_Tidy.tidyMint_Tidy.cgColor
+            ]
+            grad.startPoint = CGPoint(x: 0, y: 0)
+            grad.endPoint = CGPoint(x: 1, y: 1)
+            chatGuideCard_Tidy.layer.insertSublayer(grad, at: 0)
+            chatGuideGradient_Tidy = grad
+        }
+        chatGuideGradient_Tidy?.frame = chatGuideCard_Tidy.bounds
+        chatGuideGradient_Tidy?.cornerRadius = chatGuideCard_Tidy.layer.cornerRadius
     }
 
     // MARK: - 消息监听
@@ -582,7 +776,7 @@ class MessageBubbleCell_Tidy: UITableViewCell {
     /// 消息气泡容器（含圆角和裁剪）
     private let bubbleView_Tidy: UIView = {
         let v = UIView()
-        v.layer.cornerRadius = 20
+        v.layer.cornerRadius = 22
         v.clipsToBounds = true
         return v
     }()
@@ -708,6 +902,7 @@ class MessageBubbleCell_Tidy: UITableViewCell {
         timeTrailing_Tidy?.activate()
 
         bubbleView_Tidy.backgroundColor = .clear
+        bubbleView_Tidy.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner]
         bubbleView_Tidy.layer.shadowOpacity = 0
         messageLabel_Tidy.textColor = .white
 
@@ -758,6 +953,7 @@ class MessageBubbleCell_Tidy: UITableViewCell {
         timeTrailing_Tidy?.deactivate()
 
         bubbleView_Tidy.backgroundColor = .white
+        bubbleView_Tidy.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner]
         bubbleView_Tidy.layer.shadowColor = UIColor.black.withAlphaComponent(0.07).cgColor
         bubbleView_Tidy.layer.shadowOffset = CGSize(width: 0, height: 3)
         bubbleView_Tidy.layer.shadowRadius = 8

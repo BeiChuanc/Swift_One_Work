@@ -53,7 +53,7 @@ class MePostCell_Tidy: UICollectionViewCell {
     private let likeIconView_Tidy: UIImageView = {
         let iv = UIImageView()
         iv.image = UIImage(systemName: "heart.fill")
-        iv.tintColor = UIColor(hexstring_Tidy: "#FBB6CE")
+        iv.tintColor = ColorConfig_Tidy.secondaryGradientStart_Tidy
         iv.contentMode = .scaleAspectFit
         return iv
     }()

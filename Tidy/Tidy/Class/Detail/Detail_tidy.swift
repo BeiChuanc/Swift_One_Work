@@ -62,6 +62,15 @@ class Detail_Tidy: UIViewController {
         return v
     }()
 
+    /// 头图信息前缀，强化作品展示氛围
+    private let heroKickerLabel_tidy: UILabel = {
+        let lb = UILabel()
+        lb.text = "SHOT SPOTLIGHT"
+        lb.font = UIFont.systemFont(ofSize: 10, weight: .bold)
+        lb.textColor = UIColor.white.withAlphaComponent(0.86)
+        return lb
+    }()
+
     /// 分类徽章
     private let categoryBadge_tidy: UIView = {
         let v = UIView()
@@ -119,12 +128,12 @@ class Detail_Tidy: UIViewController {
         let cfg = UIImage.SymbolConfiguration(pointSize: 13, weight: .semibold)
         btn.setImage(UIImage(systemName: "heart", withConfiguration: cfg), for: .normal)
         btn.setImage(UIImage(systemName: "heart.fill", withConfiguration: cfg), for: .selected)
-        btn.tintColor = UIColor(hexstring_Tidy: "#FF6B6B")
+        btn.tintColor = ColorConfig_Tidy.tidyWarm_Tidy
         btn.setTitle("  Like", for: .normal)
         btn.setTitle("  Liked", for: .selected)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
         btn.setTitleColor(UIColor.white.withAlphaComponent(0.85), for: .normal)
-        btn.setTitleColor(UIColor(hexstring_Tidy: "#FF6B6B"), for: .selected)
+        btn.setTitleColor(ColorConfig_Tidy.tidyWarm_Tidy, for: .selected)
         btn.backgroundColor = UIColor.white.withAlphaComponent(0.20)
         btn.layer.cornerRadius = 16
         return btn
@@ -137,12 +146,65 @@ class Detail_Tidy: UIViewController {
         return lb
     }()
 
+    /// Hero 底部信息面板，承载作品数据摘要
+    private let heroMetaPanel_tidy: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor.white.withAlphaComponent(0.16)
+        v.layer.cornerRadius = 22
+        v.layer.borderWidth = 1
+        v.layer.borderColor = UIColor.white.withAlphaComponent(0.22).cgColor
+        return v
+    }()
+    private let heroMetricStack_tidy: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.spacing = 10
+        sv.alignment = .fill
+        sv.distribution = .fillEqually
+        return sv
+    }()
+    private let heroLikesMetricCard_tidy = UIView()
+    private let heroCommentsMetricCard_tidy = UIView()
+    private let heroMediaMetricCard_tidy = UIView()
+    private let heroLikesValueLabel_tidy = UILabel()
+    private let heroLikesTitleLabel_tidy = UILabel()
+    private let heroCommentsValueLabel_tidy = UILabel()
+    private let heroCommentsTitleLabel_tidy = UILabel()
+    private let heroMediaValueLabel_tidy = UILabel()
+    private let heroMediaTitleLabel_tidy = UILabel()
+
     // MARK: - 媒体横向滑览区
 
     private let mediaSectionBg_tidy: UIView = {
         let v = UIView()
         v.backgroundColor = ColorConfig_Tidy.backgroundPrimary_Tidy
         return v
+    }()
+    private let mediaSectionTitleLabel_tidy: UILabel = {
+        let lb = UILabel()
+        lb.text = "Visual Reel"
+        lb.font = UIFont.systemFont(ofSize: 18, weight: .heavy)
+        lb.textColor = ColorConfig_Tidy.textPrimary_Tidy
+        return lb
+    }()
+    private let mediaSectionHintLabel_tidy: UILabel = {
+        let lb = UILabel()
+        lb.text = "Swipe to preview the full frame set."
+        lb.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        lb.textColor = ColorConfig_Tidy.textSecondary_Tidy
+        return lb
+    }()
+    private let mediaCountBadge_tidy: UILabel = {
+        let lb = UILabel()
+        lb.font = UIFont.systemFont(ofSize: 11, weight: .bold)
+        lb.textColor = ColorConfig_Tidy.primaryGradientStart_Tidy
+        lb.backgroundColor = UIColor.white
+        lb.layer.cornerRadius = 13
+        lb.layer.borderWidth = 1
+        lb.layer.borderColor = ColorConfig_Tidy.primaryGradientStart_Tidy.withAlphaComponent(0.12).cgColor
+        lb.clipsToBounds = true
+        lb.textAlignment = .center
+        return lb
     }()
 
     private let mediaCollectionView_tidy: UICollectionView = {
@@ -162,6 +224,34 @@ class Detail_Tidy: UIViewController {
     // MARK: - 内容卡片
 
     private let contentCard_tidy = Detail_Tidy.buildCard_tidy()
+    private let contentLeadBadge_tidy: UILabel = {
+        let lb = UILabel()
+        lb.text = "CREATOR NOTES"
+        lb.font = UIFont.systemFont(ofSize: 10, weight: .bold)
+        lb.textColor = ColorConfig_Tidy.primaryGradientStart_Tidy
+        return lb
+    }()
+    private let contentLeadHintLabel_tidy: UILabel = {
+        let lb = UILabel()
+        lb.text = "A practical breakdown of the scene, styling, and shooting flow."
+        lb.font = UIFont.systemFont(ofSize: 12, weight: .regular)
+        lb.textColor = ColorConfig_Tidy.textSecondary_Tidy
+        lb.numberOfLines = 0
+        return lb
+    }()
+    private let contentHighlightPanel_tidy: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor(hexstring_Tidy: "#F7F9FF")
+        v.layer.cornerRadius = 16
+        return v
+    }()
+    private let contentHighlightLabel_tidy: UILabel = {
+        let lb = UILabel()
+        lb.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
+        lb.textColor = ColorConfig_Tidy.textPrimary_Tidy
+        lb.numberOfLines = 0
+        return lb
+    }()
     private let contentBodyLabel_tidy: UILabel = {
         let lb = UILabel()
         lb.font = UIFont.systemFont(ofSize: 15, weight: .regular)
@@ -178,6 +268,24 @@ class Detail_Tidy: UIViewController {
         let lb = UILabel()
         lb.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         lb.textColor = ColorConfig_Tidy.textPrimary_Tidy
+        return lb
+    }()
+    private let commentsGuideLabel_tidy: UILabel = {
+        let lb = UILabel()
+        lb.text = "See how others would frame the same moment."
+        lb.font = UIFont.systemFont(ofSize: 12, weight: .regular)
+        lb.textColor = ColorConfig_Tidy.textSecondary_Tidy
+        lb.numberOfLines = 0
+        return lb
+    }()
+    private let commentsCountBadge_tidy: UILabel = {
+        let lb = UILabel()
+        lb.font = UIFont.systemFont(ofSize: 11, weight: .bold)
+        lb.textColor = ColorConfig_Tidy.tidyMintDeep_Tidy
+        lb.backgroundColor = UIColor(hexstring_Tidy: "#EEF7FF")
+        lb.layer.cornerRadius = 12
+        lb.clipsToBounds = true
+        lb.textAlignment = .center
         return lb
     }()
     private let emptyCommentLabel_tidy: UILabel = {
@@ -199,6 +307,21 @@ class Detail_Tidy: UIViewController {
     // MARK: - 评论输入卡片（ScrollView 末尾，非悬浮）
 
     private let commentInputCard_tidy = Detail_Tidy.buildCard_tidy()
+    private let inputGuideLabel_tidy: UILabel = {
+        let lb = UILabel()
+        lb.text = "Drop a quick pose tweak, light note, or edit idea."
+        lb.font = UIFont.systemFont(ofSize: 12, weight: .regular)
+        lb.textColor = ColorConfig_Tidy.textSecondary_Tidy
+        lb.numberOfLines = 0
+        return lb
+    }()
+    private let inputTipsBadge_tidy: UILabel = {
+        let lb = UILabel()
+        lb.text = "QUICK COMMENT"
+        lb.font = UIFont.systemFont(ofSize: 10, weight: .bold)
+        lb.textColor = ColorConfig_Tidy.primaryGradientStart_Tidy
+        return lb
+    }()
     private let commentTextField_tidy: UITextField = {
         let tf = UITextField()
         tf.placeholder = "Leave a comment..."
@@ -210,13 +333,17 @@ class Detail_Tidy: UIViewController {
         tf.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 1))
         tf.rightViewMode = .always
         tf.returnKeyType = .send
+        tf.layer.borderWidth = 1
+        tf.layer.borderColor = ColorConfig_Tidy.border_Tidy.cgColor
         return tf
     }()
     private let sendButton_tidy: UIButton = {
         let btn = UIButton(type: .custom)
         let cfg = UIImage.SymbolConfiguration(pointSize: 22, weight: .bold)
         btn.setImage(UIImage(systemName: "arrow.up.circle.fill", withConfiguration: cfg), for: .normal)
-        btn.tintColor = ColorConfig_Tidy.tidyMint_Tidy
+        btn.tintColor = ColorConfig_Tidy.primaryGradientStart_Tidy
+        btn.backgroundColor = UIColor(hexstring_Tidy: "#F4F7FF")
+        btn.layer.cornerRadius = 22
         return btn
     }()
 
@@ -240,14 +367,12 @@ class Detail_Tidy: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        print("触发1")
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
         view.endEditing(true)
-        print("触发2")
     }
 
     override func viewDidLayoutSubviews() {
@@ -265,7 +390,7 @@ class Detail_Tidy: UIViewController {
         // 使用不透明外观，避免内容被导航栏遮盖
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(hexstring_Tidy: "#38B2AC")
+        appearance.backgroundColor = ColorConfig_Tidy.tidyMintDeep_Tidy
         appearance.titleTextAttributes = [
             .foregroundColor: UIColor.white,
             .font: UIFont.systemFont(ofSize: 17, weight: .semibold)
@@ -344,8 +469,7 @@ class Detail_Tidy: UIViewController {
         contentView_tidy.addSubview(heroView_tidy)
         heroView_tidy.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            // 高度由内容自适应（分类徽章 + 标题 + 作者行）
-            make.height.greaterThanOrEqualTo(0)
+            make.height.equalTo(284)
         }
 
         [heroDeco1_tidy, heroDeco2_tidy, heroDeco3_tidy, heroDecoRing_tidy].forEach {
@@ -372,6 +496,13 @@ class Detail_Tidy: UIViewController {
             make.trailing.equalToSuperview().offset(-55)
         }
 
+        heroView_tidy.addSubview(heroKickerLabel_tidy)
+        heroKickerLabel_tidy.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(26)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.lessThanOrEqualToSuperview().offset(-20)
+        }
+
         // 分类徽章（顶部左侧，从 heroView.top 计算，不用 safeArea）
         categoryBadge_tidy.addSubview(categoryLabel_tidy)
         heroView_tidy.addSubview(categoryBadge_tidy)
@@ -379,15 +510,15 @@ class Detail_Tidy: UIViewController {
             make.edges.equalToSuperview().inset(UIEdgeInsets(top: 5, left: 12, bottom: 5, right: 12))
         }
         categoryBadge_tidy.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20)
+            make.top.equalTo(heroKickerLabel_tidy.snp.bottom).offset(10)
             make.leading.equalToSuperview().offset(20)
         }
 
-        // 帖子标题（紧跟分类徽章下方，消除空白间距）
+        // 帖子标题
         heroView_tidy.addSubview(postTitleLabel_tidy)
         postTitleLabel_tidy.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(20)
-            make.top.equalTo(categoryBadge_tidy.snp.bottom).offset(12)
+            make.top.equalTo(categoryBadge_tidy.snp.bottom).offset(14)
         }
 
         // 作者行：头像 | 名称 | [Follow] | [Like Count] [Like btn]
@@ -397,16 +528,15 @@ class Detail_Tidy: UIViewController {
         heroView_tidy.addSubview(likeCountLabel_tidy)
         heroView_tidy.addSubview(likeButton_tidy)
 
-        // 作者行紧跟标题，Hero 高度由此行撑出底部
         authorAvatarView_tidy.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
             make.top.equalTo(postTitleLabel_tidy.snp.bottom).offset(16)
-            make.width.height.equalTo(28)
-            make.bottom.equalToSuperview().offset(-20)
+            make.width.height.equalTo(30)
         }
         authorNameLabel_tidy.snp.makeConstraints { make in
             make.leading.equalTo(authorAvatarView_tidy.snp.trailing).offset(8)
             make.centerY.equalTo(authorAvatarView_tidy)
+            make.trailing.lessThanOrEqualTo(followButton_tidy.snp.leading).offset(-10)
         }
         followButton_tidy.snp.makeConstraints { make in
             make.leading.equalTo(authorNameLabel_tidy.snp.trailing).offset(10)
@@ -424,6 +554,36 @@ class Detail_Tidy: UIViewController {
             make.width.equalTo(80)
         }
 
+        heroView_tidy.addSubview(heroMetaPanel_tidy)
+        heroMetaPanel_tidy.addSubview(heroMetricStack_tidy)
+        setupHeroMetricCard_tidy(
+            card_tidy: heroLikesMetricCard_tidy,
+            valueLabel_tidy: heroLikesValueLabel_tidy,
+            titleLabel_tidy: heroLikesTitleLabel_tidy
+        )
+        setupHeroMetricCard_tidy(
+            card_tidy: heroCommentsMetricCard_tidy,
+            valueLabel_tidy: heroCommentsValueLabel_tidy,
+            titleLabel_tidy: heroCommentsTitleLabel_tidy
+        )
+        setupHeroMetricCard_tidy(
+            card_tidy: heroMediaMetricCard_tidy,
+            valueLabel_tidy: heroMediaValueLabel_tidy,
+            titleLabel_tidy: heroMediaTitleLabel_tidy
+        )
+        [heroLikesMetricCard_tidy, heroCommentsMetricCard_tidy, heroMediaMetricCard_tidy].forEach {
+            heroMetricStack_tidy.addArrangedSubview($0)
+        }
+        heroMetaPanel_tidy.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(20)
+            make.top.equalTo(authorAvatarView_tidy.snp.bottom).offset(14)
+            make.height.equalTo(66)
+            make.bottom.equalToSuperview().offset(-16)
+        }
+        heroMetricStack_tidy.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 9, left: 9, bottom: 9, right: 9))
+        }
+
         likeButton_tidy.addTarget(self, action: #selector(likeTapped_tidy), for: .touchUpInside)
         followButton_tidy.addTarget(self, action: #selector(followTapped_tidy), for: .touchUpInside)
     }
@@ -433,15 +593,33 @@ class Detail_Tidy: UIViewController {
     private func setupMediaSection_tidy() {
         contentView_tidy.addSubview(mediaSectionBg_tidy)
         mediaSectionBg_tidy.snp.makeConstraints { make in
-            make.top.equalTo(heroView_tidy.snp.bottom)
+            make.top.equalTo(heroView_tidy.snp.bottom).offset(-18)
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(220)
+            make.height.equalTo(286)
+        }
+        mediaSectionBg_tidy.addSubview(mediaSectionTitleLabel_tidy)
+        mediaSectionBg_tidy.addSubview(mediaSectionHintLabel_tidy)
+        mediaSectionBg_tidy.addSubview(mediaCountBadge_tidy)
+        mediaSectionTitleLabel_tidy.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(28)
+            make.leading.equalToSuperview().offset(20)
+        }
+        mediaSectionHintLabel_tidy.snp.makeConstraints { make in
+            make.leading.equalTo(mediaSectionTitleLabel_tidy)
+            make.top.equalTo(mediaSectionTitleLabel_tidy.snp.bottom).offset(4)
+            make.trailing.lessThanOrEqualTo(mediaCountBadge_tidy.snp.leading).offset(-10)
+        }
+        mediaCountBadge_tidy.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-20)
+            make.centerY.equalTo(mediaSectionTitleLabel_tidy)
+            make.height.equalTo(26)
+            make.width.greaterThanOrEqualTo(76)
         }
         mediaSectionBg_tidy.addSubview(mediaCollectionView_tidy)
         mediaCollectionView_tidy.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.centerY.equalToSuperview()
-            make.height.equalTo(190)
+            make.top.equalTo(mediaSectionHintLabel_tidy.snp.bottom).offset(18)
+            make.height.equalTo(188)
         }
         mediaCollectionView_tidy.register(
             DetailMediaCell_tidy.self,
@@ -456,13 +634,17 @@ class Detail_Tidy: UIViewController {
     private func setupContentCard_tidy() {
         contentView_tidy.addSubview(contentCard_tidy)
         contentCard_tidy.snp.makeConstraints { make in
-            make.top.equalTo(mediaSectionBg_tidy.snp.bottom).offset(16)
+            make.top.equalTo(mediaSectionBg_tidy.snp.bottom).offset(-6)
             make.leading.trailing.equalToSuperview().inset(16)
         }
         let dot = makeSectionDot_tidy()
-        let title = makeSectionTitle_tidy(text: "Details")
+        let title = makeSectionTitle_tidy(text: "Scene Notes")
         contentCard_tidy.addSubview(dot)
         contentCard_tidy.addSubview(title)
+        contentCard_tidy.addSubview(contentLeadBadge_tidy)
+        contentCard_tidy.addSubview(contentLeadHintLabel_tidy)
+        contentCard_tidy.addSubview(contentHighlightPanel_tidy)
+        contentHighlightPanel_tidy.addSubview(contentHighlightLabel_tidy)
         dot.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
             make.top.equalToSuperview().offset(22)
@@ -473,9 +655,24 @@ class Detail_Tidy: UIViewController {
             make.leading.equalTo(dot.snp.trailing).offset(8)
             make.centerY.equalTo(dot)
         }
+        contentLeadBadge_tidy.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-20)
+            make.centerY.equalTo(title)
+        }
+        contentLeadHintLabel_tidy.snp.makeConstraints { make in
+            make.top.equalTo(dot.snp.bottom).offset(10)
+            make.leading.trailing.equalToSuperview().inset(20)
+        }
+        contentHighlightPanel_tidy.snp.makeConstraints { make in
+            make.top.equalTo(contentLeadHintLabel_tidy.snp.bottom).offset(14)
+            make.leading.trailing.equalToSuperview().inset(20)
+        }
+        contentHighlightLabel_tidy.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 14, left: 14, bottom: 14, right: 14))
+        }
         contentCard_tidy.addSubview(contentBodyLabel_tidy)
         contentBodyLabel_tidy.snp.makeConstraints { make in
-            make.top.equalTo(dot.snp.bottom).offset(14)
+            make.top.equalTo(contentHighlightPanel_tidy.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalToSuperview().offset(-20)
         }
@@ -486,12 +683,14 @@ class Detail_Tidy: UIViewController {
     private func setupCommentsCard_tidy() {
         contentView_tidy.addSubview(commentsCard_tidy)
         commentsCard_tidy.snp.makeConstraints { make in
-            make.top.equalTo(contentCard_tidy.snp.bottom).offset(16)
+            make.top.equalTo(contentCard_tidy.snp.bottom).offset(14)
             make.leading.trailing.equalToSuperview().inset(16)
         }
         let dot2 = makeSectionDot_tidy()
         commentsCard_tidy.addSubview(dot2)
         commentsCard_tidy.addSubview(commentsTitleLabel_tidy)
+        commentsCard_tidy.addSubview(commentsCountBadge_tidy)
+        commentsCard_tidy.addSubview(commentsGuideLabel_tidy)
         dot2.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
             make.top.equalToSuperview().offset(22)
@@ -502,15 +701,25 @@ class Detail_Tidy: UIViewController {
             make.leading.equalTo(dot2.snp.trailing).offset(8)
             make.centerY.equalTo(dot2)
         }
+        commentsCountBadge_tidy.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-20)
+            make.centerY.equalTo(commentsTitleLabel_tidy)
+            make.height.equalTo(24)
+            make.width.greaterThanOrEqualTo(44)
+        }
+        commentsGuideLabel_tidy.snp.makeConstraints { make in
+            make.top.equalTo(dot2.snp.bottom).offset(10)
+            make.leading.trailing.equalToSuperview().inset(20)
+        }
         commentsCard_tidy.addSubview(emptyCommentLabel_tidy)
         emptyCommentLabel_tidy.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(20)
-            make.top.equalTo(dot2.snp.bottom).offset(24)
+            make.top.equalTo(commentsGuideLabel_tidy.snp.bottom).offset(22)
             make.height.equalTo(44)
         }
         commentsCard_tidy.addSubview(commentsStack_tidy)
         commentsStack_tidy.snp.makeConstraints { make in
-            make.top.equalTo(dot2.snp.bottom).offset(12)
+            make.top.equalTo(commentsGuideLabel_tidy.snp.bottom).offset(14)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview().offset(-12)
         }
@@ -521,14 +730,16 @@ class Detail_Tidy: UIViewController {
     private func setupCommentInputCard_tidy() {
         contentView_tidy.addSubview(commentInputCard_tidy)
         commentInputCard_tidy.snp.makeConstraints { make in
-            make.top.equalTo(commentsCard_tidy.snp.bottom).offset(16)
+            make.top.equalTo(commentsCard_tidy.snp.bottom).offset(14)
             make.leading.trailing.equalToSuperview().inset(16)
             make.bottom.equalToSuperview().offset(-24)
         }
         let dot3 = makeSectionDot_tidy()
-        let inputTitle = makeSectionTitle_tidy(text: "Add Comment")
+        let inputTitle = makeSectionTitle_tidy(text: "Add Your View")
         commentInputCard_tidy.addSubview(dot3)
         commentInputCard_tidy.addSubview(inputTitle)
+        commentInputCard_tidy.addSubview(inputTipsBadge_tidy)
+        commentInputCard_tidy.addSubview(inputGuideLabel_tidy)
         dot3.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
             make.top.equalToSuperview().offset(22)
@@ -539,19 +750,27 @@ class Detail_Tidy: UIViewController {
             make.leading.equalTo(dot3.snp.trailing).offset(8)
             make.centerY.equalTo(dot3)
         }
+        inputTipsBadge_tidy.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-20)
+            make.centerY.equalTo(inputTitle)
+        }
+        inputGuideLabel_tidy.snp.makeConstraints { make in
+            make.top.equalTo(dot3.snp.bottom).offset(10)
+            make.leading.trailing.equalToSuperview().inset(20)
+        }
         commentInputCard_tidy.addSubview(commentTextField_tidy)
         commentInputCard_tidy.addSubview(sendButton_tidy)
         sendButton_tidy.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-16)
-            make.top.equalTo(dot3.snp.bottom).offset(14)
-            make.width.height.equalTo(40)
-            make.bottom.equalToSuperview().offset(-18)
+            make.top.equalTo(inputGuideLabel_tidy.snp.bottom).offset(16)
+            make.width.height.equalTo(44)
+            make.bottom.equalToSuperview().offset(-20)
         }
         commentTextField_tidy.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
             make.trailing.equalTo(sendButton_tidy.snp.leading).offset(-10)
             make.centerY.equalTo(sendButton_tidy)
-            make.height.equalTo(40)
+            make.height.equalTo(44)
         }
         commentTextField_tidy.delegate = self
         sendButton_tidy.addTarget(self, action: #selector(sendComment_tidy), for: .touchUpInside)
@@ -571,11 +790,19 @@ class Detail_Tidy: UIViewController {
         likeCountLabel_tidy.text = "\(post.likes_Tidy)"
         likeButton_tidy.isSelected = TitleViewModel_Tidy.shared_Tidy
             .isLikedPost_Tidy(post_tidy: post)
+        heroLikesValueLabel_tidy.text = "\(post.likes_Tidy)"
+        heroLikesTitleLabel_tidy.text = "Likes"
+        heroCommentsValueLabel_tidy.text = "\(post.reviews_Tidy.count)"
+        heroCommentsTitleLabel_tidy.text = "Comments"
+        heroMediaValueLabel_tidy.text = "\(post.titleMeidas_Tidy.count)"
+        heroMediaTitleLabel_tidy.text = "Frames"
+        mediaCountBadge_tidy.text = " \(post.titleMeidas_Tidy.count) items "
+        contentHighlightLabel_tidy.text = makeContentHighlightText_tidy(post: post)
 
         let hasMedia = !post.titleMeidas_Tidy.isEmpty
         mediaSectionBg_tidy.isHidden = !hasMedia
-        if !hasMedia {
-            mediaSectionBg_tidy.snp.updateConstraints { make in make.height.equalTo(0) }
+        mediaSectionBg_tidy.snp.updateConstraints { make in
+            make.height.equalTo(hasMedia ? 286 : 0)
         }
         mediaCollectionView_tidy.reloadData()
         refreshComments_tidy(post: post)
@@ -592,6 +819,16 @@ class Detail_Tidy: UIViewController {
         likeCountLabel_tidy.text = "\(post.likes_Tidy)"
         likeButton_tidy.isSelected = TitleViewModel_Tidy.shared_Tidy
             .isLikedPost_Tidy(post_tidy: post)
+        heroLikesValueLabel_tidy.text = "\(post.likes_Tidy)"
+        heroCommentsValueLabel_tidy.text = "\(post.reviews_Tidy.count)"
+        heroMediaValueLabel_tidy.text = "\(post.titleMeidas_Tidy.count)"
+        mediaCountBadge_tidy.text = " \(post.titleMeidas_Tidy.count) items "
+        contentHighlightLabel_tidy.text = makeContentHighlightText_tidy(post: post)
+        let hasMedia = !post.titleMeidas_Tidy.isEmpty
+        mediaSectionBg_tidy.isHidden = !hasMedia
+        mediaSectionBg_tidy.snp.updateConstraints { make in
+            make.height.equalTo(hasMedia ? 286 : 0)
+        }
         refreshComments_tidy(post: post)
         refreshFollowButton_tidy(post: post)
         refreshMoreButton_tidy()
@@ -637,6 +874,7 @@ class Detail_Tidy: UIViewController {
             )
         }
         commentsTitleLabel_tidy.text = "Comments (\(comments.count))"
+        commentsCountBadge_tidy.text = " \(comments.count) "
         emptyCommentLabel_tidy.isHidden = !comments.isEmpty
         comments.enumerated().forEach { idx, comment in
             let row = buildCommentRow_tidy(
@@ -653,7 +891,17 @@ class Detail_Tidy: UIViewController {
         isLast: Bool
     ) -> UIView {
         let container = UIView()
-        container.backgroundColor = .white
+        container.backgroundColor = .clear
+
+        let bubble = UIView()
+        bubble.backgroundColor = UIColor(hexstring_Tidy: "#F8FAFF")
+        bubble.layer.cornerRadius = 18
+        container.addSubview(bubble)
+        bubble.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(8)
+            make.leading.trailing.equalToSuperview().inset(14)
+            make.bottom.equalToSuperview().offset(isLast ? -4 : -10)
+        }
 
         if !isLast {
             let divider = UIView()
@@ -669,9 +917,9 @@ class Detail_Tidy: UIViewController {
 
         let avatarView = UserAvatarView_Tidy()
         avatarView.configure_Tidy(userId_Tidy: comment.commentUserId_Tidy)
-        container.addSubview(avatarView)
+        bubble.addSubview(avatarView)
         avatarView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(20)
+            make.leading.equalToSuperview().offset(14)
             make.top.equalToSuperview().offset(14)
             make.width.height.equalTo(34)
         }
@@ -684,9 +932,9 @@ class Detail_Tidy: UIViewController {
         reportBtn.setImage(UIImage(systemName: isMyComment ? "trash" : "ellipsis",
                                   withConfiguration: iconCfg), for: .normal)
         reportBtn.tintColor = ColorConfig_Tidy.textPlaceholder_Tidy
-        container.addSubview(reportBtn)
+        bubble.addSubview(reportBtn)
         reportBtn.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-16)
+            make.trailing.equalToSuperview().offset(-12)
             make.top.equalToSuperview().offset(14)
             make.width.height.equalTo(28)
         }
@@ -695,11 +943,27 @@ class Detail_Tidy: UIViewController {
         nameLabel.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
         nameLabel.textColor = ColorConfig_Tidy.textPrimary_Tidy
         nameLabel.text = comment.commentUserName_Tidy
-        container.addSubview(nameLabel)
+        bubble.addSubview(nameLabel)
         nameLabel.snp.makeConstraints { make in
             make.leading.equalTo(avatarView.snp.trailing).offset(10)
             make.top.equalTo(avatarView)
             make.trailing.equalTo(reportBtn.snp.leading).offset(-4)
+        }
+
+        let roleBadge = UILabel()
+        roleBadge.font = UIFont.systemFont(ofSize: 10, weight: .bold)
+        roleBadge.textColor = isMyComment ? .white : ColorConfig_Tidy.tidyMintDeep_Tidy
+        roleBadge.backgroundColor = isMyComment ? ColorConfig_Tidy.primaryGradientStart_Tidy : UIColor.white
+        roleBadge.textAlignment = .center
+        roleBadge.layer.cornerRadius = 9
+        roleBadge.clipsToBounds = true
+        roleBadge.text = isMyComment ? " YOU " : " VIEW "
+        bubble.addSubview(roleBadge)
+        roleBadge.snp.makeConstraints { make in
+            make.leading.equalTo(nameLabel)
+            make.top.equalTo(nameLabel.snp.bottom).offset(4)
+            make.height.equalTo(18)
+            make.width.greaterThanOrEqualTo(44)
         }
 
         let contentLabel = UILabel()
@@ -708,11 +972,11 @@ class Detail_Tidy: UIViewController {
         contentLabel.numberOfLines = 0
         contentLabel.lineBreakMode = .byWordWrapping
         contentLabel.text = comment.commentContent_Tidy
-        container.addSubview(contentLabel)
+        bubble.addSubview(contentLabel)
         contentLabel.snp.makeConstraints { make in
             make.leading.equalTo(nameLabel)
-            make.top.equalTo(nameLabel.snp.bottom).offset(4)
-            make.trailing.equalToSuperview().offset(-20)
+            make.top.equalTo(roleBadge.snp.bottom).offset(8)
+            make.trailing.equalToSuperview().offset(-14)
             make.bottom.equalToSuperview().offset(-14)
         }
 
@@ -786,6 +1050,57 @@ class Detail_Tidy: UIViewController {
 
     // MARK: - 工具方法
 
+    /// 配置 Hero 区的统计卡片样式
+    /// 参数：
+    /// - card_tidy: 统计卡片容器
+    /// - valueLabel_tidy: 数值标签
+    /// - titleLabel_tidy: 标题标签
+    /// 返回值：无
+    private func setupHeroMetricCard_tidy(card_tidy: UIView,
+                                          valueLabel_tidy: UILabel,
+                                          titleLabel_tidy: UILabel) {
+        card_tidy.backgroundColor = UIColor.white.withAlphaComponent(0.12)
+        card_tidy.layer.cornerRadius = 15
+        card_tidy.layer.borderWidth = 1
+        card_tidy.layer.borderColor = UIColor.white.withAlphaComponent(0.12).cgColor
+
+        valueLabel_tidy.font = UIFont.systemFont(ofSize: 17, weight: .heavy)
+        valueLabel_tidy.textColor = .white
+        valueLabel_tidy.textAlignment = .center
+
+        titleLabel_tidy.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
+        titleLabel_tidy.textColor = UIColor.white.withAlphaComponent(0.72)
+        titleLabel_tidy.textAlignment = .center
+
+        card_tidy.addSubview(valueLabel_tidy)
+        card_tidy.addSubview(titleLabel_tidy)
+        valueLabel_tidy.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(8)
+        }
+        titleLabel_tidy.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(6)
+            make.top.equalTo(valueLabel_tidy.snp.bottom).offset(2)
+        }
+    }
+
+    /// 生成正文卡片中的高亮摘要文案
+    /// 参数：
+    /// - post: 当前帖子模型
+    /// 返回值：用于展示的高亮摘要文本
+    private func makeContentHighlightText_tidy(post: TitleModel_Tidy) -> String {
+        let title_tidy = post.title_Tidy.trimmingCharacters(in: .whitespacesAndNewlines)
+        let content_tidy = post.titleContent_Tidy.trimmingCharacters(in: .whitespacesAndNewlines)
+        if content_tidy.isEmpty {
+            return "\"Save this setup and revisit it when you need a quick photo-ready idea.\""
+        }
+        let prefix_tidy = String(content_tidy.prefix(90))
+        if prefix_tidy.count < content_tidy.count {
+            return "\"\(prefix_tidy)...\""
+        }
+        return "\"\(title_tidy.isEmpty ? prefix_tidy : title_tidy)\""
+    }
+
     private func makeSectionDot_tidy() -> UIView {
         let v = UIView()
         v.backgroundColor = ColorConfig_Tidy.tidyMint_Tidy
@@ -803,14 +1118,14 @@ class Detail_Tidy: UIViewController {
 
     private func categoryDisplayName_tidy(_ id: String) -> String {
         switch id {
-        case "living_room": return "Living Room"
-        case "bedroom":     return "Bedroom"
-        case "kitchen":     return "Kitchen"
-        case "bathroom":    return "Bathroom"
-        case "study":       return "Study"
-        case "storage":     return "Storage"
-        case "garden":      return "Garden"
-        default:            return "Home"
+        case "living_room": return "Lighting"
+        case "bedroom":     return "Pose"
+        case "kitchen":     return "Composition"
+        case "bathroom":    return "Outfit"
+        case "study":       return "Location"
+        case "storage":     return "Editing"
+        case "garden":      return "Gear"
+        default:            return "Photo"
         }
     }
 

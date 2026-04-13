@@ -39,6 +39,24 @@ class Discover_Tidy: UIViewController {
     private var searchDebounceTimer_Tidy: Timer?
     private var sortByLikes_Tidy = false
     private var tabBundles_Tidy: [TabBundle_Tidy] = []
+    private let pageScrollView_Tidy: UIScrollView = {
+        let sv = UIScrollView()
+        sv.showsVerticalScrollIndicator = false
+        sv.alwaysBounceVertical = true
+        sv.contentInsetAdjustmentBehavior = .never
+        return sv
+    }()
+    private let pageContentView_Tidy = UIView()
+    private var postsCollectionHeightConstraint_Tidy: Constraint?
+    private let postsGridSectionView_Tidy = UIView()
+    private let postsRowsStackView_Tidy: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.spacing = 14
+        sv.alignment = .fill
+        sv.distribution = .fill
+        return sv
+    }()
 
     // MARK: - Header（渐变 + 装饰圆 + 标题 + 统计徽章 + 过滤按钮）
 
@@ -104,7 +122,7 @@ class Discover_Tidy: UIViewController {
     // --- 标题 ---
     private let pageTitleLabel_Tidy: UILabel = {
         let lb = UILabel()
-        lb.text = "Discover"
+        lb.text = "Shot Lab"
         lb.font = UIFont.systemFont(ofSize: 32, weight: .heavy)
         lb.textColor = .white
         return lb
@@ -114,13 +132,59 @@ class Discover_Tidy: UIViewController {
         let lb = UILabel()
         lb.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         lb.textColor = UIColor.white.withAlphaComponent(0.75)
+        lb.numberOfLines = 2
         return lb
     }()
 
     // --- 统计徽章容器（帖子数量 · 分类数量） ---
     private let statsRowView_Tidy: UIView = {
-        UIView()
+        let v = UIView()
+        return v
     }()
+    /// 头部右侧预览卡，强化“摄影实验室”氛围
+    private let headerPreviewCard_Tidy: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor.white.withAlphaComponent(0.14)
+        v.layer.cornerRadius = 22
+        v.layer.borderWidth = 1
+        v.layer.borderColor = UIColor.white.withAlphaComponent(0.22).cgColor
+        return v
+    }()
+    private let headerPreviewBadge_Tidy: UILabel = {
+        let lb = UILabel()
+        lb.text = "CURATED"
+        lb.font = UIFont.systemFont(ofSize: 9, weight: .bold)
+        lb.textColor = .white
+        lb.textAlignment = .center
+        lb.backgroundColor = UIColor.black.withAlphaComponent(0.16)
+        lb.layer.cornerRadius = 8
+        lb.clipsToBounds = true
+        return lb
+    }()
+    private let headerPreviewTitleLabel_Tidy: UILabel = {
+        let lb = UILabel()
+        lb.text = "Light + Pose"
+        lb.font = UIFont.systemFont(ofSize: 14, weight: .heavy)
+        lb.textColor = .white
+        return lb
+    }()
+    private let headerPreviewSubtitleLabel_Tidy: UILabel = {
+        let lb = UILabel()
+        lb.text = "Find frames worth saving"
+        lb.font = UIFont.systemFont(ofSize: 10, weight: .medium)
+        lb.textColor = UIColor.white.withAlphaComponent(0.78)
+        lb.numberOfLines = 2
+        return lb
+    }()
+    private let statFramesCard_Tidy = UIView()
+    private let statCategoriesCard_Tidy = UIView()
+    private let statFramesValueLabel_Tidy = UILabel()
+    private let statFramesTitleLabel_Tidy = UILabel()
+    private let statCategoriesValueLabel_Tidy = UILabel()
+    private let statCategoriesTitleLabel_Tidy = UILabel()
+    private let statSortValueLabel_Tidy = UILabel()
+    private let statSortTitleLabel_Tidy = UILabel()
+    private let statSortCard_Tidy = UIView()
 
     // --- 过滤/排序按钮 ---
     private let filterButton_Tidy: UIButton = {
@@ -144,7 +208,7 @@ class Discover_Tidy: UIViewController {
         let v = UIView()
         v.backgroundColor = .white
         v.layer.cornerRadius = 18
-        v.layer.shadowColor  = UIColor(hexstring_Tidy: "#38B2AC").withAlphaComponent(0.22).cgColor
+        v.layer.shadowColor  = ColorConfig_Tidy.tidyMintDeep_Tidy.withAlphaComponent(0.22).cgColor
         v.layer.shadowOffset = CGSize(width: 0, height: 8)
         v.layer.shadowRadius = 18
         v.layer.shadowOpacity = 1
@@ -160,12 +224,19 @@ class Discover_Tidy: UIViewController {
     }()
     private let searchTextField_Tidy: UITextField = {
         let tf = UITextField()
-        tf.placeholder = "Search rooms, tips, items..."
+        tf.placeholder = "Search lighting, pose, edits..."
         tf.font = UIFont.systemFont(ofSize: 14, weight: .regular)
         tf.textColor = ColorConfig_Tidy.textPrimary_Tidy
         tf.returnKeyType = .search
         tf.clearButtonMode = .whileEditing
         return tf
+    }()
+    private let searchHintLabel_Tidy: UILabel = {
+        let lb = UILabel()
+        lb.text = "CONTROL CENTER"
+        lb.font = UIFont.systemFont(ofSize: 10, weight: .bold)
+        lb.textColor = ColorConfig_Tidy.primaryGradientStart_Tidy
+        return lb
     }()
 
     // MARK: - 分类图标圆圈 Tab 栏
@@ -182,7 +253,7 @@ class Discover_Tidy: UIViewController {
         let sv = UIScrollView()
         sv.showsHorizontalScrollIndicator = false
         sv.backgroundColor = .clear
-        sv.clipsToBounds = false
+        sv.clipsToBounds = true
         return sv
     }()
 
@@ -190,7 +261,7 @@ class Discover_Tidy: UIViewController {
     private let tabStackView_Tidy: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
-        sv.spacing = 0
+        sv.spacing = 4
         sv.alignment = .center
         sv.distribution = .fill   // 每个 item 有固定宽度，fill 不强制均分
         return sv
@@ -239,6 +310,18 @@ class Discover_Tidy: UIViewController {
         lb.textColor = ColorConfig_Tidy.textSecondary_Tidy
         return lb
     }()
+    private let resultModeBadge_Tidy: UILabel = {
+        let lb = UILabel()
+        lb.font = UIFont.systemFont(ofSize: 10, weight: .bold)
+        lb.textAlignment = .center
+        lb.textColor = ColorConfig_Tidy.primaryGradientStart_Tidy
+        lb.backgroundColor = UIColor.white
+        lb.layer.cornerRadius = 10
+        lb.layer.borderWidth = 1
+        lb.layer.borderColor = ColorConfig_Tidy.primaryGradientStart_Tidy.withAlphaComponent(0.12).cgColor
+        lb.clipsToBounds = true
+        return lb
+    }()
 
     // MARK: - 帖子网格
     private var postsCollectionView_Tidy: UICollectionView!
@@ -269,7 +352,7 @@ class Discover_Tidy: UIViewController {
     }()
     private let emptySubLabel_Tidy: UILabel = {
         let lb = UILabel()
-        lb.text = "Try another keyword or category"
+        lb.text = "Try another shooting keyword or category"
         lb.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         lb.textColor = ColorConfig_Tidy.textPlaceholder_Tidy
         lb.textAlignment = .center
@@ -293,6 +376,7 @@ class Discover_Tidy: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = ColorConfig_Tidy.backgroundPrimary_Tidy
         loadCategories_Tidy()
+        setupPageScrollContainer_Tidy()
         // 搭建顺序决定 z-order，越晚添加越在上层
         buildPostsGrid_Tidy()
         buildEmptyState_Tidy()
@@ -319,6 +403,7 @@ class Discover_Tidy: UIViewController {
         tabBundles_Tidy.forEach { bundle in
             bundle.circleGrad?.frame = bundle.circleBg.bounds
         }
+        updatePostsCollectionHeight_Tidy()
     }
 
     // MARK: - 数据加载
@@ -376,47 +461,43 @@ class Discover_Tidy: UIViewController {
 
     // MARK: - UI 搭建
 
+    /// 搭建内容滚动容器
+    /// 功能：固定顶部头图与搜索卡，仅让下方内容层独立滚动
+    /// 参数：无
+    /// 返回值：无
+    private func setupPageScrollContainer_Tidy() {
+        view.addSubview(pageScrollView_Tidy)
+        pageScrollView_Tidy.addSubview(pageContentView_Tidy)
+
+        let refresh_Tidy = UIRefreshControl()
+        refresh_Tidy.tintColor = ColorConfig_Tidy.tidyMint_Tidy
+        refresh_Tidy.addTarget(self, action: #selector(onPullRefresh_Tidy(_:)), for: .valueChanged)
+        pageScrollView_Tidy.refreshControl = refresh_Tidy
+
+        pageScrollView_Tidy.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+        pageContentView_Tidy.snp.makeConstraints { make in
+            make.edges.equalTo(pageScrollView_Tidy.contentLayoutGuide)
+            make.width.equalTo(pageScrollView_Tidy.frameLayoutGuide)
+        }
+    }
+
     /// 搭建帖子双列网格（最底层）
     private func buildPostsGrid_Tidy() {
-        let w = (UIScreen.main.bounds.width - 16 * 2 - 12) / 2
-        let item = NSCollectionLayoutItem(
-            layoutSize: .init(widthDimension: .absolute(w), heightDimension: .estimated(220))
-        )
-        let group = NSCollectionLayoutGroup.horizontal(
-            layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(220)),
-            subitems: [item, item]
-        )
-        group.interItemSpacing = .fixed(12)
-        let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = .init(top: 12, leading: 16, bottom: 120, trailing: 16)
-        section.interGroupSpacing = 14
+        pageContentView_Tidy.addSubview(postsGridSectionView_Tidy)
+        postsGridSectionView_Tidy.addSubview(postsRowsStackView_Tidy)
 
-        postsCollectionView_Tidy = UICollectionView(
-            frame: .zero,
-            collectionViewLayout: UICollectionViewCompositionalLayout(section: section)
-        )
-        postsCollectionView_Tidy.backgroundColor = ColorConfig_Tidy.backgroundPrimary_Tidy
-        postsCollectionView_Tidy.showsVerticalScrollIndicator = false
-        postsCollectionView_Tidy.contentInsetAdjustmentBehavior = .never
-        postsCollectionView_Tidy.register(PostCardCell_Tidy.self, forCellWithReuseIdentifier: "PostCard")
-        postsCollectionView_Tidy.dataSource = self
-        postsCollectionView_Tidy.delegate   = self
-
-        let refresh = UIRefreshControl()
-        refresh.tintColor = ColorConfig_Tidy.tidyMint_Tidy
-        refresh.addTarget(self, action: #selector(onPullRefresh_Tidy(_:)), for: .valueChanged)
-        postsCollectionView_Tidy.refreshControl = refresh
-
-        view.addSubview(postsCollectionView_Tidy)
-        postsCollectionView_Tidy.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalToSuperview()
+        postsRowsStackView_Tidy.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(12)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-120)
         }
     }
 
     /// 搭建空状态视图
     private func buildEmptyState_Tidy() {
-        view.addSubview(emptyStateView_Tidy)
+        pageContentView_Tidy.addSubview(emptyStateView_Tidy)
         emptyStateView_Tidy.addSubview(emptyBgCircle_Tidy)
         emptyStateView_Tidy.addSubview(emptyIconView_Tidy)
         emptyStateView_Tidy.addSubview(emptyTitleLabel_Tidy)
@@ -425,7 +506,7 @@ class Discover_Tidy: UIViewController {
 
         emptyStateView_Tidy.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.centerY.equalTo(postsCollectionView_Tidy).offset(40)
+            make.centerY.equalTo(postsGridSectionView_Tidy).offset(40)
             make.width.equalToSuperview().multipliedBy(0.72)
         }
         emptyBgCircle_Tidy.snp.makeConstraints { make in
@@ -458,18 +539,26 @@ class Discover_Tidy: UIViewController {
         resultCard_Tidy.addSubview(resultCategoryLabel_Tidy)
         resultCard_Tidy.addSubview(resultCountLabel_Tidy)
         resultStrip_Tidy.addSubview(resultCard_Tidy)
+        resultStrip_Tidy.addSubview(resultModeBadge_Tidy)
 
-        view.addSubview(resultStrip_Tidy)
+        pageContentView_Tidy.addSubview(resultStrip_Tidy)
 
         resultCard_Tidy.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
             make.centerY.equalToSuperview()
+            make.height.equalTo(34)
+            make.trailing.lessThanOrEqualTo(resultModeBadge_Tidy.snp.leading).offset(-10)
+        }
+        resultModeBadge_Tidy.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-16)
+            make.centerY.equalToSuperview()
             make.height.equalTo(28)
+            make.width.greaterThanOrEqualTo(88)
         }
         resultDot_Tidy.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(10)
             make.centerY.equalToSuperview()
-            make.width.height.equalTo(8)
+            make.width.height.equalTo(10)
         }
         resultCategoryLabel_Tidy.snp.makeConstraints { make in
             make.leading.equalTo(resultDot_Tidy.snp.trailing).offset(6)
@@ -483,53 +572,63 @@ class Discover_Tidy: UIViewController {
         // top 约束在 buildCategoryIconTabs 里设置
         resultStrip_Tidy.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(42)
+            make.height.equalTo(52)
         }
     }
 
     /// 搭建分类图标圆圈 Tab 栏
     private func buildCategoryIconTabs_Tidy() {
-        view.addSubview(tabAreaBg_Tidy)
+        pageContentView_Tidy.addSubview(tabAreaBg_Tidy)
         tabAreaBg_Tidy.addSubview(tabScrollView_Tidy)
         tabAreaBg_Tidy.addSubview(tabDivider_Tidy)
         tabScrollView_Tidy.addSubview(tabStackView_Tidy)
+
+        tabAreaBg_Tidy.layer.cornerRadius = 24
+        tabAreaBg_Tidy.layer.shadowColor = UIColor.black.withAlphaComponent(0.08).cgColor
+        tabAreaBg_Tidy.layer.shadowOffset = CGSize(width: 0, height: 12)
+        tabAreaBg_Tidy.layer.shadowRadius = 22
+        tabAreaBg_Tidy.layer.shadowOpacity = 1
 
         // 创建每个分类的图标 Tab 项
         createTabItems_Tidy()
 
         tabAreaBg_Tidy.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.height.equalTo(92)   // 圆圈 48 + 文字 14 + 上下各 15
+            make.leading.equalToSuperview().offset(12)
+            make.trailing.equalToSuperview().offset(-12)
+            make.height.equalTo(84)
         }
         tabScrollView_Tidy.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview()
+            make.top.equalToSuperview().offset(6)
+            make.bottom.equalToSuperview().offset(-6)
+            make.leading.equalToSuperview().offset(8)
+            make.trailing.equalToSuperview().offset(-8)
         }
         tabDivider_Tidy.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+            make.bottom.equalToSuperview().offset(-1)
             make.height.equalTo(1)
         }
 
-        // StackView 必须同时约束四边才能让 UIScrollView 正确计算 contentSize
-        // height 固定到 scrollView frame 高度以禁止垂直滚动
+        // 使用内容布局导向约束横向内容，避免标签宽度超出时从两侧溢出显示
         tabStackView_Tidy.snp.makeConstraints { make in
-            make.top.bottom.leading.trailing.equalToSuperview()
-            make.height.equalTo(tabScrollView_Tidy.snp.height)
+            make.edges.equalTo(tabScrollView_Tidy.contentLayoutGuide)
+            make.height.equalTo(tabScrollView_Tidy.frameLayoutGuide)
         }
 
         // 结果摘要条紧贴 Tab 区下方
         resultStrip_Tidy.snp.makeConstraints { make in
-            make.top.equalTo(tabAreaBg_Tidy.snp.bottom)
+            make.top.equalTo(tabAreaBg_Tidy.snp.bottom).offset(6)
         }
         // 更新帖子网格 top = resultStrip.bottom（稍后在 buildSearchCard 中设置最终约束）
-        postsCollectionView_Tidy.snp.remakeConstraints { make in
+        postsGridSectionView_Tidy.snp.remakeConstraints { make in
             make.top.equalTo(resultStrip_Tidy.snp.bottom)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }
         emptyStateView_Tidy.snp.remakeConstraints { make in
             make.centerX.equalToSuperview()
-            make.centerY.equalTo(postsCollectionView_Tidy).offset(30)
+            make.centerY.equalTo(postsGridSectionView_Tidy).offset(20)
             make.width.equalToSuperview().multipliedBy(0.72)
         }
     }
@@ -543,11 +642,11 @@ class Discover_Tidy: UIViewController {
             let container = UIView()
             container.isUserInteractionEnabled = true
 
-            // 圆形背景
+            // 胶片标签底板
             let circleBg = UIView()
-            circleBg.layer.cornerRadius = 24
-            circleBg.clipsToBounds = true
-            circleBg.backgroundColor = UIColor(hexstring_Tidy: "#F1F5F9")
+            circleBg.layer.cornerRadius = 22
+            circleBg.clipsToBounds = false
+            circleBg.backgroundColor = UIColor(hexstring_Tidy: "#EEF2FF")
 
             // 图标
             let iconView = UIImageView()
@@ -559,7 +658,7 @@ class Discover_Tidy: UIViewController {
             // 分类名称
             let nameLabel = UILabel()
             nameLabel.text = cat.name_Tidy
-            nameLabel.font = UIFont.systemFont(ofSize: 10, weight: .medium)
+            nameLabel.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
             nameLabel.textColor = ColorConfig_Tidy.textSecondary_Tidy
             nameLabel.textAlignment = .center
             nameLabel.adjustsFontSizeToFitWidth = true
@@ -570,20 +669,25 @@ class Discover_Tidy: UIViewController {
             container.addSubview(nameLabel)
 
             circleBg.snp.makeConstraints { make in
-                make.centerX.equalToSuperview()
-                make.top.equalToSuperview().offset(10)
-                make.width.height.equalTo(48)
+                make.leading.trailing.equalToSuperview()
+                make.top.equalToSuperview().offset(8)
+                make.height.equalTo(48)
             }
             iconView.snp.makeConstraints { make in
-                make.center.equalTo(circleBg)
-                make.width.height.equalTo(20)
+                make.leading.equalTo(circleBg).offset(12)
+                make.centerY.equalTo(circleBg)
+                make.width.height.equalTo(18)
             }
             nameLabel.snp.makeConstraints { make in
-                make.top.equalTo(circleBg.snp.bottom).offset(5)
-                make.leading.trailing.equalToSuperview().inset(2)
-                make.bottom.lessThanOrEqualToSuperview().offset(-8)
+                make.leading.equalTo(iconView.snp.trailing).offset(8)
+                make.trailing.equalTo(circleBg).offset(-12)
+                make.centerY.equalTo(circleBg)
             }
-            container.snp.makeConstraints { make in make.width.equalTo(72) }
+            let itemWidth_tidy = cat.id_Tidy == "all" ? 88 : 132
+            container.snp.makeConstraints { make in
+                make.width.equalTo(itemWidth_tidy)
+                make.height.equalTo(66)
+            }
 
             // 绑定点击手势，用 tag 标记 index
             let tap = UITapGestureRecognizer(target: self,
@@ -623,12 +727,12 @@ class Discover_Tidy: UIViewController {
             make.top.leading.trailing.equalToSuperview()
         }
 
-        // 多色斜向渐变：薄荷绿 → 深蓝绿 → 微紫蓝（增加层次感和品牌辨识度）
+        // 多色斜向渐变：镜头蓝 → 深夜蓝 → 暮光紫（增强摄影氛围）
         let grad = CAGradientLayer()
         grad.colors = [
-            UIColor(hexstring_Tidy: "#4ECDC4").cgColor,
-            UIColor(hexstring_Tidy: "#2C9E96").cgColor,
-            UIColor(hexstring_Tidy: "#2D7DD2").cgColor
+            ColorConfig_Tidy.tidyMint_Tidy.cgColor,
+            ColorConfig_Tidy.tidyMintDeep_Tidy.cgColor,
+            ColorConfig_Tidy.primaryGradientStart_Tidy.cgColor
         ]
         grad.locations = [0.0, 0.58, 1.0]
         grad.startPoint = CGPoint(x: 0.0, y: 0.0)
@@ -671,24 +775,83 @@ class Discover_Tidy: UIViewController {
         // 标题区
         headerView_Tidy.addSubview(pageTitleLabel_Tidy)
         headerView_Tidy.addSubview(pageSubtitleLabel_Tidy)
-        headerView_Tidy.addSubview(filterButton_Tidy)
+        headerView_Tidy.addSubview(headerPreviewCard_Tidy)
+        headerView_Tidy.addSubview(statsRowView_Tidy)
+
+        headerPreviewCard_Tidy.addSubview(headerPreviewBadge_Tidy)
+        headerPreviewCard_Tidy.addSubview(headerPreviewTitleLabel_Tidy)
+        headerPreviewCard_Tidy.addSubview(headerPreviewSubtitleLabel_Tidy)
+
+        [statFramesCard_Tidy, statCategoriesCard_Tidy, statSortCard_Tidy].forEach {
+            statsRowView_Tidy.addSubview($0)
+        }
+        setupHeaderStatCard_Tidy(
+            card_Tidy: statFramesCard_Tidy,
+            valueLabel_Tidy: statFramesValueLabel_Tidy,
+            titleLabel_Tidy: statFramesTitleLabel_Tidy
+        )
+        setupHeaderStatCard_Tidy(
+            card_Tidy: statCategoriesCard_Tidy,
+            valueLabel_Tidy: statCategoriesValueLabel_Tidy,
+            titleLabel_Tidy: statCategoriesTitleLabel_Tidy
+        )
+        setupHeaderStatCard_Tidy(
+            card_Tidy: statSortCard_Tidy,
+            valueLabel_Tidy: statSortValueLabel_Tidy,
+            titleLabel_Tidy: statSortTitleLabel_Tidy
+        )
 
         pageTitleLabel_Tidy.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(18)
+            make.trailing.lessThanOrEqualTo(headerPreviewCard_Tidy.snp.leading).offset(-12)
         }
         pageSubtitleLabel_Tidy.snp.makeConstraints { make in
             make.leading.equalTo(pageTitleLabel_Tidy)
-            make.top.equalTo(pageTitleLabel_Tidy.snp.bottom).offset(3)
-            // 底部留出空间让搜索卡片居中对齐 header 底边，约 30pt
-            make.bottom.equalToSuperview().offset(-30)
+            make.top.equalTo(pageTitleLabel_Tidy.snp.bottom).offset(6)
+            make.trailing.lessThanOrEqualTo(headerPreviewCard_Tidy.snp.leading).offset(-12)
         }
-        filterButton_Tidy.snp.makeConstraints { make in
+        headerPreviewCard_Tidy.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-18)
-            make.centerY.equalTo(pageTitleLabel_Tidy)
-            make.width.height.equalTo(38)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
+            make.width.equalTo(146)
+            make.height.equalTo(104)
         }
-        filterButton_Tidy.addTarget(self, action: #selector(onFilterTapped_Tidy), for: .touchUpInside)
+        headerPreviewBadge_Tidy.snp.makeConstraints { make in
+            make.leading.top.equalToSuperview().offset(12)
+            make.height.equalTo(16)
+            make.width.greaterThanOrEqualTo(56)
+        }
+        headerPreviewTitleLabel_Tidy.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(12)
+            make.trailing.equalToSuperview().offset(-12)
+            make.bottom.equalTo(headerPreviewSubtitleLabel_Tidy.snp.top).offset(-5)
+        }
+        headerPreviewSubtitleLabel_Tidy.snp.makeConstraints { make in
+            make.leading.equalTo(headerPreviewTitleLabel_Tidy)
+            make.trailing.equalTo(headerPreviewTitleLabel_Tidy)
+            make.bottom.equalToSuperview().offset(-14)
+        }
+        statsRowView_Tidy.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+            make.top.equalTo(headerPreviewCard_Tidy.snp.bottom).offset(16)
+            make.bottom.equalToSuperview().offset(-34)
+            make.height.equalTo(60)
+        }
+        statFramesCard_Tidy.snp.makeConstraints { make in
+            make.leading.top.bottom.equalToSuperview()
+        }
+        statCategoriesCard_Tidy.snp.makeConstraints { make in
+            make.leading.equalTo(statFramesCard_Tidy.snp.trailing).offset(10)
+            make.top.bottom.equalToSuperview()
+            make.width.equalTo(statFramesCard_Tidy)
+        }
+        statSortCard_Tidy.snp.makeConstraints { make in
+            make.leading.equalTo(statCategoriesCard_Tidy.snp.trailing).offset(10)
+            make.trailing.top.bottom.equalToSuperview()
+            make.width.equalTo(statFramesCard_Tidy)
+        }
 
         // 同步 shadow 载体高度
         headerShadow_Tidy.snp.makeConstraints { make in
@@ -700,35 +863,225 @@ class Discover_Tidy: UIViewController {
     /// 搭建悬浮搜索卡片（最后添加，z-order 最高）
     /// centerY 对齐 headerView 底边，形成跨区悬浮效果
     private func buildSearchCard_Tidy() {
+        searchCard_Tidy.addSubview(searchHintLabel_Tidy)
         searchCard_Tidy.addSubview(searchIcon_Tidy)
         searchCard_Tidy.addSubview(searchTextField_Tidy)
+        searchCard_Tidy.addSubview(filterButton_Tidy)
         view.addSubview(searchCard_Tidy)
 
+        searchHintLabel_Tidy.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.top.equalToSuperview().offset(10)
+        }
         searchIcon_Tidy.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(14)
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(18)
+            make.leading.equalToSuperview().offset(16)
+            make.bottom.equalToSuperview().offset(-14)
+            make.width.height.equalTo(17)
         }
         searchTextField_Tidy.snp.makeConstraints { make in
             make.leading.equalTo(searchIcon_Tidy.snp.trailing).offset(8)
-            make.trailing.equalToSuperview().offset(-14)
-            make.centerY.equalToSuperview()
+            make.trailing.equalTo(filterButton_Tidy.snp.leading).offset(-10)
+            make.centerY.equalTo(searchIcon_Tidy)
+        }
+        filterButton_Tidy.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-10)
+            make.centerY.equalTo(searchIcon_Tidy)
+            make.width.height.equalTo(40)
         }
         searchCard_Tidy.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
             make.trailing.equalToSuperview().offset(-16)
             make.centerY.equalTo(headerView_Tidy.snp.bottom)
-            make.height.equalTo(50)
+            make.height.equalTo(72)
         }
 
         // Tab 区紧在搜索卡片下方
         tabAreaBg_Tidy.snp.makeConstraints { make in
-            make.top.equalTo(searchCard_Tidy.snp.bottom).offset(8)
+            make.top.equalToSuperview().offset(12)
         }
 
+        pageScrollView_Tidy.snp.makeConstraints { make in
+            make.top.equalTo(searchCard_Tidy.snp.bottom).offset(12)
+        }
+
+        filterButton_Tidy.addTarget(self, action: #selector(onFilterTapped_Tidy), for: .touchUpInside)
+        updateSortButtonAppearance_Tidy(animated_Tidy: false)
         searchTextField_Tidy.delegate = self
         searchTextField_Tidy.addTarget(self, action: #selector(onSearchTextChanged_Tidy(_:)),
                                            for: .editingChanged)
+    }
+
+    /// 配置头部统计卡片样式
+    /// 参数：
+    /// - card_Tidy: 统计卡片容器
+    /// - valueLabel_Tidy: 数值标签
+    /// - titleLabel_Tidy: 标题标签
+    /// 返回值：无
+    private func setupHeaderStatCard_Tidy(card_Tidy: UIView,
+                                          valueLabel_Tidy: UILabel,
+                                          titleLabel_Tidy: UILabel) {
+        card_Tidy.backgroundColor = UIColor.white.withAlphaComponent(0.14)
+        card_Tidy.layer.cornerRadius = 18
+        card_Tidy.layer.borderWidth = 1
+        card_Tidy.layer.borderColor = UIColor.white.withAlphaComponent(0.18).cgColor
+
+        valueLabel_Tidy.font = UIFont.systemFont(ofSize: 16, weight: .heavy)
+        valueLabel_Tidy.textColor = .white
+        valueLabel_Tidy.textAlignment = .center
+
+        titleLabel_Tidy.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
+        titleLabel_Tidy.textColor = UIColor.white.withAlphaComponent(0.74)
+        titleLabel_Tidy.textAlignment = .center
+
+        card_Tidy.addSubview(valueLabel_Tidy)
+        card_Tidy.addSubview(titleLabel_Tidy)
+        valueLabel_Tidy.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(10)
+        }
+        titleLabel_Tidy.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(6)
+            make.trailing.equalToSuperview().offset(-6)
+            make.top.equalTo(valueLabel_Tidy.snp.bottom).offset(2)
+        }
+    }
+
+    /// 更新排序按钮视觉状态
+    /// 参数：
+    /// - animated_Tidy: 是否使用动画切换
+    /// 返回值：无
+    private func updateSortButtonAppearance_Tidy(animated_Tidy: Bool) {
+        let updateBlock_Tidy = {
+            self.filterButton_Tidy.isSelected = self.sortByLikes_Tidy
+            self.filterButton_Tidy.tintColor = self.sortByLikes_Tidy ? .white : ColorConfig_Tidy.primaryGradientStart_Tidy
+            self.filterButton_Tidy.backgroundColor = self.sortByLikes_Tidy
+                ? ColorConfig_Tidy.primaryGradientStart_Tidy
+                : UIColor(hexstring_Tidy: "#F4F7FF")
+            self.filterButton_Tidy.layer.borderColor = self.sortByLikes_Tidy
+                ? ColorConfig_Tidy.primaryGradientStart_Tidy.cgColor
+                : ColorConfig_Tidy.primaryGradientStart_Tidy.withAlphaComponent(0.14).cgColor
+        }
+        guard animated_Tidy else {
+            updateBlock_Tidy()
+            return
+        }
+        UIView.animate(withDuration: 0.22, animations: updateBlock_Tidy)
+    }
+
+    /// 同步帖子列表高度到内容尺寸
+    /// 功能：关闭 CollectionView 自身滚动后，使用内容高度驱动整页滚动
+    /// 参数：无
+    /// 返回值：无
+    private func updatePostsCollectionHeight_Tidy() {
+        // 整页滚动模式下帖子区改为静态网格，不再依赖 CollectionView 高度联动
+    }
+
+    /// 渲染整页滚动模式下的帖子双列网格
+    /// 功能：将帖子数据转为静态双列卡片布局，避免嵌套滚动导致的高度与遮盖问题
+    /// 参数：无
+    /// 返回值：无
+    private func renderPostsGrid_Tidy() {
+        postsRowsStackView_Tidy.arrangedSubviews.forEach { row_Tidy in
+            postsRowsStackView_Tidy.removeArrangedSubview(row_Tidy)
+            row_Tidy.removeFromSuperview()
+        }
+
+        guard !displayPosts_Tidy.isEmpty else { return }
+
+        let cardHeight_Tidy: CGFloat = 198
+        var index_Tidy = 0
+        while index_Tidy < displayPosts_Tidy.count {
+            let rowView_Tidy = UIView()
+            rowView_Tidy.snp.makeConstraints { make in
+                make.height.equalTo(cardHeight_Tidy)
+            }
+
+            let leftCard_Tidy = PostCardCell_Tidy(frame: .zero)
+            configurePostCardCell_Tidy(cell_Tidy: leftCard_Tidy, post_Tidy: displayPosts_Tidy[index_Tidy])
+            rowView_Tidy.addSubview(leftCard_Tidy)
+
+            leftCard_Tidy.snp.makeConstraints { make in
+                make.leading.equalToSuperview().offset(16)
+                make.top.bottom.equalToSuperview()
+            }
+
+            let rightHolder_Tidy: UIView
+            if index_Tidy + 1 < displayPosts_Tidy.count {
+                let rightCard_Tidy = PostCardCell_Tidy(frame: .zero)
+                configurePostCardCell_Tidy(cell_Tidy: rightCard_Tidy, post_Tidy: displayPosts_Tidy[index_Tidy + 1])
+                rowView_Tidy.addSubview(rightCard_Tidy)
+                rightHolder_Tidy = rightCard_Tidy
+                rightCard_Tidy.snp.makeConstraints { make in
+                    make.leading.equalTo(leftCard_Tidy.snp.trailing).offset(12)
+                    make.trailing.equalToSuperview().offset(-16)
+                    make.top.bottom.equalToSuperview()
+                    make.width.equalTo(leftCard_Tidy)
+                }
+            } else {
+                let spacerView_Tidy = UIView()
+                spacerView_Tidy.backgroundColor = .clear
+                rowView_Tidy.addSubview(spacerView_Tidy)
+                rightHolder_Tidy = spacerView_Tidy
+                spacerView_Tidy.snp.makeConstraints { make in
+                    make.leading.equalTo(leftCard_Tidy.snp.trailing).offset(12)
+                    make.trailing.equalToSuperview().offset(-16)
+                    make.top.bottom.equalToSuperview()
+                    make.width.equalTo(leftCard_Tidy)
+                }
+            }
+
+            leftCard_Tidy.snp.makeConstraints { make in
+                make.trailing.equalTo(rightHolder_Tidy.snp.leading).offset(-12)
+            }
+
+            postsRowsStackView_Tidy.addArrangedSubview(rowView_Tidy)
+            rowView_Tidy.animateSlideInFromBottom_Tidy(
+                offset_Tidy: 24,
+                delay_Tidy: Double(index_Tidy % 4) * AnimationConfig_Tidy.delayShort_Tidy
+            )
+            index_Tidy += 2
+        }
+    }
+
+    /// 配置帖子卡片交互和数据
+    /// 参数：
+    /// - cell_Tidy: 待配置的帖子卡片
+    /// - post_Tidy: 帖子数据模型
+    /// 返回值：无
+    private func configurePostCardCell_Tidy(cell_Tidy: PostCardCell_Tidy, post_Tidy: TitleModel_Tidy) {
+        cell_Tidy.configure_Tidy(post_tidy: post_Tidy, style_tidy: .discoverStyle_tidy)
+        cell_Tidy.onLikeTapped_Tidy = {
+            guard UserViewModel_Tidy.shared_Tidy.isLoggedIn_Tidy else {
+                Navigation_Tidy.toLogin_Tidy(style_tidy: .present_tidy)
+                return
+            }
+            Task { @MainActor in
+                TitleViewModel_Tidy.shared_Tidy.likePost_Tidy(post_tidy: post_Tidy)
+            }
+        }
+        cell_Tidy.onCardTapped_Tidy = {
+            Navigation_Tidy.toTitleDetail_Tidy(titleModel_tidy: post_Tidy)
+        }
+        cell_Tidy.onAvatarTapped_Tidy = { userId_tidy in
+            guard !UserViewModel_Tidy.shared_Tidy.isCurrentUser_Tidy(userId_tidy: userId_tidy) else { return }
+            let userModel_tidy = UserViewModel_Tidy.shared_Tidy.getUserById_Tidy(userId_tidy: userId_tidy)
+            Navigation_Tidy.toUserInfo_Tidy(with: userModel_tidy)
+        }
+        cell_Tidy.onMoreTapped_Tidy = { [weak self] postModel_tidy in
+            guard let self = self else { return }
+            let isMyPost_tidy = UserViewModel_Tidy.shared_Tidy.isCurrentUser_Tidy(
+                userId_tidy: postModel_tidy.titleUserId_Tidy
+            )
+            if isMyPost_tidy {
+                ReportDeleteHelper_Tidy.delete_Tidy(post_Tidy: postModel_tidy, from: self) { [weak self] in
+                    self?.loadPosts_Tidy()
+                }
+            } else {
+                ReportDeleteHelper_Tidy.report_Tidy(post_Tidy: postModel_tidy, from: self) { [weak self] in
+                    self?.loadPosts_Tidy()
+                }
+            }
+        }
     }
 
     // MARK: - 数据展示刷新
@@ -737,28 +1090,47 @@ class Discover_Tidy: UIViewController {
     private func refreshDisplay_Tidy(animated: Bool) {
         let empty = displayPosts_Tidy.isEmpty
         let count = displayPosts_Tidy.count
-
-        // 副标题
-        pageSubtitleLabel_Tidy.text = empty
-            ? "No results"
-            : "\(count) post\(count == 1 ? "" : "s") found"
-
-        // 结果摘要条
         let catName = categories_Tidy.first(where: {
             $0.id_Tidy == selectedCategoryId_Tidy
         })?.name_Tidy ?? "All"
         let catColor = ColorConfig_Tidy.colorForCategory_Tidy(selectedCategoryId_Tidy)
+
+        // 副标题
+        pageSubtitleLabel_Tidy.text = empty
+            ? "Try another angle,\nkeyword, or category."
+            : "\(count) frame\(count == 1 ? "" : "s") ready for your next shot plan."
+
+        headerPreviewTitleLabel_Tidy.text = selectedCategoryId_Tidy == "all" ? "Light + Pose" : "\(catName) Focus"
+        headerPreviewSubtitleLabel_Tidy.text = empty
+            ? "Reset filters to unlock more inspiration."
+            : "Curated ideas for \(catName.lowercased()) scenes."
+        statFramesValueLabel_Tidy.text = "\(count)"
+        statFramesTitleLabel_Tidy.text = "Frames"
+        statCategoriesValueLabel_Tidy.text = "\(max(categories_Tidy.count - 1, 0))"
+        statCategoriesTitleLabel_Tidy.text = "Topics"
+        statSortValueLabel_Tidy.text = sortByLikes_Tidy ? "Hot First" : "Curated"
+        statSortTitleLabel_Tidy.text = "Sorting"
+
+        // 结果摘要条
         resultDot_Tidy.backgroundColor = catColor
         resultCategoryLabel_Tidy.text = catName
-        resultCountLabel_Tidy.text = "·  \(count) result\(count == 1 ? "" : "s")"
+        resultCountLabel_Tidy.text = "·  \(count) frame\(count == 1 ? "" : "s")"
+        resultModeBadge_Tidy.text = sortByLikes_Tidy ? "HOT FIRST" : "CURATED"
+        resultModeBadge_Tidy.textColor = sortByLikes_Tidy ? .white : ColorConfig_Tidy.primaryGradientStart_Tidy
+        resultModeBadge_Tidy.backgroundColor = sortByLikes_Tidy
+            ? ColorConfig_Tidy.primaryGradientStart_Tidy
+            : UIColor.white
+        resultModeBadge_Tidy.layer.borderColor = (sortByLikes_Tidy
+            ? ColorConfig_Tidy.primaryGradientStart_Tidy
+            : ColorConfig_Tidy.primaryGradientStart_Tidy.withAlphaComponent(0.12)).cgColor
 
-        postsCollectionView_Tidy.reloadData()
+        renderPostsGrid_Tidy()
         if empty {
             emptyStateView_Tidy.isHidden = false
             emptyStateView_Tidy.animateSpringScaleIn_Tidy()
         } else {
             emptyStateView_Tidy.isHidden = true
-            if animated { postsCollectionView_Tidy.animateFadeIn_Tidy(duration_Tidy: 0.22) }
+            if animated { postsGridSectionView_Tidy.animateFadeIn_Tidy(duration_Tidy: 0.22) }
         }
     }
 
@@ -786,40 +1158,40 @@ class Discover_Tidy: UIViewController {
                 bundle.circleGrad?.removeFromSuperlayer()
                 let grad = CAGradientLayer()
                 let sz = bundle.circleBg.bounds.isEmpty
-                    ? CGRect(x: 0, y: 0, width: 48, height: 48)
+                    ? CGRect(x: 0, y: 0, width: 120, height: 44)
                     : bundle.circleBg.bounds
                 grad.frame = sz
                 grad.colors = [catColor.cgColor,
                                catColor.withAlphaComponent(0.75).cgColor]
                 grad.startPoint = CGPoint(x: 0.1, y: 0)
                 grad.endPoint   = CGPoint(x: 1, y: 1)
-                grad.cornerRadius = 24
+                grad.cornerRadius = sz.height / 2
                 bundle.circleBg.layer.insertSublayer(grad, at: 0)
                 bundle.circleGrad = grad
                 bundle.circleBg.backgroundColor = .clear
                 // 选中态：清除边框，加光晕阴影
                 bundle.circleBg.layer.borderWidth  = 0
                 bundle.circleBg.layer.shadowColor  = catColor.cgColor
-                bundle.circleBg.layer.shadowOffset = CGSize(width: 0, height: 4)
-                bundle.circleBg.layer.shadowRadius = 8
-                bundle.circleBg.layer.shadowOpacity = 0.45
+                bundle.circleBg.layer.shadowOffset = CGSize(width: 0, height: 6)
+                bundle.circleBg.layer.shadowRadius = 12
+                bundle.circleBg.layer.shadowOpacity = 0.22
 
                 bundle.iconView.tintColor = .white
-                bundle.nameLabel.textColor = catColor
-                bundle.nameLabel.font = UIFont.systemFont(ofSize: 10, weight: .bold)
-                bundle.container.transform = CGAffineTransform(scaleX: 1.10, y: 1.10)
+                bundle.nameLabel.textColor = .white
+                bundle.nameLabel.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+                bundle.container.transform = CGAffineTransform(scaleX: 1.04, y: 1.04)
             } else {
                 bundle.circleGrad?.removeFromSuperlayer()
                 bundle.circleGrad = nil
-                // 未选中态：浅灰背景 + 分类色描边
-                bundle.circleBg.backgroundColor = UIColor(hexstring_Tidy: "#F7FAFC")
-                bundle.circleBg.layer.borderWidth  = 1.5
-                bundle.circleBg.layer.borderColor  = catColor.withAlphaComponent(0.28).cgColor
+                // 未选中态：浅色标签 + 柔和描边
+                bundle.circleBg.backgroundColor = UIColor.white
+                bundle.circleBg.layer.borderWidth  = 1
+                bundle.circleBg.layer.borderColor  = catColor.withAlphaComponent(0.18).cgColor
                 bundle.circleBg.layer.shadowOpacity = 0
 
                 bundle.iconView.tintColor = catColor
                 bundle.nameLabel.textColor = ColorConfig_Tidy.textSecondary_Tidy
-                bundle.nameLabel.font = UIFont.systemFont(ofSize: 10, weight: .medium)
+                bundle.nameLabel.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
                 bundle.container.transform = .identity
             }
         }
@@ -859,23 +1231,13 @@ class Discover_Tidy: UIViewController {
             bundle?.container.animatePressUp_Tidy()
         }
 
-        if !displayPosts_Tidy.isEmpty {
-            postsCollectionView_Tidy.scrollToItem(
-                at: IndexPath(item: 0, section: 0), at: .top, animated: true
-            )
-        }
     }
 
     /// 过滤/排序按钮切换（按点赞数排序）
     @objc private func onFilterTapped_Tidy() {
         sortByLikes_Tidy.toggle()
-        filterButton_Tidy.isSelected = sortByLikes_Tidy
         filterButton_Tidy.animatePulse_Tidy()
-        UIView.animate(withDuration: 0.2) {
-            self.filterButton_Tidy.backgroundColor = self.sortByLikes_Tidy
-                ? UIColor.white.withAlphaComponent(0.38)
-                : UIColor.white.withAlphaComponent(0.22)
-        }
+        updateSortButtonAppearance_Tidy(animated_Tidy: true)
         loadPosts_Tidy()
     }
 
@@ -935,7 +1297,7 @@ extension Discover_Tidy: UITextFieldDelegate {
     func textFieldDidEndEditing(_ tf: UITextField) {
         UIView.animate(withDuration: AnimationConfig_Tidy.durationFast_Tidy) {
             self.searchCard_Tidy.layer.shadowColor =
-                UIColor(hexstring_Tidy: "#38B2AC").withAlphaComponent(0.22).cgColor
+                ColorConfig_Tidy.tidyMintDeep_Tidy.withAlphaComponent(0.22).cgColor
             self.searchCard_Tidy.layer.shadowRadius = 18
             self.searchCard_Tidy.transform = .identity
         }

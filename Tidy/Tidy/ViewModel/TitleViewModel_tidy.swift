@@ -233,18 +233,18 @@ class TitleViewModel_Tidy {
     
     // MARK: - 公共方法 - 分类与搜索
     
-    /// 获取所有家居分类列表（含"全部"选项）
+    /// 获取所有拍照技巧分类列表（含"全部"选项）
     /// 返回值：HomeCategory_Tidy 数组
     func getCategories_Tidy() -> [HomeCategory_Tidy] {
         return [
-            HomeCategory_Tidy(id_Tidy: "all",         name_Tidy: "All",         iconName_Tidy: "square.grid.2x2.fill",  colorHex_Tidy: "#4ECDC4"),
-            HomeCategory_Tidy(id_Tidy: "living_room", name_Tidy: "Living Room", iconName_Tidy: "sofa.fill",             colorHex_Tidy: "#4ECDC4"),
-            HomeCategory_Tidy(id_Tidy: "bedroom",     name_Tidy: "Bedroom",     iconName_Tidy: "bed.double.fill",       colorHex_Tidy: "#9F7AEA"),
-            HomeCategory_Tidy(id_Tidy: "kitchen",     name_Tidy: "Kitchen",     iconName_Tidy: "fork.knife",            colorHex_Tidy: "#F6AD55"),
-            HomeCategory_Tidy(id_Tidy: "bathroom",    name_Tidy: "Bathroom",    iconName_Tidy: "shower.fill",           colorHex_Tidy: "#63B3ED"),
-            HomeCategory_Tidy(id_Tidy: "study",       name_Tidy: "Study",       iconName_Tidy: "books.vertical.fill",   colorHex_Tidy: "#68D391"),
-            HomeCategory_Tidy(id_Tidy: "storage",     name_Tidy: "Storage",     iconName_Tidy: "archivebox.fill",       colorHex_Tidy: "#FC8181"),
-            HomeCategory_Tidy(id_Tidy: "garden",      name_Tidy: "Garden",      iconName_Tidy: "leaf.fill",             colorHex_Tidy: "#48BB78"),
+            HomeCategory_Tidy(id_Tidy: "all",         name_Tidy: "All",         iconName_Tidy: "square.grid.2x2.fill",  colorHex_Tidy: "#5B8CFF"),
+            HomeCategory_Tidy(id_Tidy: "living_room", name_Tidy: "Lighting",    iconName_Tidy: "sun.max.fill",          colorHex_Tidy: "#FFB547"),
+            HomeCategory_Tidy(id_Tidy: "bedroom",     name_Tidy: "Pose",        iconName_Tidy: "figure.stand",          colorHex_Tidy: "#8B7CFF"),
+            HomeCategory_Tidy(id_Tidy: "kitchen",     name_Tidy: "Composition", iconName_Tidy: "square.on.circle",      colorHex_Tidy: "#45C8FF"),
+            HomeCategory_Tidy(id_Tidy: "bathroom",    name_Tidy: "Outfit",      iconName_Tidy: "tshirt.fill",           colorHex_Tidy: "#FF7A8A"),
+            HomeCategory_Tidy(id_Tidy: "study",       name_Tidy: "Location",    iconName_Tidy: "map.fill",              colorHex_Tidy: "#35C58B"),
+            HomeCategory_Tidy(id_Tidy: "storage",     name_Tidy: "Editing",     iconName_Tidy: "slider.horizontal.3",   colorHex_Tidy: "#FF5CA8"),
+            HomeCategory_Tidy(id_Tidy: "garden",      name_Tidy: "Gear",        iconName_Tidy: "camera.fill",           colorHex_Tidy: "#4F6DFF"),
         ]
     }
     

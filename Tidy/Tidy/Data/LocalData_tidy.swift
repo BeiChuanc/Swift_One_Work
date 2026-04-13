@@ -1,6 +1,6 @@
 import Foundation
 
-// MARK: 本地数据存放类 - Tidy 家居整理社区预制数据
+// MARK: 本地数据存放类 - Tidy 拍照技巧社区预制数据
 
 /// 数据配置常量
 private struct DataConfig_Tidy {
@@ -57,79 +57,79 @@ class LocalData_Tidy {
     }
 }
 
-// MARK: - 静态数据源（Tidy 家居主题）
+// MARK: - 静态数据源（Tidy 拍照技巧主题）
 
-/// 静态数据源 - 家居整理归类主题
+/// 静态数据源 - 拍照出片技巧主题
 private struct DataSource_Tidy {
     
     /// 用户信息列表 (用户名, 简介, 头像标识, 相册标识)
     static let usersInfo_Tidy: [(String, String, String, String)] = [
-        ("TidyNest",    "Passionate about creating cozy, organized spaces at home",       "head1", "head1"),
-        ("ClutterFree", "Minimalist lifestyle advocate and home organizing enthusiast",    "head2", "head2"),
-        ("HomeHaven",   "Transforming chaos into calm, one room at a time",               "head3", "head3"),
-        ("NeatNook",    "Budget-friendly home decor and smart storage solutions",         "head4", "head4"),
-        ("SpaceGuru",   "Professional organizer sharing tips for a stress-free home",     "head5", "head5"),
+        ("FrameMuse",    "Portrait storyteller sharing easy camera-friendly ideas",            "head1", "head1"),
+        ("LightCrafter", "Chasing soft light, clean angles, and cinematic everyday shots",     "head2", "head2"),
+        ("PosePilot",    "Helping beginners look natural with simple pose cues",               "head3", "head3"),
+        ("SnapStylist",  "Outfit and color pairing tips for polished photo sets",              "head4", "head4"),
+        ("EditBloom",    "Mobile retouching lover focused on bright, airy finishes",           "head5", "head5"),
     ]
     
     /// 帖子信息列表 (标题, 内容, 媒体标识, 分类ID)
     static let postsInfo_Tidy: [(String, String, String, String)] = [
         (
-            "Living Room Refresh",
-            "Finally tackled the living room clutter! Sorted everything into labeled bins and added floating shelves for the knick-knacks. The key is finding a home for every single item — if it doesn't have a place, it doesn't belong. The space feels so open and breathable now.",
+            "Golden Hour Balcony Portrait",
+            "Face your subject about 45 degrees toward the sunset instead of straight on. This angle keeps the cheekbone bright, adds catchlights to the eyes, and avoids a flat face. I also lowered exposure a touch so the sky stayed warm while the skin still looked clean.",
             "title1",
             "living_room"
         ),
         (
-            "Bedroom Closet Makeover",
-            "Spent the whole weekend reorganizing my wardrobe. Used the KonMari method — kept only things that spark joy. Divided clothes by category and color, added a second hanging rod for shorter items, and finally have a drawer system that actually makes sense. Morning routines are a breeze now!",
+            "Mirror Pose Guide",
+            "The easiest way to avoid stiff selfies is to give your hands a job. Touch the hair, hold the phone lower than eye level, and shift one knee forward. I asked the model to breathe out between frames and the expression instantly looked more natural.",
             "title2",
             "bedroom"
         ),
         (
-            "Kitchen Pantry System",
-            "Created a zero-waste pantry system using glass jars and clear labels. Grouped items by frequency of use — daily essentials front and center, seasonal spices in the back. Added pull-out drawer organizers for the deep cabinets. Cooking is genuinely enjoyable when you can find everything instantly.",
+            "Cafe Window Composition",
+            "Window seats are perfect for beginner portraits because the light direction is obvious. I framed the cup in the foreground, kept the eyes on the upper third line, and let the background blur naturally. Three simple layers made the shot feel much more premium.",
             "title3",
             "kitchen"
         ),
         (
-            "Bathroom Cabinet Edit",
-            "Decluttered three years of half-used products from under the sink. Installed a tiered shelf, drawer dividers, and a magnetic strip for bobby pins and nail files. Every item now has a visible, accessible spot. The morning rush is so much calmer.",
+            "Monochrome Outfit Formula",
+            "When the location is already busy, I keep the clothing palette to one main color plus one neutral. Matching the jacket with the wall tone made the photo look intentional, while white shoes kept the frame from feeling too heavy.",
             "title4",
             "bathroom"
         ),
         (
-            "Home Study Organization",
-            "Transformed my study corner into a productivity powerhouse. Cable management box hides the wire chaos, a pegboard holds frequently used supplies, and a tickler file system keeps documents in order. The most effective change? A single inbox tray — everything lands there first.",
+            "Hidden Alley Location Scout",
+            "I look for three things before shooting: clean background depth, side light, and a place to lean. This alley had soft reflected light from the wall and enough distance behind the subject to create depth even on a phone camera.",
             "title5",
             "study"
         ),
         (
-            "Seasonal Storage Solution",
-            "Swapped out winter items for summer gear using vacuum storage bags — saved so much closet space! Color-coded bins stack neatly in the top shelf. Each bin has a QR code label that links to a photo inventory on my phone. No more digging through boxes to find what I need.",
+            "Quick Mobile Edit Recipe",
+            "My fast edit flow is brightness up slightly, highlights down, shadows up, then add a tiny bit of warmth. After that I reduce saturation on distracting colors instead of pushing the whole image. The result stays clean and still looks realistic.",
             "title6",
             "storage"
         ),
         (
-            "Balcony Garden Corner",
-            "Turned a cluttered balcony into a mini garden sanctuary. Wall-mounted planter pockets hold herbs, a folding potting table tucks away when not in use, and tool hooks keep gardening gear organized. The garden tools each have their own hook — no more tangled hoses!",
+            "Pocket Camera Gear Setup",
+            "For lightweight street portraits I only carry a phone grip, mini reflector, power bank, and lens cloth. Keeping the kit small helps me move faster and makes the subject less nervous, which usually matters more than bringing extra gear.",
             "title7",
             "garden"
         ),
         (
-            "Kitchen Drawer Deep Dive",
-            "Emptied every kitchen drawer and started fresh. Bamboo drawer dividers for utensils, a dedicated drawer for food wraps and bags, and a separate zone for appliance manuals. Labeled everything with a label maker. Finding the right tool now takes two seconds, not two minutes.",
+            "Staircase Leading Lines",
+            "Stairs naturally create arrows toward the face. I placed the model one step above me, tilted the phone slightly upward, and kept both rails inside the frame. The lines did the heavy lifting and the whole shot looked taller and cleaner.",
             "title8",
             "kitchen"
         ),
         (
-            "Kids Room Tidy Hacks",
-            "Created a toy rotation system that keeps the bedroom from being overwhelmed. Only one bin of toys accessible at a time — rotate weekly. Used pegboards for art supplies and low hooks for bags and jackets. Kids actually maintain it themselves now!",
+            "Weekend Street Pose Flow",
+            "Instead of asking for big poses, I use tiny actions: walk slowly, look back once, adjust the bag strap, then stop. Shooting through motion gives you four or five usable frames in seconds and the body language feels much less forced.",
             "media_one",
             "bedroom"
         ),
         (
-            "Entry Hall Declutter",
-            "The entry hall sets the tone for the whole home. Added a wall-mounted key holder, a shoe rack that fits exactly four pairs per family member, and a small basket for incoming mail. The 'one in, one out' rule keeps it permanently tidy.",
+            "Neon Night Portrait",
+            "At night I place the strongest colored sign behind and slightly beside the subject so the face still catches a clean edge light. Locking focus first and lowering exposure keeps the neon rich without turning the skin muddy.",
             "media_two",
             "living_room"
         ),
@@ -137,16 +137,16 @@ private struct DataSource_Tidy {
     
     /// 评论列表 (评论1, 评论2)
     static let comments_Tidy: [(String, String)] = [
-        ("This is exactly what my living room needs! Love the floating shelves idea", "Labeled bins are a game changer — my family finally puts things back where they belong!"),
-        ("The KonMari method changed my relationship with stuff too. Great wardrobe system!", "A second hanging rod — why did I never think of that? Trying this weekend for sure."),
-        ("Glass jars make everything look so clean and intentional. Inspired to redo my pantry!", "Pull-out organizers for deep cabinets are brilliant. No more losing things in the back."),
-        ("That magnetic strip for small items is genius! Stealing this idea immediately", "A tiered shelf under the sink makes such a difference. Bathroom goals right here."),
-        ("Cable management is the hidden hero of any tidy workspace. Love the pegboard!", "The inbox tray idea is so simple but so effective. One landing spot changes everything."),
-        ("QR code labels for bins?! You're living in the future. I need to try this!", "Vacuum bags are essential for seasonal swaps. Your color-coding system is chef's kiss."),
-        ("A potting table that folds away — perfect solution for small balconies!", "Love how every tool has its own hook. The garden looks so peaceful and organized."),
-        ("Bamboo dividers over plastic any day! Your drawer zones are so logical", "I spent 10 minutes finding a spatula this morning. Clearly I need this system yesterday."),
-        ("The toy rotation idea is revolutionary for parents. Tried it and my kids love the 'new' toys every week!", "Low hooks for independence — teaching kids to tidy up starts with the right setup."),
-        ("'One in, one out' in the entry hall is the rule that keeps everything sane", "A shoe rack sized per family member is so smart. No more pile-up at the door!"),
+        ("That 45-degree light tip is gold. The skin still looks bright but the photo has way more depth.", "Lowering the exposure a little for sunset tones really works. Trying this tonight."),
+        ("Giving the hands a job fixes awkward poses so fast. Super beginner-friendly advice.", "The breathing-out cue is such a good reminder. Expressions always look softer that way."),
+        ("Foreground layers always make cafe shots feel more expensive. Love this breakdown.", "Using the upper third for the eyes made an immediate difference in my test shots."),
+        ("One color plus one neutral is such an easy styling rule. Saving this for my next shoot.", "Busy backgrounds are exactly where I get stuck, so this outfit tip is perfect."),
+        ("Clean background depth and side light is the scouting checklist I needed.", "Leaning spots are underrated. They instantly make people look more relaxed."),
+        ("Small edits really do look more premium than pushing every slider hard.", "Selective color control instead of global saturation is such a smart mobile workflow."),
+        ("A small kit keeps the vibe relaxed and that honestly helps portraits more than gear.", "Lens cloth in the pocket camera kit is so real. Tiny detail, huge difference."),
+        ("Leading lines plus a lower angle made my staircase shot look much taller.", "Keeping both rails in frame gave the photo structure immediately."),
+        ("Tiny movement prompts are easier than telling someone to pose from scratch.", "Walk, look back, adjust the strap is such a usable shooting sequence."),
+        ("Night portraits get muddy so easily, and the exposure lock tip helped a lot.", "Placing the neon slightly behind the subject gave me way better edge light."),
     ]
 }
 

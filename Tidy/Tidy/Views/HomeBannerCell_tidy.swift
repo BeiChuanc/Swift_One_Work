@@ -118,7 +118,7 @@ class HomeBannerCell_Tidy: FSPagerViewCell {
     private let likeIcon_Tidy: UIImageView = {
         let iv_tidy = UIImageView()
         iv_tidy.image = UIImage(systemName: "heart.fill")
-        iv_tidy.tintColor = UIColor(hexstring_Tidy: "#FF6B6B")
+        iv_tidy.tintColor = ColorConfig_Tidy.tidyWarm_Tidy
         iv_tidy.contentMode = .scaleAspectFit
         return iv_tidy
     }()
@@ -323,14 +323,14 @@ class HomeBannerCell_Tidy: FSPagerViewCell {
     /// 根据分类 ID 返回展示名称
     private func categoryDisplayName_Tidy(_ id_tidy: String) -> String {
         switch id_tidy {
-        case "living_room": return "Living Room"
-        case "bedroom":     return "Bedroom"
-        case "kitchen":     return "Kitchen"
-        case "bathroom":    return "Bathroom"
-        case "study":       return "Study"
-        case "storage":     return "Storage"
-        case "garden":      return "Garden"
-        default:            return "Home"
+        case "living_room": return "Lighting"
+        case "bedroom":     return "Pose"
+        case "kitchen":     return "Composition"
+        case "bathroom":    return "Outfit"
+        case "study":       return "Location"
+        case "storage":     return "Editing"
+        case "garden":      return "Gear"
+        default:            return "Photo"
         }
     }
 }

@@ -5,62 +5,62 @@ import UIKit
 
 /// 颜色配置类
 /// 功能：集中管理应用的主题色、情绪色和渐变色配置
-/// 设计理念：清新家居感、明快有质感，以薄荷绿为主调、珊瑚暖色为点缀，呈现整洁灵动的现代家居氛围
+/// 设计理念：围绕拍照出片主题，采用镜头蓝、暮光紫、暖日落橙等摄影感配色，强化光影与画面氛围
 struct ColorConfig_Tidy {
     
     // MARK: - 主题渐变色系
     
-    /// 主渐变色起点 - 薰衣草紫
-    static let primaryGradientStart_Tidy = UIColor(hexstring_Tidy: "#B794F6")
+    /// 主渐变色起点 - 暮光紫
+    static let primaryGradientStart_Tidy = UIColor(hexstring_Tidy: "#7C5CFF")
     
-    /// 主渐变色终点 - 天空蓝
-    static let primaryGradientEnd_Tidy = UIColor(hexstring_Tidy: "#90CDF4")
+    /// 主渐变色终点 - 镜头蓝
+    static let primaryGradientEnd_Tidy = UIColor(hexstring_Tidy: "#35C2FF")
     
-    /// 辅助渐变色起点 - 玫瑰粉
-    static let secondaryGradientStart_Tidy = UIColor(hexstring_Tidy: "#FBB6CE")
+    /// 辅助渐变色起点 - 晚霞珊瑚
+    static let secondaryGradientStart_Tidy = UIColor(hexstring_Tidy: "#FF7B72")
     
-    /// 辅助渐变色终点 - 珊瑚橙
-    static let secondaryGradientEnd_Tidy = UIColor(hexstring_Tidy: "#FED7AA")
+    /// 辅助渐变色终点 - 柔光琥珀
+    static let secondaryGradientEnd_Tidy = UIColor(hexstring_Tidy: "#FFB457")
     
     // MARK: - Tidy 专属品牌色
     
-    /// 主强调色 - 清新薄荷绿（品牌核心色，用于 CTA、选中态、高亮）
-    static let tidyMint_Tidy = UIColor(hexstring_Tidy: "#4ECDC4")
+    /// 主强调色 - 镜头蓝（品牌核心色，用于 CTA、选中态、高亮）
+    static let tidyMint_Tidy = UIColor(hexstring_Tidy: "#5B8CFF")
     
-    /// 薄荷渐变深色（渐变结束色，比主色略深）
-    static let tidyMintDeep_Tidy = UIColor(hexstring_Tidy: "#38B2AC")
+    /// 品牌深色 - 深夜蓝（渐变结束色，比主色更沉稳）
+    static let tidyMintDeep_Tidy = UIColor(hexstring_Tidy: "#2D4DDA")
     
-    /// 暖珊瑚色（互动反馈、点赞等暖色高亮）
-    static let tidyWarm_Tidy = UIColor(hexstring_Tidy: "#FF6B6B")
+    /// 暖日落色（互动反馈、点赞等暖色高亮）
+    static let tidyWarm_Tidy = UIColor(hexstring_Tidy: "#FF8A4C")
     
-    /// 米白背景色（首页 Header 底色，温暖中性）
-    static let tidySand_Tidy = UIColor(hexstring_Tidy: "#F7F3EE")
+    /// 柔雾米色（暖调中性背景）
+    static let tidySand_Tidy = UIColor(hexstring_Tidy: "#FFF4E8")
     
-    /// 柔金色（徽章、统计数字装饰）
-    static let tidyGold_Tidy = UIColor(hexstring_Tidy: "#F6AD55")
+    /// 柔金色（高光提示、徽章装饰）
+    static let tidyGold_Tidy = UIColor(hexstring_Tidy: "#FFC247")
     
     // MARK: - 分类主题色（7 个分类，对应 HomeCategory id）
     
-    /// 分类色：客厅 - 淡蓝绿
-    static let categoryLivingRoom_Tidy = UIColor(hexstring_Tidy: "#4ECDC4")
+    /// 分类色：光线 - 暖金
+    static let categoryLivingRoom_Tidy = UIColor(hexstring_Tidy: "#FFB547")
     
-    /// 分类色：卧室 - 薰衣草紫
-    static let categoryBedroom_Tidy = UIColor(hexstring_Tidy: "#9F7AEA")
+    /// 分类色：姿势 - 暮光紫
+    static let categoryBedroom_Tidy = UIColor(hexstring_Tidy: "#8B7CFF")
     
-    /// 分类色：厨房 - 暖橙
-    static let categoryKitchen_Tidy = UIColor(hexstring_Tidy: "#F6AD55")
+    /// 分类色：构图 - 通透青蓝
+    static let categoryKitchen_Tidy = UIColor(hexstring_Tidy: "#45C8FF")
     
-    /// 分类色：浴室 - 水蓝
-    static let categoryBathroom_Tidy = UIColor(hexstring_Tidy: "#63B3ED")
+    /// 分类色：穿搭 - 玫瑰珊瑚
+    static let categoryBathroom_Tidy = UIColor(hexstring_Tidy: "#FF7A8A")
     
-    /// 分类色：书房 - 森绿
-    static let categoryStudy_Tidy = UIColor(hexstring_Tidy: "#68D391")
+    /// 分类色：选景 - 清新绿
+    static let categoryStudy_Tidy = UIColor(hexstring_Tidy: "#35C58B")
     
-    /// 分类色：收纳 - 玫瑰粉
-    static let categoryStorage_Tidy = UIColor(hexstring_Tidy: "#FC8181")
+    /// 分类色：修图 - 洋红粉
+    static let categoryStorage_Tidy = UIColor(hexstring_Tidy: "#FF5CA8")
     
-    /// 分类色：花园 - 嫩绿
-    static let categoryGarden_Tidy = UIColor(hexstring_Tidy: "#48BB78")
+    /// 分类色：器材 - 深蓝
+    static let categoryGarden_Tidy = UIColor(hexstring_Tidy: "#4F6DFF")
     
     /// 根据分类ID返回对应颜色
     /// 参数：
@@ -81,8 +81,8 @@ struct ColorConfig_Tidy {
     
     // MARK: - 背景色
     
-    /// 主背景色 - 极浅灰（页面通用背景）
-    static let backgroundPrimary_Tidy = UIColor(hexstring_Tidy: "#F7FAFC")
+    /// 主背景色 - 冷调浅灰蓝（页面通用背景）
+    static let backgroundPrimary_Tidy = UIColor(hexstring_Tidy: "#F5F7FC")
     
     /// 次背景色 - 纯白（卡片、弹窗背景）
     static let backgroundSecondary_Tidy = UIColor.white
@@ -92,22 +92,22 @@ struct ColorConfig_Tidy {
     
     // MARK: - 文本色
     
-    /// 主文本色 - 深灰炭
-    static let textPrimary_Tidy = UIColor(hexstring_Tidy: "#2D3748")
+    /// 主文本色 - 深石墨
+    static let textPrimary_Tidy = UIColor(hexstring_Tidy: "#1F2937")
     
-    /// 次文本色 - 中灰
-    static let textSecondary_Tidy = UIColor(hexstring_Tidy: "#718096")
+    /// 次文本色 - 冷灰
+    static let textSecondary_Tidy = UIColor(hexstring_Tidy: "#667085")
     
-    /// 占位符文本色 - 浅灰
-    static let textPlaceholder_Tidy = UIColor(hexstring_Tidy: "#A0AEC0")
+    /// 占位符文本色 - 浅灰蓝
+    static let textPlaceholder_Tidy = UIColor(hexstring_Tidy: "#98A2B3")
     
     // MARK: - 分割线和边框
     
     /// 分割线颜色
-    static let divider_Tidy = UIColor(hexstring_Tidy: "#E2E8F0")
+    static let divider_Tidy = UIColor(hexstring_Tidy: "#E6EAF2")
     
     /// 边框颜色
-    static let border_Tidy = UIColor(hexstring_Tidy: "#CBD5E0")
+    static let border_Tidy = UIColor(hexstring_Tidy: "#D7DEEA")
     
     // MARK: - 阴影色
     
@@ -119,7 +119,7 @@ struct ColorConfig_Tidy {
 
 extension UIColor {
     
-    /// 创建主渐变图层（薰衣草紫 → 天空蓝）
+    /// 创建主渐变图层（暮光紫 → 镜头蓝）
     /// 参数：
     /// - frame_Tidy: 图层尺寸
     /// 返回值：配置好的 CAGradientLayer
@@ -135,7 +135,7 @@ extension UIColor {
         return gradientLayer_Tidy
     }
     
-    /// 创建辅助渐变图层（玫瑰粉 → 珊瑚橙）
+    /// 创建辅助渐变图层（晚霞珊瑚 → 柔光琥珀）
     /// 参数：
     /// - frame_Tidy: 图层尺寸
     /// 返回值：配置好的 CAGradientLayer
@@ -151,7 +151,7 @@ extension UIColor {
         return gradientLayer_Tidy
     }
     
-    /// 创建 Tidy 薄荷渐变图层（清新薄荷绿 → 深薄荷）
+    /// 创建品牌渐变图层（镜头蓝 → 深夜蓝）
     /// 参数：
     /// - frame_Tidy: 图层尺寸
     /// - isHorizontal_Tidy: 是否水平方向渐变，默认竖向

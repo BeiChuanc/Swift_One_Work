@@ -14,9 +14,9 @@ class UserAvatarView_Tidy: UIView {
     static let defaultAvatarColors_Tidy: [UIColor] = [
         ColorConfig_Tidy.primaryGradientStart_Tidy,
         ColorConfig_Tidy.secondaryGradientStart_Tidy,
-        UIColor(hexstring_Tidy: "#63B3ED"),
-        UIColor(hexstring_Tidy: "#F6AD55"),
-        UIColor(hexstring_Tidy: "#FC8181")
+        ColorConfig_Tidy.primaryGradientEnd_Tidy,
+        ColorConfig_Tidy.tidyGold_Tidy,
+        ColorConfig_Tidy.categoryStorage_Tidy
     ]
     
     // MARK: - UI组件

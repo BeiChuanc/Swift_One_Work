@@ -63,6 +63,8 @@ class GiftPage_Tidy: UIViewController {
     private let comp1View_Tidy = UIView()
     /// 组件1内部白色卡片（存储引用以更新选中态）
     private weak var comp1Card_Tidy: UIView?
+    private weak var comp1PriceLabel_Tidy: UILabel?
+    private weak var comp1SubLabel_Tidy: UILabel?
 
     /// 组件2：普通礼物网格
     private let comp2View_Tidy = UIView()
@@ -132,7 +134,7 @@ class GiftPage_Tidy: UIViewController {
 
         /// 白色圆角卡片背景
         let card_Tidy = UIView()
-        card_Tidy.backgroundColor = .white
+        card_Tidy.backgroundColor = UIColor(hexstring_Tidy: "#2353E4")
         card_Tidy.layer.cornerRadius = 15
         card_Tidy.layer.masksToBounds = true
         comp1View_Tidy.addSubview(card_Tidy)
@@ -147,12 +149,14 @@ class GiftPage_Tidy: UIViewController {
         let priceLabel_Tidy = UILabel()
         priceLabel_Tidy.text      = top.goodsPrice_Tidy ?? ""
         priceLabel_Tidy.font      = UIFont.systemFont(ofSize: 14, weight: .regular)
-        priceLabel_Tidy.textColor = UIColor(hexstring_Tidy: "#111111")
+        priceLabel_Tidy.textColor = .white
+        comp1PriceLabel_Tidy = priceLabel_Tidy
 
         let subLabel_Tidy = UILabel()
         subLabel_Tidy.text      = isPur_Tidy ? "Already Purchased" : "Can only be purchased once"
         subLabel_Tidy.font      = UIFont.systemFont(ofSize: 10, weight: .regular)
-        subLabel_Tidy.textColor = UIColor(hexstring_Tidy: "#111111")
+        subLabel_Tidy.textColor = .white
+        comp1SubLabel_Tidy = subLabel_Tidy
 
         let textStack_Tidy = UIStackView(arrangedSubviews: [priceLabel_Tidy, subLabel_Tidy])
         textStack_Tidy.axis      = .vertical
@@ -340,19 +344,30 @@ class GiftPage_Tidy: UIViewController {
     /// 刷新所有礼物条目的选中背景色
     /// - Parameter selectedId: 当前选中商品的 goodsId
     private func refreshSelectionUI_Tidy(selectedId: String?) {
-        let selColor_Tidy = UIColor(hexstring_Tidy: "#A678F1").withAlphaComponent(0.25)
+        let normalBgColor_Tidy = UIColor(hexstring_Tidy: "#2353E4")
+        let selectedBgColor_Tidy = UIColor.white
+        let normalTextColor_Tidy = UIColor.white
+        let selectedTextColor_Tidy = UIColor.black
 
         /// 组件1
         let isComp1_Tidy = selectedId == topGift_Tidy?.goodsId_Tidy
         UIView.animate(withDuration: 0.18) {
-            self.comp1Card_Tidy?.backgroundColor = isComp1_Tidy ? selColor_Tidy : .white
+            self.comp1Card_Tidy?.backgroundColor = isComp1_Tidy ? selectedBgColor_Tidy : normalBgColor_Tidy
+            self.comp1PriceLabel_Tidy?.textColor = isComp1_Tidy ? selectedTextColor_Tidy : normalTextColor_Tidy
+            self.comp1SubLabel_Tidy?.textColor = isComp1_Tidy ? selectedTextColor_Tidy : normalTextColor_Tidy
         }
 
         /// 组件2
         comp2Items_Tidy.forEach { item_Tidy in
             let isSel_Tidy = item_Tidy.gift_Tidy?.goodsId_Tidy == selectedId
             UIView.animate(withDuration: 0.18) {
-                item_Tidy.backgroundColor = isSel_Tidy ? selColor_Tidy : .white
+                item_Tidy.applySelectionState_Tidy(
+                    isSelected_Tidy: isSel_Tidy,
+                    normalBgColor_Tidy: normalBgColor_Tidy,
+                    selectedBgColor_Tidy: selectedBgColor_Tidy,
+                    normalTextColor_Tidy: normalTextColor_Tidy,
+                    selectedTextColor_Tidy: selectedTextColor_Tidy
+                )
             }
         }
     }
@@ -361,7 +376,7 @@ class GiftPage_Tidy: UIViewController {
 // MARK: - 礼物 Item 视图
 
 /// 礼物商品单元视图（VStack：图标60×60 → 名称10pt → 价格14pt）
-/// 功能：用于组件2网格，白色圆角背景，选中时变为浅紫色
+/// 功能：用于组件2网格，支持根据选中状态切换背景与文字颜色
 /// 关键属性：gift_Tidy（绑定数据，供外部判断选中态）
 class GiftItemView_Tidy: UIView {
 
@@ -382,7 +397,7 @@ class GiftItemView_Tidy: UIView {
     private let nameLabel_Tidy: UILabel = {
         let l = UILabel()
         l.font      = UIFont.systemFont(ofSize: 10, weight: .regular)
-        l.textColor = UIColor(hexstring_Tidy: "#111111")
+        l.textColor = .white
         l.textAlignment = .center
         l.numberOfLines = 1
         return l
@@ -392,7 +407,7 @@ class GiftItemView_Tidy: UIView {
     private let priceLabel_Tidy: UILabel = {
         let l = UILabel()
         l.font      = UIFont.systemFont(ofSize: 14, weight: .regular)
-        l.textColor = UIColor(hexstring_Tidy: "#111111")
+        l.textColor = .white
         l.textAlignment = .center
         l.numberOfLines = 1
         return l
@@ -412,7 +427,7 @@ class GiftItemView_Tidy: UIView {
     // MARK: - UI 搭建
 
     private func buildUI_Tidy() {
-        backgroundColor = .white
+        backgroundColor = UIColor(hexstring_Tidy: "#2353E4")
         layer.cornerRadius = 15
         layer.masksToBounds = true
 
@@ -442,6 +457,24 @@ class GiftItemView_Tidy: UIView {
         self.gift_Tidy     = gift
         nameLabel_Tidy.text  = gift.goodsName_Tidy  ?? ""
         priceLabel_Tidy.text = gift.goodsPrice_Tidy ?? ""
+    }
+
+    /// 应用礼物项选中态样式
+    /// 参数：
+    /// - isSelected_Tidy: 当前是否选中
+    /// - normalBgColor_Tidy: 未选中背景色
+    /// - selectedBgColor_Tidy: 选中背景色
+    /// - normalTextColor_Tidy: 未选中文字色
+    /// - selectedTextColor_Tidy: 选中文字色
+    /// 返回值：无
+    func applySelectionState_Tidy(isSelected_Tidy: Bool,
+                                  normalBgColor_Tidy: UIColor,
+                                  selectedBgColor_Tidy: UIColor,
+                                  normalTextColor_Tidy: UIColor,
+                                  selectedTextColor_Tidy: UIColor) {
+        backgroundColor = isSelected_Tidy ? selectedBgColor_Tidy : normalBgColor_Tidy
+        nameLabel_Tidy.textColor = isSelected_Tidy ? selectedTextColor_Tidy : normalTextColor_Tidy
+        priceLabel_Tidy.textColor = isSelected_Tidy ? selectedTextColor_Tidy : normalTextColor_Tidy
     }
 }
 

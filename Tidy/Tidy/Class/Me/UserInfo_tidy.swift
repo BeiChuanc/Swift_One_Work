@@ -289,6 +289,9 @@ class UserInfo_Tidy: UIViewController {
 
     /// 搭建渐变头部区域
     private func setupHeader_Tidy() {
+        nameLabel_Tidy.textAlignment = .left
+        bioLabel_Tidy.textAlignment = .left
+        bioLabel_Tidy.numberOfLines = 3
         contentView_Tidy.addSubview(headerView_Tidy)
         headerView_Tidy.addSubview(decoBubble1_Tidy)
         headerView_Tidy.addSubview(decoBubble2_Tidy)
@@ -304,59 +307,68 @@ class UserInfo_Tidy: UIViewController {
 
         headerView_Tidy.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(safeTop + 280)
+            make.height.equalTo(safeTop + 248)
         }
         decoBubble1_Tidy.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(20)
-            make.top.equalToSuperview().offset(-20)
+            make.trailing.equalToSuperview().offset(34)
+            make.top.equalToSuperview().offset(-26)
             make.width.height.equalTo(180)
         }
         decoBubble2_Tidy.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(-40)
-            make.bottom.equalToSuperview().offset(40)
+            make.trailing.equalToSuperview().offset(-8)
+            make.bottom.equalToSuperview().offset(44)
             make.width.height.equalTo(140)
         }
         decoBubble3_Tidy.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(60)
-            make.top.equalToSuperview().offset(safeTop + 30)
+            make.leading.equalToSuperview().offset(22)
+            make.top.equalToSuperview().offset(safeTop + 26)
             make.width.height.equalTo(70)
         }
         backBtn_Tidy.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(14)
-            make.top.equalToSuperview().offset(safeTop + 6)
+            make.leading.equalToSuperview().offset(16)
+            make.top.equalToSuperview().offset(safeTop + 8)
             make.width.height.equalTo(40)
         }
         reportBtn_Tidy.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-14)
+            make.trailing.equalToSuperview().offset(-16)
             make.centerY.equalTo(backBtn_Tidy)
             make.width.height.equalTo(36)
         }
         avatarRingView_Tidy.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(safeTop + 54)
-            make.width.height.equalTo(92)
+            make.leading.equalToSuperview().offset(20)
+            make.top.equalToSuperview().offset(safeTop + 62)
+            make.width.height.equalTo(96)
         }
         avatarView_Tidy.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.width.height.equalTo(80)
+            make.width.height.equalTo(84)
         }
         nameLabel_Tidy.snp.makeConstraints { make in
-            make.top.equalTo(avatarRingView_Tidy.snp.bottom).offset(14)
-            make.leading.trailing.equalToSuperview().inset(24)
+            make.leading.equalTo(avatarRingView_Tidy.snp.trailing).offset(18)
+            make.trailing.equalToSuperview().offset(-22)
+            make.top.equalTo(avatarRingView_Tidy).offset(8)
         }
         bioLabel_Tidy.snp.makeConstraints { make in
             make.top.equalTo(nameLabel_Tidy.snp.bottom).offset(6)
-            make.leading.trailing.equalToSuperview().inset(32)
+            make.leading.equalTo(nameLabel_Tidy)
+            make.trailing.equalToSuperview().offset(-22)
+            make.bottom.lessThanOrEqualToSuperview().offset(-76)
         }
     }
 
     /// 搭建统计数据行（帖子数 / 关注数 / 粉丝数）
     private func setupStats_Tidy() {
         contentView_Tidy.addSubview(statsRow_Tidy)
+        statsRow_Tidy.backgroundColor = UIColor.white.withAlphaComponent(0.96)
+        statsRow_Tidy.layer.cornerRadius = 22
+        statsRow_Tidy.layer.shadowColor = UIColor.black.withAlphaComponent(0.08).cgColor
+        statsRow_Tidy.layer.shadowOffset = CGSize(width: 0, height: 12)
+        statsRow_Tidy.layer.shadowRadius = 24
+        statsRow_Tidy.layer.shadowOpacity = 1
         statsRow_Tidy.snp.makeConstraints { make in
-            make.top.equalTo(headerView_Tidy.snp.bottom).offset(24)
+            make.top.equalTo(headerView_Tidy.snp.bottom).offset(-30)
             make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(60)
+            make.height.equalTo(82)
         }
 
         let statsData_Tidy: [(String, String)] = [
@@ -400,14 +412,14 @@ class UserInfo_Tidy: UIViewController {
         actionRow_Tidy.addSubview(chatBtn_Tidy)
 
         actionRow_Tidy.snp.makeConstraints { make in
-            make.top.equalTo(statsRow_Tidy.snp.bottom).offset(20)
-            make.leading.trailing.equalToSuperview().inset(24)
-            make.height.equalTo(44)
+            make.top.equalTo(statsRow_Tidy.snp.bottom).offset(16)
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.height.equalTo(48)
         }
         followBtn_Tidy.snp.makeConstraints { make in
             make.leading.top.bottom.equalToSuperview()
             make.trailing.equalTo(chatBtn_Tidy.snp.leading).offset(-12)
-            make.width.equalTo(chatBtn_Tidy)
+            make.width.equalTo(chatBtn_Tidy.snp.width).multipliedBy(1.15)
         }
         chatBtn_Tidy.snp.makeConstraints { make in
             make.trailing.top.bottom.equalToSuperview()
@@ -422,7 +434,7 @@ class UserInfo_Tidy: UIViewController {
         segmentContainer_Tidy.addSubview(segmentControl_Tidy)
 
         segmentContainer_Tidy.snp.makeConstraints { make in
-            make.top.equalTo(actionRow_Tidy.snp.bottom).offset(20)
+            make.top.equalTo(actionRow_Tidy.snp.bottom).offset(18)
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(44)
         }
@@ -449,7 +461,7 @@ class UserInfo_Tidy: UIViewController {
 
         contentView_Tidy.addSubview(postsCollectionView_Tidy)
         postsCollectionView_Tidy.snp.makeConstraints { make in
-            make.top.equalTo(segmentContainer_Tidy.snp.bottom).offset(16)
+            make.top.equalTo(segmentContainer_Tidy.snp.bottom).offset(20)
             make.leading.trailing.equalToSuperview().inset(gridPadding_Tidy)
             make.bottom.equalToSuperview().offset(-24)
             collectionViewHeightConstraint_Tidy = make.height.equalTo(0).constraint
@@ -880,7 +892,7 @@ class UserInfoPostCell_Tidy: UICollectionViewCell {
     private let likeIconView_Tidy: UIImageView = {
         let iv = UIImageView()
         iv.image = UIImage(systemName: "heart.fill")
-        iv.tintColor = UIColor(hexstring_Tidy: "#FBB6CE")
+        iv.tintColor = ColorConfig_Tidy.secondaryGradientStart_Tidy
         iv.contentMode = .scaleAspectFit
         return iv
     }()

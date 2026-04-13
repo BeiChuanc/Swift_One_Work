@@ -413,14 +413,14 @@ class PostCardCell_Tidy: UICollectionViewCell {
     
     private func categoryDisplayName_Tidy(_ id_tidy: String) -> String {
         switch id_tidy {
-        case "living_room": return "Living"
-        case "bedroom":     return "Bedroom"
-        case "kitchen":     return "Kitchen"
-        case "bathroom":    return "Bath"
-        case "study":       return "Study"
-        case "storage":     return "Storage"
-        case "garden":      return "Garden"
-        default:            return "Home"
+        case "living_room": return "Lighting"
+        case "bedroom":     return "Pose"
+        case "kitchen":     return "Composition"
+        case "bathroom":    return "Outfit"
+        case "study":       return "Location"
+        case "storage":     return "Editing"
+        case "garden":      return "Gear"
+        default:            return "Photo"
         }
     }
 }
