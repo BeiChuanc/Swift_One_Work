@@ -364,6 +364,14 @@ class Navigation_Epoch: NSObject {
     ) {
         navigate_Epoch(to: Setting_Epoch(), style_epoch: style_epoch, animated_epoch: animated_epoch)
     }
+
+    /// 跳转到 VIP 订阅页
+    static func toVIPSubscription_Epoch(
+        style_epoch: NavigationStyle_Epoch = .push_epoch,
+        animated_epoch: Bool = true
+    ) {
+        navigate_Epoch(to: VIPSubscription_Epoch(), style_epoch: style_epoch, animated_epoch: animated_epoch)
+    }
 }
 
 // MARK: - 举报拉黑后安全导航

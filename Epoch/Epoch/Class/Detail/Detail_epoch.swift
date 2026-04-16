@@ -46,6 +46,16 @@ class Detail_Epoch: UIViewController {
         return textField_Epoch
     }()
 
+    /// 送礼按钮（gift_btn 图标，40×40，位于发送按钮左侧 10）
+    private let giftButton_Epoch: UIButton = {
+        let btn_epoch = UIButton(type: .custom)
+        let img_epoch = UIImage(named: "gift_btn")?.withRenderingMode(.alwaysOriginal)
+        btn_epoch.setImage(img_epoch, for: .normal)
+        btn_epoch.imageView?.contentMode = .scaleAspectFit
+        btn_epoch.imageView?.clipsToBounds = true
+        return btn_epoch
+    }()
+
     /// 发送按钮
     private let sendButton_Epoch = PrimaryActionButton_Epoch(title_Epoch: "Send")
 
@@ -76,6 +86,7 @@ class Detail_Epoch: UIViewController {
         view.addSubview(tableView_Epoch)
         view.addSubview(inputContainerView_Epoch)
         inputContainerView_Epoch.addSubview(commentTextField_Epoch)
+        inputContainerView_Epoch.addSubview(giftButton_Epoch)
         inputContainerView_Epoch.addSubview(sendButton_Epoch)
 
         backgroundDecorationView_Epoch.snp.makeConstraints { make in
@@ -96,7 +107,14 @@ class Detail_Epoch: UIViewController {
         commentTextField_Epoch.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(16)
             make.centerY.equalToSuperview()
-            make.right.equalTo(sendButton_Epoch.snp.left).offset(-12)
+            make.right.equalTo(giftButton_Epoch.snp.left).offset(-10)
+        }
+
+        /// 送礼按钮：40×40，垂直居中，距发送按钮左侧 10
+        giftButton_Epoch.snp.makeConstraints { make in
+            make.right.equalTo(sendButton_Epoch.snp.left).offset(-10)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(40)
         }
 
         sendButton_Epoch.snp.makeConstraints { make in
@@ -104,6 +122,7 @@ class Detail_Epoch: UIViewController {
             make.width.equalTo(94)
         }
 
+        giftButton_Epoch.addTarget(self, action: #selector(giftTapped_Epoch), for: .touchUpInside)
         sendButton_Epoch.addTarget(self, action: #selector(sendTapped_Epoch), for: .touchUpInside)
         commentTextField_Epoch.delegate = self
 
@@ -189,6 +208,14 @@ class Detail_Epoch: UIViewController {
     /// 返回上一页
     @objc private func backTapped_Epoch() {
         Navigation_Epoch.pop_Epoch()
+    }
+
+    /// 送礼按钮点击，以全屏遮罩模式弹出送礼界面
+    @objc private func giftTapped_Epoch() {
+        let giftVC_epoch = GiftPage_Epoch()
+        giftVC_epoch.modalPresentationStyle = .overFullScreen
+        giftVC_epoch.modalTransitionStyle = .crossDissolve
+        present(giftVC_epoch, animated: true)
     }
 
     /// 发送按钮点击

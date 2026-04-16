@@ -141,6 +141,14 @@ class Me_Epoch: UIViewController {
 
     private let editButton_Epoch = PrimaryActionButton_Epoch(title_Epoch: "Edit Profile")
 
+    /// VIP 订阅入口按钮（自管理渐变，文字自适应宽，高度与操作栏一致）
+    private let vipButton_Epoch: VIPGradientButton_Epoch = {
+        let btn_epoch = VIPGradientButton_Epoch()
+        btn_epoch.setContentHuggingPriority(.required, for: .horizontal)
+        btn_epoch.setContentCompressionResistancePriority(.required, for: .horizontal)
+        return btn_epoch
+    }()
+
     /// 设置图标按钮
     private let settingButton_Epoch: UIButton = {
         let btn = UIButton(type: .system)
@@ -182,6 +190,7 @@ class Me_Epoch: UIViewController {
         avatarSepView_Epoch.layer.cornerRadius = avatarSepView_Epoch.bounds.width / 2
         // 横幅渐变随布局同步
         bannerGradientLayer_Epoch?.frame = profileBannerView_Epoch.bounds
+        // VIP 渐变由 VIPGradientButton_Epoch 内部 layoutSubviews 自动同步，无需外部处理
     }
 
     deinit {
@@ -216,6 +225,7 @@ class Me_Epoch: UIViewController {
             self?.tableView_Epoch.reloadData()
         }
         editButton_Epoch.addTarget(self, action: #selector(editTapped_Epoch), for: .touchUpInside)
+        vipButton_Epoch.addTarget(self, action: #selector(vipTapped_Epoch), for: .touchUpInside)
         settingButton_Epoch.addTarget(self, action: #selector(settingTapped_Epoch), for: .touchUpInside)
         avatarView_Epoch.onTapped_Epoch = { [weak self] in
             self?.openEdit_Epoch()
@@ -271,7 +281,7 @@ class Me_Epoch: UIViewController {
         statStack_epoch.distribution = .fillEqually
         headerContainerView_Epoch.addSubview(statStack_epoch)
 
-        let actionStack_epoch = UIStackView(arrangedSubviews: [editButton_Epoch, settingButton_Epoch])
+        let actionStack_epoch = UIStackView(arrangedSubviews: [editButton_Epoch, vipButton_Epoch, settingButton_Epoch])
         actionStack_epoch.axis = .horizontal
         actionStack_epoch.spacing = 12
         headerContainerView_Epoch.addSubview(actionStack_epoch)
@@ -338,6 +348,10 @@ class Me_Epoch: UIViewController {
         }
 
         editButton_Epoch.snp.makeConstraints { make in
+            make.height.equalTo(52)
+        }
+
+        vipButton_Epoch.snp.makeConstraints { make in
             make.height.equalTo(52)
         }
 
@@ -428,6 +442,11 @@ class Me_Epoch: UIViewController {
 
     @objc private func editTapped_Epoch() {
         openEdit_Epoch()
+    }
+
+    /// 打开 VIP 订阅页
+    @objc private func vipTapped_Epoch() {
+        Navigation_Epoch.toVIPSubscription_Epoch(style_epoch: .push_epoch)
     }
 
     @objc private func settingTapped_Epoch() {
@@ -805,4 +824,48 @@ final class MeEmptyPostCell_Epoch: UITableViewCell {
         }
     }
 
+}
+
+// MARK: - VIP 渐变入口按钮
+
+/// VIP 订阅入口按钮
+/// 核心作用：自管理渐变背景图层，覆写 layoutSubviews 确保在任意父视图（含 tableHeaderView）内 frame 始终正确
+/// 设计思路：与 PrimaryActionButton_Epoch 同样原理，通过 layoutSubviews 同步 CAGradientLayer.frame
+private final class VIPGradientButton_Epoch: UIButton {
+
+    /// 渐变图层
+    private let gradientLayer_Epoch = CAGradientLayer()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupUI_Epoch()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        gradientLayer_Epoch.frame = bounds
+    }
+
+    /// 配置按钮样式与渐变
+    private func setupUI_Epoch() {
+        setTitle("VIP", for: .normal)
+        setTitleColor(.white, for: .normal)
+        titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        layer.cornerRadius = 26
+        clipsToBounds = true
+        contentEdgeInsets = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+
+        gradientLayer_Epoch.colors = [
+            UIColor(hexstring_Epoch: "#A678F1").cgColor,
+            UIColor(hexstring_Epoch: "#F93AA7").cgColor
+        ]
+        gradientLayer_Epoch.startPoint  = CGPoint(x: 0, y: 0)
+        gradientLayer_Epoch.endPoint    = CGPoint(x: 1, y: 1)
+        gradientLayer_Epoch.cornerRadius = 26
+        layer.insertSublayer(gradientLayer_Epoch, at: 0)
+    }
 }
