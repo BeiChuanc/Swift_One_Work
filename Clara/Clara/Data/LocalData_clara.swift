@@ -47,6 +47,11 @@ class LocalData_Clara {
     func getAvailableCommenters_Clara(postAuthorUserId_clara: Int) -> [PrewUserModel_Clara] {
         return userList_Clara.filter { $0.userId_Clara != postAuthorUserId_clara }
     }
+    
+    /// 预制对话数据入口（代理 DataSource_Clara 的静态常量）
+    var presetConversation_Clara: [(Bool, String, String)] {
+        return DataSource_Clara.presetConversation_Clara
+    }
 }
 
 // MARK: - 静态数据源
@@ -77,6 +82,15 @@ private struct DataSource_Clara {
         ("Quiet Garden Fit", "This is the kind of outfit I reach for when I want to feel comfortable and put together at the same time. Light fabric, gentle colors, and a simple bag make it easy to wear while still feeling thoughtfully styled.", "title10"),
     ]
     
+    /// 预制对话数据（isMine, 内容, 时间）
+    /// 用于进入聊天页面时注入一段符合主题的示范对话，双方各两条消息
+    static let presetConversation_Clara: [(Bool, String, String)] = [
+        (false, "Hey! I just saw your latest post — the Rose Morning Layers look was honestly stunning. I love how you balanced the blush tones without it feeling too sweet. How do you usually build a color story from scratch when you're planning an outfit?", "09:12"),
+        (true,  "Thank you, that really means a lot! I usually start with a single anchor color — something soft like rose or cream — and then build outward with neutrals. The key is keeping the textures light so the palette feels airy rather than heavy. Once you have that foundation, everything else kind of falls into place naturally.", "09:14"),
+        (false, "That's such a clean approach. I've been trying to lean into pastels this spring but always end up reverting to safe neutrals because I'm not sure how to carry the color all the way through. Do you think accessories are the easiest starting point for someone just experimenting?", "09:16"),
+        (true,  "Definitely! Starting with one small accent piece — like a dusty pink bag or a soft lavender scarf — is a low-commitment way to test a new palette. Keep the rest of the outfit simple and neutral, let that one piece do the talking, and you'll start to see how the whole mood shifts. Once you trust the color, it becomes second nature.", "09:18"),
+    ]
+
     /// 评论列表 (评论1, 评论2)
     static let comments_Clara: [(String, String)] = [
         ("The rose and cream palette feels so gentle. I would totally wear this for a spring brunch.", "Love how the layers stay soft without making the look feel heavy."),

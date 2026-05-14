@@ -113,6 +113,18 @@ class Login_Clara: UIViewController {
         return v
     }()
 
+    /// Apple 登录按钮
+    private lazy var appleLoginButton_Clara: AppleLoginBt_Clara = {
+        AppleLoginBt_Clara { [weak self] in
+            self?.handleAppleLoginTap_Clara()
+        }
+    }()
+
+    /// Apple 登录管理器
+    private lazy var appleLoginManager_Clara: AppleLoginManager_Clara = {
+        AppleLoginManager_Clara(viewController_Clara: self)
+    }()
+
     /// 协议标签
     private var protocolLabel_Clara: UILabel?
 
@@ -317,9 +329,17 @@ class Login_Clara: UIViewController {
 
     /// 搭建注册跳转提示行
     private func setupRegisterPrompt_Clara() {
+        // 在登录按钮下方 10pt 添加 Apple 登录按钮
+        formCard_Clara.addSubview(appleLoginButton_Clara)
+        appleLoginButton_Clara.snp.makeConstraints { make in
+            make.top.equalTo(loginButton_Clara.snp.bottom).offset(10)
+            make.left.right.equalToSuperview().inset(20)
+            make.height.equalTo(50)
+        }
+
         formCard_Clara.addSubview(registerPromptView_Clara)
         registerPromptView_Clara.snp.makeConstraints { make in
-            make.top.equalTo(loginButton_Clara.snp.bottom).offset(18)
+            make.top.equalTo(appleLoginButton_Clara.snp.bottom).offset(18)
             make.centerX.equalToSuperview()
             make.bottom.equalToSuperview().inset(22)
         }
@@ -433,13 +453,19 @@ class Login_Clara: UIViewController {
             return
         }
 
-        // 使用用户名哈希值作为模拟 userId（项目本地数据无真实服务器）
-        let mockId = abs(username.hashValue) % 100 + 1
-        UserViewModel_Clara.shared_Clara.loginById_Clara(userId_clara: mockId)
+        UserViewModel_Clara.shared_Clara.loginById_Clara(userId_clara: 8454126)
     }
 
     @objc private func registerTapped_Clara() {
         Navigation_Clara.toRegister_Clara(style_clara: .push_clara)
+    }
+
+    /// 触发 Apple 登录流程
+    private func handleAppleLoginTap_Clara() {
+        appleLoginManager_Clara.startAppleLogin_Clara { [weak self] account_Clara in
+            guard self != nil else { return }
+            UserViewModel_Clara.shared_Clara.loginById_Clara(userId_clara: 9999)
+        } failure_Clara: { errorMsg_Clara in }
     }
 
     /// 顶部关闭按钮点击事件

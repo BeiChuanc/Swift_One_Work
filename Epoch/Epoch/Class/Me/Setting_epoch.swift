@@ -262,9 +262,9 @@ class Setting_Epoch: UIViewController {
         let content_epoch: String
         switch type_Epoch {
         case .terms_Epoch:
-            content_epoch = "These terms explain account behavior, safe sharing, creator responsibility and moderation rules when publishing content in Epoch."
+            content_epoch = "terms.png"
         case .privacy_Epoch:
-            content_epoch = "This privacy policy explains how locally stored profile data, media picks and chat previews are used only inside the app experience."
+            content_epoch = "privacy.png"
         case .eula_Epoch:
             content_epoch = "This end user license explains access conditions and acceptable usage."
         case .custom_Epoch(let title_epoch):

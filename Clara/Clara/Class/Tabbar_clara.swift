@@ -135,7 +135,7 @@ class TabBar_Clara: UITabBarController {
 
     private func setupUI_Clara() {
         // 配置底部背景视图
-        tabBgView_Clara.backgroundColor = UIColor.white.withAlphaComponent(0.61)
+        tabBgView_Clara.backgroundColor = UIColor.white.withAlphaComponent(0.85)
         tabBgView_Clara.layer.masksToBounds = true
         tabBgView_Clara.isUserInteractionEnabled = false
         view.addSubview(tabBgView_Clara)

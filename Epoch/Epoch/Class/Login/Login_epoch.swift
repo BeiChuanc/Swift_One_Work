@@ -278,9 +278,9 @@ class Login_Epoch: UIViewController {
         // 协议
         let protocolLabel_epoch = ProtocolHelper_Epoch.createProtocolTextLabel_Epoch(
             firstProtocol_Epoch: .terms_Epoch,
-            firstContent_Epoch: "These terms describe acceptable sharing behavior, creator responsibility and safe publishing rules inside Epoch.",
+            firstContent_Epoch: "terms.png",
             secondProtocol_Epoch: .privacy_Epoch,
-            secondContent_Epoch: "This policy explains how local profile data, selected media and chat previews are used only for your in-app experience.",
+            secondContent_Epoch: "privacy.png",
             from: self
         )
         sheetContent_Epoch.addSubview(protocolLabel_epoch)

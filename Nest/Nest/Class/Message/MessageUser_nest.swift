@@ -3,11 +3,11 @@ import UIKit
 import SnapKit
 
 // MARK: - 与用户聊天界面
-/// 核心作用：提供两人实时聊天界面，包含消息列表、输入框和视频通话入口
+/// 核心作用：提供两人实时聊天界面，包含消息列表和输入框
 /// 设计思路：
 ///   - 沉浸式渐变顶栏（紧贴屏幕顶部，波浪底边）+ 头像 + 用户名 + 简介 + 返回/举报按钮
 ///   - UITableView 展示消息气泡（自己：右侧渐变气泡；对方：左侧白色气泡 + 头像）
-///   - 底部输入栏（上方两角圆角 + 渐变发送按钮容器 + 视频通话按钮）
+///   - 底部输入栏（上方两角圆角 + 渐变发送按钮容器）
 /// 联动逻辑：
 ///   - 从该页进入用户中心并取消关注 → 自动返回消息列表
 ///   - 响应 messageStateDidChangeNotification_Nest 实时更新消息
@@ -63,23 +63,6 @@ class MessageUser_Nest: UIViewController {
         tf_Nest.leftViewMode = .always
         tf_Nest.returnKeyType = .send
         return tf_Nest
-    }()
-
-    /// 视频通话按钮（渐变圆形容器）
-    private let videoCallContainer_Nest: UIView = {
-        let v_Nest = UIView()
-        v_Nest.backgroundColor = ColorConfig_Nest.primaryGradientEnd_Nest.withAlphaComponent(0.12)
-        v_Nest.layer.cornerRadius = 20
-        return v_Nest
-    }()
-
-    private let videoCallBtn_Nest: UIButton = {
-        let btn_Nest = UIButton(type: .custom)
-        let cfg_Nest = UIImage.SymbolConfiguration(pointSize: 15, weight: .semibold)
-        btn_Nest.setImage(UIImage(systemName: "video.fill", withConfiguration: cfg_Nest), for: .normal)
-        btn_Nest.tintColor = ColorConfig_Nest.primaryGradientEnd_Nest
-        btn_Nest.backgroundColor = .clear
-        return btn_Nest
     }()
 
     /// 发送按钮（使用容器避免 CAGradientLayer 遮挡图标）
@@ -156,17 +139,11 @@ class MessageUser_Nest: UIViewController {
     }
 
     private func buildInputBar_Nest() {
-        // 视频通话按钮
-        videoCallContainer_Nest.addSubview(videoCallBtn_Nest)
-        videoCallBtn_Nest.snp.makeConstraints { make_Nest in make_Nest.edges.equalToSuperview() }
-        videoCallBtn_Nest.addTarget(self, action: #selector(onVideoCallTapped_Nest), for: .touchUpInside)
-
         // 发送按钮
         sendContainer_Nest.addSubview(sendBtn_Nest)
         sendBtn_Nest.snp.makeConstraints { make_Nest in make_Nest.edges.equalToSuperview() }
         sendBtn_Nest.addTarget(self, action: #selector(onSendTapped_Nest), for: .touchUpInside)
 
-        inputBar_Nest.addSubview(videoCallContainer_Nest)
         inputBar_Nest.addSubview(inputField_Nest)
         inputBar_Nest.addSubview(sendContainer_Nest)
         view.addSubview(inputBar_Nest)
@@ -182,20 +159,15 @@ class MessageUser_Nest: UIViewController {
             make_Nest.leading.trailing.bottom.equalToSuperview()
             make_Nest.height.equalTo(66)
         }
-        videoCallContainer_Nest.snp.makeConstraints { make_Nest in
-            make_Nest.leading.equalToSuperview().offset(14)
-            make_Nest.centerY.equalToSuperview().offset(-2)
-            make_Nest.width.height.equalTo(40)
-        }
         sendContainer_Nest.snp.makeConstraints { make_Nest in
             make_Nest.trailing.equalToSuperview().offset(-14)
             make_Nest.centerY.equalToSuperview().offset(-2)
             make_Nest.width.height.equalTo(40)
         }
         inputField_Nest.snp.makeConstraints { make_Nest in
-            make_Nest.leading.equalTo(videoCallContainer_Nest.snp.trailing).offset(10)
+            make_Nest.leading.equalToSuperview().offset(14)
             make_Nest.trailing.equalTo(sendContainer_Nest.snp.leading).offset(-10)
-            make_Nest.centerY.equalTo(videoCallContainer_Nest)
+            make_Nest.centerY.equalTo(sendContainer_Nest)
             make_Nest.height.equalTo(40)
         }
 
@@ -282,11 +254,7 @@ class MessageUser_Nest: UIViewController {
         }
     }
 
-    @objc private func onSendTapped_Nest()     { sendMessage_Nest() }
-    @objc private func onVideoCallTapped_Nest() {
-        guard let user_Nest = userModel_Nest else { return }
-        Navigation_Nest.toVideoChat_Nest(with: user_Nest)
-    }
+    @objc private func onSendTapped_Nest()  { sendMessage_Nest() }
     @objc private func onStateChanged_Nest() { loadData_Nest() }
     @objc private func dismissKeyboard_Nest() { view.endEditing(true) }
 

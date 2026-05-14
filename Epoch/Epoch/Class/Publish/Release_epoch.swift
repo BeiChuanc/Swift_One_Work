@@ -869,7 +869,7 @@ class Release_Epoch: UIViewController {
     @objc private func eulaTapped_Epoch() {
         ProtocolHelper_Epoch.showProtocol_Epoch(
             type_Epoch: .eula_Epoch,
-            content_Epoch: "This app is provided for creative sharing. Do not upload harmful, violent or private content without consent. You are responsible for any content you publish and any media you select from your device.",
+            content_Epoch: "eula.png",
             from: self
         )
     }

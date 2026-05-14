@@ -119,14 +119,6 @@ class MessageUser_Clara: UIViewController {
         return btn
     }()
 
-    private let videoCallButton_Clara: UIButton = {
-        let btn = UIButton(type: .system)
-        let cfg = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
-        btn.setImage(UIImage(systemName: "video.fill", withConfiguration: cfg), for: .normal)
-        btn.tintColor = ColorConfig_Clara.primaryGradientEnd_Clara
-        return btn
-    }()
-
     private let emptyStateView_Clara: UIView = {
         let v = UIView()
         v.isHidden = true
@@ -322,14 +314,6 @@ class MessageUser_Clara: UIViewController {
             make.left.right.equalToSuperview().inset(10)
         }
 
-        inputPanel_Clara.addSubview(videoCallButton_Clara)
-        videoCallButton_Clara.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(12)
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(36)
-        }
-        videoCallButton_Clara.addTarget(self, action: #selector(videoCallTapped_Clara), for: .touchUpInside)
-
         inputPanel_Clara.addSubview(sendButton_Clara)
         sendButton_Clara.snp.makeConstraints { make in
             make.right.equalToSuperview().inset(12)
@@ -340,7 +324,7 @@ class MessageUser_Clara: UIViewController {
 
         inputPanel_Clara.addSubview(inputField_Clara)
         inputField_Clara.snp.makeConstraints { make in
-            make.left.equalTo(videoCallButton_Clara.snp.right).offset(8)
+            make.left.equalToSuperview().offset(12)
             make.right.equalTo(sendButton_Clara.snp.left).offset(-8)
             make.top.bottom.equalToSuperview().inset(10)
         }
@@ -444,15 +428,6 @@ class MessageUser_Clara: UIViewController {
             chatType_clara: .personal_clara,
             id_clara: uid
         )
-    }
-
-    /// 点击视频通话按钮进入视频通话界面
-    @objc private func videoCallTapped_Clara() {
-        guard let user = userModel_Clara else { return }
-        let videoVC = VideoChat_Clara()
-        videoVC.userModel_Clara = user
-        videoVC.modalPresentationStyle = .fullScreen
-        present(videoVC, animated: true)
     }
 
     /// 举报用户

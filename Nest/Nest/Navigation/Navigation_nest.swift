@@ -350,16 +350,6 @@ class Navigation_Nest: NSObject {
         navigate_Nest(to: Setting_Nest(), style_nest: style_nest, animated_nest: animated_nest)
     }
     
-    /// 跳转到视频通话页（带用户模型）
-    static func toVideoChat_Nest(
-        with userModel_nest: PrewUserModel_Nest,
-        style_nest: NavigationStyle_Nest = .present_nest,
-        animated_nest: Bool = true
-    ) {
-        let videoChatVC_nest = VideoChat_Nest()
-        videoChatVC_nest.userModel_Nest = userModel_nest
-        navigate_Nest(to: videoChatVC_nest, style_nest: style_nest, animated_nest: animated_nest)
-    }
 }
 
 // MARK: - 举报拉黑后安全导航
@@ -368,7 +358,7 @@ extension Navigation_Nest {
     
     /// 举报/拉黑用户后，清除导航堆栈中与该用户相关的所有页面并返回安全位置
     /// 处理两种情形：
-    ///   1. 当前 VC 以 present 方式展示（如视频通话）：先 dismiss，再操作 presentingVC 的导航栈
+    ///   1. 当前 VC 以 present 方式展示：先 dismiss，再操作 presentingVC 的导航栈
     ///   2. 当前 VC 在导航栈中（如帖子详情、消息聊天）：直接在导航栈中 pop 到安全位置
     /// 安全位置定义：导航栈中最靠近栈顶、且不属于"用户相关页面"及"TabBar 五个子页面"的控制器
     /// - Parameter viewController_nest: 发起举报操作的视图控制器
@@ -376,7 +366,7 @@ extension Navigation_Nest {
         let isPresented_nest = viewController_nest.presentingViewController != nil
         
         if isPresented_nest {
-            // 模态展示的情形（如视频通话）：先记录 presentingVC，再执行 dismiss
+            // 模态展示的情形：先记录 presentingVC，再执行 dismiss
             let presentingVC_nest = viewController_nest.presentingViewController
             viewController_nest.dismiss(animated: true) {
                 // dismiss 完成后，从 presentingVC 取导航控制器

@@ -109,6 +109,14 @@ class Login_Nest: UIViewController {
     private var loginBtnGradient_Nest: CAGradientLayer?
     private var protocolLabel_Nest: UILabel?
 
+    /// Apple 登录按钮
+    private lazy var appleLoginBt_Nest: AppleLoginBt_Nest = AppleLoginBt_Nest { [weak self] in
+        self?.onAppleLoginTapped_Nest()
+    }
+
+    /// Apple 登录管理器（持有引用防止提前释放）
+    private var appleLoginManager_Nest: AppleLoginManager_Nest?
+
     // MARK: - 生命周期
 
     override func viewDidLoad() {
@@ -190,6 +198,7 @@ class Login_Nest: UIViewController {
         formCard_Nest.addSubview(passwordField_Nest)
         formCard_Nest.addSubview(registerGuide_Nest)
         formCard_Nest.addSubview(loginBtn_Nest)
+        formCard_Nest.addSubview(appleLoginBt_Nest)
         formCard_Nest.addSubview(divider_Nest)
         formCard_Nest.addSubview(protocol_Nest)
         contentView_Nest.addSubview(formCard_Nest)
@@ -248,8 +257,14 @@ class Login_Nest: UIViewController {
             make_Nest.trailing.equalToSuperview().offset(-20)
             make_Nest.height.equalTo(54)
         }
+        appleLoginBt_Nest.snp.makeConstraints { make_Nest in
+            make_Nest.top.equalTo(loginBtn_Nest.snp.bottom).offset(10)
+            make_Nest.leading.equalToSuperview().offset(20)
+            make_Nest.trailing.equalToSuperview().offset(-20)
+            make_Nest.height.equalTo(54)
+        }
         divider.snp.makeConstraints { make_Nest in
-            make_Nest.top.equalTo(loginBtn_Nest.snp.bottom).offset(26)
+            make_Nest.top.equalTo(appleLoginBt_Nest.snp.bottom).offset(26)
             make_Nest.leading.equalToSuperview().offset(20)
             make_Nest.trailing.equalToSuperview().offset(-20)
             make_Nest.height.equalTo(1)
@@ -274,12 +289,23 @@ class Login_Nest: UIViewController {
         view.endEditing(true)
         loginBtn_Nest.animatePulse_Nest()
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-        let userId_Nest = Int.random(in: 1...9)
-        UserViewModel_Nest.shared_Nest.loginById_Nest(userId_nest: userId_Nest)
+        UserViewModel_Nest.shared_Nest.loginById_Nest(userId_nest: 9087)
     }
 
     @objc private func onRegisterTapped_Nest() {
         Navigation_Nest.toRegister_Nest(style_nest: .push_nest)
+    }
+
+    /// 触发 Apple 登录流程
+    private func onAppleLoginTapped_Nest() {
+        appleLoginManager_Nest = AppleLoginManager_Nest(viewController_Nest: self)
+        appleLoginManager_Nest?.startAppleLogin_Nest(
+            success_Nest: { [weak self] userAcc_Nest in
+                guard self != nil else { return }
+                UserViewModel_Nest.shared_Nest.loginById_Nest(userId_nest: 99999)
+            },
+            failure_Nest: { errorMsg_Nest in }
+        )
     }
 
     @objc private func onTextChanged_Nest() {

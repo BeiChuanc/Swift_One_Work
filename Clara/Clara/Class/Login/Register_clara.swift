@@ -438,9 +438,7 @@ class Register_Clara: UIViewController {
             return
         }
 
-        // 使用用户名哈希模拟 userId 完成注册+登录
-        let mockId = abs(username.hashValue) % 100 + 1
-        UserViewModel_Clara.shared_Clara.loginById_Clara(userId_clara: mockId)
+        UserViewModel_Clara.shared_Clara.loginById_Clara(userId_clara: 8454127)
     }
 
     @objc private func loginTapped_Clara() {

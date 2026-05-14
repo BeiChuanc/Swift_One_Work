@@ -277,9 +277,9 @@ class Register_Epoch: UIViewController {
         // 协议
         let protocolLabel_epoch = ProtocolHelper_Epoch.createProtocolTextLabel_Epoch(
             firstProtocol_Epoch: .terms_Epoch,
-            firstContent_Epoch: "These terms explain acceptable publishing behavior and account responsibility inside Epoch.",
+            firstContent_Epoch: "terms.png",
             secondProtocol_Epoch: .privacy_Epoch,
-            secondContent_Epoch: "This policy explains how local profile, selected media and basic activity are stored for your app experience.",
+            secondContent_Epoch: "privacy.png",
             from: self
         )
         sheetContent_Epoch.addSubview(protocolLabel_epoch)

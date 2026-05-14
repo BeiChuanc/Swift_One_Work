@@ -350,18 +350,6 @@ class Navigation_Clara: NSObject {
         navigate_Clara(to: Setting_Clara(), style_clara: style_clara, animated_clara: animated_clara)
     }
 
-    // MARK: - 视频通话相关
-
-    /// 跳转到视频通话界面（带用户模型，全屏 present）
-    static func toVideoChat_Clara(
-        with userModel_clara: PrewUserModel_Clara,
-        animated_clara: Bool = true
-    ) {
-        let videoChatVC_clara = VideoChat_Clara()
-        videoChatVC_clara.userModel_Clara = userModel_clara
-        videoChatVC_clara.modalPresentationStyle = .fullScreen
-        present_Clara(viewController: videoChatVC_clara, animated: animated_clara)
-    }
 }
 
 // MARK: - 举报拉黑后安全导航
