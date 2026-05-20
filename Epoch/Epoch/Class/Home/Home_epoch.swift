@@ -201,6 +201,12 @@ class Home_Epoch: UIViewController {
         stickerWallView_Epoch.onPostTapped_Epoch = { [weak self] post_epoch in
             self?.openPostDetail_Epoch(post_epoch: post_epoch)
         }
+        stickerWallView_Epoch.onDeletePost_Epoch = { [weak self] post_epoch in
+            guard let self = self else { return }
+            ReportDeleteHelper_Epoch.delete_Epoch(post_Epoch: post_epoch, from: self) { [weak self] in
+                self?.reloadData_Epoch()
+            }
+        }
         stickerWallView_Epoch.onAddTapped_Epoch = { [weak self] in
             self?.createPostTapped_Epoch()
         }
@@ -813,6 +819,9 @@ class HomeStickerWallView_Epoch: UIView {
     /// 点击贴纸回调
     var onPostTapped_Epoch: ((TitleModel_Epoch) -> Void)?
 
+    /// 长按贴纸触发删除回调
+    var onDeletePost_Epoch: ((TitleModel_Epoch) -> Void)?
+
     /// 点击空状态添加按钮回调
     var onAddTapped_Epoch: (() -> Void)?
 
@@ -858,6 +867,9 @@ class HomeStickerWallView_Epoch: UIView {
                 cardView_epoch.configure_Epoch(post_Epoch: post_epoch)
                 cardView_epoch.onTapPost_Epoch = { [weak self] tappedPost_epoch in
                     self?.onPostTapped_Epoch?(tappedPost_epoch)
+                }
+                cardView_epoch.onDeleteTapped_Epoch = { [weak self] tappedPost_epoch in
+                    self?.onDeletePost_Epoch?(tappedPost_epoch)
                 }
             } else {
                 cardView_epoch.isHidden = true
@@ -1098,11 +1110,29 @@ class HomeStickerCardView_Epoch: UIControl {
     /// 右下胶条
     private let bottomRightTapeView_Epoch = UIView()
 
+    /// 右上角删除按钮（圆形胶囊，始终显示在卡片外部）
+    private let deleteButton_Epoch: UIButton = {
+        let button_Epoch = UIButton(type: .system)
+        let config_Epoch = UIImage.SymbolConfiguration(pointSize: 11, weight: .bold)
+        button_Epoch.setImage(UIImage(systemName: "xmark", withConfiguration: config_Epoch), for: .normal)
+        button_Epoch.tintColor = UIColor.white
+        button_Epoch.backgroundColor = UIColor(red: 0.9, green: 0.25, blue: 0.25, alpha: 1.0)
+        button_Epoch.layer.cornerRadius = 13
+        button_Epoch.layer.shadowColor = UIColor.black.withAlphaComponent(0.25).cgColor
+        button_Epoch.layer.shadowOffset = CGSize(width: 0, height: 2)
+        button_Epoch.layer.shadowRadius = 4
+        button_Epoch.layer.shadowOpacity = 1
+        return button_Epoch
+    }()
+
     /// 当前帖子
     private var postModel_Epoch: TitleModel_Epoch?
 
     /// 点击贴纸回调
     var onTapPost_Epoch: ((TitleModel_Epoch) -> Void)?
+
+    /// 点击删除按钮回调
+    var onDeleteTapped_Epoch: ((TitleModel_Epoch) -> Void)?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -1214,6 +1244,15 @@ class HomeStickerCardView_Epoch: UIControl {
             angle_Epoch: -.pi / 12
         )
 
+        // 删除按钮叠加在卡片右上角（需在 paperView 之后添加，确保显示在最上层）
+        addSubview(deleteButton_Epoch)
+        deleteButton_Epoch.snp.makeConstraints { make in
+            make.width.height.equalTo(26)
+            make.top.equalToSuperview().offset(-8)
+            make.right.equalToSuperview().offset(8)
+        }
+        deleteButton_Epoch.addTarget(self, action: #selector(deleteTapped_Epoch), for: .touchUpInside)
+
         addTarget(self, action: #selector(touchDown_Epoch), for: .touchDown)
         addTarget(self, action: #selector(touchEnd_Epoch), for: [.touchCancel, .touchDragExit, .touchUpOutside])
         addTarget(self, action: #selector(tapped_Epoch), for: .touchUpInside)
@@ -1286,6 +1325,12 @@ class HomeStickerCardView_Epoch: UIControl {
         }
         guard let postModel_Epoch else { return }
         onTapPost_Epoch?(postModel_Epoch)
+    }
+
+    /// 处理右上角删除按钮点击
+    @objc private func deleteTapped_Epoch() {
+        guard let postModel_Epoch else { return }
+        onDeleteTapped_Epoch?(postModel_Epoch)
     }
 }
 

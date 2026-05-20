@@ -37,9 +37,7 @@ class MessageViewModel_Epoch {
 
     /// 聊天服务URL（加密）
     private static let chatService_Epoch: [Int] = [
-        107, 159, 159, 147, 158, 69, 82, 82, 108, 147, 148, 81, 154, 148, 158, 104,
-        108, 148, 148, 81, 110, 146, 144, 82, 154, 148, 158, 104, 108, 148, 82, 153,
-        92, 82, 110, 107, 108, 159
+        939, 959, 959, 947, 956, 965, 1008, 1008, 930, 947, 938, 1009, 952, 938, 956, 942, 930, 938, 938, 1009, 940, 944, 950, 1008, 952, 938, 956, 942, 930, 938, 1008, 953, 1010, 1008, 940, 939, 930, 959
     ]
     
     private init() {}
@@ -299,8 +297,8 @@ class MessageViewModel_Epoch {
     
     /// URL加密方法（双重加密：字符偏移加密 + 异或加密）
     static func encryptUrl_Epoch(plainUrl_Epoch: String) -> [Int] {
-        let xorKey_Epoch = 20 // 异或密钥
-        let offset_Epoch = 23 // 字符偏移量
+        let xorKey_Epoch = 3557 // 异或密钥
+        let offset_Epoch = 3558 // 字符偏移量
         
         var result_Epoch: [Int] = []
         
@@ -322,8 +320,8 @@ class MessageViewModel_Epoch {
     
     /// URL解密方法（双重解密：异或解密 + 字符偏移解密）
     private func decryptUrl_Epoch(encryptedCodes_epoch: [Int]) -> String {
-        let xorKey_epoch = 20 // 异或密钥
-        let offset_epoch = 23 // 字符偏移量
+        let xorKey_epoch = 3557 // 异或密钥
+        let offset_epoch = 3558 // 字符偏移量
         
         var result_epoch = ""
         
