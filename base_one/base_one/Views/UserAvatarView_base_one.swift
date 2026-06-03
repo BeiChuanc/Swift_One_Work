@@ -105,7 +105,7 @@ class UserAvatarView_Base_one: UIView {
     
     /// 加载其他用户头像
     private func loadOtherUserAvatar_Base_one(userId_Base_one: Int) {
-        let userInfo_Base_one = UserViewModel_Base_one.shared_Base_one.getUserById_Base_one(userId_Base_one: userId_Base_one)
+        let userInfo_Base_one = UserViewModel_Base_one.shared_Base_one.getUserById_Base_one(userId_base_one: userId_Base_one)
         let color_Base_one = Self.defaultAvatarColors_Base_one[userId_Base_one % Self.defaultAvatarColors_Base_one.count]
         
         guard let headPath_Base_one = userInfo_Base_one.userHead_Base_one, !headPath_Base_one.isEmpty else {
