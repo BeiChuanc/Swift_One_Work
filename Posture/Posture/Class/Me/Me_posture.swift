@@ -194,6 +194,16 @@ class Me_Posture: UIViewController {
         settingsBtn_Posture.layer.cornerRadius = 22
         settingsBtn_Posture.addAction(UIAction { _ in Navigation_Posture.toSetting_Posture() }, for: .touchUpInside)
 
+        // VIP 订阅入口按钮（圆角矩形，背景色与设置按钮一致）
+        let vipBtn_Posture = UIButton(type: .system)
+        vipBtn_Posture.setTitle("VIP", for: .normal)
+        vipBtn_Posture.titleLabel?.font = .systemFont(ofSize: 14, weight: .heavy)
+        vipBtn_Posture.tintColor = UIColor.white.withAlphaComponent(0.88)
+        vipBtn_Posture.setTitleColor(UIColor.white.withAlphaComponent(0.88), for: .normal)
+        vipBtn_Posture.backgroundColor = UIColor.white.withAlphaComponent(0.18)
+        vipBtn_Posture.layer.cornerRadius = 22
+        vipBtn_Posture.addAction(UIAction { _ in Navigation_Posture.toVIPSubscription_Posture() }, for: .touchUpInside)
+
         // 头像环（渐变边框效果：外层纯白，内层深色，中间头像）
         avatarRingView_Posture.backgroundColor = .white
         avatarRingView_Posture.layer.cornerRadius = 58
@@ -239,6 +249,7 @@ class Me_Posture: UIViewController {
         hero_Posture.addSubview(bubble1_Posture)
         hero_Posture.addSubview(bubble2_Posture)
         hero_Posture.addSubview(settingsBtn_Posture)
+        hero_Posture.addSubview(vipBtn_Posture)
         hero_Posture.addSubview(avatarRingView_Posture)
         hero_Posture.addSubview(editOverlayBtn_Posture)
         hero_Posture.addSubview(nameLabel_Posture)
@@ -264,6 +275,13 @@ class Me_Posture: UIViewController {
             make.top.equalToSuperview().offset(safeTop_Posture + 14)
             make.trailing.equalToSuperview().inset(20)
             make.width.height.equalTo(44)
+        }
+        // VIP 按钮：居设置按钮左侧 10pt，高度一致，宽度由内容自适应（左右内边距各16）
+        vipBtn_Posture.snp.makeConstraints { make in
+            make.centerY.equalTo(settingsBtn_Posture)
+            make.trailing.equalTo(settingsBtn_Posture.snp.leading).offset(-10)
+            make.height.equalTo(44)
+            make.width.greaterThanOrEqualTo(64)
         }
         avatarRingView_Posture.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(safeTop_Posture + 62)

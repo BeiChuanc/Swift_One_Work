@@ -379,6 +379,14 @@ class Navigation_Posture: NSObject {
     ) {
         navigate_Posture(to: Setting_Posture(), style_posture: style_posture, animated_posture: animated_posture)
     }
+
+    /// 跳转到 VIP 订阅页
+    static func toVIPSubscription_Posture(
+        style_posture: NavigationStyle_Posture = .push_posture,
+        animated_posture: Bool = true
+    ) {
+        navigate_Posture(to: VIPSubscription_Posture(), style_posture: style_posture, animated_posture: animated_posture)
+    }
 }
 
 // MARK: - 举报拉黑后安全导航

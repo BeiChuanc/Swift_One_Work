@@ -31,6 +31,8 @@ class Detail_Posture: UIViewController {
     private let commentCountLabel_Posture = UILabel()
     private let commentsStackView_Posture = UIStackView()
     private let commentField_Posture = UITextField()
+    /// 礼物按钮：位于发送按钮左侧10pt，点击弹起送礼界面
+    private let giftButton_Posture   = UIButton(type: .custom)
     private var reportButton_Posture: UIButton?
 
     // MARK: - 生命周期
@@ -542,8 +544,15 @@ class Detail_Posture: UIViewController {
         iconView_Posture.tintColor = ColorConfig_Posture.textPlaceholder_Posture
         iconView_Posture.contentMode = .scaleAspectFit
 
+        // 礼物按钮：使用 gift_btn 图标，大小与发送按钮一致（36×36），居发送按钮左侧 10pt
+        let giftImg_Posture = UIImage(named: "gift_btn")?.withRenderingMode(.alwaysOriginal)
+        giftButton_Posture.setImage(giftImg_Posture, for: .normal)
+        giftButton_Posture.imageView?.contentMode = .scaleAspectFit
+        giftButton_Posture.addAction(UIAction { [weak self] _ in self?.showGiftPage_Posture() }, for: .touchUpInside)
+
         bar_Posture.addSubview(iconView_Posture)
         bar_Posture.addSubview(commentField_Posture)
+        bar_Posture.addSubview(giftButton_Posture)
         bar_Posture.addSubview(sendButton_Posture)
 
         iconView_Posture.snp.makeConstraints { make in
@@ -554,7 +563,13 @@ class Detail_Posture: UIViewController {
         commentField_Posture.snp.makeConstraints { make in
             make.leading.equalTo(iconView_Posture.snp.trailing).offset(10)
             make.centerY.equalToSuperview()
+            make.trailing.equalTo(giftButton_Posture.snp.leading).offset(-10)
+        }
+        // 礼物按钮约束：发送按钮左侧 10pt，大小与发送按钮相同
+        giftButton_Posture.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
             make.trailing.equalTo(sendButton_Posture.snp.leading).offset(-10)
+            make.width.height.equalTo(36)
         }
         sendButton_Posture.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
@@ -750,6 +765,18 @@ class Detail_Posture: UIViewController {
         guard !text_Posture.isEmpty else { return }
         commentField_Posture.text = nil
         TitleViewModel_Posture.shared_Posture.releaseComment_Posture(post_posture: post_Posture, content_posture: text_Posture)
+    }
+
+    /// 点击礼物按钮，以模态方式弹起送礼界面
+    /// - Parameters: 无
+    /// - Returns: Void
+    /// - Throws: 无
+    @objc private func showGiftPage_Posture() {
+        let giftPage_Posture = GiftPage_Posture()
+        // 使用 overFullScreen 保留背景，让 GiftPage 的半透明遮罩正常显示
+        giftPage_Posture.modalPresentationStyle = .overFullScreen
+        giftPage_Posture.modalTransitionStyle   = .crossDissolve
+        present(giftPage_Posture, animated: true)
     }
 
     /// 点击作者跳转用户中心
