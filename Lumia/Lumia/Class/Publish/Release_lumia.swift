@@ -403,7 +403,6 @@ class Release_Lumia: UIViewController {
     @objc private func handlePublish_Lumia() {
         // 校验是否登录
         guard UserViewModel_Lumia.shared_Lumia.isLoggedIn_Lumia else {
-            Utils_Lumia.showWarning_Lumia(message_Lumia: "Please login first.")
             Navigation_Lumia.toLogin_Lumia()
             return
         }

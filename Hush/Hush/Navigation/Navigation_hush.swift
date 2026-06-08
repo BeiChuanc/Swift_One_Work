@@ -369,6 +369,14 @@ class Navigation_Hush: NSObject {
     ) {
         navigate_Hush(to: Setting_Hush(), style_hush: style_hush, animated_hush: animated_hush)
     }
+
+    /// 跳转到 VIP 订阅页
+    static func toVIPSubscription_Hush(
+        style_hush: NavigationStyle_Hush = .push_hush,
+        animated_hush: Bool = true
+    ) {
+        navigate_Hush(to: VIPSubscription_Hush(), style_hush: style_hush, animated_hush: animated_hush)
+    }
     
     // MARK: - 时间胶囊相关
     

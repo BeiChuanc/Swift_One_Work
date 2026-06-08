@@ -77,7 +77,7 @@ class TitleViewModel_Lumia {
         // 获取当前用户信息
         let currentUser_lumia = UserViewModel_Lumia.shared_Lumia.getCurrentUser_Lumia()
         
-        let newPostId_lumia = posts_Lumia.count + 20 + 1
+        let newPostId_lumia = currentUser_lumia.userId_Lumia ?? 0 + 1
         
         let newPost_lumia = TitleModel_Lumia(
             titleId_Lumia: newPostId_lumia,

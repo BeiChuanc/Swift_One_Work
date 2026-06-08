@@ -68,6 +68,11 @@ class Me_Lumia: UIViewController {
         profileHeader_Lumia.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: 380)
         profileHeader_Lumia.onSettingsTapped_Lumia = { Navigation_Lumia.toSetting_Lumia() }
         profileHeader_Lumia.onEditTapped_Lumia = { Navigation_Lumia.toEditInfo_Lumia() }
+        profileHeader_Lumia.onVIPTapped_Lumia = { [weak self] in
+            guard let self else { return }
+            let vipVC_Lumia = VIPSubscription_Lumia()
+            Navigation_Lumia.push_Lumia(to: vipVC_Lumia, from: self)
+        }
         profileHeader_Lumia.onTabChanged_Lumia = { [weak self] idx_Lumia in
             self?.selectedTab_Lumia = idx_Lumia
             self?.loadData_Lumia()
@@ -179,6 +184,7 @@ private class MeProfileHeader_Lumia: UIView {
 
     var onSettingsTapped_Lumia: (() -> Void)?
     var onEditTapped_Lumia: (() -> Void)?
+    var onVIPTapped_Lumia: (() -> Void)?
     var onTabChanged_Lumia: ((Int) -> Void)?
 
     // MARK: - UI组件
@@ -250,6 +256,17 @@ private class MeProfileHeader_Lumia: UIView {
         btn_Lumia.layer.cornerRadius = 19
         btn_Lumia.layer.borderWidth = 1
         btn_Lumia.layer.borderColor = UIColor.white.withAlphaComponent(0.35).cgColor
+        return btn_Lumia
+    }()
+
+    /// VIP 按钮：使用 Assets 中的 vip_btn 图片，宽度随图片自适应，高度与 Edit 按钮保持一致
+    private let vipButton_Lumia: UIButton = {
+        let btn_Lumia = UIButton(type: .custom)
+        btn_Lumia.setImage(UIImage(named: "vip_btn")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        btn_Lumia.imageView?.contentMode = .scaleAspectFit
+        btn_Lumia.contentMode = .scaleAspectFit
+        btn_Lumia.layer.cornerRadius = 19
+        btn_Lumia.clipsToBounds = true
         return btn_Lumia
     }()
 
@@ -365,6 +382,15 @@ private class MeProfileHeader_Lumia: UIView {
         }
         editButton_Lumia.contentEdgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
         editButton_Lumia.addTarget(self, action: #selector(handleEdit_Lumia), for: .touchUpInside)
+
+        // VIP 按钮：位于 Edit/Settings 按钮正下方 10pt，紧贴右边缘，宽度由 vip_btn 图片自适应
+        bgView_Lumia.addSubview(vipButton_Lumia)
+        vipButton_Lumia.snp.makeConstraints { make in
+            make.top.equalTo(settingsButton_Lumia.snp.bottom).offset(10)
+            make.trailing.equalToSuperview()
+            make.height.equalTo(38)
+        }
+        vipButton_Lumia.addTarget(self, action: #selector(handleVIP_Lumia), for: .touchUpInside)
     }
 
     /// 创建装饰气泡
@@ -542,6 +568,7 @@ private class MeProfileHeader_Lumia: UIView {
 
     @objc private func handleSettings_Lumia() { onSettingsTapped_Lumia?() }
     @objc private func handleEdit_Lumia() { onEditTapped_Lumia?() }
+    @objc private func handleVIP_Lumia() { onVIPTapped_Lumia?() }
 
     @objc private func handleTabTap_Lumia(_ sender: UIButton) {
         UIImpactFeedbackGenerator(style: .light).impactOccurred()

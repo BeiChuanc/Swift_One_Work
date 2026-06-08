@@ -175,13 +175,26 @@ class Home_Lumia: UIViewController {
     // MARK: - 通知
 
     private func setupObservers_Lumia() {
+        // 用户状态变更（登录/登出）→ 整页刷新
         NotificationCenter.default.addObserver(
             self, selector: #selector(handleStateChange_Lumia),
             name: UserViewModel_Lumia.userStateDidChangeNotification_Lumia, object: nil
         )
+        // 主题讨论区评论增/删 → 同步刷新首页评论数与预览
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(handleDiscussionChange_Lumia),
+            name: FilmViewModel_Lumia.discussionCommentDidChangeNotification_Lumia, object: nil
+        )
     }
 
     @objc private func handleStateChange_Lumia() { reloadAll_Lumia() }
+
+    /// 仅刷新主题讨论区模块，避免整页重建影响性能
+    @objc private func handleDiscussionChange_Lumia() {
+        let theme_Lumia = filmVM_Lumia.getCurrentTheme_Lumia()
+        let comments_Lumia = filmVM_Lumia.getDiscussionComments_Lumia(themeId: theme_Lumia.themeId_Lumia)
+        themeSection_Lumia.configure_Lumia(theme: theme_Lumia, comments: comments_Lumia)
+    }
     deinit { NotificationCenter.default.removeObserver(self) }
 
     // MARK: - 事件处理
@@ -329,13 +342,18 @@ class Home_Lumia: UIViewController {
     }
 }
 
-// MARK: - 胶片 ViewModel
+// MARK: 胶片ViewModel
 
 /// 胶片功能业务逻辑层
 /// 核心作用：管理今日胶片卷的曝光、冲洗，胶片柜列表，时光胶囊的创建/解锁，主题征集的提交/读取
 class FilmViewModel_Lumia {
 
     static let shared_Lumia = FilmViewModel_Lumia()
+
+    // MARK: - 通知名称
+
+    /// 主题讨论区评论变更通知（增/删）
+    static let discussionCommentDidChangeNotification_Lumia = Notification.Name("DiscussionCommentDidChange_Lumia")
 
     /// 讨论区评论存储（themeId → 评论列表），内存持久，进程内有效
     private var discussionComments_Lumia: [Int: [ThemeDiscussionComment_Lumia]] = [:]
@@ -368,11 +386,21 @@ class FilmViewModel_Lumia {
             discussionComments_Lumia[themeId] = []
         }
         discussionComments_Lumia[themeId]?.append(comment_Lumia)
+        postDiscussionChangeNotification_Lumia()
     }
 
     /// 删除指定评论
     func deleteDiscussionComment_Lumia(themeId: Int, commentId: Int) {
         discussionComments_Lumia[themeId]?.removeAll { $0.commentId_Lumia == commentId }
+        postDiscussionChangeNotification_Lumia()
+    }
+
+    /// 发出主题讨论区评论变更通知，供首页及时刷新评论数与预览
+    private func postDiscussionChangeNotification_Lumia() {
+        NotificationCenter.default.post(
+            name: FilmViewModel_Lumia.discussionCommentDidChangeNotification_Lumia,
+            object: nil
+        )
     }
 
     /// 预置示例评论（让讨论区初始有内容）
@@ -388,6 +416,10 @@ class FilmViewModel_Lumia {
             (2, 2, "Found a neon sign reflecting off a puddle. Pure magic on film."),
             (3, 0, "Natural light portraits are so honest. No filter, no pretense."),
             (3, 1, "Shot my grandma in morning light. The softness on Portra 160 is unmatched."),
+            (4, 0, "Found incredible symmetry in a downtown parking structure — film just loves hard lines."),
+            (4, 1, "Shot the fire escape shadows at noon. The geometry is brutal and beautiful."),
+            (4, 2, "Black and white really amplifies the urban geometry theme. Ilford Delta 100 was perfect."),
+            (4, 3, "Every crosswalk, every grid window — the city is full of patterns waiting to be framed."),
         ]
         var counter_Lumia = 1
         for (themeId_Lumia, userIdx_Lumia, content_Lumia) in seedData_Lumia {
@@ -1490,7 +1522,7 @@ private class ThemeDiscussionView_Lumia: UIView {
         themeNameLabel_Lumia.text = theme.themeTitle_Lumia
         themeDescLabel_Lumia.text = theme.themeDesc_Lumia
 
-        // 横幅渐变
+        // 横幅渐变：先移除旧层，再重建；立即赋帧避免 layoutSubviews 延迟导致首次显示为空白
         bannerGradient_Lumia?.removeFromSuperlayer()
         let base_Lumia = UIColor(hexstring_Lumia: theme.accentColor_Lumia)
         let grad_Lumia = CAGradientLayer()
@@ -1498,6 +1530,9 @@ private class ThemeDiscussionView_Lumia: UIView {
         grad_Lumia.startPoint = CGPoint(x: 0, y: 0.5)
         grad_Lumia.endPoint = CGPoint(x: 1, y: 0.5)
         grad_Lumia.cornerRadius = 14
+        // 提前赋 frame：此时 themeBanner_Lumia 已经过初次布局，bounds 有效；
+        // layoutSubviews 后会再次同步，保证旋转/尺寸变化也能正确更新
+        grad_Lumia.frame = themeBanner_Lumia.bounds
         themeBanner_Lumia.layer.insertSublayer(grad_Lumia, at: 0)
         bannerGradient_Lumia = grad_Lumia
 
@@ -1782,12 +1817,41 @@ extension ThemeDiscussionDetail_Lumia: UITableViewDelegate, UITableViewDataSourc
         let cell_Lumia = tableView.dequeueReusableCell(
             withIdentifier: DiscussionCommentCell_Lumia.reuseId_Lumia, for: indexPath
         ) as! DiscussionCommentCell_Lumia
+
         let comment_Lumia = comments_Lumia[indexPath.row]
-        let isOwn_Lumia = UserViewModel_Lumia.shared_Lumia.isCurrentUser_Lumia(userId_lumia: comment_Lumia.userId_Lumia)
-        cell_Lumia.configure_Lumia(comment: comment_Lumia, isOwn: isOwn_Lumia)
-        cell_Lumia.onActionTapped_Lumia = { [weak self] in
-            self?.handleCommentAction_Lumia(comment: comment_Lumia, isOwn: isOwn_Lumia, indexPath: indexPath)
-        }
+
+        // 填充评论数据
+        cell_Lumia.configure_Lumia(comment_Lumia: comment_Lumia)
+
+        // 通过 ReportDeleteHelper_Lumia 创建举报/删除按钮，保持与全局规范一致
+        let actionBtn_Lumia = ReportDeleteHelper_Lumia.createDiscussionCommentButton_Lumia(
+            comment_Lumia: comment_Lumia,
+            size_Lumia: 12,
+            color_Lumia: UIColor(hexstring_Lumia: "#C0A8D8"),
+            from: self,
+            onDelete_Lumia: { [weak self] in
+                // 确认删除后从 FilmViewModel 移除该评论并刷新列表
+                guard let self else { return }
+                FilmViewModel_Lumia.shared_Lumia.deleteDiscussionComment_Lumia(
+                    themeId: self.theme_Lumia.themeId_Lumia,
+                    commentId: comment_Lumia.commentId_Lumia
+                )
+                self.reloadComments_Lumia()
+                self.onCommentAdded_Lumia?()
+            },
+            onBlock_Lumia: { [weak self] in
+                // 拉黑后同步删除该用户在讨论区的所有评论并刷新列表
+                guard let self else { return }
+                FilmViewModel_Lumia.shared_Lumia.deleteDiscussionComment_Lumia(
+                    themeId: self.theme_Lumia.themeId_Lumia,
+                    commentId: comment_Lumia.commentId_Lumia
+                )
+                self.reloadComments_Lumia()
+                self.onCommentAdded_Lumia?()
+            }
+        )
+        cell_Lumia.insertActionButton_Lumia(actionBtn_Lumia)
+
         return cell_Lumia
     }
 
@@ -1797,42 +1861,6 @@ extension ThemeDiscussionDetail_Lumia: UITableViewDelegate, UITableViewDataSourc
 
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return 72
-    }
-
-    /// 处理评论举报/删除操作
-    private func handleCommentAction_Lumia(comment: ThemeDiscussionComment_Lumia,
-                                            isOwn: Bool, indexPath: IndexPath) {
-        if isOwn {
-            // 自己的评论 → 使用系统 ActionSheet 确认删除
-            let sheet_Lumia = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-            sheet_Lumia.addAction(UIAlertAction(title: "Delete Comment", style: .destructive) { [weak self] _ in
-                guard let self = self else { return }
-                FilmViewModel_Lumia.shared_Lumia.deleteDiscussionComment_Lumia(
-                    themeId: self.theme_Lumia.themeId_Lumia,
-                    commentId: comment.commentId_Lumia
-                )
-                self.reloadComments_Lumia()
-                self.onCommentAdded_Lumia?()
-            })
-            sheet_Lumia.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-            present(sheet_Lumia, animated: true)
-        } else {
-            // 他人的评论 → 用 ReportDeleteHelper 拉黑评论者（传入由评论信息构造的用户对象）
-            let reportUser_Lumia = PrewUserModel_Lumia()
-            reportUser_Lumia.userId_Lumia = comment.userId_Lumia
-            reportUser_Lumia.userName_Lumia = comment.userName_Lumia
-            reportUser_Lumia.userHead_Lumia = comment.userHead_Lumia
-            ReportDeleteHelper_Lumia.block_Lumia(user_Lumia: reportUser_Lumia, from: self) { [weak self] in
-                guard let self = self else { return }
-                // 拉黑后同步删除该用户在讨论区的评论
-                FilmViewModel_Lumia.shared_Lumia.deleteDiscussionComment_Lumia(
-                    themeId: self.theme_Lumia.themeId_Lumia,
-                    commentId: comment.commentId_Lumia
-                )
-                self.reloadComments_Lumia()
-                self.onCommentAdded_Lumia?()
-            }
-        }
     }
 }
 
@@ -1846,10 +1874,11 @@ extension ThemeDiscussionDetail_Lumia: UITextFieldDelegate {
 // MARK: - 讨论评论 Cell
 
 /// 主题讨论评论 Cell（头像 + 用户名 + 内容 + 时间 + 举报/删除按钮）
+/// 按钮由外部通过 insertActionButton_Lumia(_:) 注入，实际由 ReportDeleteHelper_Lumia 创建，
+/// 不在 Cell 内部自行创建，保持职责单一
 private class DiscussionCommentCell_Lumia: UITableViewCell {
 
     static let reuseId_Lumia = "DiscussionCommentCell_Lumia"
-    var onActionTapped_Lumia: (() -> Void)?
 
     private let avatarView_Lumia = UserAvatarView_Lumia()
 
@@ -1875,12 +1904,11 @@ private class DiscussionCommentCell_Lumia: UITableViewCell {
         return lbl_Lumia
     }()
 
-    private let actionButton_Lumia: UIButton = {
-        let btn_Lumia = UIButton(type: .system)
-        let cfg_Lumia = UIImage.SymbolConfiguration(pointSize: 12, weight: .medium)
-        btn_Lumia.setImage(UIImage(systemName: "ellipsis", withConfiguration: cfg_Lumia), for: .normal)
-        btn_Lumia.tintColor = UIColor(hexstring_Lumia: "#C0A8D8")
-        return btn_Lumia
+    /// 按钮占位容器，尺寸固定，实际按钮由 insertActionButton_Lumia 注入
+    private let actionButtonContainer_Lumia: UIView = {
+        let v_Lumia = UIView()
+        v_Lumia.clipsToBounds = false
+        return v_Lumia
     }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -1909,13 +1937,13 @@ private class DiscussionCommentCell_Lumia: UITableViewCell {
             make.leading.equalTo(nameLabel_Lumia.snp.trailing).offset(6)
         }
 
-        contentView.addSubview(actionButton_Lumia)
-        actionButton_Lumia.snp.makeConstraints { make in
+        // 按钮容器：固定尺寸，位置与原 actionButton 一致
+        contentView.addSubview(actionButtonContainer_Lumia)
+        actionButtonContainer_Lumia.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-14)
             make.centerY.equalTo(nameLabel_Lumia)
             make.width.height.equalTo(28)
         }
-        actionButton_Lumia.addTarget(self, action: #selector(handleAction_Lumia), for: .touchUpInside)
 
         contentView.addSubview(contentLabel_Lumia)
         contentLabel_Lumia.snp.makeConstraints { make in
@@ -1928,22 +1956,30 @@ private class DiscussionCommentCell_Lumia: UITableViewCell {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func configure_Lumia(comment: ThemeDiscussionComment_Lumia, isOwn: Bool) {
-        avatarView_Lumia.configure_Lumia(userId_Lumia: comment.userId_Lumia)
-        nameLabel_Lumia.text = comment.userName_Lumia
-        timeLabel_Lumia.text = comment.createdAt_Lumia
-        contentLabel_Lumia.text = comment.content_Lumia
-
-        // 自己的评论：红色删除图标；他人的：灰色举报图标
-        let cfg_Lumia = UIImage.SymbolConfiguration(pointSize: 12, weight: .medium)
-        let icon_Lumia = isOwn ? "trash" : "flag"
-        actionButton_Lumia.setImage(UIImage(systemName: icon_Lumia, withConfiguration: cfg_Lumia), for: .normal)
-        actionButton_Lumia.tintColor = isOwn
-            ? UIColor(hexstring_Lumia: "#E53E3E", alpha_Lumia: 0.75)
-            : UIColor(hexstring_Lumia: "#C0A8D8")
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        // 清除上一次注入的按钮，防止复用时旧按钮残留
+        actionButtonContainer_Lumia.subviews.forEach { $0.removeFromSuperview() }
     }
 
-    @objc private func handleAction_Lumia() { onActionTapped_Lumia?() }
+    /// 填充评论数据（不含按钮，按钮由外部注入）
+    /// - Parameter comment_Lumia: 要展示的讨论区评论
+    func configure_Lumia(comment_Lumia: ThemeDiscussionComment_Lumia) {
+        avatarView_Lumia.configure_Lumia(userId_Lumia: comment_Lumia.userId_Lumia)
+        nameLabel_Lumia.text = comment_Lumia.userName_Lumia
+        timeLabel_Lumia.text = comment_Lumia.createdAt_Lumia
+        contentLabel_Lumia.text = comment_Lumia.content_Lumia
+    }
+
+    /// 注入由 ReportDeleteHelper_Lumia 创建的举报/删除按钮
+    /// - Parameter button_Lumia: 已配置好图标与点击动作的按钮
+    func insertActionButton_Lumia(_ button_Lumia: UIButton) {
+        actionButtonContainer_Lumia.subviews.forEach { $0.removeFromSuperview() }
+        actionButtonContainer_Lumia.addSubview(button_Lumia)
+        button_Lumia.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
 }
 
 // MARK: - 胶片卷查看器

@@ -347,6 +347,72 @@ class ReportDeleteHelper_Lumia {
         return button_Lumia
     }
     
+    /// 创建主题讨论区评论举报/删除按钮
+    /// 根据评论归属自动选择「trash」删除图标（自己）或「ellipsis」举报图标（他人）
+    /// - Parameters:
+    ///   - comment_Lumia: 讨论区评论对象
+    ///   - size_Lumia: SF Symbol 点大小，默认 12
+    ///   - color_Lumia: 他人评论按钮的图标颜色，默认淡紫色
+    ///   - viewController_Lumia: 发起弹窗的视图控制器
+    ///   - onDelete_Lumia: 用户确认删除后执行的回调（负责从数据层移除评论）
+    ///   - onBlock_Lumia: 用户确认拉黑后执行的回调（负责同步移除评论）
+    /// - Returns: 配置完毕的 UIButton
+    @MainActor static func createDiscussionCommentButton_Lumia(
+        comment_Lumia: ThemeDiscussionComment_Lumia,
+        size_Lumia: CGFloat = 12,
+        color_Lumia: UIColor = UIColor(hexstring_Lumia: "#C0A8D8"),
+        from viewController_Lumia: UIViewController,
+        onDelete_Lumia: (() -> Void)? = nil,
+        onBlock_Lumia: (() -> Void)? = nil
+    ) -> UIButton {
+        let button_Lumia = UIButton(type: .system)
+
+        // 判断是否是自己的评论
+        let isMyComment_Lumia = UserViewModel_Lumia.shared_Lumia.isCurrentUser_Lumia(
+            userId_lumia: comment_Lumia.userId_Lumia
+        )
+
+        // 与 createCommentReportButton_Lumia 保持一致：自己→trash，他人→ellipsis
+        let iconName_Lumia = isMyComment_Lumia ? "trash" : "ellipsis"
+        let tintColor_Lumia: UIColor = isMyComment_Lumia
+            ? UIColor(hexstring_Lumia: "#E53E3E", alpha_Lumia: 0.75)
+            : color_Lumia
+        configureButtonIcon_Lumia(
+            button_Lumia: button_Lumia,
+            iconName_Lumia: iconName_Lumia,
+            size_Lumia: size_Lumia,
+            color_Lumia: tintColor_Lumia
+        )
+
+        button_Lumia.addAction(UIAction { [weak viewController_Lumia] _ in
+            guard let vc_Lumia = viewController_Lumia else { return }
+            addButtonAnimation_Lumia(button_Lumia: button_Lumia)
+
+            if isMyComment_Lumia {
+                // 自己的评论：展示删除确认弹窗
+                showDeleteConfirmAlert_Lumia(
+                    title_Lumia: DeleteAlertConfig_Lumia.commentTitle_Lumia,
+                    message_Lumia: DeleteAlertConfig_Lumia.commentMessage_Lumia,
+                    from: vc_Lumia,
+                    completion_Lumia: { onDelete_Lumia?() }
+                )
+            } else {
+                // 他人的评论：拉黑用户
+                let reportUser_Lumia = PrewUserModel_Lumia()
+                reportUser_Lumia.userId_Lumia = comment_Lumia.userId_Lumia
+                reportUser_Lumia.userName_Lumia = comment_Lumia.userName_Lumia
+                reportUser_Lumia.userHead_Lumia = comment_Lumia.userHead_Lumia
+                block_Lumia(
+                    user_Lumia: reportUser_Lumia,
+                    from: vc_Lumia,
+                    completion_Lumia: { onBlock_Lumia?() }
+                )
+            }
+        }, for: .touchUpInside)
+
+        return button_Lumia
+    }
+
     /// 创建用户举报按钮（用于聊天、视频通话等场景）
     static func createUserReportButton_Lumia(
         size_Lumia: CGFloat = 44,

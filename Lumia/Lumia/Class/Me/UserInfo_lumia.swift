@@ -21,7 +21,7 @@ class UserInfo_Lumia: UIViewController {
     // MARK: - 私有属性
 
     private var userPosts_Lumia: [TitleModel_Lumia] = []
-    private let headerHeight_Lumia: CGFloat = 380
+    private let headerHeight_Lumia: CGFloat = 400
 
     // MARK: - UI组件
 
@@ -407,11 +407,11 @@ private class UserInfoProfileHeader_Lumia: UIView {
     private func setupUI_Lumia() {
         backgroundColor = UIColor(hexstring_Lumia: "#F4EEF8")
 
-        // 渐变背景 240pt
+        // 渐变背景：增高至 260pt，为用户名 + 两行简介留出充足空间，避免被悬浮统计卡遮盖
         addSubview(bgView_Lumia)
         bgView_Lumia.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(240)
+            make.height.equalTo(260)
         }
         bgView_Lumia.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         bgView_Lumia.layer.cornerRadius = 30
@@ -458,6 +458,8 @@ private class UserInfoProfileHeader_Lumia: UIView {
             make.top.equalTo(userNameLabel_Lumia.snp.bottom).offset(4)
             make.centerX.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(30)
+            // statsCard 以 offset(-22) 悬浮叠在 bgView 底部，留出足够间距避免遮盖简介文字
+            make.bottom.lessThanOrEqualToSuperview().offset(-30)
         }
 
         // 悬浮统计卡（叠在渐变底部 22pt）

@@ -142,6 +142,15 @@ class Detail_Hush: UIViewController {
         return bt_hush
     }()
 
+    /// 送礼按钮（使用 gift_btn 图标，与发送按钮等大）
+    private let _giftButton_Hush: UIButton = {
+        let bt_hush = UIButton(type: .custom)
+        bt_hush.setImage(UIImage(named: "gift_btn")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        bt_hush.imageView?.contentMode = .scaleAspectFit
+        bt_hush.clipsToBounds = true
+        return bt_hush
+    }()
+
     // MARK: - 内部状态
 
     private var _commentBarBottomConstraint_Hush: Constraint?
@@ -251,10 +260,12 @@ class Detail_Hush: UIViewController {
 
         // ── 底部评论输入栏 ──
         _commentBarView_Hush.addSubview(_commentField_Hush)
+        _commentBarView_Hush.addSubview(_giftButton_Hush)
         _commentBarView_Hush.addSubview(_sendButton_Hush)
         view.addSubview(_commentBarView_Hush)
 
         _commentField_Hush.delegate = self
+        _giftButton_Hush.addTarget(self, action: #selector(_giftTapped_Hush), for: .touchUpInside)
         _sendButton_Hush.addTarget(self, action: #selector(_sendCommentTapped_Hush), for: .touchUpInside)
     }
 
@@ -555,8 +566,14 @@ class Detail_Hush: UIViewController {
         _commentField_Hush.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
             make.centerY.equalToSuperview()
-            make.trailing.equalTo(_sendButton_Hush.snp.leading).offset(-10)
+            make.trailing.equalTo(_giftButton_Hush.snp.leading).offset(-10)
             make.height.equalTo(44)
+        }
+        // 送礼按钮：位于发送按钮左侧 10pt，大小与发送按钮相同
+        _giftButton_Hush.snp.makeConstraints { make in
+            make.trailing.equalTo(_sendButton_Hush.snp.leading).offset(-10)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(44)
         }
         _sendButton_Hush.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-16)
@@ -805,6 +822,14 @@ class Detail_Hush: UIViewController {
         guard let post_Hush = titleModel_Hush else { return }
         _likeButton_Hush.animatePulse_Hush()
         TitleViewModel_Hush.shared_Hush.likePost_Hush(post_hush: post_Hush)
+    }
+
+    /// 点击送礼按钮，以半透明遮罩方式弹出礼物选择页
+    @objc private func _giftTapped_Hush() {
+        let giftVC_hush = GiftPage_Hush()
+        giftVC_hush.modalPresentationStyle = .overFullScreen
+        giftVC_hush.modalTransitionStyle = .crossDissolve
+        Navigation_Hush.present_Hush(viewController: giftVC_hush, animated: true, from: self)
     }
 
     @objc private func _sendCommentTapped_Hush() {

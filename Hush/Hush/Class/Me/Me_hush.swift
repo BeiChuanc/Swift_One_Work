@@ -649,6 +649,15 @@ class Me_Hush: UIViewController {
         return btn
     }()
 
+    /// VIP 入口按钮（左侧导航位，vip_btn 图标，高度与设置按钮一致，宽度自适应）
+    private let vipButton_Hush: UIButton = {
+        let btn = UIButton(type: .custom)
+        btn.setImage(UIImage(named: "vip_btn")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        btn.imageView?.contentMode = .scaleAspectFit
+        btn.clipsToBounds = true
+        return btn
+    }()
+
     // MARK: - 集合视图
 
     private lazy var collectionView_Hush: UICollectionView = {
@@ -724,6 +733,7 @@ class Me_Hush: UIViewController {
 
         navBarView_Hush.addSubview(backButton_Hush)
         navBarView_Hush.addSubview(navTitleLabel_Hush)
+        navBarView_Hush.addSubview(vipButton_Hush)
         navBarView_Hush.addSubview(settingsButton_Hush)
 
         navBarView_Hush.snp.makeConstraints { make in
@@ -742,11 +752,17 @@ class Me_Hush: UIViewController {
         }
         navTitleLabel_Hush.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.centerY.equalTo(backButton_Hush)
+            make.centerY.equalTo(settingsButton_Hush)
+        }
+        // VIP 按钮：左侧，高度与设置按钮一致，宽度自适应内容
+        vipButton_Hush.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.centerY.equalTo(settingsButton_Hush)
+            make.height.equalTo(38)
         }
         settingsButton_Hush.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
-            make.centerY.equalTo(backButton_Hush)
+            make.bottom.equalToSuperview().inset(8)
             make.width.height.equalTo(38)
         }
 
@@ -755,6 +771,7 @@ class Me_Hush: UIViewController {
         backButton_Hush.onTapped_Hush = { [weak self] in
             Navigation_Hush.pop_Hush(from: self)
         }
+        vipButton_Hush.addTarget(self, action: #selector(handleVIPTapped_Hush), for: .touchUpInside)
         settingsButton_Hush.addTarget(self, action: #selector(handleSettingsTapped_Hush), for: .touchUpInside)
     }
 
@@ -795,6 +812,15 @@ class Me_Hush: UIViewController {
     }
 
     // MARK: - 事件处理
+
+    /// 点击 VIP 按钮，跳转至 VIP 订阅页
+    @objc private func handleVIPTapped_Hush() {
+        vipButton_Hush.animatePressDown_Hush {
+            self.vipButton_Hush.animatePressUp_Hush {
+                Navigation_Hush.toVIPSubscription_Hush(style_hush: .push_hush, animated_hush: true)
+            }
+        }
+    }
 
     @objc private func handleSettingsTapped_Hush() {
         settingsButton_Hush.animatePressDown_Hush {

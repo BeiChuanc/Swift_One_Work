@@ -77,6 +77,17 @@ class Detail_Lumia: UIViewController {
         return btn_Lumia
     }()
 
+    /// 送礼按钮：使用 Assets 中的 gift_btn 图片，大小与发送按钮保持一致
+    private let giftButton_Lumia: UIButton = {
+        let btn_Lumia = UIButton(type: .custom)
+        btn_Lumia.setImage(UIImage(named: "gift_btn"), for: .normal)
+        btn_Lumia.contentMode = .scaleAspectFit
+        btn_Lumia.imageView?.contentMode = .scaleAspectFit
+        btn_Lumia.layer.cornerRadius = 20
+        btn_Lumia.clipsToBounds = true
+        return btn_Lumia
+    }()
+
     // MARK: - 生命周期
 
     override func viewDidLoad() {
@@ -164,6 +175,7 @@ class Detail_Lumia: UIViewController {
     }
 
     private func setupCommentBarContent_Lumia() {
+        // 发送按钮：固定在评论栏最右侧
         commentBar_Lumia.addSubview(sendCommentButton_Lumia)
         sendCommentButton_Lumia.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-16)
@@ -172,11 +184,21 @@ class Detail_Lumia: UIViewController {
         }
         sendCommentButton_Lumia.addTarget(self, action: #selector(handleSendComment_Lumia), for: .touchUpInside)
 
+        // 送礼按钮：位于发送按钮左侧 10pt，尺寸与发送按钮一致（40×40）
+        commentBar_Lumia.addSubview(giftButton_Lumia)
+        giftButton_Lumia.snp.makeConstraints { make in
+            make.trailing.equalTo(sendCommentButton_Lumia.snp.leading).offset(-10)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(40)
+        }
+        giftButton_Lumia.addTarget(self, action: #selector(handleGift_Lumia), for: .touchUpInside)
+
+        // 输入框：右侧跟随礼物按钮
         commentBar_Lumia.addSubview(commentField_Lumia)
         commentField_Lumia.delegate = self
         commentField_Lumia.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
-            make.trailing.equalTo(sendCommentButton_Lumia.snp.leading).offset(-10)
+            make.trailing.equalTo(giftButton_Lumia.snp.leading).offset(-10)
             make.centerY.equalToSuperview()
             make.height.equalTo(40)
         }
@@ -254,6 +276,15 @@ class Detail_Lumia: UIViewController {
         Task { @MainActor in
             TitleViewModel_Lumia.shared_Lumia.releaseComment_Lumia(post_lumia: post_Lumia, content_lumia: text_Lumia)
         }
+    }
+
+    /// 点击送礼按钮：弹出礼物选择面板 GiftPage_Lumia
+    @objc private func handleGift_Lumia() {
+        view.endEditing(true)
+        let giftPage_Lumia = GiftPage_Lumia()
+        giftPage_Lumia.modalPresentationStyle = .overFullScreen
+        giftPage_Lumia.modalTransitionStyle = .crossDissolve
+        present(giftPage_Lumia, animated: true)
     }
 
     @objc private func handleReport_Lumia() {
