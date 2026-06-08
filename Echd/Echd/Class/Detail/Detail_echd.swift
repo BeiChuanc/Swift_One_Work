@@ -242,6 +242,16 @@ class Detail_Echd: UIViewController {
         return btn_Echd
     }()
 
+    /// 礼物按钮（42×42，位于发送按钮左侧 10pt，使用 Assets 中的 gift_btn 图标）
+    private let giftButton_Echd: UIButton = {
+        let btn_Echd = UIButton(type: .custom)
+        btn_Echd.setImage(UIImage(named: "gift_btn"), for: .normal)
+        btn_Echd.imageView?.contentMode = .scaleAspectFit
+        btn_Echd.layer.cornerRadius = 21   // 与发送按钮保持一致，42/2 = 21
+        btn_Echd.layer.masksToBounds = true
+        return btn_Echd
+    }()
+
     // sendGradient 已移除，发送按钮改用 backgroundColor
 
     // MARK: - 生命周期
@@ -332,11 +342,13 @@ class Detail_Echd: UIViewController {
         view.addSubview(commentBar_Echd)
         commentBar_Echd.addSubview(commentInputWrap_Echd)
         commentInputWrap_Echd.addSubview(commentTextField_Echd)
+        commentBar_Echd.addSubview(giftButton_Echd)
         commentBar_Echd.addSubview(sendCommentButton_Echd)
 
         // 直接使用 backgroundColor，避免 CAGradientLayer 初始 frame=zero 时遮住 imageView
         sendCommentButton_Echd.backgroundColor = UIColor(hexstring_Echd: "#7C3AED")
         sendCommentButton_Echd.addTarget(self, action: #selector(sendCommentTapped_Echd), for: .touchUpInside)
+        giftButton_Echd.addTarget(self, action: #selector(giftTapped_Echd), for: .touchUpInside)
     }
 
     // MARK: - 约束布局
@@ -475,10 +487,16 @@ class Detail_Echd: UIViewController {
             make.centerY.equalToSuperview().offset(-(UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 0) / 2)
             make.width.height.equalTo(42)  // 严格正方形 → cornerRadius=21 = 真圆
         }
-        // 输入框：从左侧 14pt 到发送按钮左侧 10pt，高度 44，垂直居中
+        // 礼物按钮：与发送按钮同尺寸（42×42），距发送按钮左侧 10pt
+        giftButton_Echd.snp.makeConstraints { make in
+            make.trailing.equalTo(sendCommentButton_Echd.snp.leading).offset(-10)
+            make.centerY.equalTo(sendCommentButton_Echd)
+            make.width.height.equalTo(42)
+        }
+        // 输入框：从左侧 14pt 到礼物按钮左侧 10pt，高度 44，垂直居中
         commentInputWrap_Echd.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(14)
-            make.trailing.equalTo(sendCommentButton_Echd.snp.leading).offset(-10)
+            make.trailing.equalTo(giftButton_Echd.snp.leading).offset(-10)
             make.centerY.equalTo(sendCommentButton_Echd)
             make.height.equalTo(44)
         }
@@ -739,6 +757,13 @@ class Detail_Echd: UIViewController {
         guard let post_Echd = titleModel_Echd else { return }
         let user_Echd = UserViewModel_Echd.shared_Echd.getUserById_Echd(userId_echd: post_Echd.titleUserId_Echd)
         Navigation_Echd.toMessageUser_Echd(with: user_Echd, style_echd: .push_echd)
+    }
+
+    /// 点击礼物按钮，弹出礼物购买页面
+    @objc private func giftTapped_Echd() {
+        giftButton_Echd.animatePulse_Echd()
+        let giftVC_Echd = GiftPage_Echd()
+        Navigation_Echd.present_Echd(viewController: giftVC_Echd)
     }
 
     // MARK: - 通知监听

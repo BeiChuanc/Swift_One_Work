@@ -413,11 +413,11 @@ class Setting_Echd: UIViewController {
     // MARK: - 事件处理
 
     @objc private func termsTapped_Echd() {
-        ProtocolHelper_Echd.showProtocol_Echd(type_Echd: .terms_Echd, content_Echd: "terms", from: self)
+        ProtocolHelper_Echd.showProtocol_Echd(type_Echd: .terms_Echd, content_Echd: "terms.png", from: self)
     }
 
     @objc private func privacyTapped_Echd() {
-        ProtocolHelper_Echd.showProtocol_Echd(type_Echd: .privacy_Echd, content_Echd: "privacy", from: self)
+        ProtocolHelper_Echd.showProtocol_Echd(type_Echd: .privacy_Echd, content_Echd: "privacy.png", from: self)
     }
 
     @objc private func editProfileTapped_Echd() {

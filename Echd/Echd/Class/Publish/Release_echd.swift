@@ -674,7 +674,7 @@ class Release_Echd: UIViewController {
     @objc private func eulaTapped_Echd() {
         ProtocolHelper_Echd.showProtocol_Echd(
             type_Echd: .eula_Echd,
-            content_Echd: "eula",
+            content_Echd: "eula.png",
             from: self
         )
     }

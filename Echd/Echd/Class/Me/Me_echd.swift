@@ -41,6 +41,17 @@ class Me_Echd: UIViewController {
         return btn_Echd
     }()
 
+    /// VIP 订阅按钮（位于设置按钮同行最左侧，使用 vip_btn 图标，高度与设置按钮一致，宽度自适应）
+    private let vipButton_Echd: UIButton = {
+        let btn_Echd = UIButton(type: .custom)
+        btn_Echd.setImage(UIImage(named: "vip_btn"), for: .normal)
+        btn_Echd.imageView?.contentMode = .scaleAspectFit
+        btn_Echd.contentEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        btn_Echd.layer.cornerRadius = 21
+        btn_Echd.layer.masksToBounds = true
+        return btn_Echd
+    }()
+
     // MARK: - UI组件 / Header
 
     /// 顶部渐变 Header 容器（延伸至状态栏背后）
@@ -316,9 +327,11 @@ class Me_Echd: UIViewController {
 
         // 导航按钮（浮于 header 之上）
         view.addSubview(backButton_Echd)
+        view.addSubview(vipButton_Echd)
         view.addSubview(settingButton_Echd)
         backButton_Echd.onTapped_Echd = { Navigation_Echd.pop_Echd() }
         settingButton_Echd.addTarget(self, action: #selector(settingTapped_Echd), for: .touchUpInside)
+        vipButton_Echd.addTarget(self, action: #selector(vipTapped_Echd), for: .touchUpInside)
 
         // Header 内容（不添加 editAvatarOverlay，头像纯净展示）
         headerView_Echd.addSubview(avatarRingView_Echd)
@@ -464,6 +477,12 @@ class Me_Echd: UIViewController {
         editButton_Echd.snp.makeConstraints { make in
             make.centerY.equalTo(settingButton_Echd)
             make.trailing.equalTo(settingButton_Echd.snp.leading).offset(-10)
+            make.height.equalTo(42)
+        }
+        // VIP 订阅按钮：最左侧，高度与设置按钮一致，宽度自适应
+        vipButton_Echd.snp.makeConstraints { make in
+            make.centerY.equalTo(settingButton_Echd)
+            make.leading.equalToSuperview().offset(16)
             make.height.equalTo(42)
         }
 
@@ -832,6 +851,11 @@ class Me_Echd: UIViewController {
 
     @objc private func settingTapped_Echd() {
         Navigation_Echd.toSetting_Echd(style_echd: .push_echd)
+    }
+
+    /// 点击 VIP 订阅按钮，跳转到 VIP 订阅页面
+    @objc private func vipTapped_Echd() {
+        Navigation_Echd.toVIPSubscription_Echd(style_echd: .push_echd)
     }
 
     @objc private func editProfileTapped_Echd() {

@@ -349,6 +349,14 @@ class Navigation_Echd: NSObject {
     ) {
         navigate_Echd(to: Setting_Echd(), style_echd: style_echd, animated_echd: animated_echd)
     }
+
+    /// 跳转到 VIP 订阅页
+    static func toVIPSubscription_Echd(
+        style_echd: NavigationStyle_Echd = .push_echd,
+        animated_echd: Bool = true
+    ) {
+        navigate_Echd(to: VIPSubscription_Echd(), style_echd: style_echd, animated_echd: animated_echd)
+    }
 }
 
 // MARK: - 举报拉黑后安全导航

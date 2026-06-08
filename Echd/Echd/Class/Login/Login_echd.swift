@@ -247,8 +247,8 @@ class Login_Echd: UIViewController {
         
         // 协议文本
         let protocolLbl_Echd = ProtocolHelper_Echd.createProtocolTextLabel_Echd(
-            firstContent_Echd: "terms",
-            secondContent_Echd: "privacy",
+            firstContent_Echd: "terms.png",
+            secondContent_Echd: "privacy.png",
             config_Echd: ProtocolHelper_Echd.ProtocolTextConfig_Echd.light_Echd(),
             from: self
         )
