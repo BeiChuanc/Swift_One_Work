@@ -70,18 +70,13 @@ class UserViewModel_Niche {
         // 显示加载动画
         Utils_Niche.showLoading_Niche(message_Niche: "Logging in...")
         
-        // 从 LocalData 获取对应的预览用户信息（头像、简介等）
-        let previewUser_niche = LocalData_Niche.shared_Niche.userList_Niche.first {
-            $0.userId_Niche == userId_niche
-        }
-        
         // 创建登录用户（同步 LocalData 中的名称、简介、头像）
         loggedUser_Niche = LoginUserModel_Niche(
             userId_Niche: userId_niche,
             userPwd_Niche: nil,
-            userName_Niche: previewUser_niche?.userName_Niche ?? "Wanderer",
-            userIntroduce_Niche: previewUser_niche?.userIntroduce_Niche,
-            userHead_Niche: previewUser_niche?.userHead_Niche ?? "user_avatar",
+            userName_Niche: "Nicher",
+            userIntroduce_Niche: "Nothing yet.",
+            userHead_Niche: "user_avatar",
             userPosts_Niche: [],
             userLike_Niche: [],
             userFollow_Niche: []

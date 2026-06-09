@@ -148,6 +148,21 @@ class MessageUser_Niche: UIViewController {
         return btn_niche
     }()
 
+    /// 视频通话按钮（位于发送按钮左侧10pt）
+    private let _videoCallBtn_niche: UIButton = {
+        let btn_niche = UIButton(type: .custom)
+        btn_niche.layer.cornerRadius = 20
+        btn_niche.clipsToBounds = true
+        btn_niche.backgroundColor = UIColor(hexstring_Niche: "#B794F6")
+        let cfg_niche = UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)
+        btn_niche.setImage(
+            UIImage(systemName: "video.fill", withConfiguration: cfg_niche),
+            for: .normal
+        )
+        btn_niche.tintColor = .white
+        return btn_niche
+    }()
+
     // MARK: - 生命周期
 
     override func viewDidLoad() {
@@ -191,21 +206,31 @@ class MessageUser_Niche: UIViewController {
 
         // 先全部 addSubview 再统一设约束（避免公共祖先崩溃）
         _inputBar_niche.addSubview(_inputField_niche)
+        _inputBar_niche.addSubview(_videoCallBtn_niche)
         _inputBar_niche.addSubview(_sendBtn_niche)
 
+        /// 发送按钮固定右侧
         _sendBtn_niche.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-14)
             make.centerY.equalToSuperview()
             make.width.height.equalTo(40)
         }
 
+        /// 视频通话按钮在发送按钮左侧10pt
+        _videoCallBtn_niche.snp.makeConstraints { make in
+            make.trailing.equalTo(_sendBtn_niche.snp.leading).offset(-10)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(40)
+        }
+
         _inputField_niche.addLeftPadding_Niche(16)
         _inputField_niche.placeHolderTextColor_Niche(ColorConfig_Niche.textPlaceholder_Niche)
+        /// 输入框右侧紧贴视频按钮
         _inputField_niche.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(14)
             make.centerY.equalToSuperview()
             make.height.equalTo(40)
-            make.trailing.equalTo(_sendBtn_niche.snp.leading).offset(-10)
+            make.trailing.equalTo(_videoCallBtn_niche.snp.leading).offset(-10)
         }
 
         // ── 顶部渐变区 ──
@@ -339,6 +364,7 @@ class MessageUser_Niche: UIViewController {
 
     private func setupActions_Niche() {
         _sendBtn_niche.addTarget(self, action: #selector(handleSend_Niche), for: .touchUpInside)
+        _videoCallBtn_niche.addTarget(self, action: #selector(handleVideoCall_Niche), for: .touchUpInside)
         _reportBtn_niche.addTarget(self, action: #selector(handleReport_Niche), for: .touchUpInside)
         let tap_niche = UITapGestureRecognizer(target: self, action: #selector(handleUserCardTap_Niche))
         _userCard_niche.addGestureRecognizer(tap_niche)
@@ -366,51 +392,6 @@ class MessageUser_Niche: UIViewController {
         _userAvatarView_niche.configure_Niche(userId_Niche: user_niche.userId_Niche ?? 0)
         _userNameLabel_niche.text = user_niche.userName_Niche ?? "User"
         _userBioLabel_niche.text = user_niche.userIntroduce_Niche ?? "Member of the tribe"
-
-        // 首次打开对话时注入预制对话，展示主题氛围
-        if let uid_niche = user_niche.userId_Niche {
-            injectPresetConversation_Niche(userId: uid_niche)
-        }
-    }
-
-    /// 为空白对话注入一段预制主题对话（符合亚文化部落氛围，双方各 2 句）
-    private func injectPresetConversation_Niche(userId: Int) {
-        let preset_niche: [MessageModel_Niche] = [
-            MessageModel_Niche(
-                messageId_niche: 9001,
-                content_niche: "Hey — just saw you've been to that vinyl shop on Canal Alley. That place is my weekly ritual. Have you talked to the owner about the back room? He only shows it to people he thinks will truly understand.",
-                userHead_niche: nil,
-                isMine_niche: false,
-                time_niche: "14:22"
-            ),
-            MessageModel_Niche(
-                messageId_niche: 9002,
-                content_niche: "No way, there's a back room? I've been in three times and he never mentioned it. I was too deep in the '90s UK trip-hop section to notice anything else. How do you get him to take you back there?",
-                userHead_niche: nil,
-                isMine_niche: true,
-                time_niche: "14:24"
-            ),
-            MessageModel_Niche(
-                messageId_niche: 9003,
-                content_niche: "You have to come in when it's quiet and not ask to see anything — just talk about what you love. He'll figure you out. Last visit he pulled out an original pressing of Portishead's 'Dummy' that wasn't even in the public crates.",
-                userHead_niche: nil,
-                isMine_niche: false,
-                time_niche: "14:26"
-            ),
-            MessageModel_Niche(
-                messageId_niche: 9004,
-                content_niche: "That is exactly the kind of thing that makes physical media feel sacred again. I'll be there Thursday. The city feels completely different once you know where its hidden layers are.",
-                userHead_niche: nil,
-                isMine_niche: true,
-                time_niche: "14:28"
-            )
-        ]
-        Task { @MainActor in
-            MessageViewModel_Niche.shared_Niche.injectPreset_Niche(
-                messages_niche: preset_niche,
-                userId_niche: userId
-            )
-        }
     }
 
     private func refreshMessages_Niche() {
@@ -440,6 +421,15 @@ class MessageUser_Niche: UIViewController {
             MessageViewModel_Niche.shared_Niche.deleteUserMessages_Niche(userId_niche: user_niche.userId_Niche ?? 0)
         }
         Navigation_Niche.popToSafeStateAfterBlock_Niche(from: self)
+    }
+
+    /// 点击视频通话按钮，以全屏模式进入 VideoChat_Niche
+    @objc private func handleVideoCall_Niche() {
+        let vc_niche = VideoChat_Niche()
+        vc_niche.userModel_Niche = userModel_Niche
+        vc_niche.modalPresentationStyle = .fullScreen
+        vc_niche.modalTransitionStyle = .crossDissolve
+        present(vc_niche, animated: true)
     }
 
     @objc private func handleSend_Niche() {

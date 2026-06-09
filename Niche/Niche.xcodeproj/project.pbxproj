@@ -86,7 +86,6 @@
 				AE7BF9B6E738B3A149E8FFEF /* Pods-Niche.debug.xcconfig */,
 				24D315A4BD59658787061B5B /* Pods-Niche.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};

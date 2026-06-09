@@ -295,7 +295,7 @@ class Release_Niche: UIViewController {
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
         btn_niche.setAttributedTitle(
-            NSAttributedString(string: "By publishing, you agree to our EULA", attributes: attrs_niche),
+            NSAttributedString(string: "EULA", attributes: attrs_niche),
             for: .normal
         )
         return btn_niche

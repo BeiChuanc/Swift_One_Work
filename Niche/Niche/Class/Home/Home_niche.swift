@@ -180,6 +180,7 @@ class Home_Niche: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         loadDiaryEntries_Niche()
+        seedDefaultChallengeComments_Niche()
         setupUI_Niche()
         setupObservers_Niche()
         refreshUserInfo_Niche()
@@ -759,6 +760,84 @@ class Home_Niche: UIViewController {
         }
     }
 
+    /// 为挑战馆每个话题预制 2-3 条默认评论，仅在首次（数据为空时）执行
+    private func seedDefaultChallengeComments_Niche() {
+        guard Home_Niche._challengeComments_niche.isEmpty else { return }
+
+        /// 从本地用户列表取前5个用于预制评论，避免硬编码不存在的用户ID
+        let seedUsers_niche = Array(LocalData_Niche.shared_Niche.userList_Niche.prefix(5))
+        guard seedUsers_niche.count >= 2 else { return }
+
+        /// 取用户信息的快捷方法（下标越界时复用最后一个）
+        func user_niche(_ idx: Int) -> PrewUserModel_Niche {
+            seedUsers_niche[min(idx, seedUsers_niche.count - 1)]
+        }
+
+        var nextId_niche = 9000
+
+        /// 话题1：Bonfire Stories
+        Home_Niche._challengeComments_niche[1] = [
+            HomeChallengeComment_Niche(
+                id_niche: nextId_niche,
+                userId_niche: user_niche(0).userId_Niche ?? 1,
+                userName_niche: user_niche(0).userName_Niche ?? "User",
+                content_niche: "The night we made a bonfire at the beach in Maine... played guitar until 3am and nobody wanted to leave. Pure magic. 🎸🔥"
+            ),
+            HomeChallengeComment_Niche(
+                id_niche: nextId_niche + 1,
+                userId_niche: user_niche(1).userId_Niche ?? 2,
+                userName_niche: user_niche(1).userName_Niche ?? "User",
+                content_niche: "Camping in the Rockies last summer. Roasted marshmallows and told ghost stories. The smell of pine and smoke still brings me right back. 🌲"
+            ),
+            HomeChallengeComment_Niche(
+                id_niche: nextId_niche + 2,
+                userId_niche: user_niche(2).userId_Niche ?? 3,
+                userName_niche: user_niche(2).userName_Niche ?? "User",
+                content_niche: "Our annual backyard bonfire every October — hot cocoa, old friends, new stories. Some traditions just hit different. ❤️"
+            )
+        ]
+        nextId_niche += 10
+
+        /// 话题2：Night Owls United
+        Home_Niche._challengeComments_niche[2] = [
+            HomeChallengeComment_Niche(
+                id_niche: nextId_niche,
+                userId_niche: user_niche(1).userId_Niche ?? 2,
+                userName_niche: user_niche(1).userName_Niche ?? "User",
+                content_niche: "Reading by lamplight with rain on the window. That's my 2am vibe. Everyone else asleep, feels like the whole world belongs to me. 🌧️"
+            ),
+            HomeChallengeComment_Niche(
+                id_niche: nextId_niche + 1,
+                userId_niche: user_niche(3).userId_Niche ?? 4,
+                userName_niche: user_niche(3).userName_Niche ?? "User",
+                content_niche: "I sketch fashion designs and listen to film scores when it gets late. The quiet just unlocks a totally different part of my brain. ✏️🎵"
+            )
+        ]
+        nextId_niche += 10
+
+        /// 话题3：Hidden Gems
+        Home_Niche._challengeComments_niche[3] = [
+            HomeChallengeComment_Niche(
+                id_niche: nextId_niche,
+                userId_niche: user_niche(0).userId_Niche ?? 1,
+                userName_niche: user_niche(0).userName_Niche ?? "User",
+                content_niche: "Competitive jigsaw puzzling. Yes, that's a thing. Done a 5000-piece in under a week and I'm absolutely not ashamed. 🧩"
+            ),
+            HomeChallengeComment_Niche(
+                id_niche: nextId_niche + 1,
+                userId_niche: user_niche(2).userId_Niche ?? 3,
+                userName_niche: user_niche(2).userName_Niche ?? "User",
+                content_niche: "Miniature bottle cap collecting. Each one tells a story from a different era or country. My room is basically a tiny museum. 🏺"
+            ),
+            HomeChallengeComment_Niche(
+                id_niche: nextId_niche + 2,
+                userId_niche: user_niche(4).userId_Niche ?? 5,
+                userName_niche: user_niche(4).userName_Niche ?? "User",
+                content_niche: "Old radio dramas from the 40s and 50s. The storytelling is incredible and nobody my age even knows they exist. 📻"
+            )
+        ]
+    }
+
     private func refreshDiaryList_Niche() {
         _diaryListContainer_niche.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
@@ -784,6 +863,10 @@ class Home_Niche: UIViewController {
     private func buildDiaryEntryRow_Niche(entry: HomeDiaryEntry_Niche) -> UIView {
         let row_niche = UIView()
 
+        let dot_niche = UIView()
+        dot_niche.backgroundColor = ColorConfig_Niche.primaryGradientStart_Niche.withValues(alpha: 0.5)
+        dot_niche.layer.cornerRadius = 3
+
         let dateLbl_niche = UILabel()
         dateLbl_niche.text = entry.date_niche
         dateLbl_niche.font = UIFont.systemFont(ofSize: 10, weight: .medium)
@@ -795,12 +878,18 @@ class Home_Niche: UIViewController {
         textLbl_niche.textColor = ColorConfig_Niche.textPrimary_Niche
         textLbl_niche.numberOfLines = 2
 
-        let dot_niche = UIView()
-        dot_niche.backgroundColor = ColorConfig_Niche.primaryGradientStart_Niche.withValues(alpha: 0.5)
-        dot_niche.layer.cornerRadius = 3
+        /// 删除按钮（垃圾桶图标，右侧对齐）
+        let deleteBtn_niche = UIButton(type: .custom)
+        let delCfg_niche = UIImage.SymbolConfiguration(pointSize: 12, weight: .medium)
+        deleteBtn_niche.setImage(
+            UIImage(systemName: "trash", withConfiguration: delCfg_niche),
+            for: .normal
+        )
+        deleteBtn_niche.tintColor = ColorConfig_Niche.textPlaceholder_Niche
 
         row_niche.addSubview(dot_niche)
         row_niche.addSubview(dateLbl_niche)
+        row_niche.addSubview(deleteBtn_niche)
         row_niche.addSubview(textLbl_niche)
 
         dot_niche.snp.makeConstraints { make in
@@ -812,14 +901,44 @@ class Home_Niche: UIViewController {
             make.leading.equalTo(dot_niche.snp.trailing).offset(8)
             make.centerY.equalTo(dot_niche)
         }
+        /// 删除按钮固定在右侧，与日期行垂直居中
+        deleteBtn_niche.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-14)
+            make.centerY.equalTo(dot_niche)
+            make.width.height.equalTo(24)
+        }
         textLbl_niche.snp.makeConstraints { make in
             make.top.equalTo(dot_niche.snp.bottom).offset(4)
             make.leading.equalToSuperview().offset(14)
-            make.trailing.equalToSuperview().offset(-14)
+            make.trailing.equalTo(deleteBtn_niche.snp.leading).offset(-8)
             make.bottom.equalToSuperview().offset(-10)
         }
 
+        let entryId_niche = entry.id_niche
+        deleteBtn_niche.addAction(UIAction { [weak self] _ in
+            self?.confirmDeleteEntry_Niche(entryId: entryId_niche)
+        }, for: .touchUpInside)
+
         return row_niche
+    }
+
+    /// 弹出确认框后删除指定日志条目
+    /// - Parameter entryId: 要删除条目的唯一 ID
+    private func confirmDeleteEntry_Niche(entryId: Int) {
+        let alert_niche = UIAlertController(
+            title: "Delete Entry",
+            message: "Are you sure you want to delete this vibe entry?",
+            preferredStyle: .alert
+        )
+        alert_niche.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert_niche.addAction(UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
+            self._diaryEntries_niche.removeAll { $0.id_niche == entryId }
+            self.saveDiaryEntries_Niche()
+            self.refreshDiaryList_Niche()
+            Utils_Niche.showSuccess_Niche(message_Niche: "Entry deleted.")
+        })
+        present(alert_niche, animated: true)
     }
 
     // MARK: - 事件处理

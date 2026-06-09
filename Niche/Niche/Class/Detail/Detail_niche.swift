@@ -193,6 +193,22 @@ class Detail_Niche: UIViewController {
     }()
     private var _sendBtnGrad_niche: CAGradientLayer?
 
+    /// 送礼按钮（gift_btn 图标，与发送按钮同尺寸）
+    /// 送礼按钮，高度与发送按钮一致，宽度由 gift_btn 图片比例自适应
+    private let _giftButton_niche: UIButton = {
+        let btn_niche = UIButton(type: .custom)
+        btn_niche.layer.cornerRadius = 20
+        btn_niche.clipsToBounds = true
+        btn_niche.setImage(
+            UIImage(named: "gift_btn")?.withRenderingMode(.alwaysOriginal),
+            for: .normal
+        )
+        btn_niche.imageView?.contentMode = .scaleAspectFit
+        btn_niche.contentHorizontalAlignment = .fill
+        btn_niche.contentVerticalAlignment = .fill
+        return btn_niche
+    }()
+
     // MARK: - 生命周期
 
     override func viewDidLoad() {
@@ -236,11 +252,13 @@ class Detail_Niche: UIViewController {
         _inputBar_niche.addSubview(_commentField_niche)
         _inputBar_niche.addSubview(_sendButton_niche)
 
+        /// 发送按钮固定右侧
         _sendButton_niche.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-14)
             make.centerY.equalToSuperview()
             make.width.height.equalTo(40)
         }
+        /// 输入框右侧紧贴发送按钮
         _commentField_niche.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(14)
             make.centerY.equalToSuperview()
@@ -458,6 +476,7 @@ class Detail_Niche: UIViewController {
     private func setupActions_Niche() {
         _likeButton_niche.addTarget(self, action: #selector(handleLike_Niche), for: .touchUpInside)
         _sendButton_niche.addTarget(self, action: #selector(handleSendComment_Niche), for: .touchUpInside)
+        _giftButton_niche.addTarget(self, action: #selector(handleGift_Niche), for: .touchUpInside)
 
         // 作者卡片点击 → 进入用户中心
         _authorCard_niche.isUserInteractionEnabled = true
@@ -519,6 +538,14 @@ class Detail_Niche: UIViewController {
             make.width.height.equalTo(36)
         }
         _reportBtn_niche = btn_niche
+
+        /// 礼物按钮移至举报按钮左侧10pt，垂直居中对齐
+        view.addSubview(_giftButton_niche)
+        _giftButton_niche.snp.remakeConstraints { make in
+            make.trailing.equalTo(btn_niche.snp.leading).offset(-10)
+            make.centerY.equalTo(btn_niche)
+            make.height.equalTo(btn_niche.snp.height)
+        }
     }
 
     private func refreshComments_Niche(post: TitleModel_Niche) {
@@ -676,5 +703,13 @@ class Detail_Niche: UIViewController {
         Task { @MainActor in
             TitleViewModel_Niche.shared_Niche.releaseComment_Niche(post_niche: post_niche, content_niche: text_niche)
         }
+    }
+
+    /// 点击送礼按钮，弹出礼物选择界面
+    @objc private func handleGift_Niche() {
+        let giftPage_Niche = GiftPage_Niche()
+        giftPage_Niche.modalPresentationStyle = .overFullScreen
+        giftPage_Niche.modalTransitionStyle = .crossDissolve
+        present(giftPage_Niche, animated: true)
     }
 }

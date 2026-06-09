@@ -56,12 +56,12 @@ class EditInfo_Niche: UIViewController {
 
     private let _avatarView_niche = CurrentUserAvatarView_Niche()
 
-    /// 相机遮罩
+    /// 相机遮罩（作为头像区域点击的最顶层响应视图）
     private let _cameraMask_niche: UIView = {
         let v_niche = UIView()
         v_niche.backgroundColor = UIColor.black.withValues(alpha: 0.38)
         v_niche.layer.cornerRadius = 51
-        v_niche.isUserInteractionEnabled = false
+        v_niche.isUserInteractionEnabled = true
         return v_niche
     }()
 
@@ -311,10 +311,14 @@ class EditInfo_Niche: UIViewController {
             make.centerX.equalToSuperview()
         }
 
-        // 点击手势
-        let tap_niche = UITapGestureRecognizer(target: self, action: #selector(handleAvatarTap_Niche))
-        _avatarRing_niche.isUserInteractionEnabled = true
-        _avatarRing_niche.addGestureRecognizer(tap_niche)
+        // 手势绑定在相机遮罩（最顶层，确保触摸可被捕获）
+        let maskTap_niche = UITapGestureRecognizer(target: self, action: #selector(handleAvatarTap_Niche))
+        _cameraMask_niche.addGestureRecognizer(maskTap_niche)
+
+        // "Change Photo" 文字也响应点击
+        _changePhotoLabel_niche.isUserInteractionEnabled = true
+        let labelTap_niche = UITapGestureRecognizer(target: self, action: #selector(handleAvatarTap_Niche))
+        _changePhotoLabel_niche.addGestureRecognizer(labelTap_niche)
     }
 
     private func buildFormCard_Niche() {
