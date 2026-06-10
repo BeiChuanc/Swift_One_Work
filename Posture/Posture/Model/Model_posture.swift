@@ -357,3 +357,73 @@ class StoreModel_Posture: NSObject {
         super.init()
     }
 }
+
+// MARK: - 用户自定义体态计划
+
+/// 用户自定义体态计划模型
+/// 核心作用：存储用户手动添加的单条训练计划及锻炼进度。
+/// 设计思路：通过 JSON 编解码持久化到 UserDefaults；progressRatio 用于 UI 进度条展示。
+/// 新增字段：content（内容描述）、coverImagePath（封面本地路径）、scheduledTime（计划时间）
+struct UserPlan_Posture: Codable {
+
+    /// 计划唯一标识
+    var planId_Posture: String
+
+    /// 计划标题（用户输入）
+    var title_Posture: String
+
+    /// 计划内容描述
+    var content_Posture: String
+
+    /// 封面图片本地路径（可选）
+    var coverImagePath_Posture: String?
+
+    /// 计划时间字符串，如 "08:30"（可选）
+    var scheduledTime_Posture: String?
+
+    /// 目标时长（分钟）
+    var targetMinutes_Posture: Int
+
+    /// 已累计锻炼秒数（每次会话结束后叠加）
+    var completedSeconds_Posture: Int
+
+    /// 创建日期字符串（"yyyy-MM-dd"）
+    var createdDate_Posture: String
+
+    /// 初始化新计划
+    /// - Parameters:
+    ///   - title_posture: 计划标题
+    ///   - content_posture: 内容描述
+    ///   - coverImagePath_posture: 封面本地路径（可选）
+    ///   - scheduledTime_posture: 计划时间字符串（可选）
+    ///   - targetMinutes_posture: 目标时长（分钟）
+    init(title_posture: String,
+         content_posture: String = "",
+         coverImagePath_posture: String? = nil,
+         scheduledTime_posture: String? = nil,
+         targetMinutes_posture: Int) {
+        planId_Posture = UUID().uuidString
+        title_Posture = title_posture
+        content_Posture = content_posture
+        coverImagePath_Posture = coverImagePath_posture
+        scheduledTime_Posture = scheduledTime_posture
+        targetMinutes_Posture = targetMinutes_posture
+        completedSeconds_Posture = 0
+        let fmt_Posture = DateFormatter()
+        fmt_Posture.dateFormat = "yyyy-MM-dd"
+        createdDate_Posture = fmt_Posture.string(from: Date())
+    }
+
+    /// 完成进度比例（0.0 ~ 1.0）
+    var progressRatio_Posture: Double {
+        let target_Posture = targetMinutes_Posture * 60
+        guard target_Posture > 0 else { return 0 }
+        return min(1.0, Double(completedSeconds_Posture) / Double(target_Posture))
+    }
+
+    /// 已完成分钟数（向下取整）
+    var completedMinutes_Posture: Int { completedSeconds_Posture / 60 }
+
+    /// 是否达到目标时长
+    var isCompleted_Posture: Bool { completedSeconds_Posture >= targetMinutes_Posture * 60 }
+}

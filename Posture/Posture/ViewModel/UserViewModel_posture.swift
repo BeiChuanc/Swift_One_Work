@@ -472,3 +472,76 @@ class UserViewModel_Posture {
         UserDefaults.standard.set(dates_posture, forKey: UDKey_Posture.checkInDates_Posture)
     }
 }
+
+// MARK: - 用户自定义体态计划 CRUD
+
+extension UserViewModel_Posture {
+
+    /// 计划数据变化通知名
+    static let userPlansDidChangeNotification_Posture = Notification.Name("UserPlansDidChange_Posture")
+
+    /// UserDefaults 计划存储键
+    private static let plansUDKey_Posture = "userCustomPlans_posture"
+
+    /// 获取所有用户自定义计划
+    /// - Returns: [UserPlan_Posture]
+    func getUserPlans_Posture() -> [UserPlan_Posture] {
+        guard let data_Posture = UserDefaults.standard.data(forKey: Self.plansUDKey_Posture),
+              let plans_Posture = try? JSONDecoder().decode([UserPlan_Posture].self, from: data_Posture) else {
+            return []
+        }
+        return plans_Posture
+    }
+
+    /// 添加一条新计划
+    /// - Parameters:
+    ///   - title_posture: 计划标题
+    ///   - content_posture: 内容描述
+    ///   - coverImagePath_posture: 封面图片本地路径（可选）
+    ///   - scheduledTime_posture: 计划时间字符串（可选，如 "08:30"）
+    ///   - targetMinutes_posture: 目标锻炼时长（分钟）
+    func addPlan_Posture(title_posture: String,
+                         content_posture: String = "",
+                         coverImagePath_posture: String? = nil,
+                         scheduledTime_posture: String? = nil,
+                         targetMinutes_posture: Int) {
+        var plans_Posture = getUserPlans_Posture()
+        let newPlan_Posture = UserPlan_Posture(
+            title_posture: title_posture,
+            content_posture: content_posture,
+            coverImagePath_posture: coverImagePath_posture,
+            scheduledTime_posture: scheduledTime_posture,
+            targetMinutes_posture: targetMinutes_posture
+        )
+        plans_Posture.append(newPlan_Posture)
+        savePlans_Posture(plans_Posture)
+    }
+
+    /// 删除指定计划
+    /// - Parameter planId_posture: 计划 UUID
+    func deletePlan_Posture(planId_posture: String) {
+        var plans_Posture = getUserPlans_Posture()
+        plans_Posture.removeAll { $0.planId_Posture == planId_posture }
+        savePlans_Posture(plans_Posture)
+    }
+
+    /// 为指定计划累计锻炼秒数（每次会话结束时调用）
+    /// - Parameters:
+    ///   - planId_posture: 计划 UUID
+    ///   - addSeconds_posture: 本次新增秒数
+    func updatePlanProgress_Posture(planId_posture: String, addSeconds_posture: Int) {
+        var plans_Posture = getUserPlans_Posture()
+        if let idx_Posture = plans_Posture.firstIndex(where: { $0.planId_Posture == planId_posture }) {
+            plans_Posture[idx_Posture].completedSeconds_Posture += addSeconds_posture
+        }
+        savePlans_Posture(plans_Posture)
+    }
+
+    /// 持久化计划数组并广播通知
+    private func savePlans_Posture(_ plans_posture: [UserPlan_Posture]) {
+        if let data_Posture = try? JSONEncoder().encode(plans_posture) {
+            UserDefaults.standard.set(data_Posture, forKey: Self.plansUDKey_Posture)
+        }
+        NotificationCenter.default.post(name: Self.userPlansDidChangeNotification_Posture, object: nil)
+    }
+}

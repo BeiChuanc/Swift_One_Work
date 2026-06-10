@@ -103,29 +103,39 @@ class MessageBubbleCell_Hush: UITableViewCell {
 
         if isMine_hush {
             // 我的消息：右对齐，主渐变背景，白色文字
+            bubbleTrailing_Hush?.deactivate()
             bubbleLeading_Hush?.deactivate()
             bubbleTrailing_Hush?.activate()
             bubbleGradient_Hush?.isHidden = false
             bubbleView_Hush.backgroundColor = .clear
             bubbleView_Hush.layer.borderWidth = 0
             contentLabel_Hush.textColor = .white
-            timeLabel_Hush.textAlignment = .right
+            // 复用时重置 timeLabel 约束为右对齐，防止 isMine=false 的 leading 约束残留
+            timeLabel_Hush.snp.remakeConstraints { make in
+                make.top.equalTo(bubbleView_Hush.snp.bottom).offset(4)
+                make.trailing.equalTo(bubbleView_Hush)
+                make.bottom.equalToSuperview().inset(2)
+            }
         } else {
             // 对方消息：左对齐，白色背景，深色文字，边框
             bubbleTrailing_Hush?.deactivate()
+            bubbleLeading_Hush?.deactivate()
             bubbleLeading_Hush?.activate()
             bubbleGradient_Hush?.isHidden = true
             bubbleView_Hush.backgroundColor = ColorConfig_Hush.cardBackground_Hush
             bubbleView_Hush.layer.borderWidth = 1
             bubbleView_Hush.layer.borderColor = ColorConfig_Hush.border_Hush.cgColor
             contentLabel_Hush.textColor = ColorConfig_Hush.textPrimary_Hush
-            timeLabel_Hush.textAlignment = .left
+            // 重置 timeLabel 约束为左对齐
             timeLabel_Hush.snp.remakeConstraints { make in
                 make.top.equalTo(bubbleView_Hush.snp.bottom).offset(4)
                 make.leading.equalTo(bubbleView_Hush)
                 make.bottom.equalToSuperview().inset(2)
             }
         }
+
+        // 强制触发布局，确保渐变层 frame 在 layoutSubviews 中正确更新
+        setNeedsLayout()
     }
 }
 

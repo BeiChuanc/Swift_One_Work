@@ -387,6 +387,31 @@ class Navigation_Posture: NSObject {
     ) {
         navigate_Posture(to: VIPSubscription_Posture(), style_posture: style_posture, animated_posture: animated_posture)
     }
+
+    // MARK: - 媒体播放器
+
+    /// 跳转到全屏媒体播放器页
+    /// - Parameters:
+    ///   - mediaPath_posture: 媒体路径（Bundle 资源名 / 本地路径 / 网络 URL）
+    ///   - isVideo_posture: 是否为视频（false 时播放器自动检测）
+    ///   - style_posture: 导航方式，默认 present（全屏展示）
+    ///   - animated_posture: 是否启用动画
+    static func toMediaPlayer_Posture(
+        mediaPath_posture: String,
+        isVideo_posture: Bool = true,
+        style_posture: NavigationStyle_Posture = .present_posture,
+        animated_posture: Bool = true
+    ) {
+        let playerVC_posture = MediaPlayerPage_Posture()
+        playerVC_posture.mediaPath_Posture = mediaPath_posture
+        playerVC_posture.isVideo_Posture   = isVideo_posture
+        playerVC_posture.modalPresentationStyle = .fullScreen
+        navigate_Posture(
+            to: playerVC_posture,
+            style_posture: style_posture,
+            animated_posture: animated_posture
+        )
+    }
 }
 
 // MARK: - 举报拉黑后安全导航

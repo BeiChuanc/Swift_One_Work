@@ -136,6 +136,7 @@ class MessageList_Posture: UIViewController {
     // MARK: - 区块构建
 
     /// 构建顶部渐变头图卡片
+    /// 优化排版：图标与标题横向并排，减少垂直堆叠高度
     /// - Parameters: 无
     /// - Returns: UIView - 渐变头图卡片
     /// - Throws: 无
@@ -158,14 +159,14 @@ class MessageList_Posture: UIViewController {
         gradientLayer_Posture.endPoint   = CGPoint(x: 1, y: 1)
         gradientCard_Posture.layer.insertSublayer(gradientLayer_Posture, at: 0)
 
-        // 大背景装饰气泡
-        let bubbleA_Posture = makeDecorationBubble_Posture(size: 100, alpha: 0.12)
-        let bubbleB_Posture = makeDecorationBubble_Posture(size: 60, alpha: 0.1)
+        // 背景装饰气泡
+        let bubbleA_Posture = makeDecorationBubble_Posture(size: 90, alpha: 0.12)
+        let bubbleB_Posture = makeDecorationBubble_Posture(size: 55, alpha: 0.1)
 
-        // 图标
+        // 图标（缩小并与标题横向排列）
         let iconContainer_Posture = UIView()
         iconContainer_Posture.backgroundColor = UIColor.white.withAlphaComponent(0.22)
-        iconContainer_Posture.layer.cornerRadius = 26
+        iconContainer_Posture.layer.cornerRadius = 18
 
         let iconView_Posture = UIImageView(image: UIImage(systemName: "message.fill"))
         iconView_Posture.tintColor = .white
@@ -174,19 +175,19 @@ class MessageList_Posture: UIViewController {
         iconContainer_Posture.addSubview(iconView_Posture)
         iconView_Posture.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.width.height.equalTo(28)
+            make.width.height.equalTo(20)
         }
 
         // 标题
         let titleLabel_Posture = UILabel()
         titleLabel_Posture.text = "Messages"
-        titleLabel_Posture.font = .systemFont(ofSize: 32, weight: .heavy)
+        titleLabel_Posture.font = .systemFont(ofSize: 26, weight: .heavy)
         titleLabel_Posture.textColor = .white
 
         // 副标题
         let subtitleLabel_Posture = UILabel()
         subtitleLabel_Posture.text = "Your posture connections"
-        subtitleLabel_Posture.font = .systemFont(ofSize: 14, weight: .medium)
+        subtitleLabel_Posture.font = .systemFont(ofSize: 12, weight: .medium)
         subtitleLabel_Posture.textColor = UIColor.white.withAlphaComponent(0.78)
 
         // 在线人数胶囊
@@ -199,39 +200,41 @@ class MessageList_Posture: UIViewController {
         gradientCard_Posture.addSubview(subtitleLabel_Posture)
         gradientCard_Posture.addSubview(onlineChip_Posture)
 
+        let safeTop_Posture: CGFloat = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first(where: { $0.isKeyWindow })?.safeAreaInsets.top ?? 44
+
         bubbleA_Posture.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(28)
-            make.top.equalToSuperview().offset(-18)
-            make.width.height.equalTo(100)
+            make.trailing.equalToSuperview().offset(24)
+            make.top.equalToSuperview().offset(-14)
+            make.width.height.equalTo(90)
         }
         bubbleB_Posture.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-28)
-            make.bottom.equalToSuperview().offset(20)
-            make.width.height.equalTo(60)
+            make.trailing.equalToSuperview().offset(-24)
+            make.bottom.equalToSuperview().offset(16)
+            make.width.height.equalTo(55)
         }
+        // 图标与标题顶部对齐，横向排列
         iconContainer_Posture.snp.makeConstraints { make in
-            let safeTop_Posture: CGFloat = UIApplication.shared.connectedScenes
-                .compactMap { $0 as? UIWindowScene }
-                .flatMap { $0.windows }
-                .first(where: { $0.isKeyWindow })?.safeAreaInsets.top ?? 44
-            make.top.equalToSuperview().offset(safeTop_Posture + 16)
+            make.top.equalToSuperview().offset(safeTop_Posture + 14)
             make.leading.equalToSuperview().offset(22)
-            make.width.height.equalTo(52)
+            make.width.height.equalTo(36)
         }
         titleLabel_Posture.snp.makeConstraints { make in
-            make.top.equalTo(iconContainer_Posture.snp.bottom).offset(14)
-            make.leading.equalToSuperview().offset(22)
+            make.centerY.equalTo(iconContainer_Posture)
+            make.leading.equalTo(iconContainer_Posture.snp.trailing).offset(10)
             make.trailing.equalToSuperview().inset(22)
         }
         subtitleLabel_Posture.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel_Posture.snp.bottom).offset(6)
-            make.leading.equalTo(titleLabel_Posture)
+            make.top.equalTo(iconContainer_Posture.snp.bottom).offset(6)
+            make.leading.equalToSuperview().offset(22)
         }
         onlineChip_Posture.snp.makeConstraints { make in
-            make.top.equalTo(subtitleLabel_Posture.snp.bottom).offset(18)
-            make.leading.equalTo(titleLabel_Posture)
-            make.bottom.equalToSuperview().offset(-24)
-            make.height.equalTo(32)
+            make.top.equalTo(subtitleLabel_Posture.snp.bottom).offset(12)
+            make.leading.equalToSuperview().offset(22)
+            make.bottom.equalToSuperview().offset(-18)
+            make.height.equalTo(30)
         }
 
         container_Posture.addSubview(gradientCard_Posture)
@@ -253,7 +256,7 @@ class MessageList_Posture: UIViewController {
     private func buildOnlineChip_Posture() -> UIView {
         let chip_Posture = UIView()
         chip_Posture.backgroundColor = UIColor.white.withAlphaComponent(0.2)
-        chip_Posture.layer.cornerRadius = 16
+        chip_Posture.layer.cornerRadius = 15
 
         let dot_Posture = UIView()
         dot_Posture.backgroundColor = ColorConfig_Posture.accentMint_Posture
