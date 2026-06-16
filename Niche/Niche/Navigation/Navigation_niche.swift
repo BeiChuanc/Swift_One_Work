@@ -349,6 +349,14 @@ class Navigation_Niche: NSObject {
     ) {
         navigate_Niche(to: Setting_Niche(), style_niche: style_niche, animated_niche: animated_niche)
     }
+
+    /// 跳转到 VIP 订阅页
+    static func toVIPSubscription_Niche(
+        style_niche: NavigationStyle_Niche = .push_niche,
+        animated_niche: Bool = true
+    ) {
+        navigate_Niche(to: VIPSubscription_Niche(), style_niche: style_niche, animated_niche: animated_niche)
+    }
 }
 
 // MARK: - 举报拉黑后安全导航

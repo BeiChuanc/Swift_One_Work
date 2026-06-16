@@ -7,13 +7,13 @@ import SnapKit
 /// 功能：每日打卡 / 观鸟数据看板 / 四季专题 / 技巧 Tips 卡片
 /// 设计：深紫渐变 Header + ScrollView 纵向内容区
 class Home_Ornit: UIViewController {
-
+    
     // MARK: - 私有属性
-
+    
     /// 主滚动视图
     private let scrollView_Ornit = UIScrollView()
     private let contentView_Ornit = UIView()
-
+    
     /// Header 渐变图层
     private var headerGradient_Ornit: CAGradientLayer?
     private let headerView_Ornit = UIView()
@@ -29,7 +29,7 @@ class Home_Ornit: UIViewController {
         btn_ornit.contentEdgeInsets = UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)
         return btn_ornit
     }()
-
+    
     /// 观鸟看板卡片（仅登录用户显示）
     private let dashboardCard_Ornit = UIView()
 
@@ -40,7 +40,7 @@ class Home_Ornit: UIViewController {
         sv_ornit.spacing = 8
         return sv_ornit
     }()
-
+    
     /// 观鸟看板空状态标签（作为 observationsStack 的 arrangedSubview 管理）
     private let dashboardEmptyLabel_Ornit: UILabel = {
         let label_ornit = UILabel()
@@ -51,7 +51,7 @@ class Home_Ornit: UIViewController {
         label_ornit.numberOfLines = 2
         return label_ornit
     }()
-
+    
     /// Tips 详情遮罩层引用（用于正确释放，防止遮罩卡住页面）
     private weak var tipDetailOverlay_Ornit: UIView?
 
@@ -108,9 +108,9 @@ class Home_Ornit: UIViewController {
             content_Ornit: "A route covering three or more distinct habitat types in a single outing will always outperform one confined to a single habitat, regardless of habitat quality.\n\nDesign your birding route as a loop that moves through woodland, open ground, and water. Even a half-kilometer loop with habitat variety can produce 30+ species in peak seasons.",
             iconName_Ornit: "globe.americas.fill", accentColor_Ornit: "#BE185D")
     ]
-
+    
     // MARK: - 生命周期
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = ColorConfig_Ornit.backgroundMe_Ornit
@@ -122,13 +122,13 @@ class Home_Ornit: UIViewController {
         setupTipsSection_Ornit()
         setupNotifications_Ornit()
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = true
         refreshAllSections_Ornit()
     }
-
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         headerGradient_Ornit?.frame = headerView_Ornit.bounds
@@ -137,9 +137,9 @@ class Home_Ornit: UIViewController {
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-
+    
     // MARK: - 通知监听
-
+    
     private func setupNotifications_Ornit() {
         NotificationCenter.default.addObserver(
             self,
@@ -148,7 +148,7 @@ class Home_Ornit: UIViewController {
             object: nil
         )
     }
-
+    
     @objc private func handleStateChange_Ornit() {
         refreshAllSections_Ornit()
     }
@@ -187,16 +187,16 @@ class Home_Ornit: UIViewController {
         // 登录状态控制看板显示
         dashboardCard_Ornit.isHidden = false
     }
-
+    
     // MARK: - UI 搭建
-
+    
     private func setupScrollView_Ornit() {
         scrollView_Ornit.showsVerticalScrollIndicator = false
         scrollView_Ornit.contentInsetAdjustmentBehavior = .never
         scrollView_Ornit.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
         view.addSubview(scrollView_Ornit)
         scrollView_Ornit.addSubview(contentView_Ornit)
-
+        
         scrollView_Ornit.snp.makeConstraints { make_ornit in make_ornit.edges.equalToSuperview() }
         contentView_Ornit.snp.makeConstraints { make_ornit in
             make_ornit.edges.equalToSuperview()
@@ -207,7 +207,7 @@ class Home_Ornit: UIViewController {
     /// 构建顶部渐变 Header（App 名 + 问候 + 日期 + 打卡按钮）
     private func setupHeaderView_Ornit() {
         contentView_Ornit.addSubview(headerView_Ornit)
-
+        
         let gradient_ornit = CAGradientLayer()
         gradient_ornit.colors = [
             ColorConfig_Ornit.meGradientStart_Ornit.cgColor,
@@ -257,7 +257,7 @@ class Home_Ornit: UIViewController {
 
         // 打卡按钮
         headerView_Ornit.addSubview(checkInButton_Ornit)
-
+        
         // 装饰鸟图标
         let birdConfig_ornit = UIImage.SymbolConfiguration(pointSize: 36, weight: .thin)
         let birdIcon_ornit = UIImageView(
@@ -308,7 +308,7 @@ class Home_Ornit: UIViewController {
             make_ornit.bottom.equalToSuperview().offset(-10)
             make_ornit.width.height.equalTo(50)
         }
-
+        
         checkInButton_Ornit.addTarget(self, action: #selector(checkInTapped_Ornit), for: .touchUpInside)
         refreshCheckInButton_Ornit()
     }
@@ -760,7 +760,7 @@ class Home_Ornit: UIViewController {
         card_ornit.layer.cornerRadius = 18
         card_ornit.clipsToBounds = true
         card_ornit.isUserInteractionEnabled = true
-
+        
         let gradient_ornit = CAGradientLayer()
         gradient_ornit.colors = [
             UIColor(hexstring_Ornit: topic_ornit.gradientStart_Ornit).cgColor,
@@ -769,7 +769,7 @@ class Home_Ornit: UIViewController {
         gradient_ornit.startPoint = CGPoint(x: 0, y: 0)
         gradient_ornit.endPoint = CGPoint(x: 1, y: 1)
         card_ornit.layer.insertSublayer(gradient_ornit, at: 0)
-
+        
         DispatchQueue.main.async { gradient_ornit.frame = card_ornit.bounds }
 
         // 装饰圆
@@ -793,7 +793,7 @@ class Home_Ornit: UIViewController {
         seasonLabel_ornit.font = UIFont.systemFont(ofSize: 10, weight: .bold)
         seasonLabel_ornit.textColor = UIColor.white.withValues(alpha: 0.7)
         card_ornit.addSubview(seasonLabel_ornit)
-
+        
         // 标题
         let titleLabel_ornit = UILabel()
         titleLabel_ornit.text = topic_ornit.title_Ornit
@@ -801,7 +801,7 @@ class Home_Ornit: UIViewController {
         titleLabel_ornit.textColor = .white
         titleLabel_ornit.numberOfLines = 2
         card_ornit.addSubview(titleLabel_ornit)
-
+        
         // 评论数
         let countLabel_ornit = UILabel()
         countLabel_ornit.text = "\(topic_ornit.comments_Ornit.count) comments"
@@ -840,10 +840,10 @@ class Home_Ornit: UIViewController {
         let tap_ornit = UITapGestureRecognizer(target: self, action: #selector(topicCardTapped_Ornit(_:)))
         card_ornit.addGestureRecognizer(tap_ornit)
         card_ornit.tag = topic_ornit.topicId_Ornit
-
+        
         return card_ornit
     }
-
+    
     // MARK: - Tips 卡片区
 
     /// 构建技巧卡片横向滚动区
@@ -947,7 +947,7 @@ class Home_Ornit: UIViewController {
         titleLabel_ornit.textColor = ColorConfig_Ornit.textPrimary_Ornit
         titleLabel_ornit.numberOfLines = 2
         card_ornit.addSubview(titleLabel_ornit)
-
+        
         // 内容预览（2行截断）
         let previewLabel_ornit = UILabel()
         previewLabel_ornit.text = tip_ornit.content_Ornit
@@ -1018,9 +1018,9 @@ class Home_Ornit: UIViewController {
         fmt_ornit.dateFormat = "EEEE, MMM d"
         return fmt_ornit.string(from: Date())
     }
-
+    
     // MARK: - 事件处理
-
+    
     /// 打卡按钮点击
     @objc private func checkInTapped_Ornit() {
         guard UserViewModel_Ornit.shared_Ornit.isLoggedIn_Ornit else {
@@ -1052,7 +1052,7 @@ class Home_Ornit: UIViewController {
               let topic_ornit = LocalData_Ornit.shared_Ornit.seasonalTopics_Ornit.first(
                 where: { $0.topicId_Ornit == card_ornit.tag }
               ) else { return }
-
+        
         UIView.animate(withDuration: 0.1, animations: {
             card_ornit.transform = CGAffineTransform(scaleX: 0.96, y: 0.96)
         }) { _ in

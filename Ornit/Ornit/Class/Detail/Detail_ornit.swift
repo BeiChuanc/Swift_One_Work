@@ -192,6 +192,16 @@ class Detail_Ornit: UIViewController {
         return btn_ornit
     }()
 
+    /// 送礼按钮（gift_btn 图标，46×46，位于发送按钮左侧10pt）
+    private let giftButton_Ornit: UIButton = {
+        let btn_ornit = UIButton(type: .custom)
+        if let img_ornit = UIImage(named: "gift_btn") {
+            btn_ornit.setImage(img_ornit.withRenderingMode(.alwaysOriginal), for: .normal)
+        }
+        btn_ornit.imageView?.contentMode = .scaleAspectFit
+        return btn_ornit
+    }()
+
     /// 输入栏底部约束（键盘弹起时动态更新）
     private var inputBottomConstraint_Ornit: Constraint?
 
@@ -573,6 +583,7 @@ class Detail_Ornit: UIViewController {
         commentInputContainer_Ornit.addSubview(topLine_ornit)
 
         commentInputContainer_Ornit.addSubview(commentField_Ornit)
+        commentInputContainer_Ornit.addSubview(giftButton_Ornit)
         commentInputContainer_Ornit.addSubview(sendCommentButton_Ornit)
 
         commentInputContainer_Ornit.snp.makeConstraints { make_ornit in
@@ -592,15 +603,23 @@ class Detail_Ornit: UIViewController {
             make_ornit.width.height.equalTo(40)
         }
 
+        // 送礼按钮：发送按钮左边10pt，46×46
+        giftButton_Ornit.snp.makeConstraints { make_ornit in
+            make_ornit.trailing.equalTo(sendCommentButton_Ornit.snp.leading).offset(-10)
+            make_ornit.centerY.equalToSuperview()
+            make_ornit.width.height.equalTo(46)
+        }
+
         commentField_Ornit.snp.makeConstraints { make_ornit in
             make_ornit.leading.equalToSuperview().offset(14)
-            make_ornit.trailing.equalTo(sendCommentButton_Ornit.snp.leading).offset(-10)
+            make_ornit.trailing.equalTo(giftButton_Ornit.snp.leading).offset(-10)
             make_ornit.centerY.equalToSuperview()
             make_ornit.height.equalTo(40)
         }
 
         commentField_Ornit.delegate = self
         sendCommentButton_Ornit.addTarget(self, action: #selector(sendCommentTapped_Ornit), for: .touchUpInside)
+        giftButton_Ornit.addTarget(self, action: #selector(giftButtonTapped_Ornit), for: .touchUpInside)
     }
 
     // MARK: - 辅助方法
@@ -707,6 +726,14 @@ class Detail_Ornit: UIViewController {
         commentField_Ornit.text = ""
         view.endEditing(true)
         TitleViewModel_Ornit.shared_Ornit.releaseComment_Ornit(post_ornit: post_ornit, content_ornit: text_ornit)
+    }
+
+    /// 送礼按钮点击，弹出 GiftPage（从底部滑入）
+    @objc private func giftButtonTapped_Ornit() {
+        let giftVC_ornit = GiftPage_Ornit()
+        giftVC_ornit.modalPresentationStyle = .overFullScreen
+        giftVC_ornit.modalTransitionStyle = .crossDissolve
+        present(giftVC_ornit, animated: false)
     }
 }
 

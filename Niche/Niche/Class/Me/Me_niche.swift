@@ -52,6 +52,23 @@ class Me_Niche: UIViewController {
         return btn_niche
     }()
 
+    /// VIP 订阅按钮（左上角），与设置按钮高度一致，宽度自适应内容
+    private let _vipBtn_niche: UIButton = {
+        let btn_niche = UIButton(type: .custom)
+        let cfg_niche = UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)
+        btn_niche.setImage(UIImage(systemName: "crown.fill", withConfiguration: cfg_niche), for: .normal)
+        btn_niche.setTitle("  VIP", for: .normal)
+        btn_niche.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
+        btn_niche.tintColor = .white
+        btn_niche.setTitleColor(.white, for: .normal)
+        btn_niche.backgroundColor = UIColor.white.withValues(alpha: 0.20)
+        btn_niche.layer.cornerRadius = 18
+        btn_niche.layer.borderWidth = 1
+        btn_niche.layer.borderColor = UIColor.white.withValues(alpha: 0.3).cgColor
+        btn_niche.contentEdgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 14)
+        return btn_niche
+    }()
+
     /// 头像外发光容器
     private let _avatarGlowView_niche: UIView = {
         let v_niche = UIView()
@@ -234,6 +251,15 @@ class Me_Niche: UIViewController {
             make.width.height.equalTo(36)
         }
         _settingBtn_niche.addTarget(self, action: #selector(handleSetting_Niche), for: .touchUpInside)
+
+        // VIP 订阅按钮：左上角，高度与设置按钮一致，宽度自适应内容
+        view.addSubview(_vipBtn_niche)
+        _vipBtn_niche.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(12)
+            make.leading.equalToSuperview().offset(18)
+            make.height.equalTo(36)
+        }
+        _vipBtn_niche.addTarget(self, action: #selector(handleVIP_Niche), for: .touchUpInside)
     }
 
     // MARK: - 封面构建
@@ -802,6 +828,7 @@ class Me_Niche: UIViewController {
     // MARK: - 事件
 
     @objc private func handleSetting_Niche() { Navigation_Niche.toSetting_Niche() }
+    @objc private func handleVIP_Niche() { Navigation_Niche.toVIPSubscription_Niche() }
     @objc private func handleEditProfile_Niche() { Navigation_Niche.toEditInfo_Niche() }
 
     @objc private func handleTabPosts_Niche() {

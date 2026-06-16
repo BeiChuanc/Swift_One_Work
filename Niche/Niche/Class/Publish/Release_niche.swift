@@ -598,7 +598,7 @@ class Release_Niche: UIViewController {
         _eulaButton_niche.snp.makeConstraints { make in
             make.top.equalTo(_publishButton_niche.snp.bottom).offset(12)
             make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview().offset(-30)
+            make.bottom.equalToSuperview().offset(-100)
         }
     }
 
@@ -769,7 +769,7 @@ class Release_Niche: UIViewController {
     }
 
     @objc private func handleEULA_Niche() {
-        ProtocolHelper_Niche.showProtocol_Niche(type_Niche: .eula_Niche, content_Niche: "eula", from: self)
+        ProtocolHelper_Niche.showProtocol_Niche(type_Niche: .eula_Niche, content_Niche: "eula.png", from: self)
     }
 
     @objc private func textViewDidChange_Niche() {

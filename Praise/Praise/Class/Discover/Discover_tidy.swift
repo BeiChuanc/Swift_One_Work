@@ -123,7 +123,7 @@ class Discover_Tidy: UIViewController {
     private let pageTitleLabel_Tidy: UILabel = {
         let lb = UILabel()
         lb.text = "Shot Lab"
-        lb.font = UIFont.systemFont(ofSize: 32, weight: .heavy)
+        lb.font = UIFont.systemFont(ofSize: 22, weight: .heavy)  // 由 32→22，避免排版过大
         lb.textColor = .white
         return lb
     }()
@@ -576,41 +576,32 @@ class Discover_Tidy: UIViewController {
         }
     }
 
-    /// 搭建分类图标圆圈 Tab 栏
+    /// 搭建分类 Pill 胶囊 Tab 栏（紧凑版，取代原图标圆圈样式）
+    /// 设计：透明背景容器 + 横向滚动 StackView + 选中态渐变胶囊 + 未选中白色边框胶囊
     private func buildCategoryIconTabs_Tidy() {
         pageContentView_Tidy.addSubview(tabAreaBg_Tidy)
         tabAreaBg_Tidy.addSubview(tabScrollView_Tidy)
-        tabAreaBg_Tidy.addSubview(tabDivider_Tidy)
         tabScrollView_Tidy.addSubview(tabStackView_Tidy)
 
-        tabAreaBg_Tidy.layer.cornerRadius = 24
-        tabAreaBg_Tidy.layer.shadowColor = UIColor.black.withAlphaComponent(0.08).cgColor
-        tabAreaBg_Tidy.layer.shadowOffset = CGSize(width: 0, height: 12)
-        tabAreaBg_Tidy.layer.shadowRadius = 22
-        tabAreaBg_Tidy.layer.shadowOpacity = 1
+        // 重置为透明背景（无卡片阴影），依靠各 Pill 自身的阴影提供层次感
+        tabAreaBg_Tidy.backgroundColor = ColorConfig_Tidy.backgroundPrimary_Tidy
+        tabAreaBg_Tidy.layer.cornerRadius = 0
+        tabAreaBg_Tidy.layer.shadowOpacity = 0
 
-        // 创建每个分类的图标 Tab 项
+        tabStackView_Tidy.spacing = 8
+
         createTabItems_Tidy()
 
         tabAreaBg_Tidy.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(12)
-            make.trailing.equalToSuperview().offset(-12)
-            make.height.equalTo(84)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(60)
         }
         tabScrollView_Tidy.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(6)
-            make.bottom.equalToSuperview().offset(-6)
-            make.leading.equalToSuperview().offset(8)
-            make.trailing.equalToSuperview().offset(-8)
-        }
-        tabDivider_Tidy.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(10)
+            make.bottom.equalToSuperview().offset(-10)
             make.leading.equalToSuperview().offset(16)
             make.trailing.equalToSuperview().offset(-16)
-            make.bottom.equalToSuperview().offset(-1)
-            make.height.equalTo(1)
         }
-
-        // 使用内容布局导向约束横向内容，避免标签宽度超出时从两侧溢出显示
         tabStackView_Tidy.snp.makeConstraints { make in
             make.edges.equalTo(tabScrollView_Tidy.contentLayoutGuide)
             make.height.equalTo(tabScrollView_Tidy.frameLayoutGuide)
@@ -618,9 +609,8 @@ class Discover_Tidy: UIViewController {
 
         // 结果摘要条紧贴 Tab 区下方
         resultStrip_Tidy.snp.makeConstraints { make in
-            make.top.equalTo(tabAreaBg_Tidy.snp.bottom).offset(6)
+            make.top.equalTo(tabAreaBg_Tidy.snp.bottom).offset(4)
         }
-        // 更新帖子网格 top = resultStrip.bottom（稍后在 buildSearchCard 中设置最终约束）
         postsGridSectionView_Tidy.snp.remakeConstraints { make in
             make.top.equalTo(resultStrip_Tidy.snp.bottom)
             make.leading.trailing.equalToSuperview()
@@ -633,80 +623,81 @@ class Discover_Tidy: UIViewController {
         }
     }
 
-    /// 批量创建分类图标 Tab 项并加入 StackView
+    /// 批量创建 Pill 胶囊 Tab 项（icon + text 横排，紧凑高度 40pt）
     private func createTabItems_Tidy() {
         for (idx, cat) in categories_Tidy.enumerated() {
-            let catColor = ColorConfig_Tidy.colorForCategory_Tidy(cat.id_Tidy)
+            let catColor_tidy = ColorConfig_Tidy.colorForCategory_Tidy(cat.id_Tidy)
 
-            // 可点击整体区域
-            let container = UIView()
-            container.isUserInteractionEnabled = true
+            // 整体可点击容器
+            let container_tidy = UIView()
+            container_tidy.isUserInteractionEnabled = true
 
-            // 胶片标签底板
-            let circleBg = UIView()
-            circleBg.layer.cornerRadius = 22
-            circleBg.clipsToBounds = false
-            circleBg.backgroundColor = UIColor(hexstring_Tidy: "#EEF2FF")
+            // 胶囊背景（未选中态：白色 + 彩色描边）
+            let pillBg_tidy = UIView()
+            pillBg_tidy.layer.cornerRadius = 20
+            pillBg_tidy.clipsToBounds = false
+            pillBg_tidy.backgroundColor = .white
+            pillBg_tidy.layer.borderWidth = 1.5
+            pillBg_tidy.layer.borderColor = catColor_tidy.withAlphaComponent(0.22).cgColor
+            pillBg_tidy.layer.shadowColor = UIColor.black.withAlphaComponent(0.06).cgColor
+            pillBg_tidy.layer.shadowOffset = CGSize(width: 0, height: 2)
+            pillBg_tidy.layer.shadowRadius = 6
+            pillBg_tidy.layer.shadowOpacity = 1
 
             // 图标
-            let iconView = UIImageView()
-            let cfg = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
-            iconView.image = UIImage(systemName: cat.iconName_Tidy, withConfiguration: cfg)
-            iconView.tintColor = catColor
-            iconView.contentMode = .scaleAspectFit
+            let iconView_tidy = UIImageView()
+            let cfg_tidy = UIImage.SymbolConfiguration(pointSize: 14, weight: .semibold)
+            iconView_tidy.image = UIImage(systemName: cat.iconName_Tidy, withConfiguration: cfg_tidy)
+            iconView_tidy.tintColor = catColor_tidy
+            iconView_tidy.contentMode = .scaleAspectFit
 
             // 分类名称
-            let nameLabel = UILabel()
-            nameLabel.text = cat.name_Tidy
-            nameLabel.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
-            nameLabel.textColor = ColorConfig_Tidy.textSecondary_Tidy
-            nameLabel.textAlignment = .center
-            nameLabel.adjustsFontSizeToFitWidth = true
-            nameLabel.minimumScaleFactor = 0.8
+            let nameLabel_tidy = UILabel()
+            nameLabel_tidy.text = cat.name_Tidy
+            nameLabel_tidy.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
+            nameLabel_tidy.textColor = ColorConfig_Tidy.textPrimary_Tidy
 
-            container.addSubview(circleBg)
-            container.addSubview(iconView)
-            container.addSubview(nameLabel)
+            container_tidy.addSubview(pillBg_tidy)
+            container_tidy.addSubview(iconView_tidy)
+            container_tidy.addSubview(nameLabel_tidy)
 
-            circleBg.snp.makeConstraints { make in
-                make.leading.trailing.equalToSuperview()
-                make.top.equalToSuperview().offset(8)
-                make.height.equalTo(48)
+            pillBg_tidy.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
             }
-            iconView.snp.makeConstraints { make in
-                make.leading.equalTo(circleBg).offset(12)
-                make.centerY.equalTo(circleBg)
-                make.width.height.equalTo(18)
+            iconView_tidy.snp.makeConstraints { make in
+                make.leading.equalToSuperview().offset(12)
+                make.centerY.equalToSuperview()
+                make.width.height.equalTo(16)
             }
-            nameLabel.snp.makeConstraints { make in
-                make.leading.equalTo(iconView.snp.trailing).offset(8)
-                make.trailing.equalTo(circleBg).offset(-12)
-                make.centerY.equalTo(circleBg)
-            }
-            let itemWidth_tidy = cat.id_Tidy == "all" ? 88 : 132
-            container.snp.makeConstraints { make in
-                make.width.equalTo(itemWidth_tidy)
-                make.height.equalTo(66)
+            nameLabel_tidy.snp.makeConstraints { make in
+                make.leading.equalTo(iconView_tidy.snp.trailing).offset(6)
+                make.trailing.equalToSuperview().offset(-14)
+                make.centerY.equalToSuperview()
             }
 
-            // 绑定点击手势，用 tag 标记 index
-            let tap = UITapGestureRecognizer(target: self,
-                                             action: #selector(onTabItemTapped_Tidy(_:)))
-            container.addGestureRecognizer(tap)
-            container.tag = idx
+            // 胶囊宽度：自适应文字（"All" 最小宽，其他根据文字宽度）
+            let estimatedW_tidy = cat.id_Tidy == "all" ? 72 : 116
+            container_tidy.snp.makeConstraints { make in
+                make.width.equalTo(estimatedW_tidy)
+                make.height.equalTo(40)
+            }
 
-            tabStackView_Tidy.addArrangedSubview(container)
+            let tap_tidy = UITapGestureRecognizer(target: self,
+                                                  action: #selector(onTabItemTapped_Tidy(_:)))
+            container_tidy.addGestureRecognizer(tap_tidy)
+            container_tidy.tag = idx
 
-            let bundle = TabBundle_Tidy(
-                container: container,
-                circleBg: circleBg,
-                iconView: iconView,
-                nameLabel: nameLabel,
+            tabStackView_Tidy.addArrangedSubview(container_tidy)
+
+            let bundle_tidy = TabBundle_Tidy(
+                container: container_tidy,
+                circleBg: pillBg_tidy,
+                iconView: iconView_tidy,
+                nameLabel: nameLabel_tidy,
                 category: cat
             )
-            tabBundles_Tidy.append(bundle)
+            tabBundles_Tidy.append(bundle_tidy)
         }
-        // 延迟一帧更新初始选中态（等布局完成）
         DispatchQueue.main.async { [weak self] in
             self?.refreshAllTabStates_Tidy(animated: false)
         }
@@ -772,50 +763,31 @@ class Discover_Tidy: UIViewController {
             make.width.height.equalTo(80)
         }
 
-        // 标题区
+        // 标题区（移除 statsRowView，减少 Header 高度，消除与搜索卡遮盖问题）
         headerView_Tidy.addSubview(pageTitleLabel_Tidy)
         headerView_Tidy.addSubview(pageSubtitleLabel_Tidy)
         headerView_Tidy.addSubview(headerPreviewCard_Tidy)
-        headerView_Tidy.addSubview(statsRowView_Tidy)
 
         headerPreviewCard_Tidy.addSubview(headerPreviewBadge_Tidy)
         headerPreviewCard_Tidy.addSubview(headerPreviewTitleLabel_Tidy)
         headerPreviewCard_Tidy.addSubview(headerPreviewSubtitleLabel_Tidy)
 
-        [statFramesCard_Tidy, statCategoriesCard_Tidy, statSortCard_Tidy].forEach {
-            statsRowView_Tidy.addSubview($0)
-        }
-        setupHeaderStatCard_Tidy(
-            card_Tidy: statFramesCard_Tidy,
-            valueLabel_Tidy: statFramesValueLabel_Tidy,
-            titleLabel_Tidy: statFramesTitleLabel_Tidy
-        )
-        setupHeaderStatCard_Tidy(
-            card_Tidy: statCategoriesCard_Tidy,
-            valueLabel_Tidy: statCategoriesValueLabel_Tidy,
-            titleLabel_Tidy: statCategoriesTitleLabel_Tidy
-        )
-        setupHeaderStatCard_Tidy(
-            card_Tidy: statSortCard_Tidy,
-            valueLabel_Tidy: statSortValueLabel_Tidy,
-            titleLabel_Tidy: statSortTitleLabel_Tidy
-        )
-
         pageTitleLabel_Tidy.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(18)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
             make.trailing.lessThanOrEqualTo(headerPreviewCard_Tidy.snp.leading).offset(-12)
         }
         pageSubtitleLabel_Tidy.snp.makeConstraints { make in
             make.leading.equalTo(pageTitleLabel_Tidy)
-            make.top.equalTo(pageTitleLabel_Tidy.snp.bottom).offset(6)
+            make.top.equalTo(pageTitleLabel_Tidy.snp.bottom).offset(5)
             make.trailing.lessThanOrEqualTo(headerPreviewCard_Tidy.snp.leading).offset(-12)
         }
+        // 预览卡缩小高度，配合较短的 Header
         headerPreviewCard_Tidy.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-18)
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
-            make.width.equalTo(146)
-            make.height.equalTo(104)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(14)
+            make.width.equalTo(130)
+            make.height.equalTo(88)
         }
         headerPreviewBadge_Tidy.snp.makeConstraints { make in
             make.leading.top.equalToSuperview().offset(12)
@@ -825,32 +797,16 @@ class Discover_Tidy: UIViewController {
         headerPreviewTitleLabel_Tidy.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(12)
             make.trailing.equalToSuperview().offset(-12)
-            make.bottom.equalTo(headerPreviewSubtitleLabel_Tidy.snp.top).offset(-5)
+            make.bottom.equalTo(headerPreviewSubtitleLabel_Tidy.snp.top).offset(-4)
         }
         headerPreviewSubtitleLabel_Tidy.snp.makeConstraints { make in
             make.leading.equalTo(headerPreviewTitleLabel_Tidy)
             make.trailing.equalTo(headerPreviewTitleLabel_Tidy)
-            make.bottom.equalToSuperview().offset(-14)
+            make.bottom.equalToSuperview().offset(-12)
         }
-        statsRowView_Tidy.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
-            make.top.equalTo(headerPreviewCard_Tidy.snp.bottom).offset(16)
-            make.bottom.equalToSuperview().offset(-34)
-            make.height.equalTo(60)
-        }
-        statFramesCard_Tidy.snp.makeConstraints { make in
-            make.leading.top.bottom.equalToSuperview()
-        }
-        statCategoriesCard_Tidy.snp.makeConstraints { make in
-            make.leading.equalTo(statFramesCard_Tidy.snp.trailing).offset(10)
-            make.top.bottom.equalToSuperview()
-            make.width.equalTo(statFramesCard_Tidy)
-        }
-        statSortCard_Tidy.snp.makeConstraints { make in
-            make.leading.equalTo(statCategoriesCard_Tidy.snp.trailing).offset(10)
-            make.trailing.top.bottom.equalToSuperview()
-            make.width.equalTo(statFramesCard_Tidy)
+        // Header 底部与预览卡下方对齐，并留 28pt 给搜索卡悬浮半遮盖留白
+        headerView_Tidy.snp.makeConstraints { make in
+            make.bottom.equalTo(headerPreviewCard_Tidy.snp.bottom).offset(28)
         }
 
         // 同步 shadow 载体高度
@@ -1154,44 +1110,46 @@ class Discover_Tidy: UIViewController {
 
         let block = {
             if isSelected {
-                // 移除旧渐变，添加新渐变
+                // 选中态：渐变背景胶囊 + 白色图标/文字 + 彩色光晕
                 bundle.circleGrad?.removeFromSuperlayer()
-                let grad = CAGradientLayer()
-                let sz = bundle.circleBg.bounds.isEmpty
-                    ? CGRect(x: 0, y: 0, width: 120, height: 44)
+                let sz_tidy = bundle.circleBg.bounds.isEmpty
+                    ? CGRect(x: 0, y: 0, width: 110, height: 40)
                     : bundle.circleBg.bounds
-                grad.frame = sz
-                grad.colors = [catColor.cgColor,
-                               catColor.withAlphaComponent(0.75).cgColor]
-                grad.startPoint = CGPoint(x: 0.1, y: 0)
-                grad.endPoint   = CGPoint(x: 1, y: 1)
-                grad.cornerRadius = sz.height / 2
-                bundle.circleBg.layer.insertSublayer(grad, at: 0)
-                bundle.circleGrad = grad
+                let grad_tidy = CAGradientLayer()
+                grad_tidy.frame       = sz_tidy
+                grad_tidy.colors      = [catColor.cgColor,
+                                          catColor.withAlphaComponent(0.78).cgColor]
+                grad_tidy.startPoint  = CGPoint(x: 0, y: 0)
+                grad_tidy.endPoint    = CGPoint(x: 1, y: 1)
+                grad_tidy.cornerRadius = sz_tidy.height / 2
+                bundle.circleBg.layer.insertSublayer(grad_tidy, at: 0)
+                bundle.circleGrad = grad_tidy
                 bundle.circleBg.backgroundColor = .clear
-                // 选中态：清除边框，加光晕阴影
                 bundle.circleBg.layer.borderWidth  = 0
                 bundle.circleBg.layer.shadowColor  = catColor.cgColor
-                bundle.circleBg.layer.shadowOffset = CGSize(width: 0, height: 6)
-                bundle.circleBg.layer.shadowRadius = 12
-                bundle.circleBg.layer.shadowOpacity = 0.22
+                bundle.circleBg.layer.shadowOffset = CGSize(width: 0, height: 4)
+                bundle.circleBg.layer.shadowRadius = 10
+                bundle.circleBg.layer.shadowOpacity = 0.25
 
-                bundle.iconView.tintColor = .white
+                bundle.iconView.tintColor  = .white
                 bundle.nameLabel.textColor = .white
-                bundle.nameLabel.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+                bundle.nameLabel.font      = UIFont.systemFont(ofSize: 13, weight: .bold)
                 bundle.container.transform = CGAffineTransform(scaleX: 1.04, y: 1.04)
             } else {
+                // 未选中态：白色胶囊 + 彩色描边 + 彩色图标
                 bundle.circleGrad?.removeFromSuperlayer()
                 bundle.circleGrad = nil
-                // 未选中态：浅色标签 + 柔和描边
-                bundle.circleBg.backgroundColor = UIColor.white
-                bundle.circleBg.layer.borderWidth  = 1
-                bundle.circleBg.layer.borderColor  = catColor.withAlphaComponent(0.18).cgColor
-                bundle.circleBg.layer.shadowOpacity = 0
+                bundle.circleBg.backgroundColor    = .white
+                bundle.circleBg.layer.borderWidth  = 1.5
+                bundle.circleBg.layer.borderColor  = catColor.withAlphaComponent(0.22).cgColor
+                bundle.circleBg.layer.shadowColor  = UIColor.black.withAlphaComponent(0.06).cgColor
+                bundle.circleBg.layer.shadowOffset = CGSize(width: 0, height: 2)
+                bundle.circleBg.layer.shadowRadius = 6
+                bundle.circleBg.layer.shadowOpacity = 1
 
-                bundle.iconView.tintColor = catColor
-                bundle.nameLabel.textColor = ColorConfig_Tidy.textSecondary_Tidy
-                bundle.nameLabel.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+                bundle.iconView.tintColor  = catColor
+                bundle.nameLabel.textColor = ColorConfig_Tidy.textPrimary_Tidy
+                bundle.nameLabel.font      = UIFont.systemFont(ofSize: 13, weight: .semibold)
                 bundle.container.transform = .identity
             }
         }

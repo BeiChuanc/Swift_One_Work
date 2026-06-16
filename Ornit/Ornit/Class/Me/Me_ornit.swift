@@ -86,6 +86,18 @@ class Me_Ornit: UIViewController {
         return btn_ornit
     }()
 
+    /// VIP 入口按钮（vip_btn 原图，与 editButton 左对齐，高度一致）
+    private let vipButton_Ornit: UIButton = {
+        let btn_ornit = UIButton(type: .custom)
+        if let img_ornit = UIImage(named: "vip_btn") {
+            btn_ornit.setImage(img_ornit.withRenderingMode(.alwaysOriginal), for: .normal)
+        }
+        btn_ornit.imageView?.contentMode = .scaleAspectFit
+        btn_ornit.contentHorizontalAlignment = .fill
+        btn_ornit.contentVerticalAlignment = .fill
+        return btn_ornit
+    }()
+
     /// 设置入口按钮（右上角齿轮，半透明圆形背景）
     private let settingButton_Ornit: UIButton = {
         let btn_ornit = UIButton(type: .system)
@@ -204,6 +216,7 @@ class Me_Ornit: UIViewController {
         // 两个按钮均始终可见
         settingButton_Ornit.isHidden = false
         editButton_Ornit.isHidden = false
+        vipButton_Ornit.isHidden = false
     }
 
     /// 刷新统计数据行（Posts / Following / Likes）
@@ -333,6 +346,8 @@ class Me_Ornit: UIViewController {
 
         headerCard_Ornit.addSubview(settingButton_Ornit)
         headerCard_Ornit.addSubview(avatarView_Ornit)
+        headerCard_Ornit.addSubview(editButton_Ornit)
+        headerCard_Ornit.addSubview(vipButton_Ornit)
         headerCard_Ornit.addSubview(nameLabel_Ornit)
         headerCard_Ornit.addSubview(bioLabel_Ornit)
 
@@ -353,8 +368,8 @@ class Me_Ornit: UIViewController {
 
         headerCard_Ornit.snp.makeConstraints { make_ornit in
             make_ornit.top.leading.trailing.equalToSuperview()
-            // editButton 移至顶部后底部空间收紧
-            make_ornit.height.equalTo(300)
+            // vipButton 额外增加 34+5=39pt，header 高度相应增至 340
+            make_ornit.height.equalTo(340)
         }
 
         deco1_ornit.snp.makeConstraints { make_ornit in
@@ -389,9 +404,18 @@ class Me_Ornit: UIViewController {
             make_ornit.width.height.equalTo(36)
         }
 
+        // VIP 按钮：与 editButton 左对齐，间距 5pt，高度相同
+        vipButton_Ornit.snp.makeConstraints { make_ornit in
+            make_ornit.leading.equalToSuperview().offset(20)
+            make_ornit.top.equalTo(editButton_Ornit.snp.bottom).offset(5)
+            make_ornit.width.equalTo(editButton_Ornit)
+            make_ornit.height.equalTo(34)
+        }
+
         avatarView_Ornit.snp.makeConstraints { make_ornit in
             make_ornit.centerX.equalToSuperview()
-            make_ornit.top.equalTo(editButton_Ornit.snp.bottom).offset(10)
+            // avatarView 跟随 vipButton 下方
+            make_ornit.top.equalTo(vipButton_Ornit.snp.bottom).offset(10)
             make_ornit.width.height.equalTo(96)
         }
 
@@ -427,6 +451,7 @@ class Me_Ornit: UIViewController {
 
         settingButton_Ornit.addTarget(self, action: #selector(settingTapped_Ornit), for: .touchUpInside)
         editButton_Ornit.addTarget(self, action: #selector(editProfileTapped_Ornit), for: .touchUpInside)
+        vipButton_Ornit.addTarget(self, action: #selector(vipButtonTapped_Ornit), for: .touchUpInside)
     }
 
     /// 构建自定义分段选择器 + 帖子网格区域
@@ -724,6 +749,12 @@ class Me_Ornit: UIViewController {
 
     @objc private func settingTapped_Ornit() {
         Navigation_Ornit.toSetting_Ornit()
+    }
+
+    /// VIP 按钮点击，跳转 VIP 订阅页面
+    @objc private func vipButtonTapped_Ornit() {
+        let vipVC_ornit = VIPSubscription_Ornit()
+        Navigation_Ornit.push_Ornit(to: vipVC_ornit)
     }
 
     @objc private func postCardTapped_Ornit(_ gesture: UITapGestureRecognizer) {

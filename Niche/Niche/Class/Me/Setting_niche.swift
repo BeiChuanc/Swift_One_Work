@@ -362,9 +362,9 @@ class Setting_Niche: UIViewController {
         gesture.view?.animatePressDown_Niche { gesture.view?.animatePressUp_Niche() }
         switch name_niche {
         case "Terms of Service":
-            ProtocolHelper_Niche.showProtocol_Niche(type_Niche: .terms_Niche, content_Niche: "terms", from: self)
+            ProtocolHelper_Niche.showProtocol_Niche(type_Niche: .terms_Niche, content_Niche: "terms.png", from: self)
         case "Privacy Policy":
-            ProtocolHelper_Niche.showProtocol_Niche(type_Niche: .privacy_Niche, content_Niche: "privacy", from: self)
+            ProtocolHelper_Niche.showProtocol_Niche(type_Niche: .privacy_Niche, content_Niche: "privacy.png", from: self)
         case "Log Out":
             UIAlertController.logout_Niche {
                 Task { @MainActor in UserViewModel_Niche.shared_Niche.logout_Niche(logoutType_niche: .logout_niche) }

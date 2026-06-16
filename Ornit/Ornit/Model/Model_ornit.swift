@@ -339,3 +339,45 @@ class TipCard_Ornit: NSObject {
         self.accentColor_Ornit = accentColor_Ornit
     }
 }
+
+/// 商店模型
+class StoreModel_Ornit: NSObject {
+    
+    /// ID编号
+    var id_Ornit: Int?
+    
+    /// 商品ID
+    var goodsId_Ornit: String?
+    
+    /// 商品名字
+    var goodsName_Ornit: String?
+    
+    /// 商品价格
+    var goodsPrice_Ornit: String?
+    
+    /// 是否顶部商品
+    var goodIsTop_Ornit: Bool?
+    
+    /// 是否特殊商品
+    var goodIsSpecial_Ornit: Bool?
+    
+    /// 是否VIP商品
+    var goodIsVIP_Ornit: Bool?
+    
+    init(id_Ornit: Int? = nil,
+         goodsId_Ornit: String? = nil,
+         goodsName_Ornit: String? = nil,
+         goodsPrice_Ornit: String? = nil,
+         goodIsTop_Ornit: Bool? = false,
+         goodIsLimit_Ornit: Bool? = false,
+         goodIsVIP_Ornit: Bool? = false) {
+        self.id_Ornit = id_Ornit
+        self.goodsId_Ornit = goodsId_Ornit
+        self.goodsName_Ornit = goodsName_Ornit
+        self.goodsPrice_Ornit = goodsPrice_Ornit
+        self.goodIsTop_Ornit = goodIsTop_Ornit
+        self.goodIsSpecial_Ornit = goodIsLimit_Ornit
+        self.goodIsVIP_Ornit = goodIsVIP_Ornit
+        super.init()
+    }
+}

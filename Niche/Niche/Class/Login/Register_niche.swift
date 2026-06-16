@@ -317,8 +317,8 @@ class Register_Niche: UIViewController {
         
         // 协议
         _protocolLabel_niche = ProtocolHelper_Niche.createProtocolTextLabel_Niche(
-            firstContent_Niche: "terms",
-            secondContent_Niche: "privacy",
+            firstContent_Niche: "terms.png",
+            secondContent_Niche: "privacy.png",
             from: self
         )
         _formCard_niche.addSubview(_protocolLabel_niche)
