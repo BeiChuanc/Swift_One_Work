@@ -2,20 +2,11 @@ import Foundation
 
 // MARK: 本地数据存放类, 预制数据存放
 
-/// 数据配置常量结构体
-private struct DataConfig_Base_one {
-    /// ID起始值
-    static let userIdStart_Base_one = 10
-    static let postIdStart_Base_one = 20
-    
-    /// 喜欢帖子数量
-    static let likePostCount_Base_one = 2
-}
-
 /// 本地数据管理类
+/// 功能：管理预制用户与帖子数据，提供查询过滤方法
+/// 设计：单例 + 内部 DataGenerator 负责批量生成
 class LocalData_Base_one {
     
-    /// 单例
     static let shared_Base_one = LocalData_Base_one()
     
     /// 用户列表
@@ -24,14 +15,11 @@ class LocalData_Base_one {
     /// 帖子列表
     var titleList_Base_one: [TitleModel_Base_one] = []
     
-    /// 数据生成器
-    private lazy var generator_Base_one: DataGenerator_Base_one = {
-        return DataGenerator_Base_one(dataLocal_base_one: self)
-    }()
+    private lazy var generator_Base_one = DataGenerator_Base_one(dataLocal_base_one: self)
     
     private init() {}
     
-    /// 初始化所有数据
+    /// 初始化所有预制数据
     func initData_Base_one() {
         generator_Base_one.initUsers_Base_one()
         generator_Base_one.initPosts_Base_one()
@@ -40,19 +28,19 @@ class LocalData_Base_one {
     
     /// 获取排除指定用户的帖子列表
     func getPostsExcludingUser_Base_one(userId_base_one: Int) -> [TitleModel_Base_one] {
-        return titleList_Base_one.filter { $0.titleUserId_Base_one != userId_base_one }
+        titleList_Base_one.filter { $0.titleUserId_Base_one != userId_base_one }
     }
     
-    /// 获取可评论的用户列表
+    /// 获取可评论的用户列表（排除帖子作者）
     func getAvailableCommenters_Base_one(postAuthorUserId_base_one: Int) -> [PrewUserModel_Base_one] {
-        return userList_Base_one.filter { $0.userId_Base_one != postAuthorUserId_base_one }
+        userList_Base_one.filter { $0.userId_Base_one != postAuthorUserId_base_one }
     }
 }
 
 // MARK: - 静态数据源
 
-/// 静态数据源类
-private struct DataSource_Base_one {
+/// 预制用户与帖子原始数据
+private enum DataSource_Base_one {
     
     /// 用户信息列表 (用户名, 简介, 头像URL, 相册URL)
     static let usersInfo_Base_one: [(String, String, String, String)] = [
@@ -92,41 +80,37 @@ private struct DataSource_Base_one {
     ]
 }
 
-// MARK: - 随机数工具类
+// MARK: - 随机数工具
 
-/// 随机数工具类
-/// 功能：提供各种随机数生成方法
-private struct RandomUtil_Base_one {
+/// 随机数工具（仅供数据生成使用）
+private enum RandomUtil_Base_one {
     
-    /// 生成指定范围的随机整数
+    /// 生成 [min, min + range) 范围内的随机整数
     static func nextInt_Base_one(min_base_one: Int, range_base_one: Int) -> Int {
-        return Int.random(in: min_base_one..<(min_base_one + range_base_one))
+        Int.random(in: min_base_one..<(min_base_one + range_base_one))
     }
     
-    /// 从列表中随机选择不重复的N个元素
+    /// 从列表中随机选取不重复的 N 个元素
     static func selectRandomItems_Base_one<T>(from list_base_one: [T], count_base_one: Int) -> [T] {
         guard !list_base_one.isEmpty else { return [] }
         guard list_base_one.count > count_base_one else { return list_base_one }
         
         var selected_base_one: [T] = []
-        var indices_base_one: Set<Int> = []
-        
-        while selected_base_one.count < count_base_one && indices_base_one.count < list_base_one.count {
+        var usedIndices_base_one = Set<Int>()
+        while selected_base_one.count < count_base_one {
             let index_base_one = Int.random(in: 0..<list_base_one.count)
-            if !indices_base_one.contains(index_base_one) {
-                indices_base_one.insert(index_base_one)
+            if usedIndices_base_one.insert(index_base_one).inserted {
                 selected_base_one.append(list_base_one[index_base_one])
             }
         }
-        
         return selected_base_one
     }
 }
 
-// MARK: - 数据生成器类
+// MARK: - 数据生成器
 
-/// 数据生成器类
-class DataGenerator_Base_one {
+/// 预制数据生成器（仅 LocalData 内部使用）
+private class DataGenerator_Base_one {
     
     private weak var dataLocal_Base_one: LocalData_Base_one?
     
@@ -134,113 +118,86 @@ class DataGenerator_Base_one {
         self.dataLocal_Base_one = dataLocal_base_one
     }
     
-    /// 初始化生成用户数据
+    /// 根据静态数据源生成用户列表
     func initUsers_Base_one() {
         guard let dataLocal_base_one = dataLocal_Base_one else { return }
-        dataLocal_base_one.userList_Base_one.removeAll()
-        
-        for (index_base_one, userInfo_base_one) in DataSource_Base_one.usersInfo_Base_one.enumerated() {
-            let (username_base_one, introduce_base_one, userHead_base_one, userAlbum_base_one) = userInfo_base_one
-            
+        dataLocal_base_one.userList_Base_one = DataSource_Base_one.usersInfo_Base_one.enumerated().map { index, info in
+            let (name, intro, head, album) = info
             let user_base_one = PrewUserModel_Base_one()
-            user_base_one.userId_Base_one = index_base_one + DataConfig_Base_one.userIdStart_Base_one
-            user_base_one.userName_Base_one = username_base_one
-            user_base_one.userIntroduce_Base_one = introduce_base_one
-            user_base_one.userHead_Base_one = userHead_base_one
-            user_base_one.userMedia_Base_one = [userAlbum_base_one]
+            user_base_one.userId_Base_one = index + 10
+            user_base_one.userName_Base_one = name
+            user_base_one.userIntroduce_Base_one = intro
+            user_base_one.userHead_Base_one = head
+            user_base_one.userMedia_Base_one = [album]
             user_base_one.userLike_Base_one = []
             user_base_one.userFollow_Base_one = 15 + Int.random(in: 1...50)
             user_base_one.userFans_Base_one = 20 + Int.random(in: 1...50)
-            
-            dataLocal_base_one.userList_Base_one.append(user_base_one)
+            return user_base_one
         }
     }
     
-    /// 初始化生成帖子数据
+    /// 根据静态数据源生成帖子列表（循环分配作者）
     func initPosts_Base_one() {
         guard let dataLocal_base_one = dataLocal_Base_one else { return }
-        dataLocal_base_one.titleList_Base_one.removeAll()
+        let users_base_one = dataLocal_base_one.userList_Base_one
+        guard !users_base_one.isEmpty else {
+            dataLocal_base_one.titleList_Base_one = []
+            return
+        }
         
-        for (index_base_one, postInfo_base_one) in DataSource_Base_one.postsInfo_Base_one.enumerated() {
-            let (title_base_one, content_base_one, media_base_one) = postInfo_base_one
+        dataLocal_base_one.titleList_Base_one = DataSource_Base_one.postsInfo_Base_one.enumerated().map { index, info in
+            let (title, content, media) = info
+            let author_base_one = users_base_one[index % users_base_one.count]
+            let authorId_base_one = author_base_one.userId_Base_one ?? 0
             
-            // 循环分配作者
-            let authorIndex_base_one = index_base_one % dataLocal_base_one.userList_Base_one.count
-            guard authorIndex_base_one < dataLocal_base_one.userList_Base_one.count else { continue }
-            let author_base_one = dataLocal_base_one.userList_Base_one[authorIndex_base_one]
-            
-            // 生成评论
-            let comments_base_one = generateComments_Base_one(
-                postIndex_base_one: index_base_one,
-                postAuthorUserId_base_one: author_base_one.userId_Base_one ?? 0
-            )
-            
-            // 创建帖子
-            let post_base_one = TitleModel_Base_one(
-                titleId_Base_one: index_base_one + DataConfig_Base_one.postIdStart_Base_one,
-                titleUserId_Base_one: author_base_one.userId_Base_one ?? 0,
+            return TitleModel_Base_one(
+                titleId_Base_one: index + 20,
+                titleUserId_Base_one: authorId_base_one,
                 titleUserName_Base_one: author_base_one.userName_Base_one ?? "",
-                titleMeidas_Base_one: [media_base_one],
-                title_Base_one: title_base_one,
-                titleContent_Base_one: content_base_one,
-                reviews_Base_one: comments_base_one,
+                titleMeidas_Base_one: [media],
+                title_Base_one: title,
+                titleContent_Base_one: content,
+                reviews_Base_one: generateComments_Base_one(postIndex_base_one: index, postAuthorUserId_base_one: authorId_base_one),
                 likes_Base_one: RandomUtil_Base_one.nextInt_Base_one(min_base_one: 10, range_base_one: 150)
             )
-            
-            dataLocal_base_one.titleList_Base_one.append(post_base_one)
         }
     }
     
-    /// 为帖子生成评论
+    /// 为帖子生成两条评论
     private func generateComments_Base_one(postIndex_base_one: Int, postAuthorUserId_base_one: Int) -> [Comment_Base_one] {
         guard let dataLocal_base_one = dataLocal_Base_one else { return [] }
+        let available_base_one = dataLocal_base_one.getAvailableCommenters_Base_one(postAuthorUserId_base_one: postAuthorUserId_base_one)
+        guard available_base_one.count >= 2 else { return [] }
         
-        let availableUsers_base_one = dataLocal_base_one.getAvailableCommenters_Base_one(postAuthorUserId_base_one: postAuthorUserId_base_one)
-        guard availableUsers_base_one.count >= 2 else { return [] }
-        
-        // 获取评论者
-        let commenter1_base_one = availableUsers_base_one[postIndex_base_one % availableUsers_base_one.count]
-        let commenter2_base_one = availableUsers_base_one[(postIndex_base_one + 1) % availableUsers_base_one.count]
-        
-        // 获取评论内容
-        let commentIndex_base_one = postIndex_base_one % DataSource_Base_one.comments_Base_one.count
-        let (comment1_base_one, comment2_base_one) = DataSource_Base_one.comments_Base_one[commentIndex_base_one]
+        let commenter1_base_one = available_base_one[postIndex_base_one % available_base_one.count]
+        let commenter2_base_one = available_base_one[(postIndex_base_one + 1) % available_base_one.count]
+        let (text1, text2) = DataSource_Base_one.comments_Base_one[postIndex_base_one % DataSource_Base_one.comments_Base_one.count]
         
         return [
-            Comment_Base_one(
-                commentId_Base_one: postIndex_base_one * 2 + 1,
-                commentUserId_Base_one: commenter1_base_one.userId_Base_one ?? 0,
-                commentUserName_Base_one: commenter1_base_one.userName_Base_one ?? "",
-                commentContent_Base_one: comment1_base_one
-            ),
-            Comment_Base_one(
-                commentId_Base_one: postIndex_base_one * 2 + 2,
-                commentUserId_Base_one: commenter2_base_one.userId_Base_one ?? 0,
-                commentUserName_Base_one: commenter2_base_one.userName_Base_one ?? "",
-                commentContent_Base_one: comment2_base_one
-            )
+            makeComment_Base_one(id: postIndex_base_one * 2 + 1, user: commenter1_base_one, content: text1),
+            makeComment_Base_one(id: postIndex_base_one * 2 + 2, user: commenter2_base_one, content: text2)
         ]
     }
     
-    /// 更新用户的喜欢帖子列表
+    /// 为每个用户随机分配喜欢的帖子（排除自己的帖子）
     func setUserLikes_Base_one() {
         guard let dataLocal_base_one = dataLocal_Base_one else { return }
-        
-        for i_base_one in 0..<dataLocal_base_one.userList_Base_one.count {
-            let user_base_one = dataLocal_base_one.userList_Base_one[i_base_one]
-            
-            // 获取可喜欢的帖子（排除自己的）
-            let availablePosts_base_one = dataLocal_base_one.getPostsExcludingUser_Base_one(
-                userId_base_one: user_base_one.userId_Base_one ?? 0
+        for i in dataLocal_base_one.userList_Base_one.indices {
+            let userId_base_one = dataLocal_base_one.userList_Base_one[i].userId_Base_one ?? 0
+            dataLocal_base_one.userList_Base_one[i].userLike_Base_one = RandomUtil_Base_one.selectRandomItems_Base_one(
+                from: dataLocal_base_one.getPostsExcludingUser_Base_one(userId_base_one: userId_base_one),
+                count_base_one: 2
             )
-            
-            // 随机选择喜欢的帖子
-            let likePosts_base_one = RandomUtil_Base_one.selectRandomItems_Base_one(
-                from: availablePosts_base_one,
-                count_base_one: DataConfig_Base_one.likePostCount_Base_one
-            )
-            
-            dataLocal_base_one.userList_Base_one[i_base_one].userLike_Base_one = likePosts_base_one
         }
+    }
+    
+    /// 构建评论模型
+    private func makeComment_Base_one(id: Int, user: PrewUserModel_Base_one, content: String) -> Comment_Base_one {
+        Comment_Base_one(
+            commentId_Base_one: id,
+            commentUserId_Base_one: user.userId_Base_one ?? 0,
+            commentUserName_Base_one: user.userName_Base_one ?? "",
+            commentContent_Base_one: content
+        )
     }
 }

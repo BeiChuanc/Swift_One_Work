@@ -12,8 +12,8 @@ class UserAvatarView_Base_one: UIView {
     
     /// 用户默认头像颜色数组
     static let defaultAvatarColors_Base_one: [UIColor] = [
-        ColorConfig_Base_one.primaryGradientStart_Base_one,
-        ColorConfig_Base_one.secondaryGradientStart_Base_one,
+        UIColor(hexstring_Base_one: "#B794F6"),
+        UIColor(hexstring_Base_one: "#FBB6CE"),
         UIColor(hexstring_Base_one: "#63B3ED"),
         UIColor(hexstring_Base_one: "#F6AD55"),
         UIColor(hexstring_Base_one: "#FC8181")
@@ -26,7 +26,7 @@ class UserAvatarView_Base_one: UIView {
         let imageView_Base_one = UIImageView()
         imageView_Base_one.contentMode = .scaleAspectFill
         imageView_Base_one.clipsToBounds = true
-        imageView_Base_one.backgroundColor = ColorConfig_Base_one.backgroundPrimary_Base_one
+        imageView_Base_one.backgroundColor = UIColor(hexstring_Base_one: "#F7FAFC")
         return imageView_Base_one
     }()
     
@@ -96,11 +96,11 @@ class UserAvatarView_Base_one: UIView {
     private func loadCurrentUserAvatar_Base_one(user_Base_one: LoginUserModel_Base_one) {
         guard let headPath_Base_one = user_Base_one.userHead_Base_one, !headPath_Base_one.isEmpty else {
             // 使用默认头像
-            setDefaultAvatar_Base_one(color_Base_one: ColorConfig_Base_one.primaryGradientStart_Base_one)
+            setDefaultAvatar_Base_one(color_Base_one: UIColor(hexstring_Base_one: "#B794F6"))
             return
         }
         
-        loadAvatarFromPath_Base_one(path_Base_one: headPath_Base_one, defaultColor_Base_one: ColorConfig_Base_one.primaryGradientStart_Base_one)
+        loadAvatarFromPath_Base_one(path_Base_one: headPath_Base_one, defaultColor_Base_one: UIColor(hexstring_Base_one: "#B794F6"))
     }
     
     /// 加载其他用户头像
@@ -241,11 +241,11 @@ class CurrentUserAvatarView_Base_one: UserAvatarView_Base_one {
         
         guard let headPath_Base_one = currentUser_Base_one.userHead_Base_one, !headPath_Base_one.isEmpty else {
             // 使用默认头像
-            setDefaultAvatar_Base_one(color_Base_one: ColorConfig_Base_one.primaryGradientStart_Base_one)
+            setDefaultAvatar_Base_one(color_Base_one: UIColor(hexstring_Base_one: "#B794F6"))
             return
         }
         
-        loadAvatarFromPath_Base_one(path_Base_one: headPath_Base_one, defaultColor_Base_one: ColorConfig_Base_one.primaryGradientStart_Base_one)
+        loadAvatarFromPath_Base_one(path_Base_one: headPath_Base_one, defaultColor_Base_one: UIColor(hexstring_Base_one: "#B794F6"))
     }
     
     /// 创建渐变占位符图片（重写父类方法，使用渐变效果）
@@ -256,8 +256,8 @@ class CurrentUserAvatarView_Base_one: UserAvatarView_Base_one {
         // 绘制渐变背景
         let context_Base_one = UIGraphicsGetCurrentContext()
         let colors_Base_one = [
-            ColorConfig_Base_one.primaryGradientStart_Base_one.cgColor,
-            ColorConfig_Base_one.primaryGradientEnd_Base_one.cgColor
+            UIColor(hexstring_Base_one: "#B794F6").cgColor,
+            UIColor(hexstring_Base_one: "#90CDF4").cgColor
         ]
         let colorSpace_Base_one = CGColorSpaceCreateDeviceRGB()
         let gradient_Base_one = CGGradient(colorsSpace: colorSpace_Base_one, colors: colors_Base_one as CFArray, locations: nil)
@@ -284,10 +284,6 @@ class CurrentUserAvatarView_Base_one: UserAvatarView_Base_one {
     
     /// 处理头像点击事件
     @objc private func handleTap_Base_one() {
-        // 缩放动画
-        animatePressDown_Base_one {
-            self.animatePressUp_Base_one()
-        }
         
         // 触觉反馈
         let generator_Base_one = UIImpactFeedbackGenerator(style: .light)

@@ -135,30 +135,30 @@ extension Store_Base_one {
     
     // 内购商品
     func PurchaseStoreGift_Base_one(gid_Base_one: String, completion_Base_one: @escaping() -> Void) {
-        Utils_Base_one.showLoading_Base_one()
+        Load_Base_one.showLoading_Base_one()
         
         let products: Set = [gid_Base_one]
         RMStore.default().requestProducts(products) { success, invalidProductIdentifiers in
             RMStore.default().addPayment(gid_Base_one) { SKPaymentTransaction in
-                Utils_Base_one.dismissLoading_Base_one()
+                Load_Base_one.dismissLoading_Base_one()
                 if SKPaymentTransaction?.transactionState == .purchased {
                     print("支付成功")
-                    Utils_Base_one.showSuccess_Base_one(message_Base_one: "Payment successful")
+                    Load_Base_one.showSuccess_Base_one(message_Base_one: "Payment successful")
                     
                     NotificationCenter.default.post(name: NSNotification.Name("DazzlRefreshGifts"), object: nil)
                     completion_Base_one()
                 }else{
                     print("取消支付")
-                    Utils_Base_one.showError_Base_one(message_Base_one: "User cancels payment")
+                    Load_Base_one.showError_Base_one(message_Base_one: "User cancels payment")
                 }
                 
             } failure: { transaction, error in
                 print("商品信息无效")
-                Utils_Base_one.showError_Base_one(message_Base_one: "Invalid product information")
+                Load_Base_one.showError_Base_one(message_Base_one: "Invalid product information")
             }
         } failure: { error in
             print("商品信息无效")
-            Utils_Base_one.showError_Base_one(message_Base_one: "Invalid product information")
+            Load_Base_one.showError_Base_one(message_Base_one: "Invalid product information")
         }
     }
     

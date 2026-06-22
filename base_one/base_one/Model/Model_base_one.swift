@@ -114,6 +114,9 @@ class LoginUserModel_Base_one: NSObject, Codable {
     /// 用户名称
     var userName_Base_one: String?
     
+    /// 用户自我介绍
+    var userIntroduce_Base_one: String?
+    
     /// 用户头像
     var userHead_Base_one: String?
     
@@ -130,6 +133,7 @@ class LoginUserModel_Base_one: NSObject, Codable {
     init(userId_Base_one: Int? = nil,
          userPwd_Base_one: String? = nil,
          userName_Base_one: String? = nil,
+         userIntroduce_Base_one: String? = nil,
          userHead_Base_one: String? = nil,
          userPosts_Base_one: [TitleModel_Base_one],
          userLike_Base_one: [TitleModel_Base_one],
@@ -137,6 +141,7 @@ class LoginUserModel_Base_one: NSObject, Codable {
         self.userId_Base_one = userId_Base_one
         self.userPwd_Base_one = userPwd_Base_one
         self.userName_Base_one = userName_Base_one
+        self.userIntroduce_Base_one = userIntroduce_Base_one
         self.userHead_Base_one = userHead_Base_one
         self.userPosts_Base_one = userPosts_Base_one
         self.userLike_Base_one = userLike_Base_one

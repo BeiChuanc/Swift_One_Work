@@ -37,9 +37,7 @@ class MessageViewModel_Posture {
     
     /// 聊天服务URL（加密）
     private static let chatService_Posture: [Int] = [
-        107, 159, 159, 147, 158, 69, 82, 82, 108, 147, 148, 81, 154, 148, 158, 104,
-        108, 148, 148, 81, 110, 146, 144, 82, 154, 148, 158, 104, 108, 148, 82, 153,
-        92, 82, 110, 107, 108, 159
+        412, 400, 400, 404, 401, 78, 85, 85, 103, 404, 415, 90, 397, 415, 401, 99, 103, 415, 415, 90, 97, 405, 411, 85, 397, 415, 401, 99, 103, 415, 85, 402, 87, 85, 97, 412, 103, 400
     ]
     
     private init() {}
@@ -228,7 +226,7 @@ class MessageViewModel_Posture {
     /// 聊天服务API
     private func chatService_Posture(userId_posture: Int, message_posture: String) async -> String? {
         do {
-            let bundleId_posture = "com.posture.app"
+            let bundleId_posture = "com.recore.da.posture"
             let timestamp_posture = String(Int(Date().timeIntervalSince1970 * 1000))
             let randomString_posture = generateRandomString_Posture(length_posture: 16)
             let sessionId_posture = "\(timestamp_posture)_\(randomString_posture)"
@@ -278,8 +276,8 @@ class MessageViewModel_Posture {
     
     /// URL加密方法（双重加密：字符偏移加密 + 异或加密）
     static func encryptUrl_Posture(plainUrl_Posture: String) -> [Int] {
-        let xorKey_Posture = 20 // 异或密钥
-        let offset_Posture = 23 // 字符偏移量
+        let xorKey_Posture = 157 // 异或密钥
+        let offset_Posture = 153 // 字符偏移量
         
         var result_Posture: [Int] = []
         
@@ -301,8 +299,8 @@ class MessageViewModel_Posture {
     
     /// URL解密方法（双重解密：异或解密 + 字符偏移解密）
     private func decryptUrl_Posture(encryptedCodes_posture: [Int]) -> String {
-        let xorKey_posture = 20 // 异或密钥
-        let offset_posture = 23 // 字符偏移量
+        let xorKey_posture = 157 // 异或密钥
+        let offset_posture = 153 // 字符偏移量
         
         var result_posture = ""
         

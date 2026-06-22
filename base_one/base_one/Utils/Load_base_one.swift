@@ -5,7 +5,7 @@ import UIKit
 // MARK: 工具类
 
 /// 工具类
-class Utils_Base_one: NSObject {
+class Load_Base_one: NSObject {
     
     // MARK: - HUD配置
     

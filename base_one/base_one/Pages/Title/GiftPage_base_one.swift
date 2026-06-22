@@ -130,7 +130,6 @@ class GiftPage_Base_one: UIViewController {
     /// 已购时禁用点击并显示 Already Purchased
     private func buildComp1_Base_one() {
         guard let top = topGift_Base_one else { return }
-        let isPur_Base_one = Store_Base_one.shared_Base_one.isPur_Base_one
 
         /// 白色圆角卡片背景
         let card_Base_one = UIView()
@@ -142,8 +141,8 @@ class GiftPage_Base_one: UIViewController {
         comp1Card_Base_one = card_Base_one
 
         /// 禁用/降透
-        card_Base_one.alpha = isPur_Base_one ? 0.55 : 1.0
-        card_Base_one.isUserInteractionEnabled = !isPur_Base_one
+        card_Base_one.alpha = 1.0
+        card_Base_one.isUserInteractionEnabled = true
 
         /// 左侧价格文字栈
         let priceLabel_Base_one = UILabel()
@@ -153,7 +152,7 @@ class GiftPage_Base_one: UIViewController {
         comp1PriceLabel_Base_one = priceLabel_Base_one
 
         let subLabel_Base_one = UILabel()
-        subLabel_Base_one.text      = isPur_Base_one ? "Already Purchased" : "Can only be purchased once"
+        subLabel_Base_one.text      = "Can only be purchased once"
         subLabel_Base_one.font      = UIFont.systemFont(ofSize: 10, weight: .regular)
         subLabel_Base_one.textColor = .white
         comp1SubLabel_Base_one = subLabel_Base_one
@@ -180,12 +179,6 @@ class GiftPage_Base_one: UIViewController {
             make.center.equalToSuperview()
             make.leading.greaterThanOrEqualToSuperview().offset(16)
             make.trailing.lessThanOrEqualToSuperview().offset(-8)
-        }
-
-        /// 点击选中（未购时）
-        if !isPur_Base_one {
-            let tap_Base_one = UITapGestureRecognizer(target: self, action: #selector(comp1Tapped_Base_one))
-            card_Base_one.addGestureRecognizer(tap_Base_one)
         }
     }
 
@@ -331,7 +324,7 @@ class GiftPage_Base_one: UIViewController {
     @objc private func buyTapped_Base_one() {
         guard let gift_Base_one = selectedGift_Base_one,
               let gid_Base_one  = gift_Base_one.goodsId_Base_one else {
-            Utils_Base_one.showWarning_Base_one(message_Base_one: "Please select a gift first")
+            Load_Base_one.showWarning_Base_one(message_Base_one: "Please select a gift first")
             return
         }
         Store_Base_one.shared_Base_one.PurchaseStoreGift_Base_one(gid_Base_one: gid_Base_one) { [weak self] in

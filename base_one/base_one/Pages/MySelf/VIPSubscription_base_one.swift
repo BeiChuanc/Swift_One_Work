@@ -331,7 +331,7 @@ class VIPSubscription_Base_one: UIViewController {
 
     /// 恢复购买按钮回调
     @objc private func restoreTapped_Base_one() {
-        Store_Base_one.shared_Base_one.RestorePurchase_Base_one { [weak self] in
+        Subscribe_Base_one.shared_Base_one.RestorePurchase_Base_one { [weak self] in
             guard let self_Base_one = self else { return }
             _ = self_Base_one
         }
@@ -341,11 +341,10 @@ class VIPSubscription_Base_one: UIViewController {
     @objc private func subscribeTapped_Base_one() {
         guard let item_Base_one = selectedItem_Base_one,
               let gid_Base_one  = item_Base_one.goodsId_Base_one else {
-            Utils_Base_one.showWarning_Base_one(message_Base_one: "Please select a subscription plan.")
+            Load_Base_one.showWarning_Base_one(message_Base_one: "Please select a subscription plan.")
             return
         }
-        subscribeButton_Base_one.animatePressDown_Base_one { self.subscribeButton_Base_one.animatePressUp_Base_one() }
-        Store_Base_one.shared_Base_one.PurchaseStoreVIP_Base_one(vipId_Base_one: gid_Base_one) { [weak self] in
+        Subscribe_Base_one.shared_Base_one.PurchaseStoreVIP_Base_one(vipId_Base_one: gid_Base_one) { [weak self] in
             guard let self_Base_one = self else { return }
             Navigation_Base_one.pop_Base_one(from: self_Base_one)
         }

@@ -115,15 +115,15 @@ extension Subscribe_Base_one {
     
     // 内购商品
     func PurchaseStoreGift_Base_one(gid_Base_one: String, completion_Base_one: @escaping() -> Void) {
-        Utils_Base_one.showLoading_Base_one()
+        Load_Base_one.showLoading_Base_one()
         
         let products: Set = [gid_Base_one]
         RMStore.default().requestProducts(products) { success, invalidProductIdentifiers in
             RMStore.default().addPayment(gid_Base_one) { SKPaymentTransaction in
-                Utils_Base_one.dismissLoading_Base_one()
+                Load_Base_one.dismissLoading_Base_one()
                 if SKPaymentTransaction?.transactionState == .purchased {
                     print("支付成功")
-                    Utils_Base_one.showSuccess_Base_one(message_Base_one: "Payment successful")
+                    Load_Base_one.showSuccess_Base_one(message_Base_one: "Payment successful")
                     
                     if (gid_Base_one.contains("praise.gift.x5.3_9")) {
                         self.isPur_Base_one = true
@@ -133,30 +133,30 @@ extension Subscribe_Base_one {
                     completion_Base_one()
                 }else{
                     print("取消支付")
-                    Utils_Base_one.showError_Base_one(message_Base_one: "User cancels payment")
+                    Load_Base_one.showError_Base_one(message_Base_one: "User cancels payment")
                 }
                 
             } failure: { transaction, error in
                 print("商品信息无效")
-                Utils_Base_one.showError_Base_one(message_Base_one: "Invalid product information")
+                Load_Base_one.showError_Base_one(message_Base_one: "Invalid product information")
             }
         } failure: { error in
             print("商品信息无效")
-            Utils_Base_one.showError_Base_one(message_Base_one: "Invalid product information")
+            Load_Base_one.showError_Base_one(message_Base_one: "Invalid product information")
         }
     }
 
     // 订阅VIP
     func PurchaseStoreVIP_Base_one(vipId_Base_one: String, completion_Base_one: @escaping () -> Void) {
-        Utils_Base_one.showLoading_Base_one()
+        Load_Base_one.showLoading_Base_one()
 
         let products_Base_one: Set = [vipId_Base_one]
         RMStore.default().requestProducts(products_Base_one) { success, invalidProductIdentifiers in
             RMStore.default().addPayment(vipId_Base_one) { transaction_Base_one in
-                Utils_Base_one.dismissLoading_Base_one()
+                Load_Base_one.dismissLoading_Base_one()
                 if transaction_Base_one?.transactionState == .purchased {
                     print("VIP 支付成功")
-                    Utils_Base_one.showSuccess_Base_one(message_Base_one: "Payment successful")
+                    Load_Base_one.showSuccess_Base_one(message_Base_one: "Payment successful")
 
                     NotificationCenter.default.post(
                         name: NSNotification.Name("PaneRefreshVIP"),
@@ -165,30 +165,30 @@ extension Subscribe_Base_one {
                     completion_Base_one()
                 } else {
                     print("取消 VIP 支付")
-                    Utils_Base_one.showError_Base_one(message_Base_one: "User cancels payment")
+                    Load_Base_one.showError_Base_one(message_Base_one: "User cancels payment")
                 }
             } failure: { transaction_Base_one, error_Base_one in
                 print("VIP 商品信息无效")
-                Utils_Base_one.showError_Base_one(message_Base_one: "Invalid product information")
+                Load_Base_one.showError_Base_one(message_Base_one: "Invalid product information")
             }
         } failure: { error_Base_one in
             print("VIP 商品信息无效")
-            Utils_Base_one.showError_Base_one(message_Base_one: "Invalid product information")
+            Load_Base_one.showError_Base_one(message_Base_one: "Invalid product information")
         }
     }
 
     // 恢复购买
     func RestorePurchase_Base_one(completion_Base_one: @escaping () -> Void) {
-        Utils_Base_one.showLoading_Base_one()
+        Load_Base_one.showLoading_Base_one()
 
         RMStore.default().restoreTransactions(onSuccess: { transactions_Base_one in
-            Utils_Base_one.dismissLoading_Base_one()
+            Load_Base_one.dismissLoading_Base_one()
             if transactions_Base_one?.count == 0 {
                 print("当前没有可恢复的商品")
-                Utils_Base_one.showError_Base_one(message_Base_one: "There are currently no items to restore")
+                Load_Base_one.showError_Base_one(message_Base_one: "There are currently no items to restore")
             } else {
                 print("恢复购买成功")
-                Utils_Base_one.showSuccess_Base_one(message_Base_one: "Restore purchase successfully")
+                Load_Base_one.showSuccess_Base_one(message_Base_one: "Restore purchase successfully")
 
                 NotificationCenter.default.post(
                     name: NSNotification.Name("PaneRefreshVIP"),
@@ -198,7 +198,7 @@ extension Subscribe_Base_one {
             }
         }, failure: { error_Base_one in
             print("取消恢复购买")
-            Utils_Base_one.showError_Base_one(message_Base_one: "Cancel restore purchase")
+            Load_Base_one.showError_Base_one(message_Base_one: "Cancel restore purchase")
         })
     }
 }
