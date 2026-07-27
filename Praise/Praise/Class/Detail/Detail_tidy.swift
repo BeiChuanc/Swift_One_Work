@@ -364,6 +364,11 @@ class Detail_Tidy: UIViewController {
         bindData_tidy()
         observeNotifications_tidy()
         observeKeyboard_tidy()
+
+        // 记录"浏览帖子"每日任务进度
+        if titleModel_Tidy != nil {
+            TaskViewModel_Tidy.shared_Tidy.recordEvent_Tidy(type_tidy: .browsePosts_tidy)
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {

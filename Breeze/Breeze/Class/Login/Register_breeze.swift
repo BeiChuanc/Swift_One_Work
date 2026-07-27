@@ -160,9 +160,9 @@ class Register_Breeze: UIViewController {
     private lazy var protocolLabel_Breeze: UILabel = {
         return ProtocolHelper_Breeze.createProtocolTextLabel_Breeze(
             firstProtocol_Breeze: .terms_Breeze,
-            firstContent_Breeze: ProtocolConfig_Breeze.termsContent_Breeze,
+            firstContent_Breeze: "terms.png",
             secondProtocol_Breeze: .privacy_Breeze,
-            secondContent_Breeze: ProtocolConfig_Breeze.privacyContent_Breeze,
+            secondContent_Breeze: "privacy.png",
             from: self
         )
     }()

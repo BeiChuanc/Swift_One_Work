@@ -373,6 +373,14 @@ class Navigation_Bague: NSObject {
     ) {
         navigate_Bague(to: Setting_Bague(), style_bague: style_bague, animated_bague: animated_bague)
     }
+
+    /// 跳转到 VIP 订阅页
+    static func toVIPSubscription_Bague(
+        style_bague: NavigationStyle_Bague = .push_bague,
+        animated_bague: Bool = true
+    ) {
+        navigate_Bague(to: VIPSubscription_Bague(), style_bague: style_bague, animated_bague: animated_bague)
+    }
 }
 
 // MARK: - 举报拉黑后安全导航

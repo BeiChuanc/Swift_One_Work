@@ -269,6 +269,20 @@ class Navigation_Retrs: NSObject {
         )
     }
     
+    /// 跳转到"我的CCD技巧库"新增条目页（独立于通用发布页 Release_Retrs）
+    static func toDiaryPublish_Retrs(
+        style_retrs: NavigationStyle_Retrs = .present_retrs,
+        animated_retrs: Bool = true,
+        completion_retrs: (() -> Void)? = nil
+    ) {
+        navigate_Retrs(
+            to: DiaryPublish_Retrs(),
+            style_retrs: style_retrs,
+            animated_retrs: animated_retrs,
+            completion_retrs: completion_retrs
+        )
+    }
+
     // MARK: - 消息相关
     
     /// 跳转到消息列表

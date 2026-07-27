@@ -4,48 +4,28 @@ import UIKit
 // MARK: 颜色配置
 
 /// 颜色配置类
-/// 核心作用：集中管理应用所有主题色、渐变色、强调色与文本色
-/// 设计理念：清新自然露营风格——青绿天空 + 暖橙晨光 + 薄荷草地，营造户外探索氛围
+/// 功能：集中管理应用的主题色、情绪色和渐变色配置
+/// 设计理念：柔和渐变、温暖包容、富有疗愈感
 struct ColorConfig_Breeze {
     
-    // MARK: - 主题渐变色系（晴空清晨）
+    // MARK: - 主题渐变色系
     
-    /// 主渐变起点 - 清爽青绿
-    static let primaryGradientStart_Breeze = UIColor(hexstring_Breeze: "#4ECDC4")
+    /// 主渐变色 - 薰衣草紫
+    static let primaryGradientStart_Breeze = UIColor(hexstring_Breeze: "#B794F6")
     
-    /// 主渐变终点 - 天空蓝
-    static let primaryGradientEnd_Breeze = UIColor(hexstring_Breeze: "#45B7D1")
+    /// 主渐变色 - 天空蓝
+    static let primaryGradientEnd_Breeze = UIColor(hexstring_Breeze: "#90CDF4")
     
-    /// 辅助渐变起点 - 晨光琥珀橙
-    static let secondaryGradientStart_Breeze = UIColor(hexstring_Breeze: "#FFB347")
+    /// 辅助渐变色 - 玫瑰粉
+    static let secondaryGradientStart_Breeze = UIColor(hexstring_Breeze: "#FBB6CE")
     
-    /// 辅助渐变终点 - 暖阳金黄
-    static let secondaryGradientEnd_Breeze = UIColor(hexstring_Breeze: "#FFEAA7")
-    
-    /// 第三渐变起点 - 薄荷草绿
-    static let tertiaryGradientStart_Breeze = UIColor(hexstring_Breeze: "#55EFC4")
-    
-    /// 第三渐变终点 - 深苔绿
-    static let tertiaryGradientEnd_Breeze = UIColor(hexstring_Breeze: "#00B894")
-    
-    // MARK: - 强调色
-    
-    /// 珊瑚红（点赞、互动按钮）
-    static let accentCoral_Breeze = UIColor(hexstring_Breeze: "#FF6B6B")
-    
-    /// 琥珀橙（露营分类徽章）
-    static let accentAmber_Breeze = UIColor(hexstring_Breeze: "#FFB347")
-    
-    /// 深苔绿（徒步分类徽章）
-    static let accentTeal_Breeze = UIColor(hexstring_Breeze: "#00B894")
-    
-    /// 晚霞紫（摄影分类徽章）
-    static let accentDusk_Breeze = UIColor(hexstring_Breeze: "#A29BFE")
+    /// 辅助渐变色 - 珊瑚橙
+    static let secondaryGradientEnd_Breeze = UIColor(hexstring_Breeze: "#FED7AA")
     
     // MARK: - 背景色
     
-    /// 主背景色 - 薄荷白（山林晨雾感）
-    static let backgroundPrimary_Breeze = UIColor(hexstring_Breeze: "#F0F9F7")
+    /// 主背景色 - 极浅灰
+    static let backgroundPrimary_Breeze = UIColor(hexstring_Breeze: "#F7FAFC")
     
     /// 次背景色 - 纯白
     static let backgroundSecondary_Breeze = UIColor.white
@@ -53,81 +33,94 @@ struct ColorConfig_Breeze {
     /// 卡片背景色
     static let cardBackground_Breeze = UIColor.white
     
-    /// 标签背景色 - 极浅薄荷
-    static let tagBackground_Breeze = UIColor(hexstring_Breeze: "#E0F5F2")
-    
     // MARK: - 文本色
     
-    /// 主文本色 - 深森林绿
-    static let textPrimary_Breeze = UIColor(hexstring_Breeze: "#1A3C34")
+    /// 主文本色 - 深灰
+    static let textPrimary_Breeze = UIColor(hexstring_Breeze: "#2D3748")
     
-    /// 次文本色 - 苔藓绿灰
-    static let textSecondary_Breeze = UIColor(hexstring_Breeze: "#4A7066")
+    /// 次文本色 - 中灰
+    static let textSecondary_Breeze = UIColor(hexstring_Breeze: "#718096")
     
-    /// 占位符文本色 - 雾青
-    static let textPlaceholder_Breeze = UIColor(hexstring_Breeze: "#8BB8B0")
+    /// 占位符文本色 - 浅灰
+    static let textPlaceholder_Breeze = UIColor(hexstring_Breeze: "#A0AEC0")
     
     // MARK: - 分割线和边框
     
     /// 分割线颜色
-    static let divider_Breeze = UIColor(hexstring_Breeze: "#CCE9E3")
+    static let divider_Breeze = UIColor(hexstring_Breeze: "#E2E8F0")
     
     /// 边框颜色
-    static let border_Breeze = UIColor(hexstring_Breeze: "#A8D5CD")
+    static let border_Breeze = UIColor(hexstring_Breeze: "#CBD5E0")
     
     // MARK: - 阴影色
     
-    /// 卡片阴影色（带微青绿调）
-    static let shadowColor_Breeze = UIColor(hexstring_Breeze: "#2C7A6E", alpha_Breeze: 0.1)
+    /// 卡片阴影色
+    static let shadowColor_Breeze = UIColor(hexstring_Breeze: "#000000", alpha_Breeze: 0.1)
+    
+    // MARK: - 强调色（补充）
+    
+    /// 珊瑚红（点赞心形、互动按钮）
+    static let accentCoral_Breeze = UIColor(hexstring_Breeze: "#FF6B6B")
+    
+    /// 暮色紫（穿搭分类徽章、Tip 详情标签）
+    static let accentDusk_Breeze = UIColor(hexstring_Breeze: "#A29BFE")
+    
+    /// 深苔绿（徒步分类徽章、设置协议图标）
+    static let accentTeal_Breeze = UIColor(hexstring_Breeze: "#00B894")
+    
+    /// 琥珀橙（设置登出图标）
+    static let accentAmber_Breeze = UIColor(hexstring_Breeze: "#FFB347")
+    
+    // MARK: - 第三渐变色系（露营路线主题）
+    
+    /// 第三渐变起点 - 薄荷草绿
+    static let tertiaryGradientStart_Breeze = UIColor(hexstring_Breeze: "#55EFC4")
+    
+    /// 第三渐变终点 - 深苔绿
+    static let tertiaryGradientEnd_Breeze = UIColor(hexstring_Breeze: "#00B894")
+    
+    // MARK: - 标签背景色
+    
+    /// 标签背景色 - 极浅薄荷（相册添加按钮、分类芯片背景）
+    static let tagBackground_Breeze = UIColor(hexstring_Breeze: "#E0F5F2")
 }
 
-// MARK: - UIColor 扩展：渐变图层工厂
+// MARK: - UIColor扩展 - 便捷访问
 
 extension UIColor {
     
-    /// 创建主渐变图层（清爽青绿 → 天空蓝）
-    /// - Parameter frame_Breeze: 图层尺寸
-    /// - Returns: 配置好的 CAGradientLayer
+    /// 创建渐变图层（主渐变）
+    /// 功能：创建薰衣草紫到天空蓝的渐变图层
+    /// 参数：
+    /// - frame_Breeze: 渐变图层的尺寸
+    /// 返回值：CAGradientLayer - 配置好的渐变图层
     static func createPrimaryGradientLayer_Breeze(frame_Breeze: CGRect) -> CAGradientLayer {
-        let layer_breeze = CAGradientLayer()
-        layer_breeze.frame = frame_Breeze
-        layer_breeze.colors = [
+        let gradientLayer_Breeze = CAGradientLayer()
+        gradientLayer_Breeze.frame = frame_Breeze
+        gradientLayer_Breeze.colors = [
             ColorConfig_Breeze.primaryGradientStart_Breeze.cgColor,
             ColorConfig_Breeze.primaryGradientEnd_Breeze.cgColor
         ]
-        layer_breeze.startPoint = CGPoint(x: 0, y: 0)
-        layer_breeze.endPoint = CGPoint(x: 1, y: 1)
-        return layer_breeze
+        gradientLayer_Breeze.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer_Breeze.endPoint = CGPoint(x: 1, y: 1)
+        return gradientLayer_Breeze
     }
     
-    /// 创建辅助渐变图层（晨光琥珀橙 → 暖阳金黄）
-    /// - Parameter frame_Breeze: 图层尺寸
-    /// - Returns: 配置好的 CAGradientLayer
+    /// 创建渐变图层（辅助渐变）
+    /// 功能：创建玫瑰粉到珊瑚橙的渐变图层
+    /// 参数：
+    /// - frame_Breeze: 渐变图层的尺寸
+    /// 返回值：CAGradientLayer - 配置好的渐变图层
     static func createSecondaryGradientLayer_Breeze(frame_Breeze: CGRect) -> CAGradientLayer {
-        let layer_breeze = CAGradientLayer()
-        layer_breeze.frame = frame_Breeze
-        layer_breeze.colors = [
+        let gradientLayer_Breeze = CAGradientLayer()
+        gradientLayer_Breeze.frame = frame_Breeze
+        gradientLayer_Breeze.colors = [
             ColorConfig_Breeze.secondaryGradientStart_Breeze.cgColor,
             ColorConfig_Breeze.secondaryGradientEnd_Breeze.cgColor
         ]
-        layer_breeze.startPoint = CGPoint(x: 0, y: 0)
-        layer_breeze.endPoint = CGPoint(x: 1, y: 1)
-        return layer_breeze
-    }
-    
-    /// 创建第三渐变图层（薄荷草绿 → 深苔绿）
-    /// - Parameter frame_Breeze: 图层尺寸
-    /// - Returns: 配置好的 CAGradientLayer
-    static func createTertiaryGradientLayer_Breeze(frame_Breeze: CGRect) -> CAGradientLayer {
-        let layer_breeze = CAGradientLayer()
-        layer_breeze.frame = frame_Breeze
-        layer_breeze.colors = [
-            ColorConfig_Breeze.tertiaryGradientStart_Breeze.cgColor,
-            ColorConfig_Breeze.tertiaryGradientEnd_Breeze.cgColor
-        ]
-        layer_breeze.startPoint = CGPoint(x: 0, y: 0)
-        layer_breeze.endPoint = CGPoint(x: 1, y: 1)
-        return layer_breeze
+        gradientLayer_Breeze.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer_Breeze.endPoint = CGPoint(x: 1, y: 1)
+        return gradientLayer_Breeze
     }
 }
 

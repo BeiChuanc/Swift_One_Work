@@ -18,6 +18,8 @@ class MeHeaderView_Breeze: UICollectionReusableView {
     var onEdit_Breeze: (() -> Void)?
     var onAvatarTap_Breeze: (() -> Void)?
     var onSegmentChange_Breeze: ((Int) -> Void)?
+    /// 点击订阅按钮回调
+    var onSubscription_Breeze: (() -> Void)?
     
     // MARK: - UI：渐变头像区
     
@@ -144,6 +146,70 @@ class MeHeaderView_Breeze: UICollectionReusableView {
     private let divider1_Breeze = MeHeaderView_Breeze.makeDivider_Breeze()
     private let divider2_Breeze = MeHeaderView_Breeze.makeDivider_Breeze()
     
+    // MARK: - UI：VIP 订阅入口按钮
+    
+    /// 订阅入口卡（统计卡与分段控件之间，金色→VIP紫渐变）
+    private let subscriptionCard_Breeze: UIControl = {
+        let v_breeze = UIControl()
+        v_breeze.layer.cornerRadius = 16
+        v_breeze.layer.shadowColor = UIColor(hexstring_Breeze: "#C197FC").cgColor
+        v_breeze.layer.shadowOffset = CGSize(width: 0, height: 5)
+        v_breeze.layer.shadowRadius = 14
+        v_breeze.layer.shadowOpacity = 0.45
+        return v_breeze
+    }()
+    
+    /// 订阅按钮渐变图层（金色 → VIP 紫）
+    private var subscriptionGradient_Breeze: CAGradientLayer?
+    
+    /// 皇冠图标
+    private let crownIcon_Breeze: UIImageView = {
+        let iv_breeze = UIImageView()
+        let config_breeze = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)
+        iv_breeze.image = UIImage(systemName: "crown.fill", withConfiguration: config_breeze)
+        iv_breeze.tintColor = UIColor(hexstring_Breeze: "#FFD700")
+        iv_breeze.contentMode = .scaleAspectFit
+        return iv_breeze
+    }()
+    
+    /// 订阅主文案
+    private let subscriptionTitle_Breeze: UILabel = {
+        let label_breeze = UILabel()
+        label_breeze.text = "Upgrade to Premium"
+        label_breeze.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        label_breeze.textColor = .white
+        return label_breeze
+    }()
+    
+    /// 订阅副文案
+    private let subscriptionSubtitle_Breeze: UILabel = {
+        let label_breeze = UILabel()
+        label_breeze.text = "Unlock exclusive gifts & features"
+        label_breeze.font = UIFont.systemFont(ofSize: 11, weight: .regular)
+        label_breeze.textColor = UIColor.white.withAlphaComponent(0.82)
+        return label_breeze
+    }()
+    
+    /// 右侧装饰：星星图标
+    private let sparkleIcon_Breeze: UIImageView = {
+        let iv_breeze = UIImageView()
+        let config_breeze = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
+        iv_breeze.image = UIImage(systemName: "sparkles", withConfiguration: config_breeze)
+        iv_breeze.tintColor = UIColor(hexstring_Breeze: "#FFD700")
+        iv_breeze.contentMode = .scaleAspectFit
+        return iv_breeze
+    }()
+    
+    /// 右侧箭头
+    private let subscriptionChevron_Breeze: UIImageView = {
+        let iv_breeze = UIImageView()
+        let config_breeze = UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)
+        iv_breeze.image = UIImage(systemName: "chevron.right", withConfiguration: config_breeze)
+        iv_breeze.tintColor = UIColor.white.withAlphaComponent(0.8)
+        iv_breeze.contentMode = .scaleAspectFit
+        return iv_breeze
+    }()
+    
     // MARK: - UI：自定义分段控件
     
     /// 分段容器（背景胶囊）
@@ -204,6 +270,7 @@ class MeHeaderView_Breeze: UICollectionReusableView {
         backgroundColor = ColorConfig_Breeze.backgroundPrimary_Breeze
         setupGradientCard_Breeze()
         setupStatsCard_Breeze()
+        setupSubscriptionButton_Breeze()
         setupSegment_Breeze()
     }
     
@@ -341,6 +408,47 @@ class MeHeaderView_Breeze: UICollectionReusableView {
         }
     }
     
+    /// 搭建 VIP 订阅入口卡片（统计卡 → 订阅卡 → 分段控件）
+    private func setupSubscriptionButton_Breeze() {
+        addSubview(subscriptionCard_Breeze)
+        subscriptionCard_Breeze.addSubview(crownIcon_Breeze)
+        subscriptionCard_Breeze.addSubview(subscriptionTitle_Breeze)
+        subscriptionCard_Breeze.addSubview(subscriptionSubtitle_Breeze)
+        subscriptionCard_Breeze.addSubview(sparkleIcon_Breeze)
+        subscriptionCard_Breeze.addSubview(subscriptionChevron_Breeze)
+        
+        subscriptionCard_Breeze.snp.makeConstraints { make in
+            make.top.equalTo(statsCard_Breeze.snp.bottom).offset(14)
+            make.left.right.equalToSuperview().inset(20)
+            make.height.equalTo(58)
+        }
+        crownIcon_Breeze.snp.makeConstraints { make in
+            make.left.equalToSuperview().offset(16)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(28)
+        }
+        subscriptionTitle_Breeze.snp.makeConstraints { make in
+            make.left.equalTo(crownIcon_Breeze.snp.right).offset(10)
+            make.top.equalToSuperview().offset(12)
+        }
+        subscriptionSubtitle_Breeze.snp.makeConstraints { make in
+            make.left.equalTo(subscriptionTitle_Breeze)
+            make.top.equalTo(subscriptionTitle_Breeze.snp.bottom).offset(3)
+        }
+        sparkleIcon_Breeze.snp.makeConstraints { make in
+            make.right.equalTo(subscriptionChevron_Breeze.snp.left).offset(-8)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(20)
+        }
+        subscriptionChevron_Breeze.snp.makeConstraints { make in
+            make.right.equalToSuperview().offset(-16)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(16)
+        }
+        
+        subscriptionCard_Breeze.addTarget(self, action: #selector(handleSubscription_Breeze), for: .touchUpInside)
+    }
+    
     /// 搭建自定义分段选择器
     private func setupSegment_Breeze() {
         addSubview(segmentContainer_Breeze)
@@ -349,10 +457,9 @@ class MeHeaderView_Breeze: UICollectionReusableView {
         segmentContainer_Breeze.addSubview(segLiked_Breeze)
         
         segmentContainer_Breeze.snp.makeConstraints { make in
-            make.top.equalTo(statsCard_Breeze.snp.bottom).offset(14)
+            make.top.equalTo(subscriptionCard_Breeze.snp.bottom).offset(14)
             make.left.right.equalToSuperview().inset(20)
             make.height.equalTo(44)
-            make.bottom.equalToSuperview().offset(-8)
         }
         
         segMyPosts_Breeze.snp.makeConstraints { make in
@@ -374,7 +481,25 @@ class MeHeaderView_Breeze: UICollectionReusableView {
     override func layoutSubviews() {
         super.layoutSubviews()
         refreshHeaderGradient_Breeze()
+        refreshSubscriptionGradient_Breeze()
         updateSegmentIndicator_Breeze(animated: false)
+    }
+    
+    /// 刷新订阅卡渐变（金色 → VIP 紫，水平方向）
+    private func refreshSubscriptionGradient_Breeze() {
+        subscriptionGradient_Breeze?.removeFromSuperlayer()
+        guard !subscriptionCard_Breeze.bounds.isEmpty else { return }
+        let gradient_breeze = CAGradientLayer()
+        gradient_breeze.frame = subscriptionCard_Breeze.bounds
+        gradient_breeze.colors = [
+            UIColor(hexstring_Breeze: "#FDCB6E").cgColor,
+            UIColor(hexstring_Breeze: "#C197FC").cgColor
+        ]
+        gradient_breeze.startPoint = CGPoint(x: 0, y: 0.5)
+        gradient_breeze.endPoint = CGPoint(x: 1, y: 0.5)
+        gradient_breeze.cornerRadius = subscriptionCard_Breeze.layer.cornerRadius
+        subscriptionCard_Breeze.layer.insertSublayer(gradient_breeze, at: 0)
+        subscriptionGradient_Breeze = gradient_breeze
     }
     
     /// 刷新头部渐变图层
@@ -443,6 +568,10 @@ class MeHeaderView_Breeze: UICollectionReusableView {
     @objc private func handleSettings_Breeze() { onSettings_Breeze?() }
     @objc private func handleEdit_Breeze() { onEdit_Breeze?() }
     @objc private func handleAvatarTap_Breeze() { onAvatarTap_Breeze?() }
+    @objc private func handleSubscription_Breeze() {
+        subscriptionCard_Breeze.animatePulse_Breeze()
+        onSubscription_Breeze?()
+    }
     
     /// 分段按钮点击
     @objc private func handleSegTap_Breeze(_ sender: UIButton) {

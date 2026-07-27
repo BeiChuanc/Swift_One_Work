@@ -341,9 +341,9 @@ class Setting_Ornit: UIViewController {
 
         switch view_ornit.tag {
         case 0:
-            ProtocolHelper_Ornit.showProtocol_Ornit(type_Ornit: .terms_Ornit, content_Ornit: "terms", from: self)
+            ProtocolHelper_Ornit.showProtocol_Ornit(type_Ornit: .terms_Ornit, content_Ornit: "terms.png", from: self)
         case 1:
-            ProtocolHelper_Ornit.showProtocol_Ornit(type_Ornit: .privacy_Ornit, content_Ornit: "privacy", from: self)
+            ProtocolHelper_Ornit.showProtocol_Ornit(type_Ornit: .privacy_Ornit, content_Ornit: "privacy.png", from: self)
         case 2:
             showLogoutConfirm_Ornit()
         case 3:

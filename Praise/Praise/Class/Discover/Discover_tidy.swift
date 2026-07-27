@@ -5,10 +5,12 @@ import SnapKit
 // MARK: - 发现页
 
 /// 发现页面
-/// 功能：彩色品牌 Header + 悬浮搜索卡片 + 图标圆圈分类 Tab 栏 + 结果摘要条 + 双列帖子瀑布流 + 空状态
-/// 设计思路：顶部渐变 Header 圆弧底部增强品牌感；分类 Tab 区采用彩色图标圆圈样式，
-///           每个分类有独立色彩，选中态带渐变填充圆形 + 弹性缩放；结果摘要条
-///           展示当前筛选维度与帖子数量；整体配色清新活泼、层次丰富
+/// 功能：固定悬停的渐变 Header（标题 + 真实统计文案 + 内嵌搜索栏）+ 分类胶囊 Tab 栏
+///      + 轻量结果摘要行 + 双列帖子网格 + 空状态
+/// 设计思路：Header 与搜索栏合并为同一固定区块（不再使用悬浮重叠卡片技巧），层级关系更简单、
+///           约束更稳健；分类 Tab 区采用彩色胶囊样式，每个分类有独立色彩，选中态带渐变填充 +
+///           弹性缩放；结果摘要行去除多余卡片包裹层，直接展示当前筛选维度与帖子数量；
+///           整体配色清新活泼、层次分明
 class Discover_Tidy: UIViewController {
 
     // MARK: - 分类 Tab 视图包（管理图标圆圈 Tab 的各子视图引用）
@@ -47,7 +49,6 @@ class Discover_Tidy: UIViewController {
         return sv
     }()
     private let pageContentView_Tidy = UIView()
-    private var postsCollectionHeightConstraint_Tidy: Constraint?
     private let postsGridSectionView_Tidy = UIView()
     private let postsRowsStackView_Tidy: UIStackView = {
         let sv = UIStackView()
@@ -58,7 +59,7 @@ class Discover_Tidy: UIViewController {
         return sv
     }()
 
-    // MARK: - Header（渐变 + 装饰圆 + 标题 + 统计徽章 + 过滤按钮）
+    // MARK: - Header（渐变 + 装饰圆 + 标题 + 真实统计文案 + 内嵌搜索栏）
 
     /// Header 阴影载体（在渐变层下方，负责投影，避免 clipsToBounds 冲突）
     private let headerShadow_Tidy: UIView = {
@@ -136,55 +137,15 @@ class Discover_Tidy: UIViewController {
         return lb
     }()
 
-    // --- 统计徽章容器（帖子数量 · 分类数量） ---
-    private let statsRowView_Tidy: UIView = {
-        let v = UIView()
-        return v
-    }()
-    /// 头部右侧预览卡，强化“摄影实验室”氛围
-    private let headerPreviewCard_Tidy: UIView = {
-        let v = UIView()
-        v.backgroundColor = UIColor.white.withAlphaComponent(0.14)
-        v.layer.cornerRadius = 22
-        v.layer.borderWidth = 1
-        v.layer.borderColor = UIColor.white.withAlphaComponent(0.22).cgColor
-        return v
-    }()
-    private let headerPreviewBadge_Tidy: UILabel = {
+    /// 头部说明文案下方的数据摘要（如 "128 frames · 7 topics ready to explore"），
+    /// 取代原来悬浮在 Header 边界上的 "CURATED" 预览卡，减少 Header 复杂度的同时保留真实统计信息
+    private let headerStatsLabel_Tidy: UILabel = {
         let lb = UILabel()
-        lb.text = "CURATED"
-        lb.font = UIFont.systemFont(ofSize: 9, weight: .bold)
-        lb.textColor = .white
-        lb.textAlignment = .center
-        lb.backgroundColor = UIColor.black.withAlphaComponent(0.16)
-        lb.layer.cornerRadius = 8
-        lb.clipsToBounds = true
+        lb.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        lb.textColor = UIColor.white.withAlphaComponent(0.85)
+        lb.numberOfLines = 1
         return lb
     }()
-    private let headerPreviewTitleLabel_Tidy: UILabel = {
-        let lb = UILabel()
-        lb.text = "Light + Pose"
-        lb.font = UIFont.systemFont(ofSize: 14, weight: .heavy)
-        lb.textColor = .white
-        return lb
-    }()
-    private let headerPreviewSubtitleLabel_Tidy: UILabel = {
-        let lb = UILabel()
-        lb.text = "Find frames worth saving"
-        lb.font = UIFont.systemFont(ofSize: 10, weight: .medium)
-        lb.textColor = UIColor.white.withAlphaComponent(0.78)
-        lb.numberOfLines = 2
-        return lb
-    }()
-    private let statFramesCard_Tidy = UIView()
-    private let statCategoriesCard_Tidy = UIView()
-    private let statFramesValueLabel_Tidy = UILabel()
-    private let statFramesTitleLabel_Tidy = UILabel()
-    private let statCategoriesValueLabel_Tidy = UILabel()
-    private let statCategoriesTitleLabel_Tidy = UILabel()
-    private let statSortValueLabel_Tidy = UILabel()
-    private let statSortTitleLabel_Tidy = UILabel()
-    private let statSortCard_Tidy = UIView()
 
     // --- 过滤/排序按钮 ---
     private let filterButton_Tidy: UIButton = {
@@ -196,13 +157,13 @@ class Discover_Tidy: UIViewController {
                              withConfiguration: cfg), for: .selected)
         btn.tintColor = .white
         btn.backgroundColor = UIColor.white.withAlphaComponent(0.22)
-        btn.layer.cornerRadius = 19
+        btn.layer.cornerRadius = 18
         btn.layer.borderWidth  = 1.2
         btn.layer.borderColor  = UIColor.white.withAlphaComponent(0.35).cgColor
         return btn
     }()
 
-    // MARK: - 搜索卡片（独立浮层，z-order 最高）
+    // MARK: - 搜索栏（现内嵌于 Header 内部，随 Header 一起固定悬停）
 
     private let searchCard_Tidy: UIView = {
         let v = UIView()
@@ -230,13 +191,6 @@ class Discover_Tidy: UIViewController {
         tf.returnKeyType = .search
         tf.clearButtonMode = .whileEditing
         return tf
-    }()
-    private let searchHintLabel_Tidy: UILabel = {
-        let lb = UILabel()
-        lb.text = "CONTROL CENTER"
-        lb.font = UIFont.systemFont(ofSize: 10, weight: .bold)
-        lb.textColor = ColorConfig_Tidy.primaryGradientStart_Tidy
-        return lb
     }()
 
     // MARK: - 分类图标圆圈 Tab 栏
@@ -267,13 +221,6 @@ class Discover_Tidy: UIViewController {
         return sv
     }()
 
-    /// Tab 区底部分隔线
-    private let tabDivider_Tidy: UIView = {
-        let v = UIView()
-        v.backgroundColor = ColorConfig_Tidy.divider_Tidy
-        return v
-    }()
-
     // MARK: - 结果摘要条（白色卡片样式，带阴影）
 
     private let resultStrip_Tidy: UIView = {
@@ -281,21 +228,10 @@ class Discover_Tidy: UIViewController {
         v.backgroundColor = ColorConfig_Tidy.backgroundPrimary_Tidy
         return v
     }()
-    /// 摘要内容容器（白色小卡片）
-    private let resultCard_Tidy: UIView = {
-        let v = UIView()
-        v.backgroundColor = .white
-        v.layer.cornerRadius = 10
-        v.layer.shadowColor  = UIColor.black.withAlphaComponent(0.06).cgColor
-        v.layer.shadowOffset = CGSize(width: 0, height: 2)
-        v.layer.shadowRadius = 6
-        v.layer.shadowOpacity = 1
-        return v
-    }()
     private let resultDot_Tidy: UIView = {
         let v = UIView()
         v.backgroundColor = ColorConfig_Tidy.tidyMint_Tidy
-        v.layer.cornerRadius = 5
+        v.layer.cornerRadius = 4
         return v
     }()
     private let resultCategoryLabel_Tidy: UILabel = {
@@ -322,9 +258,6 @@ class Discover_Tidy: UIViewController {
         lb.clipsToBounds = true
         return lb
     }()
-
-    // MARK: - 帖子网格
-    private var postsCollectionView_Tidy: UICollectionView!
 
     // MARK: - 空状态视图
     private let emptyStateView_Tidy: UIView = { let v = UIView(); v.isHidden = true; return v }()
@@ -383,8 +316,7 @@ class Discover_Tidy: UIViewController {
         buildResultStrip_Tidy()
         buildCategoryIconTabs_Tidy()
         buildHeaderShadow_Tidy()
-        buildHeader_Tidy()
-        buildSearchCard_Tidy()  // 最后添加，z-order 最高
+        buildHeader_Tidy()  // 搜索栏已内化在 buildHeader_Tidy 内部搭建
         loadPosts_Tidy()
         listenNotifications_Tidy()
     }
@@ -533,46 +465,39 @@ class Discover_Tidy: UIViewController {
                                             for: .touchUpInside)
     }
 
-    /// 搭建结果摘要条（白色小卡片内嵌分类色圆点 + 文字）
+    /// 搭建结果摘要条（去除多余卡片包裹层，圆点 + 文字直接铺在页面背景上，更轻量）
     private func buildResultStrip_Tidy() {
-        resultCard_Tidy.addSubview(resultDot_Tidy)
-        resultCard_Tidy.addSubview(resultCategoryLabel_Tidy)
-        resultCard_Tidy.addSubview(resultCountLabel_Tidy)
-        resultStrip_Tidy.addSubview(resultCard_Tidy)
+        resultStrip_Tidy.addSubview(resultDot_Tidy)
+        resultStrip_Tidy.addSubview(resultCategoryLabel_Tidy)
+        resultStrip_Tidy.addSubview(resultCountLabel_Tidy)
         resultStrip_Tidy.addSubview(resultModeBadge_Tidy)
 
         pageContentView_Tidy.addSubview(resultStrip_Tidy)
 
-        resultCard_Tidy.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.centerY.equalToSuperview()
-            make.height.equalTo(34)
-            make.trailing.lessThanOrEqualTo(resultModeBadge_Tidy.snp.leading).offset(-10)
-        }
-        resultModeBadge_Tidy.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-16)
-            make.centerY.equalToSuperview()
-            make.height.equalTo(28)
-            make.width.greaterThanOrEqualTo(88)
-        }
         resultDot_Tidy.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(10)
+            make.leading.equalToSuperview().offset(20)
             make.centerY.equalToSuperview()
-            make.width.height.equalTo(10)
+            make.width.height.equalTo(8)
         }
         resultCategoryLabel_Tidy.snp.makeConstraints { make in
-            make.leading.equalTo(resultDot_Tidy.snp.trailing).offset(6)
+            make.leading.equalTo(resultDot_Tidy.snp.trailing).offset(7)
             make.centerY.equalToSuperview()
         }
         resultCountLabel_Tidy.snp.makeConstraints { make in
             make.leading.equalTo(resultCategoryLabel_Tidy.snp.trailing).offset(5)
             make.centerY.equalToSuperview()
-            make.trailing.equalToSuperview().offset(-10)
+            make.trailing.lessThanOrEqualTo(resultModeBadge_Tidy.snp.leading).offset(-10)
+        }
+        resultModeBadge_Tidy.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-20)
+            make.centerY.equalToSuperview()
+            make.height.equalTo(24)
+            make.width.greaterThanOrEqualTo(80)
         }
         // top 约束在 buildCategoryIconTabs 里设置
         resultStrip_Tidy.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(52)
+            make.height.equalTo(40)
         }
     }
 
@@ -593,6 +518,7 @@ class Discover_Tidy: UIViewController {
         createTabItems_Tidy()
 
         tabAreaBg_Tidy.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(12)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(60)
         }
@@ -763,50 +689,32 @@ class Discover_Tidy: UIViewController {
             make.width.height.equalTo(80)
         }
 
-        // 标题区（移除 statsRowView，减少 Header 高度，消除与搜索卡遮盖问题）
+        // 标题区：主标题 + 真实数据统计文案（取代原悬浮 CURATED 预览卡）
         headerView_Tidy.addSubview(pageTitleLabel_Tidy)
+        headerView_Tidy.addSubview(headerStatsLabel_Tidy)
         headerView_Tidy.addSubview(pageSubtitleLabel_Tidy)
-        headerView_Tidy.addSubview(headerPreviewCard_Tidy)
-
-        headerPreviewCard_Tidy.addSubview(headerPreviewBadge_Tidy)
-        headerPreviewCard_Tidy.addSubview(headerPreviewTitleLabel_Tidy)
-        headerPreviewCard_Tidy.addSubview(headerPreviewSubtitleLabel_Tidy)
 
         pageTitleLabel_Tidy.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
-            make.trailing.lessThanOrEqualTo(headerPreviewCard_Tidy.snp.leading).offset(-12)
+        }
+        headerStatsLabel_Tidy.snp.makeConstraints { make in
+            make.leading.equalTo(pageTitleLabel_Tidy.snp.trailing).offset(10)
+            make.centerY.equalTo(pageTitleLabel_Tidy)
+            make.trailing.lessThanOrEqualToSuperview().offset(-20)
         }
         pageSubtitleLabel_Tidy.snp.makeConstraints { make in
             make.leading.equalTo(pageTitleLabel_Tidy)
-            make.top.equalTo(pageTitleLabel_Tidy.snp.bottom).offset(5)
-            make.trailing.lessThanOrEqualTo(headerPreviewCard_Tidy.snp.leading).offset(-12)
+            make.trailing.lessThanOrEqualToSuperview().offset(-20)
+            make.top.equalTo(pageTitleLabel_Tidy.snp.bottom).offset(4)
         }
-        // 预览卡缩小高度，配合较短的 Header
-        headerPreviewCard_Tidy.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-18)
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(14)
-            make.width.equalTo(130)
-            make.height.equalTo(88)
-        }
-        headerPreviewBadge_Tidy.snp.makeConstraints { make in
-            make.leading.top.equalToSuperview().offset(12)
-            make.height.equalTo(16)
-            make.width.greaterThanOrEqualTo(56)
-        }
-        headerPreviewTitleLabel_Tidy.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(12)
-            make.trailing.equalToSuperview().offset(-12)
-            make.bottom.equalTo(headerPreviewSubtitleLabel_Tidy.snp.top).offset(-4)
-        }
-        headerPreviewSubtitleLabel_Tidy.snp.makeConstraints { make in
-            make.leading.equalTo(headerPreviewTitleLabel_Tidy)
-            make.trailing.equalTo(headerPreviewTitleLabel_Tidy)
-            make.bottom.equalToSuperview().offset(-12)
-        }
-        // Header 底部与预览卡下方对齐，并留 28pt 给搜索卡悬浮半遮盖留白
+
+        // 搜索栏内化到 Header 内部（不再作为悬浮重叠卡片），布局关系更简单直接
+        buildInlineSearchBar_Tidy()
+
+        // Header 底部紧随搜索栏，不再需要为悬浮卡片预留额外留白
         headerView_Tidy.snp.makeConstraints { make in
-            make.bottom.equalTo(headerPreviewCard_Tidy.snp.bottom).offset(28)
+            make.bottom.equalTo(searchCard_Tidy.snp.bottom).offset(18)
         }
 
         // 同步 shadow 载体高度
@@ -814,24 +722,31 @@ class Discover_Tidy: UIViewController {
             make.top.leading.trailing.equalToSuperview()
             make.bottom.equalTo(headerView_Tidy)
         }
+
+        // 下方滚动内容紧贴 Header 底部，Header 固定悬停、内容独立滚动
+        pageScrollView_Tidy.snp.makeConstraints { make in
+            make.top.equalTo(headerView_Tidy.snp.bottom)
+        }
     }
 
-    /// 搭建悬浮搜索卡片（最后添加，z-order 最高）
-    /// centerY 对齐 headerView 底边，形成跨区悬浮效果
-    private func buildSearchCard_Tidy() {
-        searchCard_Tidy.addSubview(searchHintLabel_Tidy)
+    /// 搭建 Header 内嵌搜索栏（图标 + 输入框 + 排序按钮）
+    /// 设计思路：直接铺在渐变 Header 内部，随 Header 一起固定悬停，
+    /// 取代旧版"卡片悬浮在 Header 边界上"的重叠技巧，层级关系更清晰、约束更稳健
+    private func buildInlineSearchBar_Tidy() {
+        headerView_Tidy.addSubview(searchCard_Tidy)
         searchCard_Tidy.addSubview(searchIcon_Tidy)
         searchCard_Tidy.addSubview(searchTextField_Tidy)
         searchCard_Tidy.addSubview(filterButton_Tidy)
-        view.addSubview(searchCard_Tidy)
 
-        searchHintLabel_Tidy.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.top.equalToSuperview().offset(10)
+        searchCard_Tidy.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+            make.top.equalTo(pageSubtitleLabel_Tidy.snp.bottom).offset(16)
+            make.height.equalTo(48)
         }
         searchIcon_Tidy.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
-            make.bottom.equalToSuperview().offset(-14)
+            make.centerY.equalToSuperview()
             make.width.height.equalTo(17)
         }
         searchTextField_Tidy.snp.makeConstraints { make in
@@ -840,24 +755,9 @@ class Discover_Tidy: UIViewController {
             make.centerY.equalTo(searchIcon_Tidy)
         }
         filterButton_Tidy.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-10)
+            make.trailing.equalToSuperview().offset(-6)
             make.centerY.equalTo(searchIcon_Tidy)
-            make.width.height.equalTo(40)
-        }
-        searchCard_Tidy.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().offset(-16)
-            make.centerY.equalTo(headerView_Tidy.snp.bottom)
-            make.height.equalTo(72)
-        }
-
-        // Tab 区紧在搜索卡片下方
-        tabAreaBg_Tidy.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(12)
-        }
-
-        pageScrollView_Tidy.snp.makeConstraints { make in
-            make.top.equalTo(searchCard_Tidy.snp.bottom).offset(12)
+            make.width.height.equalTo(36)
         }
 
         filterButton_Tidy.addTarget(self, action: #selector(onFilterTapped_Tidy), for: .touchUpInside)
@@ -865,41 +765,6 @@ class Discover_Tidy: UIViewController {
         searchTextField_Tidy.delegate = self
         searchTextField_Tidy.addTarget(self, action: #selector(onSearchTextChanged_Tidy(_:)),
                                            for: .editingChanged)
-    }
-
-    /// 配置头部统计卡片样式
-    /// 参数：
-    /// - card_Tidy: 统计卡片容器
-    /// - valueLabel_Tidy: 数值标签
-    /// - titleLabel_Tidy: 标题标签
-    /// 返回值：无
-    private func setupHeaderStatCard_Tidy(card_Tidy: UIView,
-                                          valueLabel_Tidy: UILabel,
-                                          titleLabel_Tidy: UILabel) {
-        card_Tidy.backgroundColor = UIColor.white.withAlphaComponent(0.14)
-        card_Tidy.layer.cornerRadius = 18
-        card_Tidy.layer.borderWidth = 1
-        card_Tidy.layer.borderColor = UIColor.white.withAlphaComponent(0.18).cgColor
-
-        valueLabel_Tidy.font = UIFont.systemFont(ofSize: 16, weight: .heavy)
-        valueLabel_Tidy.textColor = .white
-        valueLabel_Tidy.textAlignment = .center
-
-        titleLabel_Tidy.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
-        titleLabel_Tidy.textColor = UIColor.white.withAlphaComponent(0.74)
-        titleLabel_Tidy.textAlignment = .center
-
-        card_Tidy.addSubview(valueLabel_Tidy)
-        card_Tidy.addSubview(titleLabel_Tidy)
-        valueLabel_Tidy.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(10)
-        }
-        titleLabel_Tidy.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(6)
-            make.trailing.equalToSuperview().offset(-6)
-            make.top.equalTo(valueLabel_Tidy.snp.bottom).offset(2)
-        }
     }
 
     /// 更新排序按钮视觉状态
@@ -944,7 +809,8 @@ class Discover_Tidy: UIViewController {
 
         guard !displayPosts_Tidy.isEmpty else { return }
 
-        let cardHeight_Tidy: CGFloat = 198
+        // 卡片重构后封面图加高、点赞信息移入图内浮层，整卡高度相应增加
+        let cardHeight_Tidy: CGFloat = 234
         var index_Tidy = 0
         while index_Tidy < displayPosts_Tidy.count {
             let rowView_Tidy = UIView()
@@ -1053,19 +919,12 @@ class Discover_Tidy: UIViewController {
 
         // 副标题
         pageSubtitleLabel_Tidy.text = empty
-            ? "Try another angle,\nkeyword, or category."
-            : "\(count) frame\(count == 1 ? "" : "s") ready for your next shot plan."
-
-        headerPreviewTitleLabel_Tidy.text = selectedCategoryId_Tidy == "all" ? "Light + Pose" : "\(catName) Focus"
-        headerPreviewSubtitleLabel_Tidy.text = empty
-            ? "Reset filters to unlock more inspiration."
+            ? "Try another angle, keyword, or category."
             : "Curated ideas for \(catName.lowercased()) scenes."
-        statFramesValueLabel_Tidy.text = "\(count)"
-        statFramesTitleLabel_Tidy.text = "Frames"
-        statCategoriesValueLabel_Tidy.text = "\(max(categories_Tidy.count - 1, 0))"
-        statCategoriesTitleLabel_Tidy.text = "Topics"
-        statSortValueLabel_Tidy.text = sortByLikes_Tidy ? "Hot First" : "Curated"
-        statSortTitleLabel_Tidy.text = "Sorting"
+
+        // Header 数据摘要文案（真实统计，取代原悬浮预览卡）
+        let topicsCount = max(categories_Tidy.count - 1, 0)
+        headerStatsLabel_Tidy.text = "\(count) frame\(count == 1 ? "" : "s") · \(topicsCount) topics"
 
         // 结果摘要条
         resultDot_Tidy.backgroundColor = catColor
@@ -1259,67 +1118,5 @@ extension Discover_Tidy: UITextFieldDelegate {
             self.searchCard_Tidy.layer.shadowRadius = 18
             self.searchCard_Tidy.transform = .identity
         }
-    }
-}
-
-// MARK: - CollectionView DataSource & Delegate（帖子网格）
-
-extension Discover_Tidy: UICollectionViewDataSource, UICollectionViewDelegate {
-
-    func collectionView(_ cv: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        displayPosts_Tidy.count
-    }
-
-    func collectionView(_ cv: UICollectionView,
-                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = cv.dequeueReusableCell(
-            withReuseIdentifier: "PostCard", for: indexPath
-        ) as! PostCardCell_Tidy
-        let post = displayPosts_Tidy[indexPath.item]
-        cell.configure_Tidy(post_tidy: post, style_tidy: .discoverStyle_tidy)
-        cell.onLikeTapped_Tidy = {
-            /// 点赞前先验证登录状态，未登录则跳转登录页
-            guard UserViewModel_Tidy.shared_Tidy.isLoggedIn_Tidy else {
-                Navigation_Tidy.toLogin_Tidy(style_tidy: .present_tidy)
-                return
-            }
-            Task { @MainActor in
-                TitleViewModel_Tidy.shared_Tidy.likePost_Tidy(post_tidy: post)
-            }
-        }
-        cell.onCardTapped_Tidy = {
-            Navigation_Tidy.toTitleDetail_Tidy(titleModel_tidy: post)
-        }
-        /// 点击作者头像：非当前用户则进入用户中心页
-        cell.onAvatarTapped_Tidy = { userId_tidy in
-            guard !UserViewModel_Tidy.shared_Tidy.isCurrentUser_Tidy(userId_tidy: userId_tidy) else { return }
-            let userModel_tidy = UserViewModel_Tidy.shared_Tidy.getUserById_Tidy(userId_tidy: userId_tidy)
-            Navigation_Tidy.toUserInfo_Tidy(with: userModel_tidy)
-        }
-        // 举报/删除完成后重新拉取数据，刷新帖子列表
-        cell.onMoreTapped_Tidy = { [weak self] post_tidy in
-            guard let self = self else { return }
-            let isMyPost_tidy = UserViewModel_Tidy.shared_Tidy.isCurrentUser_Tidy(
-                userId_tidy: post_tidy.titleUserId_Tidy
-            )
-            if isMyPost_tidy {
-                ReportDeleteHelper_Tidy.delete_Tidy(post_Tidy: post_tidy, from: self) { [weak self] in
-                    self?.loadPosts_Tidy()
-                }
-            } else {
-                ReportDeleteHelper_Tidy.report_Tidy(post_Tidy: post_tidy, from: self) { [weak self] in
-                    self?.loadPosts_Tidy()
-                }
-            }
-        }
-        return cell
-    }
-
-    func collectionView(_ cv: UICollectionView,
-                        willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        cell.animateSlideInFromBottom_Tidy(
-            offset_Tidy: 24,
-            delay_Tidy: Double(indexPath.item % 4) * AnimationConfig_Tidy.delayShort_Tidy
-        )
     }
 }

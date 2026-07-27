@@ -583,7 +583,7 @@ class Home_Retrs: UIViewController {
     }
 
     @objc private func addDiaryTapped_Retrs() {
-        Navigation_Retrs.toRelease_Retrs(style_retrs: .present_retrs)
+        Navigation_Retrs.toDiaryPublish_Retrs(style_retrs: .present_retrs)
     }
 }
 
@@ -672,7 +672,7 @@ extension Home_Retrs: UICollectionViewDataSource, UICollectionViewDelegateFlowLa
                 activity_Retrs: ThemeActivity_Retrs.activities_Retrs[indexPath.item])
         case 400:
             guard !diaryPosts_Retrs.isEmpty else {
-                Navigation_Retrs.toRelease_Retrs(style_retrs: .present_retrs); return
+                Navigation_Retrs.toDiaryPublish_Retrs(style_retrs: .present_retrs); return
             }
             Navigation_Retrs.toTitleDetail_Retrs(titleModel_retrs: diaryPosts_Retrs[indexPath.item])
         default: break

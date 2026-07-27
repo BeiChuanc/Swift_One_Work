@@ -92,6 +92,17 @@ class Detail_Breeze: UIViewController {
     private var sendGradient_Breeze: CAGradientLayer?
     private var inputBarBottomConstraint_Breeze: Constraint?
     
+    /// 送礼按钮（原图，大小与发送按钮一致）
+    private let giftButton_Breeze: UIButton = {
+        let btn_breeze = UIButton(type: .custom)
+        btn_breeze.setImage(
+            UIImage(named: "gift_btn")?.withRenderingMode(.alwaysOriginal),
+            for: .normal
+        )
+        btn_breeze.imageView?.contentMode = .scaleAspectFit
+        return btn_breeze
+    }()
+    
     // MARK: - 表头组件
     
     private let headerContainer_Breeze = UIView()
@@ -226,6 +237,7 @@ class Detail_Breeze: UIViewController {
         view.addSubview(actionContainer_Breeze)
         
         inputBar_Breeze.addSubview(commentField_Breeze)
+        inputBar_Breeze.addSubview(giftButton_Breeze)
         inputBar_Breeze.addSubview(sendButton_Breeze)
         
         inputBar_Breeze.snp.makeConstraints { make in
@@ -233,16 +245,24 @@ class Detail_Breeze: UIViewController {
             inputBarBottomConstraint_Breeze = make.bottom.equalToSuperview().constraint
             make.height.equalTo(64 + (view.window?.safeAreaInsets.bottom ?? 0))
         }
-        commentField_Breeze.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(16)
-            make.top.equalToSuperview().offset(12)
-            make.height.equalTo(40)
-            make.right.equalTo(sendButton_Breeze.snp.left).offset(-10)
-        }
+        // 发送按钮：最右侧
         sendButton_Breeze.snp.makeConstraints { make in
             make.right.equalToSuperview().offset(-14)
             make.centerY.equalTo(commentField_Breeze)
             make.width.height.equalTo(40)
+        }
+        // 礼物按钮：发送按钮左侧 10pt
+        giftButton_Breeze.snp.makeConstraints { make in
+            make.right.equalTo(sendButton_Breeze.snp.left).offset(-10)
+            make.centerY.equalTo(sendButton_Breeze)
+            make.width.height.equalTo(40)
+        }
+        // 输入框右边界对齐礼物按钮左侧
+        commentField_Breeze.snp.makeConstraints { make in
+            make.left.equalToSuperview().offset(16)
+            make.top.equalToSuperview().offset(12)
+            make.height.equalTo(40)
+            make.right.equalTo(giftButton_Breeze.snp.left).offset(-10)
         }
         
         tableView_Breeze.snp.makeConstraints { make in
@@ -272,6 +292,7 @@ class Detail_Breeze: UIViewController {
         
         likeButton_Breeze.addTarget(self, action: #selector(handleLike_Breeze), for: .touchUpInside)
         sendButton_Breeze.addTarget(self, action: #selector(handleSend_Breeze), for: .touchUpInside)
+        giftButton_Breeze.addTarget(self, action: #selector(handleGift_Breeze), for: .touchUpInside)
         commentField_Breeze.delegate = self
         avatarRow_Breeze.onTapped_Breeze = { [weak self] in self?.openAuthor_Breeze() }
     }
@@ -498,6 +519,14 @@ class Detail_Breeze: UIViewController {
         TitleViewModel_Breeze.shared_Breeze.releaseComment_Breeze(post_breeze: post_breeze, content_breeze: text_breeze)
         commentField_Breeze.text = ""
         commentField_Breeze.resignFirstResponder()
+    }
+    
+    /// 点击礼物按钮：底部弹出送礼页面
+    @objc private func handleGift_Breeze() {
+        let giftPage_breeze = GiftPage_Breeze()
+        giftPage_breeze.modalPresentationStyle = .overFullScreen
+        giftPage_breeze.modalTransitionStyle = .crossDissolve
+        present(giftPage_breeze, animated: true)
     }
     
     private func openAuthor_Breeze() {

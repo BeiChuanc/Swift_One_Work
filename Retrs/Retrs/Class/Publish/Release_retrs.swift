@@ -665,7 +665,7 @@ class Release_Retrs: UIViewController {
         // EULA 链接
         let eulaBtn_Retrs = UIButton(type: .system)
         eulaBtn_Retrs.setAttributedTitle(
-            NSAttributedString(string: "By publishing you agree to our User Agreement (EULA)", attributes: [
+            NSAttributedString(string: "EULA", attributes: [
                 .font: UIFont.systemFont(ofSize: 10, weight: .regular),
                 .foregroundColor: UIColor(hexstring_Retrs: "#B794F6").withAlphaComponent(0.65),
                 .underlineStyle: NSUnderlineStyle.single.rawValue

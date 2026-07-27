@@ -13,6 +13,32 @@ struct HomeTip_Tidy {
     let color_Tidy: UIColor
 }
 
+// MARK: - 拍摄工具箱入口数据模型
+
+/// 首页拍摄工具箱入口卡片数据模型
+/// 功能：承载 Shooting Tools 区块入口卡片的展示内容与跳转目标
+struct HomeToolEntry_Tidy {
+
+    /// 入口跳转目标类型
+    enum Target_Tidy {
+        /// 跳转到拍摄工具主页（构图网格/滤镜/渐变/曝光模拟）
+        case shootStudio_tidy
+        /// 跳转到离线光影教学图库
+        case lightingGallery_tidy
+    }
+
+    /// 卡片 emoji 图标
+    let icon_Tidy: String
+    /// 卡片标题
+    let title_Tidy: String
+    /// 卡片副标题
+    let subtitle_Tidy: String
+    /// 主题色（用于图标底色与箭头颜色）
+    let color_Tidy: UIColor
+    /// 跳转目标
+    let target_Tidy: Target_Tidy
+}
+
 // MARK: - Header Cell（现代化重构版）
 
 /// 首页顶部 Header 单元格（现代化设计）
@@ -219,7 +245,7 @@ class HomeHeaderCell_Tidy: UICollectionViewCell {
             make.trailing.lessThanOrEqualTo(contentView.snp.trailing).offset(-16)
         }
 
-        // 标语（用户名下方，紧凑间距）
+        // 标语（用户名下方，紧凑间距） 
         contentView.addSubview(taglineLabel_Tidy)
         taglineLabel_Tidy.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
@@ -318,7 +344,7 @@ class HomeHeaderCell_Tidy: UICollectionViewCell {
                 cornerRadius: 2
             ).cgPath
             hole_tidy.fillColor   = UIColor.white.withAlphaComponent(0.14).cgColor
-            hole_tidy.strokeColor = UIColor.white.withAlphaComponent(0.08).cgColor
+            hole_tidy.strokeColor = UIColor.white.withAlphaComponent(0.08).cgColor 
             hole_tidy.lineWidth   = 0.5
             filmStripView_Tidy.layer.addSublayer(hole_tidy)
             y_tidy += holeSize_tidy + gap_tidy
@@ -348,52 +374,70 @@ class HomeHeaderCell_Tidy: UICollectionViewCell {
     }
 }
 
-// MARK: - Section 标题 Cell（现代简约版）
+// MARK: - 分区横幅 Cell（首页信息架构重构：Today / Create / Learn 三大分区）
 
-/// Section 分区标题单元格（现代简约版）
-/// 功能：主标题 + 副标题 + 右侧"See All"按钮
-/// 设计：移除竖条，改为底部渐变下划线 + 较大标题字号，整体扁平现代
-class HomeSectionTitleCell_Tidy: UICollectionViewCell {
+/// 首页分区横幅单元格
+/// 核心作用：作为首页三大信息分区（Today 今日 / Create 创作 / Learn 学习）的"章节分隔"，
+///           取代旧版扁平的小标题行，以更醒目的彩色渐变横幅强化分区边界与视觉层级
+/// 设计思路：
+///   全宽渐变卡片 + 白色圆形图标底衬 + 大号加粗标题 + 说明文案，右侧可选操作按钮
+///   （如 Today 分区的"History"入口），比原来的"标题+下划线"样式更具视觉冲击力
+/// 关键属性/方法：
+///   - onActionTapped_Tidy：右侧操作按钮点击回调（无操作按钮时不设置）
+///   - configure_Tidy：配置图标、标题、说明文案、渐变色与可选操作按钮文案
+class HomeZoneBannerCell_Tidy: UICollectionViewCell {
 
-    var onSeeAllTapped_Tidy: (() -> Void)?
+    var onActionTapped_Tidy: (() -> Void)?
 
+    private let cardView_Tidy: UIView = {
+        let v = UIView()
+        v.layer.cornerRadius = 18
+        v.clipsToBounds = true
+        return v
+    }()
+    private var gradLayer_Tidy: CAGradientLayer?
+    private let iconBg_Tidy: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor.white.withAlphaComponent(0.22)
+        v.layer.cornerRadius = 22
+        return v
+    }()
+    private let iconView_Tidy: UIImageView = {
+        let iv = UIImageView()
+        iv.tintColor = .white
+        iv.contentMode = .scaleAspectFit
+        return iv
+    }()
     private let titleLabel_Tidy: UILabel = {
         let lb = UILabel()
-        lb.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        lb.textColor = ColorConfig_Tidy.textPrimary_Tidy
+        lb.font = UIFont.systemFont(ofSize: 18, weight: .heavy)
+        lb.textColor = .white
         return lb
     }()
     private let subtitleLabel_Tidy: UILabel = {
         let lb = UILabel()
-        lb.font = UIFont.systemFont(ofSize: 12, weight: .regular)
-        lb.textColor = ColorConfig_Tidy.textSecondary_Tidy
+        lb.font = UIFont.systemFont(ofSize: 11.5, weight: .medium)
+        lb.textColor = UIColor.white.withAlphaComponent(0.82)
+        lb.numberOfLines = 1
         return lb
     }()
-    /// 标题下方渐变下划线（取代竖条）
-    private let underlineView_Tidy: UIView = {
-        let v = UIView()
-        v.clipsToBounds = true
-        v.layer.cornerRadius = 1.5
-        return v
-    }()
-    private var underlineGrad_Tidy: CAGradientLayer?
-
-    private let seeAllButton_Tidy: UIButton = {
+    private let actionButton_Tidy: UIButton = {
         let btn = UIButton(type: .custom)
-        var cfg = UIButton.Configuration.plain()
-        cfg.title = "See All"
-        cfg.image = UIImage(systemName: "arrow.right",
-                            withConfiguration: UIImage.SymbolConfiguration(pointSize: 10, weight: .bold))
-        cfg.imagePlacement = .trailing
-        cfg.imagePadding   = 4
-        cfg.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attrs in
+        var cfg_tidy = UIButton.Configuration.plain()
+        cfg_tidy.image = UIImage(systemName: "arrow.right",
+                                  withConfiguration: UIImage.SymbolConfiguration(pointSize: 10, weight: .bold))
+        cfg_tidy.imagePlacement = .trailing
+        cfg_tidy.imagePadding   = 4
+        cfg_tidy.contentInsets  = NSDirectionalEdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 10)
+        cfg_tidy.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attrs in
             var a = attrs
-            a.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
-            a.foregroundColor = ColorConfig_Tidy.tidyMint_Tidy
+            a.font = UIFont.systemFont(ofSize: 11.5, weight: .bold)
             return a
         }
-        cfg.baseForegroundColor = ColorConfig_Tidy.tidyMint_Tidy
-        btn.configuration = cfg
+        cfg_tidy.baseForegroundColor = .white
+        btn.configuration = cfg_tidy
+        btn.backgroundColor = UIColor.white.withAlphaComponent(0.20)
+        btn.layer.cornerRadius = 14
         return btn
     }()
 
@@ -407,51 +451,91 @@ class HomeSectionTitleCell_Tidy: UICollectionViewCell {
     }
     override func layoutSubviews() {
         super.layoutSubviews()
-        underlineGrad_Tidy?.frame = underlineView_Tidy.bounds
+        gradLayer_Tidy?.frame = cardView_Tidy.bounds
     }
 
     private func setupUI_Tidy() {
-        contentView.addSubview(titleLabel_Tidy)
-        contentView.addSubview(subtitleLabel_Tidy)
-        contentView.addSubview(underlineView_Tidy)
-        contentView.addSubview(seeAllButton_Tidy)
+        contentView.layer.shadowColor   = UIColor.black.withAlphaComponent(0.10).cgColor
+        contentView.layer.shadowOffset  = CGSize(width: 0, height: 4)
+        contentView.layer.shadowRadius  = 10
+        contentView.layer.shadowOpacity = 1
+        contentView.clipsToBounds = false
 
-        // 渐变下划线（薄荷蓝 → 透明）
-        let grad_tidy = CAGradientLayer()
-        grad_tidy.colors = [ColorConfig_Tidy.tidyMint_Tidy.cgColor, UIColor.clear.cgColor]
-        grad_tidy.startPoint = CGPoint(x: 0, y: 0.5)
-        grad_tidy.endPoint   = CGPoint(x: 1, y: 0.5)
-        underlineView_Tidy.layer.insertSublayer(grad_tidy, at: 0)
-        underlineGrad_Tidy = grad_tidy
+        contentView.addSubview(cardView_Tidy)
+        cardView_Tidy.addSubview(iconBg_Tidy)
+        iconBg_Tidy.addSubview(iconView_Tidy)
+        cardView_Tidy.addSubview(titleLabel_Tidy)
+        cardView_Tidy.addSubview(subtitleLabel_Tidy)
+        cardView_Tidy.addSubview(actionButton_Tidy)
 
-        titleLabel_Tidy.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.top.equalToSuperview().offset(8)
+        cardView_Tidy.snp.makeConstraints { make in make.edges.equalToSuperview() }
+        iconBg_Tidy.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(14)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(44)
         }
-        underlineView_Tidy.snp.makeConstraints { make in
-            make.leading.equalTo(titleLabel_Tidy)
-            make.top.equalTo(titleLabel_Tidy.snp.bottom).offset(3)
-            make.width.equalTo(36)
-            make.height.equalTo(3)
+        iconView_Tidy.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(20)
+        }
+        actionButton_Tidy.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-14)
+            make.centerY.equalToSuperview()
+            make.height.equalTo(28)
+        }
+        titleLabel_Tidy.snp.makeConstraints { make in
+            make.leading.equalTo(iconBg_Tidy.snp.trailing).offset(12)
+            make.trailing.lessThanOrEqualTo(actionButton_Tidy.snp.leading).offset(-8)
+            make.top.equalToSuperview().offset(13)
         }
         subtitleLabel_Tidy.snp.makeConstraints { make in
             make.leading.equalTo(titleLabel_Tidy)
-            make.top.equalTo(underlineView_Tidy.snp.bottom).offset(3)
+            make.trailing.lessThanOrEqualTo(actionButton_Tidy.snp.leading).offset(-8)
+            make.top.equalTo(titleLabel_Tidy.snp.bottom).offset(2)
         }
-        seeAllButton_Tidy.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-10)
-            make.centerY.equalToSuperview()
-        }
-        seeAllButton_Tidy.addTarget(self, action: #selector(seeAllTapped_Tidy), for: .touchUpInside)
+        actionButton_Tidy.addTarget(self, action: #selector(actionTapped_Tidy), for: .touchUpInside)
     }
 
-    @objc private func seeAllTapped_Tidy() { onSeeAllTapped_Tidy?() }
+    @objc private func actionTapped_Tidy() {
+        actionButton_Tidy.animatePulse_Tidy()
+        onActionTapped_Tidy?()
+    }
 
-    /// 配置标题区内容
-    func configure_Tidy(title_tidy: String, subtitle_tidy: String = "", showSeeAll_tidy: Bool = true) {
+    /// 配置分区横幅内容
+    /// 参数：
+    /// - icon_tidy: SF Symbol 图标名
+    /// - title_tidy: 分区标题（如 "Today" / "Create" / "Learn"）
+    /// - subtitle_tidy: 分区说明文案
+    /// - gradientColors_tidy: 背景渐变色（起止两色，左上→右下）
+    /// - actionTitle_tidy: 右侧操作按钮文案，传 nil 则隐藏按钮
+    func configure_Tidy(icon_tidy: String,
+                        title_tidy: String,
+                        subtitle_tidy: String,
+                        gradientColors_tidy: (UIColor, UIColor),
+                        actionTitle_tidy: String? = nil) {
+        iconView_Tidy.image = UIImage(systemName: icon_tidy,
+                                       withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold))
         titleLabel_Tidy.text    = title_tidy
         subtitleLabel_Tidy.text = subtitle_tidy
-        seeAllButton_Tidy.isHidden = !showSeeAll_tidy
+
+        gradLayer_Tidy?.removeFromSuperlayer()
+        let grad_tidy = CAGradientLayer()
+        grad_tidy.colors     = [gradientColors_tidy.0.cgColor, gradientColors_tidy.1.cgColor]
+        grad_tidy.startPoint = CGPoint(x: 0, y: 0)
+        grad_tidy.endPoint   = CGPoint(x: 1, y: 1)
+        cardView_Tidy.layer.insertSublayer(grad_tidy, at: 0)
+        gradLayer_Tidy = grad_tidy
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            grad_tidy.frame = self.cardView_Tidy.bounds
+        }
+
+        if let actionTitle_tidy {
+            actionButton_Tidy.isHidden = false
+            actionButton_Tidy.configuration?.title = actionTitle_tidy
+        } else {
+            actionButton_Tidy.isHidden = true
+        }
     }
 }
 
@@ -464,6 +548,23 @@ class HomeSectionTitleCell_Tidy: UICollectionViewCell {
 class HomeCheckinCell_Tidy: UICollectionViewCell {
 
     var onCheckInTapped_Tidy: (() -> Void)?
+
+    /// 卡片总高度：需与 [Home_tidy.swift](Praise/Praise/Class/Home/Home_tidy.swift) 中
+    /// `layoutCheckin_Tidy()` 引用的高度保持同一来源，避免两处各写一份数字导致底部内容
+    /// 被压缩甚至完全不可见（此前打卡按钮"看不清"正是这一类问题）。
+    /// 推算依据（从卡片顶部累加）：
+    ///   头部区(12) + 标题/副标题(~44) + 分隔线间距(8+1) ≈ 56 分隔线底部；
+    ///   周格点行距分隔线 92（覆盖左侧连续天数文案区 ~130 / 右侧进度环 ~124，均留有余量）+ 高度 34；
+    ///   打卡按钮间距 12 + 高度 46；底部留白 16
+    static let cardHeight_Tidy: CGFloat = 256
+
+    // MARK: 底部行布局常量
+    private enum BottomMetrics_Tidy {
+        static let dotsRowTopOffset: CGFloat = 92
+        static let dotsRowHeight: CGFloat = 34
+        static let buttonTopGap: CGFloat = 12
+        static let buttonHeight: CGFloat = 46
+    }
 
     // MARK: 阴影外壳（clipsToBounds=false 保留投影）
     private let cardShadow_Tidy: UIView = {
@@ -596,15 +697,32 @@ class HomeCheckinCell_Tidy: UICollectionViewCell {
         return sv
     }()
 
-    // MARK: 打卡按钮（全宽胶囊）
+    // MARK: 打卡按钮（独占一整行的全宽胶囊，图标+文字组合，始终保持满不透明度以确保清晰可见）
+    /// 打卡按钮阴影外壳（clipsToBounds=false 保留投影）
+    private let checkInButtonShadow_Tidy: UIView = {
+        let v = UIView()
+        v.backgroundColor = .clear
+        v.layer.shadowOffset  = CGSize(width: 0, height: 3)
+        v.layer.shadowRadius  = 8
+        v.layer.shadowOpacity = 1
+        return v
+    }()
+    /// 打卡按钮底衬：独立于 UIButton 自身图层单独承载填充色。
+    /// 改用 backgroundColor 纯色填充而非 CAGradientLayer 手动插层——纯色填充由系统直接
+    /// 渲染，不依赖任何手动 sublayer 插入/frame 同步的时机，杜绝"看不清"问题再次出现
+    private let checkInButtonBg_Tidy: UIView = {
+        let v = UIView()
+        v.clipsToBounds = true
+        v.backgroundColor = ColorConfig_Tidy.tidyMint_Tidy
+        return v
+    }()
     private let checkInButton_Tidy: UIButton = {
         let btn = UIButton(type: .custom)
-        btn.layer.cornerRadius = 14
-        btn.clipsToBounds = true
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        btn.backgroundColor = .clear
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        btn.tintColor = .white
         return btn
     }()
-    private var btnGradLayer_Tidy: CAGradientLayer?
 
     // MARK: 进度数据
     private var weekProgress_Tidy: CGFloat = 0
@@ -620,7 +738,11 @@ class HomeCheckinCell_Tidy: UICollectionViewCell {
     }
     override func layoutSubviews() {
         super.layoutSubviews()
-        btnGradLayer_Tidy?.frame  = checkInButton_Tidy.bounds
+        checkInButtonBg_Tidy.layer.cornerRadius = checkInButtonBg_Tidy.bounds.height / 2
+        checkInButtonShadow_Tidy.layer.shadowPath = UIBezierPath(
+            roundedRect: checkInButtonShadow_Tidy.bounds,
+            cornerRadius: checkInButtonShadow_Tidy.bounds.height / 2
+        ).cgPath
         cardBgGrad_Tidy?.frame    = cardView_Tidy.bounds
         stripGrad_Tidy?.frame     = leftStrip_Tidy.bounds
         // 阴影路径与圆角同步，提升渲染性能
@@ -650,7 +772,7 @@ class HomeCheckinCell_Tidy: UICollectionViewCell {
                                UIColor(hexstring_Tidy: "#F2F6FF").cgColor]
         bgGrad_tidy.startPoint = CGPoint(x: 0, y: 0)
         bgGrad_tidy.endPoint   = CGPoint(x: 1, y: 1)
-        bgGrad_tidy.frame      = CGRect(x: 0, y: 0, width: cardW_tidy, height: 158)
+        bgGrad_tidy.frame      = CGRect(x: 0, y: 0, width: cardW_tidy, height: HomeCheckinCell_Tidy.cardHeight_Tidy)
         cardView_Tidy.layer.insertSublayer(bgGrad_tidy, at: 0)
         cardBgGrad_Tidy = bgGrad_tidy
 
@@ -660,7 +782,7 @@ class HomeCheckinCell_Tidy: UICollectionViewCell {
                                ColorConfig_Tidy.primaryGradientStart_Tidy.cgColor]
         stripG_tidy.startPoint = CGPoint(x: 0.5, y: 0)
         stripG_tidy.endPoint   = CGPoint(x: 0.5, y: 1)
-        stripG_tidy.frame      = CGRect(x: 0, y: 0, width: 5, height: 158)
+        stripG_tidy.frame      = CGRect(x: 0, y: 0, width: 5, height: HomeCheckinCell_Tidy.cardHeight_Tidy)
         leftStrip_Tidy.layer.insertSublayer(stripG_tidy, at: 0)
         leftStrip_Tidy.layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
         leftStrip_Tidy.layer.cornerRadius  = 3
@@ -774,46 +896,39 @@ class HomeCheckinCell_Tidy: UICollectionViewCell {
             make.leading.equalTo(flameLabel_Tidy)
             make.top.equalTo(streakUnitLabel_Tidy.snp.bottom).offset(3)
             make.trailing.lessThanOrEqualTo(ringContainer_Tidy.snp.leading).offset(-8)
-            // 使用 cardView 固定偏移（weekStack 此时尚未入视图层级，不能直接引用）
-            // 卡片 158pt，weekStack.top ≈ 158-10-30=118，此处限制在 112pt 以内
-            make.bottom.lessThanOrEqualTo(cardView_Tidy.snp.bottom).offset(-46)
+            // 使用 cardView 固定偏移（weekStack 此时尚未入视图层级，不能直接引用）作为安全上限，
+            // 防止文案异常增高时越过周格点行（新卡片总高 256pt，周格点行顶部约在 148pt 处）
+            make.bottom.lessThanOrEqualTo(cardView_Tidy.snp.bottom).offset(-100)
         }
 
-        // ─── 底部行：周格点（左）+ 打卡按钮（右）────────────────────────
-        // 两者在同一行，避免按钮与进度环产生约束冲突
+        // ─── 底部区：周格点（独占一整行）+ 打卡按钮（独占一整行，全宽高对比度）──────
+        // 拆分为上下两行而非左右挤在同一行，杜绝按钮因空间不足被压缩/遮挡导致"看不清"的问题
 
-        // 打卡按钮渐变
-        let btnGrad_tidy = CAGradientLayer()
-        btnGrad_tidy.colors = [ColorConfig_Tidy.tidyMint_Tidy.cgColor,
-                                ColorConfig_Tidy.primaryGradientStart_Tidy.cgColor]
-        btnGrad_tidy.startPoint  = CGPoint(x: 0, y: 0.5)
-        btnGrad_tidy.endPoint    = CGPoint(x: 1, y: 0.5)
-        btnGrad_tidy.cornerRadius = 15
-        checkInButton_Tidy.layer.insertSublayer(btnGrad_tidy, at: 0)
-        btnGradLayer_Tidy = btnGrad_tidy
-        checkInButton_Tidy.layer.shadowColor   = ColorConfig_Tidy.tidyMint_Tidy.withAlphaComponent(0.35).cgColor
-        checkInButton_Tidy.layer.shadowOffset  = CGSize(width: 0, height: 3)
-        checkInButton_Tidy.layer.shadowRadius  = 8
-        checkInButton_Tidy.layer.shadowOpacity = 1
+        // 打卡按钮底色（未打卡态：镜头蓝纯色；已打卡态在 configure_Tidy 中切换为暮光紫纯色）
+        checkInButtonShadow_Tidy.layer.shadowColor = ColorConfig_Tidy.tidyMint_Tidy.withAlphaComponent(0.35).cgColor
 
         cardView_Tidy.addSubview(weekStack_Tidy)
-        cardView_Tidy.addSubview(checkInButton_Tidy)
+        cardView_Tidy.addSubview(checkInButtonShadow_Tidy)
+        checkInButtonShadow_Tidy.addSubview(checkInButtonBg_Tidy)
+        checkInButtonBg_Tidy.addSubview(checkInButton_Tidy)
         buildWeekDots_Tidy()
 
-        // 按钮：固定在右下角
-        checkInButton_Tidy.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-12)
-            make.bottom.equalToSuperview().offset(-10)
-            make.width.equalTo(90)
-            make.height.equalTo(30)
-        }
-        // 周格点：左侧，与按钮同行
+        // 周格点：独占一整行，紧随内容区之下，留有充足的呼吸空间
         weekStack_Tidy.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(14)
-            make.trailing.equalTo(checkInButton_Tidy.snp.leading).offset(-8)
-            make.centerY.equalTo(checkInButton_Tidy)
-            make.height.equalTo(30)
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+            make.top.equalTo(divider_tidy.snp.bottom).offset(BottomMetrics_Tidy.dotsRowTopOffset)
+            make.height.equalTo(BottomMetrics_Tidy.dotsRowHeight)
         }
+        // 打卡按钮：独占一整行的全宽胶囊，不再与其它元素挤在同一行
+        checkInButtonShadow_Tidy.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+            make.top.equalTo(weekStack_Tidy.snp.bottom).offset(BottomMetrics_Tidy.buttonTopGap)
+            make.height.equalTo(BottomMetrics_Tidy.buttonHeight)
+        }
+        checkInButtonBg_Tidy.snp.makeConstraints { make in make.edges.equalToSuperview() }
+        checkInButton_Tidy.snp.makeConstraints { make in make.edges.equalToSuperview() }
         checkInButton_Tidy.addTarget(self, action: #selector(onCheckInTapped_handler_Tidy), for: .touchUpInside)
     }
 
@@ -824,26 +939,26 @@ class HomeCheckinCell_Tidy: UICollectionViewCell {
         for day_tidy in days_tidy {
             let col_tidy = UIView()
             let dot_tidy = UIView()
-            dot_tidy.layer.cornerRadius = 5
+            dot_tidy.layer.cornerRadius = 6
             dot_tidy.backgroundColor = ColorConfig_Tidy.divider_Tidy
 
             let dayLb_tidy = UILabel()
             dayLb_tidy.text = day_tidy
-            dayLb_tidy.font = UIFont.systemFont(ofSize: 8, weight: .semibold)
+            dayLb_tidy.font = UIFont.systemFont(ofSize: 9, weight: .semibold)
             dayLb_tidy.textColor = ColorConfig_Tidy.textPlaceholder_Tidy
             dayLb_tidy.textAlignment = .center
 
             col_tidy.addSubview(dot_tidy)
             col_tidy.addSubview(dayLb_tidy)
             dot_tidy.snp.makeConstraints { make in
-                make.top.equalToSuperview().offset(2)
+                make.top.equalToSuperview()
                 make.centerX.equalToSuperview()
-                make.width.height.equalTo(10)
+                make.width.height.equalTo(12)
             }
             dayLb_tidy.snp.makeConstraints { make in
-                make.top.equalTo(dot_tidy.snp.bottom).offset(2)
+                make.top.equalTo(dot_tidy.snp.bottom).offset(4)
                 make.centerX.equalToSuperview()
-                make.bottom.equalToSuperview().offset(-2)
+                make.bottom.lessThanOrEqualToSuperview()
             }
             weekStack_Tidy.addArrangedSubview(col_tidy)
         }
@@ -868,7 +983,7 @@ class HomeCheckinCell_Tidy: UICollectionViewCell {
     }
 
     @objc private func onCheckInTapped_handler_Tidy() {
-        checkInButton_Tidy.animatePulse_Tidy()
+        checkInButtonShadow_Tidy.animatePulse_Tidy()
         onCheckInTapped_Tidy?()
     }
 
@@ -887,15 +1002,23 @@ class HomeCheckinCell_Tidy: UICollectionViewCell {
         default:       motivationLabel_Tidy.text = "Photo streak master! 🏆"
         }
 
+        // 无论是否已打卡，按钮都保持满不透明度显示，避免此前"已打卡态透明度过低导致看不清"的问题；
+        // 已打卡态改用纯色填充 + 打勾图标区分状态，而不是简单地把整个按钮变淡
+        checkInButton_Tidy.alpha = 1.0
+        checkInButton_Tidy.setTitleColor(.white, for: .normal)
         if isCheckedToday_tidy {
-            checkInButton_Tidy.setTitle("✓  Logged", for: .normal)
-            checkInButton_Tidy.setTitleColor(.white, for: .normal)
-            checkInButton_Tidy.alpha = 0.50
+            checkInButton_Tidy.setImage(UIImage(systemName: "checkmark.circle.fill",
+                                                 withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)),
+                                         for: .normal)
+            checkInButton_Tidy.setTitle("  Logged Today", for: .normal)
+            checkInButtonBg_Tidy.backgroundColor = ColorConfig_Tidy.primaryGradientStart_Tidy
             checkInButton_Tidy.isUserInteractionEnabled = false
         } else {
-            checkInButton_Tidy.setTitle("Log Today", for: .normal)
-            checkInButton_Tidy.setTitleColor(.white, for: .normal)
-            checkInButton_Tidy.alpha = 1.0
+            checkInButton_Tidy.setImage(UIImage(systemName: "camera.fill",
+                                                 withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)),
+                                         for: .normal)
+            checkInButton_Tidy.setTitle("  Log Today's Shot", for: .normal)
+            checkInButtonBg_Tidy.backgroundColor = ColorConfig_Tidy.tidyMint_Tidy
             checkInButton_Tidy.isUserInteractionEnabled = true
         }
 
@@ -924,6 +1047,277 @@ class HomeCheckinCell_Tidy: UICollectionViewCell {
         anim_tidy.timingFunction = CAMediaTimingFunction(name: .easeOut)
         ringFillLayer_Tidy.strokeEnd = weekProgress_Tidy
         ringFillLayer_Tidy.add(anim_tidy, forKey: "ringProgress")
+    }
+}
+
+// MARK: - 每日任务 Cell
+
+/// 首页每日任务单元格
+/// 核心作用：展示"浏览帖子/点赞帖子/发布帖子/打卡/查看用户资料"五类每日任务的完成进度
+/// 设计思路：
+///   顶部标题 + 完成度徽章 + 整体进度条，下方 5 条任务行（图标 + 标题 + 难度标签 + 进度徽章/打勾）；
+///   卡片总高度由内部各区域高度精确累加得出，通过 `cardHeight_Tidy` 暴露给 Home_tidy.swift 的
+///   CompositionalLayout 直接引用，避免两处各写一份数字导致内容被压缩或遮挡。
+/// 关键属性/方法：
+///   - configure_Tidy(tasks_tidy:)：传入全部任务展示项，刷新进度条与每一行的状态
+class HomeTaskCell_Tidy: UICollectionViewCell {
+
+    private enum Metrics_Tidy {
+        static let topPadding: CGFloat = 14
+        static let headerHeight: CGFloat = 20
+        static let headerGap: CGFloat = 10
+        static let progressBarHeight: CGFloat = 6
+        static let progressBarGap: CGFloat = 14
+        static let rowHeight: CGFloat = 46
+        static let rowGap: CGFloat = 6
+        static let bottomPadding: CGFloat = 14
+        static let rowCount: CGFloat = 5
+
+        static var totalHeight: CGFloat {
+            topPadding + headerHeight + headerGap + progressBarHeight + progressBarGap
+                + rowCount * rowHeight + (rowCount - 1) * rowGap + bottomPadding
+        }
+    }
+
+    /// 卡片总高度：供 Home_tidy.swift 的 `layoutTasks_Tidy()` 直接引用
+    static let cardHeight_Tidy: CGFloat = Metrics_Tidy.totalHeight
+
+    private let cardView_Tidy: UIView = {
+        let v = UIView()
+        v.backgroundColor = .white
+        v.layer.cornerRadius = 20
+        v.layer.shadowColor = UIColor.black.withAlphaComponent(0.06).cgColor
+        v.layer.shadowOffset = CGSize(width: 0, height: 6)
+        v.layer.shadowRadius = 14
+        v.layer.shadowOpacity = 1
+        return v
+    }()
+    private let headerLabel_Tidy: UILabel = {
+        let lb = UILabel()
+        lb.text = "Today's Missions"
+        lb.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        lb.textColor = ColorConfig_Tidy.textPrimary_Tidy
+        return lb
+    }()
+    private let completedBadge_Tidy: UILabel = {
+        let lb = UILabel()
+        lb.font = UIFont.systemFont(ofSize: 11, weight: .bold)
+        lb.textColor = ColorConfig_Tidy.tidyMint_Tidy
+        lb.backgroundColor = ColorConfig_Tidy.tidyMint_Tidy.withAlphaComponent(0.12)
+        lb.layer.cornerRadius = 10
+        lb.clipsToBounds = true
+        lb.textAlignment = .center
+        return lb
+    }()
+    private let progressTrack_Tidy: UIView = {
+        let v = UIView()
+        v.backgroundColor = ColorConfig_Tidy.divider_Tidy
+        v.layer.cornerRadius = Metrics_Tidy.progressBarHeight / 2
+        v.clipsToBounds = true
+        return v
+    }()
+    private let progressFill_Tidy: UIView = {
+        let v = UIView()
+        v.backgroundColor = ColorConfig_Tidy.tidyMint_Tidy
+        return v
+    }()
+    private var progressFillWidthConstraint_Tidy: Constraint?
+    private let rowsStack_Tidy: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.spacing = Metrics_Tidy.rowGap
+        return sv
+    }()
+    private var rowViews_Tidy: [TaskRowView_Tidy] = []
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupUI_Tidy()
+    }
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupUI_Tidy()
+    }
+
+    private func setupUI_Tidy() {
+        contentView.addSubview(cardView_Tidy)
+        cardView_Tidy.addSubview(headerLabel_Tidy)
+        cardView_Tidy.addSubview(completedBadge_Tidy)
+        cardView_Tidy.addSubview(progressTrack_Tidy)
+        progressTrack_Tidy.addSubview(progressFill_Tidy)
+        cardView_Tidy.addSubview(rowsStack_Tidy)
+
+        cardView_Tidy.snp.makeConstraints { make in make.edges.equalToSuperview() }
+        headerLabel_Tidy.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.top.equalToSuperview().offset(Metrics_Tidy.topPadding)
+        }
+        completedBadge_Tidy.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-16)
+            make.centerY.equalTo(headerLabel_Tidy)
+            make.height.equalTo(Metrics_Tidy.headerHeight)
+            make.width.greaterThanOrEqualTo(40)
+        }
+        progressTrack_Tidy.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+            make.top.equalTo(headerLabel_Tidy.snp.bottom).offset(Metrics_Tidy.headerGap)
+            make.height.equalTo(Metrics_Tidy.progressBarHeight)
+        }
+        progressFill_Tidy.snp.makeConstraints { make in
+            make.leading.top.bottom.equalToSuperview()
+            progressFillWidthConstraint_Tidy = make.width.equalTo(0).constraint
+        }
+        rowsStack_Tidy.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+            make.top.equalTo(progressTrack_Tidy.snp.bottom).offset(Metrics_Tidy.progressBarGap)
+        }
+
+        for _ in DailyTaskType_Tidy.allCases {
+            let row_tidy = TaskRowView_Tidy()
+            row_tidy.snp.makeConstraints { make in make.height.equalTo(Metrics_Tidy.rowHeight) }
+            rowsStack_Tidy.addArrangedSubview(row_tidy)
+            rowViews_Tidy.append(row_tidy)
+        }
+    }
+
+    /// 配置任务列表数据：刷新整体完成度徽章、进度条与每一行的状态
+    /// 参数：
+    /// - tasks_tidy: 全部任务展示项数组（长度需与 DailyTaskType_Tidy.allCases 一致）
+    func configure_Tidy(tasks_tidy: [DailyTaskItem_Tidy]) {
+        let completed_tidy = tasks_tidy.filter { $0.isCompleted_Tidy }.count
+        completedBadge_Tidy.text = "  \(completed_tidy)/\(tasks_tidy.count)  "
+
+        let progressRatio_tidy = tasks_tidy.isEmpty ? 0 : CGFloat(completed_tidy) / CGFloat(tasks_tidy.count)
+        let trackWidth_tidy = UIScreen.main.bounds.width - 32 - 32 // 屏幕宽度 - 区块左右内边距(16*2) - 卡片内边距(16*2)
+        progressFillWidthConstraint_Tidy?.update(offset: trackWidth_tidy * progressRatio_tidy)
+
+        for (index_tidy, item_tidy) in tasks_tidy.enumerated() where index_tidy < rowViews_Tidy.count {
+            rowViews_Tidy[index_tidy].configure_Tidy(item_tidy: item_tidy)
+        }
+
+        UIView.animate(withDuration: 0.4) { [weak self] in
+            self?.layoutIfNeeded()
+        }
+    }
+}
+
+/// 单条每日任务行视图
+/// 功能：展示任务图标、标题、难度标签，以及右侧的进度徽章（未达标显示 "已完成次数/目标次数"，
+///       达标后切换为打勾图标）
+private class TaskRowView_Tidy: UIView {
+
+    private let iconBg_Tidy: UIView = {
+        let v = UIView()
+        v.layer.cornerRadius = 16
+        return v
+    }()
+    private let iconView_Tidy: UIImageView = {
+        let iv = UIImageView()
+        iv.contentMode = .scaleAspectFit
+        iv.tintColor = .white
+        return iv
+    }()
+    private let titleLabel_Tidy: UILabel = {
+        let lb = UILabel()
+        lb.font = UIFont.systemFont(ofSize: 13.5, weight: .semibold)
+        lb.textColor = ColorConfig_Tidy.textPrimary_Tidy
+        return lb
+    }()
+    private let difficultyLabel_Tidy: UILabel = {
+        let lb = UILabel()
+        lb.font = UIFont.systemFont(ofSize: 9.5, weight: .medium)
+        lb.textColor = ColorConfig_Tidy.textPlaceholder_Tidy
+        return lb
+    }()
+    private let progressBadge_Tidy: UILabel = {
+        let lb = UILabel()
+        lb.font = UIFont.systemFont(ofSize: 11, weight: .bold)
+        lb.textAlignment = .center
+        lb.layer.cornerRadius = 11
+        lb.clipsToBounds = true
+        return lb
+    }()
+    private let checkIcon_Tidy: UIImageView = {
+        let iv = UIImageView()
+        iv.image = UIImage(systemName: "checkmark.circle.fill",
+                            withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .bold))
+        iv.contentMode = .scaleAspectFit
+        iv.isHidden = true
+        return iv
+    }()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupUI_Tidy()
+    }
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupUI_Tidy()
+    }
+
+    private func setupUI_Tidy() {
+        addSubview(iconBg_Tidy)
+        iconBg_Tidy.addSubview(iconView_Tidy)
+        addSubview(checkIcon_Tidy)
+        addSubview(progressBadge_Tidy)
+        addSubview(titleLabel_Tidy)
+        addSubview(difficultyLabel_Tidy)
+
+        iconBg_Tidy.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(32)
+        }
+        iconView_Tidy.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(16)
+        }
+        checkIcon_Tidy.snp.makeConstraints { make in
+            make.trailing.equalToSuperview()
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(22)
+        }
+        progressBadge_Tidy.snp.makeConstraints { make in
+            make.trailing.equalToSuperview()
+            make.centerY.equalToSuperview()
+            make.height.equalTo(22)
+            make.width.greaterThanOrEqualTo(34)
+        }
+        titleLabel_Tidy.snp.makeConstraints { make in
+            make.leading.equalTo(iconBg_Tidy.snp.trailing).offset(10)
+            make.trailing.lessThanOrEqualTo(progressBadge_Tidy.snp.leading).offset(-8)
+            make.top.equalToSuperview().offset(2)
+        }
+        difficultyLabel_Tidy.snp.makeConstraints { make in
+            make.leading.equalTo(titleLabel_Tidy)
+            make.top.equalTo(titleLabel_Tidy.snp.bottom).offset(2)
+        }
+    }
+
+    /// 配置任务行内容
+    /// 参数：
+    /// - item_tidy: 任务展示项（类型 + 今日进度）
+    func configure_Tidy(item_tidy: DailyTaskItem_Tidy) {
+        let color_tidy = item_tidy.type_Tidy.themeColor_Tidy
+        iconBg_Tidy.backgroundColor = color_tidy
+        iconView_Tidy.image = UIImage(systemName: item_tidy.type_Tidy.iconName_Tidy,
+                                       withConfiguration: UIImage.SymbolConfiguration(pointSize: 14, weight: .semibold))
+        titleLabel_Tidy.text = item_tidy.type_Tidy.title_Tidy
+        difficultyLabel_Tidy.text = item_tidy.type_Tidy.difficultyLabel_Tidy
+
+        if item_tidy.isCompleted_Tidy {
+            progressBadge_Tidy.isHidden = true
+            checkIcon_Tidy.isHidden = false
+            checkIcon_Tidy.tintColor = color_tidy
+        } else {
+            progressBadge_Tidy.isHidden = false
+            checkIcon_Tidy.isHidden = true
+            progressBadge_Tidy.text = "  \(item_tidy.progress_Tidy)/\(item_tidy.type_Tidy.targetCount_Tidy)  "
+            progressBadge_Tidy.textColor = color_tidy
+            progressBadge_Tidy.backgroundColor = color_tidy.withAlphaComponent(0.12)
+        }
     }
 }
 
@@ -1091,6 +1485,159 @@ class HomeTipCardCell_Tidy: UICollectionViewCell {
     }
 }
 
+// MARK: - 拍摄工具箱入口 Cell
+
+/// 拍摄工具箱入口卡片单元格
+/// 功能：展示单个拍摄工具入口（图标 + 标题 + 副标题 + 箭头），点击跳转对应工具页
+/// 关键属性/方法：
+///   - onTapped_Tidy：点击回调，由外部 VC 注入具体跳转逻辑
+class HomeToolEntryCell_Tidy: UICollectionViewCell {
+
+    /// 点击卡片时的回调
+    var onTapped_Tidy: (() -> Void)?
+
+    private let cardView_Tidy: UIView = {
+        let v = UIView()
+        v.backgroundColor = .white
+        v.layer.cornerRadius = 18
+        v.layer.borderWidth = 1
+        v.layer.shadowOffset = CGSize(width: 0, height: 6)
+        v.layer.shadowRadius = 12
+        v.layer.shadowOpacity = 1
+        return v
+    }()
+    /// 图标底色渐变层（随主题色变化）
+    private var iconGradLayer_Tidy: CAGradientLayer?
+    private let iconBg_Tidy: UIView = {
+        let v = UIView()
+        v.layer.cornerRadius = 20
+        v.layer.borderWidth = 1
+        return v
+    }()
+    private let iconLabel_Tidy: UILabel = {
+        let lb = UILabel()
+        lb.font = UIFont.systemFont(ofSize: 20)
+        lb.textAlignment = .center
+        return lb
+    }()
+    private let titleLabel_Tidy: UILabel = {
+        let lb = UILabel()
+        lb.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        lb.textColor = ColorConfig_Tidy.textPrimary_Tidy
+        return lb
+    }()
+    private let subtitleLabel_Tidy: UILabel = {
+        let lb = UILabel()
+        lb.font = UIFont.systemFont(ofSize: 10.5, weight: .regular)
+        lb.textColor = ColorConfig_Tidy.textSecondary_Tidy
+        lb.numberOfLines = 2
+        return lb
+    }()
+    /// 右上角箭头徽章底色圆（与图标圆呼应，强化"可点击进入"的视觉提示）
+    private let arrowBg_Tidy: UIView = {
+        let v = UIView()
+        v.layer.cornerRadius = 12
+        return v
+    }()
+    private let arrowView_Tidy: UIImageView = {
+        let iv = UIImageView()
+        iv.image = UIImage(systemName: "arrow.right",
+                            withConfiguration: UIImage.SymbolConfiguration(pointSize: 11, weight: .bold))
+        return iv
+    }()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupUI_Tidy()
+    }
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupUI_Tidy()
+    }
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        iconGradLayer_Tidy?.frame = iconBg_Tidy.bounds
+    }
+
+    private func setupUI_Tidy() {
+        contentView.addSubview(cardView_Tidy)
+        cardView_Tidy.addSubview(iconBg_Tidy)
+        iconBg_Tidy.addSubview(iconLabel_Tidy)
+        cardView_Tidy.addSubview(arrowBg_Tidy)
+        arrowBg_Tidy.addSubview(arrowView_Tidy)
+        cardView_Tidy.addSubview(titleLabel_Tidy)
+        cardView_Tidy.addSubview(subtitleLabel_Tidy)
+
+        cardView_Tidy.snp.makeConstraints { make in make.edges.equalToSuperview() }
+        iconBg_Tidy.snp.makeConstraints { make in
+            make.leading.top.equalToSuperview().offset(12)
+            make.width.height.equalTo(40)
+        }
+        iconLabel_Tidy.snp.makeConstraints { make in make.center.equalToSuperview() }
+        arrowBg_Tidy.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-12)
+            make.centerY.equalTo(iconBg_Tidy)
+            make.width.height.equalTo(24)
+        }
+        arrowView_Tidy.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(11)
+        }
+        titleLabel_Tidy.snp.makeConstraints { make in
+            make.leading.equalTo(iconBg_Tidy)
+            make.top.equalTo(iconBg_Tidy.snp.bottom).offset(10)
+            make.trailing.equalToSuperview().offset(-10)
+        }
+        subtitleLabel_Tidy.snp.makeConstraints { make in
+            make.leading.trailing.equalTo(titleLabel_Tidy)
+            make.top.equalTo(titleLabel_Tidy.snp.bottom).offset(3)
+            make.bottom.lessThanOrEqualToSuperview().offset(-10)
+        }
+
+        let tap_tidy = UITapGestureRecognizer(target: self, action: #selector(handleTap_Tidy))
+        contentView.addGestureRecognizer(tap_tidy)
+    }
+
+    @objc private func handleTap_Tidy() {
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        contentView.animatePressDown_Tidy { [weak self] in
+            self?.contentView.animatePressUp_Tidy {
+                self?.onTapped_Tidy?()
+            }
+        }
+    }
+
+    /// 配置卡片展示内容：主题色渐变图标底、色调边框、色调投影，强化每个入口的独立识别度
+    /// 参数：
+    /// - entry_tidy: 拍摄工具入口数据
+    func configure_Tidy(entry_tidy: HomeToolEntry_Tidy) {
+        let color_tidy = entry_tidy.color_Tidy
+
+        cardView_Tidy.layer.borderColor  = color_tidy.withAlphaComponent(0.12).cgColor
+        cardView_Tidy.layer.shadowColor  = color_tidy.withAlphaComponent(0.28).cgColor
+
+        iconGradLayer_Tidy?.removeFromSuperlayer()
+        let grad_tidy = CAGradientLayer()
+        grad_tidy.colors = [color_tidy.withAlphaComponent(0.24).cgColor,
+                             color_tidy.withAlphaComponent(0.08).cgColor]
+        grad_tidy.startPoint = CGPoint(x: 0, y: 0)
+        grad_tidy.endPoint   = CGPoint(x: 1, y: 1)
+        grad_tidy.cornerRadius = 20
+        iconBg_Tidy.layer.insertSublayer(grad_tidy, at: 0)
+        iconGradLayer_Tidy = grad_tidy
+        iconBg_Tidy.layer.borderColor = color_tidy.withAlphaComponent(0.20).cgColor
+        DispatchQueue.main.async { [weak self] in
+            grad_tidy.frame = self?.iconBg_Tidy.bounds ?? .zero
+        }
+
+        iconLabel_Tidy.text = entry_tidy.icon_Tidy
+        titleLabel_Tidy.text = entry_tidy.title_Tidy
+        subtitleLabel_Tidy.text = entry_tidy.subtitle_Tidy
+        arrowBg_Tidy.backgroundColor = color_tidy.withAlphaComponent(0.12)
+        arrowView_Tidy.tintColor = color_tidy
+    }
+}
+
 // MARK: - 技巧详情底部弹窗
 
 /// 拍照技巧详情底部弹窗
@@ -1226,9 +1773,25 @@ class TipDetailSheet_Tidy: UIViewController {
 // MARK: - 打卡历史底部弹窗
 
 /// 打卡历史记录底部弹窗
-/// 功能：以弹窗形式展示统计数据及当月日历
-/// 设计：拖动条 + 三栏统计卡片 + 月历网格
+/// 功能：以弹窗形式展示统计数据、摄影主题连续打卡成就徽章及可翻页浏览的月历
+/// 设计：拖动条 + 四栏统计卡片 + 成就徽章行 + 月份导航 + 月历网格
+/// 关键属性：
+///   - displayedYear_Tidy / displayedMonth_Tidy：当前日历浏览到的年月，支持前后翻页查看历史月份
 class CheckinHistorySheet_Tidy: UIViewController {
+
+    /// 当前日历展示的年份/月份（默认当前月，可通过上一月/下一月按钮切换浏览）
+    private var displayedYear_Tidy: Int
+    private var displayedMonth_Tidy: Int
+    /// 全部打卡日期集合（缓存一份，避免每次翻页重复查询）
+    private var checkedDateSet_Tidy: Set<String> = []
+
+    init() {
+        let now_tidy = Date()
+        displayedYear_Tidy  = Calendar.current.component(.year, from: now_tidy)
+        displayedMonth_Tidy = Calendar.current.component(.month, from: now_tidy)
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) { fatalError("不支持 Storyboard 初始化") }
 
     private let dragBar_Tidy: UIView = {
         let v = UIView()
@@ -1257,6 +1820,25 @@ class CheckinHistorySheet_Tidy: UIViewController {
         sv.spacing = 20
         return sv
     }()
+    /// 月历导航按钮：上一月 / 下一月（浏览到当前月时下一月按钮自动置灰禁用）
+    private let prevMonthButton_Tidy: UIButton = {
+        let btn = UIButton(type: .custom)
+        btn.setImage(UIImage(systemName: "chevron.left",
+                              withConfiguration: UIImage.SymbolConfiguration(pointSize: 13, weight: .bold)), for: .normal)
+        btn.tintColor = ColorConfig_Tidy.textSecondary_Tidy
+        btn.backgroundColor = UIColor(hexstring_Tidy: "#F0F4F8")
+        btn.layer.cornerRadius = 15
+        return btn
+    }()
+    private let nextMonthButton_Tidy: UIButton = {
+        let btn = UIButton(type: .custom)
+        btn.setImage(UIImage(systemName: "chevron.right",
+                              withConfiguration: UIImage.SymbolConfiguration(pointSize: 13, weight: .bold)), for: .normal)
+        btn.tintColor = ColorConfig_Tidy.textSecondary_Tidy
+        btn.backgroundColor = UIColor(hexstring_Tidy: "#F0F4F8")
+        btn.layer.cornerRadius = 15
+        return btn
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -1268,6 +1850,8 @@ class CheckinHistorySheet_Tidy: UIViewController {
     }
 
     private func setupUI_Tidy() {
+        prevMonthButton_Tidy.addTarget(self, action: #selector(onPrevMonthTapped_Tidy), for: .touchUpInside)
+        nextMonthButton_Tidy.addTarget(self, action: #selector(onNextMonthTapped_Tidy), for: .touchUpInside)
         view.addSubview(dragBar_Tidy)
         dragBar_Tidy.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(12)
@@ -1301,42 +1885,140 @@ class CheckinHistorySheet_Tidy: UIViewController {
         }
     }
 
+    /// 加载打卡数据并渲染统计区、成就徽章区、日历区（每次调用会先清空重建，翻页/首次加载均走同一路径）
     private func loadCheckinData_Tidy() {
         let vm_tidy = UserViewModel_Tidy.shared_Tidy
-        let streak_tidy   = vm_tidy.getCheckinStreak_Tidy()
-        let allDates_tidy = vm_tidy.getAllCheckinDates_Tidy()
-        let total_tidy    = allDates_tidy.count
-        let checkedSet_tidy = Set(allDates_tidy)
+        let streak_tidy     = vm_tidy.getCheckinStreak_Tidy()
+        let bestStreak_tidy = vm_tidy.getBestCheckinStreak_Tidy()
+        let allDates_tidy   = vm_tidy.getAllCheckinDates_Tidy()
+        let total_tidy      = allDates_tidy.count
+        checkedDateSet_Tidy = Set(allDates_tidy)
 
-        let cal_tidy    = Calendar.current
-        let now_tidy    = Date()
-        let year_tidy   = cal_tidy.component(.year,  from: now_tidy)
-        let month_tidy  = cal_tidy.component(.month, from: now_tidy)
-        let dayNow_tidy = cal_tidy.component(.day,   from: now_tidy)
-        let prefix_tidy = String(format: "%04d-%02d-", year_tidy, month_tidy)
+        let cal_tidy = Calendar.current
+        let now_tidy = Date()
+        let isCurrentMonth_tidy = cal_tidy.component(.year, from: now_tidy) == displayedYear_Tidy
+            && cal_tidy.component(.month, from: now_tidy) == displayedMonth_Tidy
+        let prefix_tidy = String(format: "%04d-%02d-", displayedYear_Tidy, displayedMonth_Tidy)
         let monthCnt_tidy = allDates_tidy.filter { $0.hasPrefix(prefix_tidy) }.count
-        let rate_tidy   = dayNow_tidy > 0 ? Int(Double(monthCnt_tidy) / Double(dayNow_tidy) * 100) : 0
 
-        buildStatsRow_Tidy(streak: streak_tidy, total: total_tidy, rate: rate_tidy)
-        buildCalendar_Tidy(year: year_tidy, month: month_tidy, checkedSet: checkedSet_tidy)
+        // 当前月按"至今天数"计算达成率；翻页浏览的历史月份已完整走完，按该月总天数计算
+        var daysInMonth_tidy = 30
+        var comps_tidy = DateComponents()
+        comps_tidy.year = displayedYear_Tidy; comps_tidy.month = displayedMonth_Tidy; comps_tidy.day = 1
+        if let firstDay_tidy = cal_tidy.date(from: comps_tidy),
+           let range_tidy = cal_tidy.range(of: .day, in: .month, for: firstDay_tidy) {
+            daysInMonth_tidy = range_tidy.count
+        }
+        let denom_tidy = isCurrentMonth_tidy ? cal_tidy.component(.day, from: now_tidy) : daysInMonth_tidy
+        let rate_tidy = denom_tidy > 0 ? Int(Double(monthCnt_tidy) / Double(denom_tidy) * 100) : 0
+
+        contentStack_Tidy.arrangedSubviews.forEach {
+            contentStack_Tidy.removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+        buildStatsRow_Tidy(streak: streak_tidy, best: bestStreak_tidy, total: total_tidy, rate: rate_tidy)
+        buildMilestones_Tidy(bestStreak: bestStreak_tidy)
+        buildCalendar_Tidy(checkedSet: checkedDateSet_Tidy)
     }
 
-    private func buildStatsRow_Tidy(streak: Int, total: Int, rate: Int) {
+    /// 统计卡片区：连续打卡 / 历史最佳 / 总打卡天数 / 本月达成率，2x2 网格布局
+    private func buildStatsRow_Tidy(streak: Int, best: Int, total: Int, rate: Int) {
+        let items_tidy: [(String, String, String, UIColor)] = [
+            ("🔥", "\(streak)", "Day Streak",  ColorConfig_Tidy.categoryKitchen_Tidy),
+            ("🏆", "\(best)",   "Best Streak", ColorConfig_Tidy.tidyGold_Tidy),
+            ("📅", "\(total)",  "Total Days",  ColorConfig_Tidy.tidyMint_Tidy),
+            ("📈", "\(rate)%",  "This Month",  ColorConfig_Tidy.primaryGradientStart_Tidy)
+        ]
+        let grid_tidy = UIStackView()
+        grid_tidy.axis = .vertical
+        grid_tidy.spacing = 10
+        for pairStart_tidy in stride(from: 0, to: items_tidy.count, by: 2) {
+            let rowStack_tidy = UIStackView()
+            rowStack_tidy.axis = .horizontal
+            rowStack_tidy.distribution = .fillEqually
+            rowStack_tidy.spacing = 10
+            for offset_tidy in 0..<2 {
+                let (icon_tidy, val_tidy, sub_tidy, color_tidy) = items_tidy[pairStart_tidy + offset_tidy]
+                rowStack_tidy.addArrangedSubview(makeStatCard_Tidy(icon: icon_tidy, value: val_tidy,
+                                                                    subtitle: sub_tidy, color: color_tidy))
+            }
+            rowStack_tidy.snp.makeConstraints { make in make.height.equalTo(84) }
+            grid_tidy.addArrangedSubview(rowStack_tidy)
+        }
+        contentStack_Tidy.addArrangedSubview(grid_tidy)
+    }
+
+    /// 摄影主题连续打卡成就徽章区：按历史最佳连续打卡天数解锁对应称号，形成正向激励闭环
+    /// 参数：
+    /// - bestStreak: 历史最长连续打卡天数
+    private func buildMilestones_Tidy(bestStreak: Int) {
+        let titleLb_tidy = UILabel()
+        titleLb_tidy.text = "Milestones"
+        titleLb_tidy.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        titleLb_tidy.textColor = ColorConfig_Tidy.textPrimary_Tidy
+        contentStack_Tidy.addArrangedSubview(titleLb_tidy)
+
+        let tiers_tidy: [(threshold: Int, icon: String, title: String)] = [
+            (3, "🎯", "First Frame"),
+            (7, "🎞️", "Roll Complete"),
+            (30, "🏅", "Monthly Pro"),
+            (100, "🏆", "Century Lens")
+        ]
         let row_tidy = UIStackView()
         row_tidy.axis = .horizontal
         row_tidy.distribution = .fillEqually
-        row_tidy.spacing = 10
-        let items_tidy: [(String, String, String, UIColor)] = [
-            ("🔥", "\(streak)", "Day Streak", ColorConfig_Tidy.categoryKitchen_Tidy),
-            ("📅", "\(total)",  "Total Days",  ColorConfig_Tidy.tidyMint_Tidy),
-            ("📈", "\(rate)%", "This Month",  ColorConfig_Tidy.primaryGradientStart_Tidy)
-        ]
-        for (icon_tidy, val_tidy, sub_tidy, color_tidy) in items_tidy {
-            row_tidy.addArrangedSubview(makeStatCard_Tidy(icon: icon_tidy, value: val_tidy,
-                                                          subtitle: sub_tidy, color: color_tidy))
+        row_tidy.spacing = 8
+        for tier_tidy in tiers_tidy {
+            row_tidy.addArrangedSubview(makeMilestoneBadge_Tidy(
+                icon: tier_tidy.icon, title: tier_tidy.title,
+                threshold: tier_tidy.threshold, unlocked: bestStreak >= tier_tidy.threshold
+            ))
         }
+        row_tidy.snp.makeConstraints { make in make.height.equalTo(84) }
         contentStack_Tidy.addArrangedSubview(row_tidy)
-        row_tidy.snp.makeConstraints { make in make.height.equalTo(90) }
+    }
+
+    /// 创建单个成就徽章：已解锁展示主题色高亮圆徽 + 称号；未解锁展示灰度圆徽 + 达成所需天数
+    private func makeMilestoneBadge_Tidy(icon: String, title: String, threshold: Int, unlocked: Bool) -> UIView {
+        let container_tidy = UIView()
+        let circle_tidy = UIView()
+        circle_tidy.layer.cornerRadius = 26
+        circle_tidy.backgroundColor = unlocked
+            ? ColorConfig_Tidy.tidyGold_Tidy.withAlphaComponent(0.14)
+            : UIColor(hexstring_Tidy: "#F0F4F8")
+        circle_tidy.layer.borderWidth = unlocked ? 1.5 : 1
+        circle_tidy.layer.borderColor = (unlocked
+            ? ColorConfig_Tidy.tidyGold_Tidy.withAlphaComponent(0.4)
+            : ColorConfig_Tidy.divider_Tidy).cgColor
+
+        let iconLb_tidy = UILabel()
+        iconLb_tidy.text = icon
+        iconLb_tidy.font = UIFont.systemFont(ofSize: 22)
+        iconLb_tidy.textAlignment = .center
+        iconLb_tidy.alpha = unlocked ? 1.0 : 0.35
+
+        let captionLb_tidy = UILabel()
+        captionLb_tidy.text = unlocked ? title : "\(threshold)d"
+        captionLb_tidy.font = UIFont.systemFont(ofSize: 9.5, weight: .semibold)
+        captionLb_tidy.textColor = unlocked ? ColorConfig_Tidy.textPrimary_Tidy : ColorConfig_Tidy.textPlaceholder_Tidy
+        captionLb_tidy.textAlignment = .center
+        captionLb_tidy.numberOfLines = 1
+        captionLb_tidy.adjustsFontSizeToFitWidth = true
+        captionLb_tidy.minimumScaleFactor = 0.8
+
+        container_tidy.addSubview(circle_tidy)
+        circle_tidy.addSubview(iconLb_tidy)
+        container_tidy.addSubview(captionLb_tidy)
+        circle_tidy.snp.makeConstraints { make in
+            make.top.centerX.equalToSuperview()
+            make.width.height.equalTo(52)
+        }
+        iconLb_tidy.snp.makeConstraints { make in make.center.equalToSuperview() }
+        captionLb_tidy.snp.makeConstraints { make in
+            make.top.equalTo(circle_tidy.snp.bottom).offset(4)
+            make.leading.trailing.equalToSuperview().inset(2)
+        }
+        return container_tidy
     }
 
     private func makeStatCard_Tidy(icon: String, value: String, subtitle: String, color: UIColor) -> UIView {
@@ -1379,18 +2061,39 @@ class CheckinHistorySheet_Tidy: UIViewController {
         return card_tidy
     }
 
-    private func buildCalendar_Tidy(year: Int, month: Int, checkedSet: Set<String>) {
+    /// 渲染日历区：月份导航行（上一月 / 下一月）+ 星期表头 + 月历网格
+    /// 参数：
+    /// - checkedSet: 全部打卡日期集合
+    private func buildCalendar_Tidy(checkedSet: Set<String>) {
         var comps_tidy = DateComponents()
-        comps_tidy.year = year; comps_tidy.month = month; comps_tidy.day = 1
+        comps_tidy.year = displayedYear_Tidy; comps_tidy.month = displayedMonth_Tidy; comps_tidy.day = 1
         guard let firstDay_tidy = Calendar.current.date(from: comps_tidy) else { return }
 
+        let nowCal_tidy = Calendar.current
+        let isCurrentMonth_tidy = nowCal_tidy.component(.year, from: Date()) == displayedYear_Tidy
+            && nowCal_tidy.component(.month, from: Date()) == displayedMonth_Tidy
+
+        // 月份导航行：上一月按钮 + 月份标题（居中自适应宽度）+ 下一月按钮（浏览到当前月时置灰禁用）
         let fmt_tidy = DateFormatter()
         fmt_tidy.dateFormat = "MMMM yyyy"
-        let sLb_tidy = UILabel()
-        sLb_tidy.text = fmt_tidy.string(from: firstDay_tidy)
-        sLb_tidy.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        sLb_tidy.textColor = ColorConfig_Tidy.textPrimary_Tidy
-        contentStack_Tidy.addArrangedSubview(sLb_tidy)
+        let monthLb_tidy = UILabel()
+        monthLb_tidy.text = fmt_tidy.string(from: firstDay_tidy)
+        monthLb_tidy.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        monthLb_tidy.textColor = ColorConfig_Tidy.textPrimary_Tidy
+        monthLb_tidy.textAlignment = .center
+        monthLb_tidy.setContentHuggingPriority(.defaultLow, for: .horizontal)
+
+        nextMonthButton_Tidy.isUserInteractionEnabled = !isCurrentMonth_tidy
+        nextMonthButton_Tidy.alpha = isCurrentMonth_tidy ? 0.3 : 1.0
+
+        let navRow_tidy = UIStackView(arrangedSubviews: [prevMonthButton_Tidy, monthLb_tidy, nextMonthButton_Tidy])
+        navRow_tidy.axis = .horizontal
+        navRow_tidy.alignment = .center
+        navRow_tidy.spacing = 8
+        prevMonthButton_Tidy.snp.makeConstraints { make in make.width.height.equalTo(30) }
+        nextMonthButton_Tidy.snp.makeConstraints { make in make.width.height.equalTo(30) }
+        navRow_tidy.snp.makeConstraints { make in make.height.equalTo(30) }
+        contentStack_Tidy.addArrangedSubview(navRow_tidy)
         contentStack_Tidy.addArrangedSubview(makeWeekHeaderRow_Tidy())
 
         var isoCal_tidy = Calendar(identifier: .iso8601)
@@ -1399,19 +2102,16 @@ class CheckinHistorySheet_Tidy: UIViewController {
         let offset_tidy  = (weekday_tidy == 1) ? 6 : (weekday_tidy - 2)
         let daysCount_tidy = isoCal_tidy.range(of: .day, in: .month, for: firstDay_tidy)!.count
 
-        let nowCal_tidy = Calendar.current
-        let today_tidy  = nowCal_tidy.component(.day, from: Date())
-        let isCurrent_tidy = (nowCal_tidy.component(.year,  from: Date()) == year &&
-                              nowCal_tidy.component(.month, from: Date()) == month)
+        let today_tidy = nowCal_tidy.component(.day, from: Date())
 
         var cells_tidy: [UIView] = Array(repeating: makeEmptyCell_Tidy(), count: offset_tidy)
         for d_tidy in 1...daysCount_tidy {
-            let str_tidy = String(format: "%04d-%02d-%02d", year, month, d_tidy)
+            let str_tidy = String(format: "%04d-%02d-%02d", displayedYear_Tidy, displayedMonth_Tidy, d_tidy)
             cells_tidy.append(makeDayCell_Tidy(
                 day: d_tidy,
                 isChecked: checkedSet.contains(str_tidy),
-                isFuture: isCurrent_tidy && d_tidy > today_tidy,
-                isToday:  isCurrent_tidy && d_tidy == today_tidy
+                isFuture: isCurrentMonth_tidy && d_tidy > today_tidy,
+                isToday:  isCurrentMonth_tidy && d_tidy == today_tidy
             ))
         }
         while cells_tidy.count % 7 != 0 { cells_tidy.append(makeEmptyCell_Tidy()) }
@@ -1422,6 +2122,32 @@ class CheckinHistorySheet_Tidy: UIViewController {
             contentStack_Tidy.addArrangedSubview(makeWeekRow_Tidy(cells: rowCells_tidy))
             idx_tidy += 7
         }
+    }
+
+    /// 切换日历浏览的月份并重新渲染整个内容区
+    /// 参数：
+    /// - delta_tidy: 月份偏移量（-1 上一月，+1 下一月）
+    private func adjustDisplayedMonth_Tidy(by delta_tidy: Int) {
+        displayedMonth_Tidy += delta_tidy
+        if displayedMonth_Tidy < 1 {
+            displayedMonth_Tidy = 12
+            displayedYear_Tidy -= 1
+        } else if displayedMonth_Tidy > 12 {
+            displayedMonth_Tidy = 1
+            displayedYear_Tidy += 1
+        }
+        loadCheckinData_Tidy()
+    }
+
+    @objc private func onPrevMonthTapped_Tidy() {
+        prevMonthButton_Tidy.animatePulse_Tidy()
+        adjustDisplayedMonth_Tidy(by: -1)
+    }
+
+    @objc private func onNextMonthTapped_Tidy() {
+        guard nextMonthButton_Tidy.isUserInteractionEnabled else { return }
+        nextMonthButton_Tidy.animatePulse_Tidy()
+        adjustDisplayedMonth_Tidy(by: 1)
     }
 
     private func makeWeekHeaderRow_Tidy() -> UIStackView {
@@ -1482,23 +2208,30 @@ class CheckinHistorySheet_Tidy: UIViewController {
 
 // MARK: - 首页 ViewController
 
-/// 首页页面（现代化重构版）
-/// 功能：Header + 打卡区 + 摄影技巧卡片
-/// 设计：CompositionalLayout 五区段，通知驱动刷新；技巧卡点击底部 Sheet
+/// 首页页面（信息架构重构版）
+/// 功能：Header + 三大分区横幅（Today / Create / Learn）串联打卡、每日任务、拍摄工具箱、摄影技巧
+/// 设计：CompositionalLayout 分区渲染，通知驱动刷新；技巧卡点击底部 Sheet；
+///       原来"每个功能各自一个小标题+内容"的重复结构，改为按 Today/Create/Learn 三大信息分区
+///       用醒目的渐变横幅分隔，Today 分区统一收纳打卡与每日任务，减少一层重复标题
 class Home_Tidy: UIViewController {
 
     private enum Section_Tidy: Int, CaseIterable {
         case header_tidy       = 0
-        case checkinTitle_tidy = 1
+        case todayBanner_tidy  = 1
         case checkin_tidy      = 2
-        case tipsTitle_tidy    = 3
-        case tips_tidy         = 4
+        case tasks_tidy        = 3
+        case createBanner_tidy = 4
+        case shootTools_tidy   = 5
+        case learnBanner_tidy  = 6
+        case tips_tidy         = 7
     }
 
-    private let idHeader_Tidy   = "HomeHeaderCell"
-    private let idSecTitle_Tidy = "HomeSectionTitle"
-    private let idCheckin_Tidy  = "HomeCheckinCell"
-    private let idTip_Tidy      = "HomeTipCardCell"
+    private let idHeader_Tidy    = "HomeHeaderCell"
+    private let idZoneBanner_Tidy = "HomeZoneBanner"
+    private let idCheckin_Tidy   = "HomeCheckinCell"
+    private let idTip_Tidy       = "HomeTipCardCell"
+    private let idToolEntry_Tidy = "HomeToolEntryCell"
+    private let idTask_Tidy      = "HomeTaskCell"
 
     private let tipsList_Tidy: [HomeTip_Tidy] = [
         HomeTip_Tidy(icon_Tidy: "🌤️", title_Tidy: "Face the Light",
@@ -1527,6 +2260,16 @@ class Home_Tidy: UIViewController {
                      color_Tidy: ColorConfig_Tidy.categoryStorage_Tidy),
     ]
 
+    /// 拍摄工具箱入口卡片数据（Shooting Tools 区块）
+    private let toolEntries_Tidy: [HomeToolEntry_Tidy] = [
+        HomeToolEntry_Tidy(icon_Tidy: "🎯", title_Tidy: "Composition Studio",
+                            subtitle_Tidy: "Grids, film filters & gradients",
+                            color_Tidy: ColorConfig_Tidy.tidyMint_Tidy, target_Tidy: .shootStudio_tidy),
+        HomeToolEntry_Tidy(icon_Tidy: "💡", title_Tidy: "Lighting Gallery",
+                            subtitle_Tidy: "Offline composition references",
+                            color_Tidy: ColorConfig_Tidy.categoryBedroom_Tidy, target_Tidy: .lightingGallery_tidy)
+    ]
+
     private var collectionView_Tidy: UICollectionView!
 
     override func viewDidLoad() {
@@ -1538,7 +2281,10 @@ class Home_Tidy: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
-        collectionView_Tidy.reloadSections(IndexSet(integer: Section_Tidy.checkin_tidy.rawValue))
+        collectionView_Tidy.reloadSections(IndexSet([
+            Section_Tidy.checkin_tidy.rawValue,
+            Section_Tidy.tasks_tidy.rawValue
+        ]))
     }
 
     private func setupNotifications_Tidy() {
@@ -1546,12 +2292,21 @@ class Home_Tidy: UIViewController {
             self, selector: #selector(onUserChanged_Tidy),
             name: UserViewModel_Tidy.userStateDidChangeNotification_Tidy, object: nil
         )
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(onTaskProgressChanged_Tidy),
+            name: TaskViewModel_Tidy.taskProgressDidChangeNotification_Tidy, object: nil
+        )
     }
     @objc private func onUserChanged_Tidy() {
         collectionView_Tidy.reloadSections(
             IndexSet([Section_Tidy.header_tidy.rawValue,
-                      Section_Tidy.checkin_tidy.rawValue])
+                      Section_Tidy.checkin_tidy.rawValue,
+                      Section_Tidy.tasks_tidy.rawValue])
         )
+    }
+    /// 浏览/点赞/发布/查看资料任务进度变更时，仅刷新每日任务区块
+    @objc private func onTaskProgressChanged_Tidy() {
+        collectionView_Tidy.reloadSections(IndexSet(integer: Section_Tidy.tasks_tidy.rawValue))
     }
 
     private func setupCollectionView_Tidy() {
@@ -1563,9 +2318,11 @@ class Home_Tidy: UIViewController {
         collectionView_Tidy.dataSource = self
 
         collectionView_Tidy.register(HomeHeaderCell_Tidy.self,       forCellWithReuseIdentifier: idHeader_Tidy)
-        collectionView_Tidy.register(HomeSectionTitleCell_Tidy.self, forCellWithReuseIdentifier: idSecTitle_Tidy)
+        collectionView_Tidy.register(HomeZoneBannerCell_Tidy.self,   forCellWithReuseIdentifier: idZoneBanner_Tidy)
         collectionView_Tidy.register(HomeCheckinCell_Tidy.self,      forCellWithReuseIdentifier: idCheckin_Tidy)
         collectionView_Tidy.register(HomeTipCardCell_Tidy.self,      forCellWithReuseIdentifier: idTip_Tidy)
+        collectionView_Tidy.register(HomeToolEntryCell_Tidy.self,    forCellWithReuseIdentifier: idToolEntry_Tidy)
+        collectionView_Tidy.register(HomeTaskCell_Tidy.self,         forCellWithReuseIdentifier: idTask_Tidy)
 
         let refresh_tidy = UIRefreshControl()
         refresh_tidy.tintColor = ColorConfig_Tidy.tidyMint_Tidy
@@ -1594,9 +2351,12 @@ class Home_Tidy: UIViewController {
             guard let self, let sec = Section_Tidy(rawValue: idx) else { return nil }
             switch sec {
             case .header_tidy:       return self.layoutHeader_Tidy()
-            case .checkinTitle_tidy: return self.layoutSingleRow_Tidy(height: 56)
+            case .todayBanner_tidy:  return self.layoutZoneBanner_Tidy()
             case .checkin_tidy:      return self.layoutCheckin_Tidy()
-            case .tipsTitle_tidy:    return self.layoutSingleRow_Tidy(height: 56)
+            case .tasks_tidy:        return self.layoutTasks_Tidy()
+            case .createBanner_tidy: return self.layoutZoneBanner_Tidy()
+            case .shootTools_tidy:   return self.layoutToolEntries_Tidy()
+            case .learnBanner_tidy:  return self.layoutZoneBanner_Tidy()
             case .tips_tidy:         return self.layoutTips_Tidy()
             }
         }
@@ -1613,17 +2373,21 @@ class Home_Tidy: UIViewController {
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(h_tidy)), subitems: [item])
         return NSCollectionLayoutSection(group: group)
     }
-    private func layoutSingleRow_Tidy(height: CGFloat) -> NSCollectionLayoutSection {
-        let item  = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(height)))
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(height)), subitems: [item])
+    /// 分区横幅布局：全宽固定高度 72pt，供 Today/Create/Learn 三个分区共用
+    private func layoutZoneBanner_Tidy() -> NSCollectionLayoutSection {
+        let height_tidy: CGFloat = 72
+        let item  = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(height_tidy)))
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(height_tidy)), subitems: [item])
         let sec   = NSCollectionLayoutSection(group: group)
-        sec.contentInsets = .init(top: 10, leading: 0, bottom: 0, trailing: 0)
+        sec.contentInsets = .init(top: 14, leading: 16, bottom: 6, trailing: 16)
         return sec
     }
     private func layoutCheckin_Tidy() -> NSCollectionLayoutSection {
-        // 打卡卡片：三区布局（头部 + 内容 + 底部行）= 158pt
-        let item  = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(158)))
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(158)), subitems: [item])
+        // 打卡卡片：头部 + 内容 + 周格点行 + 打卡按钮行，高度直接引用 HomeCheckinCell_Tidy
+        // 暴露的常量，与单元格内部约束保持同一数据来源，避免两处数字不一致导致底部内容被压缩
+        let h_tidy = HomeCheckinCell_Tidy.cardHeight_Tidy
+        let item  = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(h_tidy)))
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(h_tidy)), subitems: [item])
         let sec   = NSCollectionLayoutSection(group: group)
         sec.contentInsets = .init(top: 4, leading: 16, bottom: 10, trailing: 16)
         return sec
@@ -1639,6 +2403,28 @@ class Home_Tidy: UIViewController {
         sec.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
         sec.contentInsets    = .init(top: 4, leading: 16, bottom: 20, trailing: 16)
         sec.interGroupSpacing = 10
+        return sec
+    }
+    private func layoutTasks_Tidy() -> NSCollectionLayoutSection {
+        // 每日任务卡片：高度直接引用 HomeTaskCell_Tidy 暴露的常量，与单元格内部约束
+        // 保持同一数据来源，避免两处数字不一致导致任务行被压缩或遮挡
+        let h_tidy = HomeTaskCell_Tidy.cardHeight_Tidy
+        let item  = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(h_tidy)))
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(h_tidy)), subitems: [item])
+        let sec   = NSCollectionLayoutSection(group: group)
+        sec.contentInsets = .init(top: 4, leading: 16, bottom: 10, trailing: 16)
+        return sec
+    }
+    private func layoutToolEntries_Tidy() -> NSCollectionLayoutSection {
+        // 拍摄工具箱入口：双列固定高度卡片，一行内展示完毕，无需横向滚动
+        let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(0.5), heightDimension: .fractionalHeight(1)))
+        item.contentInsets = .init(top: 0, leading: 6, bottom: 0, trailing: 6)
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(132)),
+            subitems: [item, item]
+        )
+        let sec = NSCollectionLayoutSection(group: group)
+        sec.contentInsets = .init(top: 4, leading: 10, bottom: 20, trailing: 10)
         return sec
     }
 
@@ -1663,6 +2449,18 @@ class Home_Tidy: UIViewController {
         Navigation_Tidy.present_Tidy(viewController: sheet_tidy, from: self)
     }
 
+    /// 根据拍摄工具入口目标跳转到对应工具页
+    /// 参数：
+    /// - entry_tidy: 拍摄工具入口数据
+    private func navigateToToolEntry_Tidy(entry_tidy: HomeToolEntry_Tidy) {
+        switch entry_tidy.target_Tidy {
+        case .shootStudio_tidy:
+            Navigation_Tidy.push_Tidy(to: ShootStudio_Tidy(), from: self)
+        case .lightingGallery_tidy:
+            Navigation_Tidy.push_Tidy(to: LightingGallery_Tidy(), from: self)
+        }
+    }
+
     deinit { NotificationCenter.default.removeObserver(self) }
 }
 
@@ -1678,7 +2476,10 @@ extension Home_Tidy: UICollectionViewDataSource {
                         numberOfItemsInSection section: Int) -> Int {
         guard let sec = Section_Tidy(rawValue: section) else { return 0 }
         switch sec {
-        case .header_tidy, .checkinTitle_tidy, .checkin_tidy, .tipsTitle_tidy: return 1
+        case .header_tidy, .todayBanner_tidy, .checkin_tidy, .tasks_tidy,
+             .createBanner_tidy, .learnBanner_tidy:
+            return 1
+        case .shootTools_tidy: return toolEntries_Tidy.count
         case .tips_tidy: return tipsList_Tidy.count
         }
     }
@@ -1699,12 +2500,14 @@ extension Home_Tidy: UICollectionViewDataSource {
             }
             return cell
 
-        case .checkinTitle_tidy:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: idSecTitle_Tidy, for: indexPath) as! HomeSectionTitleCell_Tidy
-            cell.configure_Tidy(title_tidy: "Shot Log",
-                                 subtitle_tidy: "Daily practice should stay in sight",
-                                 showSeeAll_tidy: true)
-            cell.onSeeAllTapped_Tidy = { [weak self] in self?.showCheckinHistory_Tidy() }
+        case .todayBanner_tidy:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: idZoneBanner_Tidy, for: indexPath) as! HomeZoneBannerCell_Tidy
+            cell.configure_Tidy(icon_tidy: "sun.max.fill",
+                                 title_tidy: "Today",
+                                 subtitle_tidy: "Check in and clear your daily missions",
+                                 gradientColors_tidy: (ColorConfig_Tidy.tidyWarm_Tidy, ColorConfig_Tidy.primaryGradientStart_Tidy),
+                                 actionTitle_tidy: "History")
+            cell.onActionTapped_Tidy = { [weak self] in self?.showCheckinHistory_Tidy() }
             return cell
 
         case .checkin_tidy:
@@ -1723,12 +2526,36 @@ extension Home_Tidy: UICollectionViewDataSource {
             }
             return cell
 
-        case .tipsTitle_tidy:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: idSecTitle_Tidy, for: indexPath) as! HomeSectionTitleCell_Tidy
-            cell.configure_Tidy(title_tidy: "Photo Glow Tips",
+        case .tasks_tidy:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: idTask_Tidy, for: indexPath) as! HomeTaskCell_Tidy
+            cell.configure_Tidy(tasks_tidy: TaskViewModel_Tidy.shared_Tidy.getAllTasks_Tidy())
+            return cell
+
+        case .createBanner_tidy:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: idZoneBanner_Tidy, for: indexPath) as! HomeZoneBannerCell_Tidy
+            cell.configure_Tidy(icon_tidy: "camera.aperture",
+                                 title_tidy: "Create",
+                                 subtitle_tidy: "Plan every frame before you shoot",
+                                 gradientColors_tidy: (ColorConfig_Tidy.tidyMint_Tidy, ColorConfig_Tidy.tidyMintDeep_Tidy))
+            cell.onActionTapped_Tidy = nil
+            return cell
+
+        case .shootTools_tidy:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: idToolEntry_Tidy, for: indexPath) as! HomeToolEntryCell_Tidy
+            let entry_tidy = toolEntries_Tidy[indexPath.item]
+            cell.configure_Tidy(entry_tidy: entry_tidy)
+            cell.onTapped_Tidy = { [weak self] in
+                self?.navigateToToolEntry_Tidy(entry_tidy: entry_tidy)
+            }
+            return cell
+
+        case .learnBanner_tidy:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: idZoneBanner_Tidy, for: indexPath) as! HomeZoneBannerCell_Tidy
+            cell.configure_Tidy(icon_tidy: "sparkles",
+                                 title_tidy: "Learn",
                                  subtitle_tidy: "Tap any card for the full tip",
-                                 showSeeAll_tidy: false)
-            cell.onSeeAllTapped_Tidy = nil
+                                 gradientColors_tidy: (ColorConfig_Tidy.tidyGold_Tidy, ColorConfig_Tidy.tidyWarm_Tidy))
+            cell.onActionTapped_Tidy = nil
             return cell
 
         case .tips_tidy:
@@ -1749,10 +2576,19 @@ extension Home_Tidy: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView,
                         willDisplay cell: UICollectionViewCell,
                         forItemAt indexPath: IndexPath) {
-        guard Section_Tidy(rawValue: indexPath.section) == .tips_tidy else { return }
-        cell.animateSlideInFromBottom_Tidy(
-            offset_Tidy: 28,
-            delay_Tidy: Double(indexPath.item % 4) * AnimationConfig_Tidy.delayShort_Tidy
-        )
+        switch Section_Tidy(rawValue: indexPath.section) {
+        case .tips_tidy:
+            cell.animateSlideInFromBottom_Tidy(
+                offset_Tidy: 28,
+                delay_Tidy: Double(indexPath.item % 4) * AnimationConfig_Tidy.delayShort_Tidy
+            )
+        case .shootTools_tidy:
+            cell.animateSlideInFromBottom_Tidy(
+                offset_Tidy: 20,
+                delay_Tidy: Double(indexPath.item) * AnimationConfig_Tidy.delayShort_Tidy
+            )
+        default:
+            break
+        }
     }
 }

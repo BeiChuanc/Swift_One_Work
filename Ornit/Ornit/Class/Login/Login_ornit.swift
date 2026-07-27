@@ -385,8 +385,8 @@ class Login_Ornit: UIViewController {
 
         // 协议文本
         let protocolLabel_ornit = ProtocolHelper_Ornit.createProtocolTextLabel_Ornit(
-            firstContent_Ornit: "terms",
-            secondContent_Ornit: "privacy",
+            firstContent_Ornit: "terms.png",
+            secondContent_Ornit: "privacy.png",
             config_Ornit: .light_Ornit(),
             from: self
         )

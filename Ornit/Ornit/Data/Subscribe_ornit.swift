@@ -19,7 +19,7 @@ class Subscribe_Ornit: NSObject {
     var goodsList_Ornit: [StoreModel_Ornit] = [
         StoreModel_Ornit(
             id_Ornit: 0,
-            goodsId_Ornit: "ornit.gift.x2.1_9",
+            goodsId_Ornit: "ornit.gift.spe.1_9",
             goodsName_Ornit: "x1",
             goodsPrice_Ornit: "$1.99",
             goodIsTop_Ornit: false,
@@ -27,7 +27,7 @@ class Subscribe_Ornit: NSObject {
         ),
         StoreModel_Ornit(
             id_Ornit: 1,
-            goodsId_Ornit: "ornit.gift.x3.3_9",
+            goodsId_Ornit: "ornit.gift.spe.3_9",
             goodsName_Ornit: "x1",
             goodsPrice_Ornit: "$3.99",
             goodIsTop_Ornit: false,
@@ -35,7 +35,7 @@ class Subscribe_Ornit: NSObject {
         ),
         StoreModel_Ornit(
             id_Ornit: 2,
-            goodsId_Ornit: "ornit.gift.x5.4_9",
+            goodsId_Ornit: "ornit.gift.spe.4_9",
             goodsName_Ornit: "x1",
             goodsPrice_Ornit: "$4.99",
             goodIsTop_Ornit: false,
@@ -51,7 +51,7 @@ class Subscribe_Ornit: NSObject {
         ),
         StoreModel_Ornit(
             id_Ornit: 4,
-            goodsId_Ornit: "ornit.gift.x2.2_9",
+            goodsId_Ornit: "ornit.gift.x5.2_9",
             goodsName_Ornit: "x5",
             goodsPrice_Ornit: "$2.99",
             goodIsTop_Ornit: false,
@@ -59,7 +59,7 @@ class Subscribe_Ornit: NSObject {
         ),
         StoreModel_Ornit(
             id_Ornit: 5,
-            goodsId_Ornit: "ornit.gift.x3.3_9_s",
+            goodsId_Ornit: "ornit.gift.x10.3_9",
             goodsName_Ornit: "x10",
             goodsPrice_Ornit: "$3.99",
             goodIsTop_Ornit: false,
@@ -67,7 +67,7 @@ class Subscribe_Ornit: NSObject {
         ),
         StoreModel_Ornit(
             id_Ornit: 6,
-            goodsId_Ornit: "ornit.gift.x4.4_9",
+            goodsId_Ornit: "ornit.gift.x30.4_9",
             goodsName_Ornit: "x30",
             goodsPrice_Ornit: "$4.99",
             goodIsTop_Ornit: false,
@@ -75,7 +75,7 @@ class Subscribe_Ornit: NSObject {
         ),
         StoreModel_Ornit(
             id_Ornit: 7,
-            goodsId_Ornit: "ornit.gift.x5.6_9",
+            goodsId_Ornit: "ornit.gift.x1.6_9",
             goodsName_Ornit: "x1",
             goodsPrice_Ornit: "$6.99",
             goodIsTop_Ornit: false,
@@ -83,7 +83,7 @@ class Subscribe_Ornit: NSObject {
         ),
         StoreModel_Ornit(
             id_Ornit: 8,
-            goodsId_Ornit: "ornit.gift.x10.9_9",
+            goodsId_Ornit: "ornit.gift.x5.9_9",
             goodsName_Ornit: "x5",
             goodsPrice_Ornit: "$9.99",
             goodIsTop_Ornit: false,
@@ -91,7 +91,7 @@ class Subscribe_Ornit: NSObject {
         ),
         StoreModel_Ornit(
             id_Ornit: 9,
-            goodsId_Ornit: "ornit.gift.x20.19_9",
+            goodsId_Ornit: "ornit.gift.x10.19_9",
             goodsName_Ornit: "x10",
             goodsPrice_Ornit: "$19.99",
             goodIsTop_Ornit: false,
@@ -107,7 +107,7 @@ class Subscribe_Ornit: NSObject {
         ),
         StoreModel_Ornit(
             id_Ornit: 11,
-            goodsId_Ornit: "ornit.gift.x50.49_9",
+            goodsId_Ornit: "ornit.gift.x1.49_9",
             goodsName_Ornit: "x1",
             goodsPrice_Ornit: "$49.99",
             goodIsTop_Ornit: false,
@@ -115,7 +115,7 @@ class Subscribe_Ornit: NSObject {
         ),
         StoreModel_Ornit(
             id_Ornit: 12,
-            goodsId_Ornit: "ornit.gift.x70.69_9",
+            goodsId_Ornit: "ornit.gift.x5.69_9",
             goodsName_Ornit: "x5",
             goodsPrice_Ornit: "$69.99",
             goodIsTop_Ornit: false,
@@ -123,7 +123,7 @@ class Subscribe_Ornit: NSObject {
         ),
         StoreModel_Ornit(
             id_Ornit: 13,
-            goodsId_Ornit: "ornit.gift.x100.99_9",
+            goodsId_Ornit: "ornit.gift.x10.99_9",
             goodsName_Ornit: "x10",
             goodsPrice_Ornit: "$99.99",
             goodIsTop_Ornit: false,

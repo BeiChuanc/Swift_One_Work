@@ -119,10 +119,10 @@ class Me_Breeze: UIViewController {
         emptyView_Breeze.addSubview(emptyTitleLabel_Breeze)
         emptyView_Breeze.addSubview(emptySubtitleLabel_Breeze)
         
-        // 空态视图定位：水平居中，垂直偏移约 header(348) + 内容区中间
+        // 空态视图：以 safeArea 顶部 + header(394) + 60 定位，确保完全在帖子内容区内且不遮挡分段控件
         emptyView_Breeze.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(420)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(394 + 60)
             make.left.right.equalToSuperview().inset(40)
         }
         
@@ -239,6 +239,11 @@ class Me_Breeze: UIViewController {
     private func openSetting_Breeze() { Navigation_Breeze.toSetting_Breeze() }
     private func openEdit_Breeze() { Navigation_Breeze.toEditInfo_Breeze() }
     
+    /// 跳转 VIP 订阅页
+    private func openSubscription_Breeze() {
+        Navigation_Breeze.push_Breeze(to: VIPSubscription_Breeze())
+    }
+    
     private func switchSegment_Breeze(index_breeze: Int) {
         guard index_breeze != selectedSegment_Breeze else { return }
         selectedSegment_Breeze = index_breeze
@@ -288,13 +293,15 @@ extension Me_Breeze: UICollectionViewDataSource, UICollectionViewDelegate, UICol
         header_breeze.onSegmentChange_Breeze = { [weak self] idx_breeze in
             self?.switchSegment_Breeze(index_breeze: idx_breeze)
         }
+        header_breeze.onSubscription_Breeze = { [weak self] in self?.openSubscription_Breeze() }
         return header_breeze
     }
     
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.bounds.width, height: 348)
+        // 梯次累加：渐变卡210 + 统计卡68(-22) + 订阅卡58(+14) + 分段44(+14) + 底部8 = 394
+        return CGSize(width: collectionView.bounds.width, height: 394)
     }
     
     func collectionView(_ collectionView: UICollectionView,

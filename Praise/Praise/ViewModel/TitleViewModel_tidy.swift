@@ -102,6 +102,9 @@ class TitleViewModel_Tidy {
         
         // 将帖子添加到用户的帖子列表
         UserViewModel_Tidy.shared_Tidy.addPostToCurrentUser_Tidy(post_tidy: newPost_tidy)
+
+        // 记录"发布帖子"每日任务进度
+        TaskViewModel_Tidy.shared_Tidy.recordEvent_Tidy(type_tidy: .publishPost_tidy)
         
         Utils_Tidy.showSuccess_Tidy(
             message_Tidy: "Published successfully.",
@@ -226,6 +229,9 @@ class TitleViewModel_Tidy {
             if let index_tidy = posts_Tidy.firstIndex(where: { $0.titleId_Tidy == post_tidy.titleId_Tidy }) {
                 posts_Tidy[index_tidy].likes_Tidy += 1
             }
+
+            // 记录"点赞帖子"每日任务进度（仅点赞时记录，取消点赞不计入）
+            TaskViewModel_Tidy.shared_Tidy.recordEvent_Tidy(type_tidy: .likePosts_tidy)
         }
         
         notifyStateChange_Tidy()

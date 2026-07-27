@@ -358,13 +358,13 @@ class Setting_Breeze: UIViewController {
         case .terms_breeze:
             ProtocolHelper_Breeze.showProtocol_Breeze(
                 type_Breeze: .terms_Breeze,
-                content_Breeze: ProtocolConfig_Breeze.termsContent_Breeze,
+                content_Breeze: "terms.png",
                 from: self
             )
         case .privacy_breeze:
             ProtocolHelper_Breeze.showProtocol_Breeze(
                 type_Breeze: .privacy_Breeze,
-                content_Breeze: ProtocolConfig_Breeze.privacyContent_Breeze,
+                content_Breeze: "privacy.png",
                 from: self
             )
         case .logout_breeze:

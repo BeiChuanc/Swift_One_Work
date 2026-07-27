@@ -262,6 +262,11 @@ class UserInfo_Tidy: UIViewController {
         configureUserInfo_Tidy()
         loadUserPosts_Tidy()
         observeNotifications_Tidy()
+
+        // 记录"查看用户资料"每日任务进度
+        if userModel_Tidy != nil {
+            TaskViewModel_Tidy.shared_Tidy.recordEvent_Tidy(type_tidy: .viewProfile_tidy)
+        }
     }
 
     override func viewDidLayoutSubviews() {

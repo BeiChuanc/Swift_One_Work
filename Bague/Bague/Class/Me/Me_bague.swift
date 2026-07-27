@@ -73,6 +73,17 @@ class Me_Bague: UIViewController {
         return btn
     }()
 
+    /// VIP 按钮（vip_btn 图标，宽度自适应）
+    private let vipBtn_Bague: UIButton = {
+        let btn = UIButton(type: .custom)
+        let img = UIImage(named: "vip_btn")?.withRenderingMode(.alwaysOriginal)
+        btn.setImage(img, for: .normal)
+        btn.imageView?.contentMode = .scaleAspectFit
+        btn.layer.cornerRadius = 18
+        btn.clipsToBounds = true
+        return btn
+    }()
+
     // MARK: - UI 组件（用户信息区）
 
     /// 头像外环（渐变色边框）
@@ -237,8 +248,10 @@ class Me_Bague: UIViewController {
         headerView_Bague.addSubview(headerDecorIcon_Bague)
         headerView_Bague.addSubview(settingBtn_Bague)
         headerView_Bague.addSubview(editBtn_Bague)
+        headerView_Bague.addSubview(vipBtn_Bague)
         settingBtn_Bague.addTarget(self, action: #selector(settingTapped_Bague), for: .touchUpInside)
         editBtn_Bague.addTarget(self, action: #selector(editTapped_Bague), for: .touchUpInside)
+        vipBtn_Bague.addTarget(self, action: #selector(vipBtnTapped_Bague), for: .touchUpInside)
 
         // 头像（渐变环）
         contentView_Bague.addSubview(avatarRing_Bague)
@@ -312,6 +325,11 @@ class Me_Bague: UIViewController {
             make.centerY.equalTo(settingBtn_Bague)
             make.trailing.equalTo(settingBtn_Bague.snp.leading).offset(-10)
             make.width.height.equalTo(36)
+        }
+        vipBtn_Bague.snp.makeConstraints { make in
+            make.centerY.equalTo(settingBtn_Bague)
+            make.trailing.equalTo(editBtn_Bague.snp.leading).offset(-10)
+            make.height.equalTo(36)
         }
 
         // 头像渐变环
@@ -498,6 +516,12 @@ class Me_Bague: UIViewController {
     @objc private func editTapped_Bague() {
         editBtn_Bague.animatePulse_Bague()
         Navigation_Bague.toEditInfo_Bague()
+    }
+
+    /// 点击 VIP 按钮，跳转到 VIP 订阅页
+    @objc private func vipBtnTapped_Bague() {
+        vipBtn_Bague.animatePulse_Bague()
+        Navigation_Bague.toVIPSubscription_Bague()
     }
 
     @objc private func segmentChanged_Bague(_ sender: UISegmentedControl) {

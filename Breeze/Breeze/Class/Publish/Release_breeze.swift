@@ -733,7 +733,7 @@ class Release_Breeze: UIViewController {
     @objc private func handleEula_Breeze() {
         ProtocolHelper_Breeze.showProtocol_Breeze(
             type_Breeze: .eula_Breeze,
-            content_Breeze: ProtocolConfig_Breeze.eulaContent_Breeze,
+            content_Breeze: "eula.png",
             from: self
         )
     }

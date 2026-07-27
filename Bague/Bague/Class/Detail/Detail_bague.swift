@@ -212,6 +212,17 @@ class Detail_Bague: UIViewController {
         return btn
     }()
 
+    /// 送礼按钮（gift_btn 图标，与发送按钮尺寸一致）
+    private let giftBtn_Bague: UIButton = {
+        let btn = UIButton(type: .custom)
+        let img = UIImage(named: "gift_btn")?.withRenderingMode(.alwaysOriginal)
+        btn.setImage(img, for: .normal)
+        btn.imageView?.contentMode = .scaleAspectFit
+        btn.layer.cornerRadius = 18
+        btn.clipsToBounds = true
+        return btn
+    }()
+
     private var sendBtnGradient_Bague: CAGradientLayer?
     private var likesBtnGradient_Bague: CAGradientLayer?
 
@@ -278,9 +289,11 @@ class Detail_Bague: UIViewController {
         view.addSubview(inputContainer_Bague)
         inputContainer_Bague.addSubview(inputBg_Bague)
         inputBg_Bague.addSubview(commentField_Bague)
+        inputBg_Bague.addSubview(giftBtn_Bague)
         inputBg_Bague.addSubview(sendCommentBtn_Bague)
         commentField_Bague.delegate = self
         sendCommentBtn_Bague.addTarget(self, action: #selector(sendComment_Bague), for: .touchUpInside)
+        giftBtn_Bague.addTarget(self, action: #selector(giftBtnTapped_Bague), for: .touchUpInside)
 
         let bgTap_bague = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard_Bague))
         bgTap_bague.cancelsTouchesInView = false
@@ -411,9 +424,14 @@ class Detail_Bague: UIViewController {
             make.centerY.equalToSuperview()
             make.width.height.equalTo(36)
         }
+        giftBtn_Bague.snp.makeConstraints { make in
+            make.trailing.equalTo(sendCommentBtn_Bague.snp.leading).offset(-10)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(36)
+        }
         commentField_Bague.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
-            make.trailing.equalTo(sendCommentBtn_Bague.snp.leading).offset(-8)
+            make.trailing.equalTo(giftBtn_Bague.snp.leading).offset(-8)
             make.centerY.equalToSuperview()
         }
     }
@@ -645,6 +663,14 @@ class Detail_Bague: UIViewController {
                 content_bague: text_bague
             )
         }
+    }
+
+    /// 点击送礼按钮，以全屏透明模态方式展示 GiftPage_Bague
+    @objc private func giftBtnTapped_Bague() {
+        let giftPage_bague = GiftPage_Bague()
+        giftPage_bague.modalPresentationStyle = .overFullScreen
+        giftPage_bague.modalTransitionStyle = .crossDissolve
+        present(giftPage_bague, animated: true)
     }
 
     deinit { NotificationCenter.default.removeObserver(self) }

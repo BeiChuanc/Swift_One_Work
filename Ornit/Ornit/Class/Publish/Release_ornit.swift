@@ -661,7 +661,7 @@ class Release_Ornit: UIViewController {
         // EULA 说明文字（富文本，含下划线链接）
         let eulaButton_ornit = UIButton(type: .system)
         let attrStr_ornit = NSMutableAttributedString(
-            string: "By publishing, you agree to our ",
+            string: "",
             attributes: [
                 .font: UIFont.systemFont(ofSize: 12, weight: .regular),
                 .foregroundColor: ColorConfig_Ornit.textSecondary_Ornit
@@ -790,7 +790,7 @@ class Release_Ornit: UIViewController {
     @objc private func eulaTapped_Ornit() {
         ProtocolHelper_Ornit.showProtocol_Ornit(
             type_Ornit: .eula_Ornit,
-            content_Ornit: "eula",
+            content_Ornit: "eula.png",
             from: self
         )
     }

@@ -23,6 +23,8 @@ class ReportDeleteHelper_Lumia {
         static let postMessage_Lumia = "Are you sure you want to delete this post? This action cannot be undone."
         static let commentTitle_Lumia = "Delete Comment"
         static let commentMessage_Lumia = "Are you sure you want to delete this comment? This action cannot be undone."
+        static let capsuleTitle_Lumia = "Delete Capsule"
+        static let capsuleMessage_Lumia = "Are you sure you want to delete this time capsule? This action cannot be undone."
         static let deleteButtonTitle_Lumia = "Delete"
         static let cancelButtonTitle_Lumia = "Cancel"
     }
@@ -87,6 +89,20 @@ class ReportDeleteHelper_Lumia {
         })
     }
     
+    /// 举报时光胶囊（发现页 Capsules 标签）
+    static func report_Lumia(
+        capsule_Lumia: TimeCapsule_Lumia,
+        from viewController_Lumia: UIViewController,
+        completion_Lumia: (() -> Void)? = nil
+    ) {
+        UIAlertController.report_Lumia(with: false, completeBlock: {
+            performReportCapsule_Lumia(
+                capsule_Lumia: capsule_Lumia,
+                viewController_Lumia: viewController_Lumia,
+                completion_Lumia: completion_Lumia)
+        })
+    }
+    
     // MARK: - 删除方法
     
     /// 删除帖子
@@ -123,6 +139,25 @@ class ReportDeleteHelper_Lumia {
             performDeleteComment_Lumia(
                 comment_Lumia: comment_Lumia,
                 post_Lumia: post_Lumia,
+                viewController_Lumia: viewController_Lumia,
+                completion_Lumia: completion_Lumia
+            )
+        }
+    }
+    
+    /// 删除时光胶囊（发现页 Capsules 标签）
+    static func delete_Lumia(
+        capsule_Lumia: TimeCapsule_Lumia,
+        from viewController_Lumia: UIViewController,
+        completion_Lumia: (() -> Void)? = nil
+    ) {
+        showDeleteConfirmAlert_Lumia(
+            title_Lumia: DeleteAlertConfig_Lumia.capsuleTitle_Lumia,
+            message_Lumia: DeleteAlertConfig_Lumia.capsuleMessage_Lumia,
+            from: viewController_Lumia
+        ) {
+            performDeleteCapsule_Lumia(
+                capsule_Lumia: capsule_Lumia,
                 viewController_Lumia: viewController_Lumia,
                 completion_Lumia: completion_Lumia
             )
@@ -267,6 +302,41 @@ class ReportDeleteHelper_Lumia {
         )
     }
     
+    /// 举报/删除时光胶囊后统一展示的提示文案（二者行为一致：均从展示列表移除该胶囊）
+    private static let capsuleRemovedMessage_Lumia = "This capsule will no longer appear."
+
+    /// 执行举报时光胶囊操作（预制展示数据，举报即从发现页列表移除）
+    private static func performReportCapsule_Lumia(
+        capsule_Lumia: TimeCapsule_Lumia,
+        viewController_Lumia: UIViewController,
+        completion_Lumia: (() -> Void)? = nil
+    ) {
+        performAsyncAction_Lumia(
+            action_Lumia: {
+                DiscoverCapsuleViewModel_Lumia.shared_Lumia.removeCapsule_Lumia(capsuleId_Lumia: capsule_Lumia.capsuleId_Lumia)
+                print("已举报时光胶囊: \(capsule_Lumia.message_Lumia)")
+                Utils_Lumia.showSuccess_Lumia(message_Lumia: capsuleRemovedMessage_Lumia, delay_Lumia: 1.5)
+            },
+            completion_Lumia: completion_Lumia
+        )
+    }
+    
+    /// 执行删除时光胶囊操作
+    private static func performDeleteCapsule_Lumia(
+        capsule_Lumia: TimeCapsule_Lumia,
+        viewController_Lumia: UIViewController,
+        completion_Lumia: (() -> Void)? = nil
+    ) {
+        performAsyncAction_Lumia(
+            action_Lumia: {
+                DiscoverCapsuleViewModel_Lumia.shared_Lumia.removeCapsule_Lumia(capsuleId_Lumia: capsule_Lumia.capsuleId_Lumia)
+                print("已删除时光胶囊: \(capsule_Lumia.message_Lumia)")
+                Utils_Lumia.showSuccess_Lumia(message_Lumia: capsuleRemovedMessage_Lumia, delay_Lumia: 1.5)
+            },
+            completion_Lumia: completion_Lumia
+        )
+    }
+    
     // MARK: - 按钮创建方法
     
     /// 创建举报按钮
@@ -344,6 +414,50 @@ class ReportDeleteHelper_Lumia {
             )
         }, for: .touchUpInside)
         
+        return button_Lumia
+    }
+    
+    /// 创建时光胶囊举报/删除按钮（发现页 Capsules 标签，卡片右上角）
+    /// 根据胶囊作者归属自动选择「trash」删除图标（自己）或「ellipsis」举报图标（他人）
+    /// - Parameters:
+    ///   - capsule_Lumia: 时光胶囊对象
+    ///   - size_Lumia: SF Symbol 点大小，默认 12
+    ///   - color_Lumia: 图标颜色
+    ///   - viewController_Lumia: 发起弹窗的视图控制器
+    ///   - completion_Lumia: 删除/举报完成后的回调
+    /// - Returns: 配置完毕的 UIButton
+    @MainActor static func createCapsuleReportButton_Lumia(
+        capsule_Lumia: TimeCapsule_Lumia,
+        size_Lumia: CGFloat = 12,
+        color_Lumia: UIColor = .white,
+        from viewController_Lumia: UIViewController,
+        completion_Lumia: (() -> Void)? = nil
+    ) -> UIButton {
+        let button_Lumia = UIButton(type: .system)
+
+        // 判断是否是自己发布的胶囊
+        let isMyCapsule_Lumia = UserViewModel_Lumia.shared_Lumia.isCurrentUser_Lumia(
+            userId_lumia: capsule_Lumia.authorUserId_Lumia
+        )
+
+        let iconName_Lumia = isMyCapsule_Lumia ? "trash" : "ellipsis"
+        configureButtonIcon_Lumia(
+            button_Lumia: button_Lumia,
+            iconName_Lumia: iconName_Lumia,
+            size_Lumia: size_Lumia,
+            color_Lumia: color_Lumia
+        )
+
+        button_Lumia.addAction(UIAction { [weak viewController_Lumia] _ in
+            guard let viewController_Lumia = viewController_Lumia else { return }
+            addButtonAnimation_Lumia(button_Lumia: button_Lumia)
+            if isMyCapsule_Lumia {
+                delete_Lumia(capsule_Lumia: capsule_Lumia, from: viewController_Lumia, completion_Lumia: completion_Lumia)
+            } else {
+                report_Lumia(capsule_Lumia: capsule_Lumia, from: viewController_Lumia, completion_Lumia: completion_Lumia)
+            }
+        }, for: .touchUpInside)
+
         return button_Lumia
     }
     

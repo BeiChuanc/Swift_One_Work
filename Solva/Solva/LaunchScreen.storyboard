@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  LaunchScreen.storyboard
+  Solva
+
+  原生启动屏（系统级，App 进程启动前由 Springboard 直接展示）。
+  设计思路：在 App 代码真正开始运行、SwiftUI 首帧渲染完成之前，系统会先展示这一屏
+  真正意义上的“启动画面”——之前仅靠 Info.plist 的 UILaunchScreen 生成配置尝试设置背景色
+  未能生效（生成结果为空字典），导致这段系统级空窗期仍显示默认纯白色。
+  改为提供真实的 LaunchScreen.storyboard，直接把背景色设为与游戏桌呢一致的深绿色，
+  并叠加「SOLVA」品牌字样，使这段系统必然存在的空窗期与后续 SwiftUI 发牌动画视觉衔接，
+  彻底消除启动瞬间的白屏。
+-->
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Solva-LaunchVC-01">
+    <device id="retina6_1" orientation="landscape" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23505"/>
+    </dependencies>
+    <scenes>
+        <!--Launch Screen-->
+        <scene sceneID="Solva-LaunchScene-01">
+            <objects>
+                <viewController id="Solva-LaunchVC-01" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Solva-LaunchView-01">
+                        <rect key="frame" x="0.0" y="0.0" width="844" height="390"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SOLVA" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Solva-LaunchLabel-01">
+                                <rect key="frame" x="372" y="175" width="100" height="40"/>
+                                <fontDescription key="fontDescription" type="system" weight="black" pointSize="28"/>
+                                <color key="textColor" red="0.95" green="0.85" blue="0.55" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Solva-SafeArea-01"/>
+                        <color key="backgroundColor" red="0.035" green="0.16" blue="0.11" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="Solva-LaunchLabel-01" firstAttribute="centerX" secondItem="Solva-LaunchView-01" secondAttribute="centerX" id="Solva-Constraint-CenterX"/>
+                            <constraint firstItem="Solva-LaunchLabel-01" firstAttribute="centerY" secondItem="Solva-LaunchView-01" secondAttribute="centerY" id="Solva-Constraint-CenterY"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Solva-FirstResponder-01" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="140.80000000000001" y="129.79910714285713"/>
+        </scene>
+    </scenes>
+</document>

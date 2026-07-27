@@ -24,41 +24,9 @@ class TitleViewModel_Breeze {
     
     // MARK: - 公共方法 - 获取数据
     
-    /// 获取全量帖子列表
+    /// 获取帖子列表
     func getPosts_Breeze() -> [TitleModel_Breeze] {
         return posts_Breeze
-    }
-    
-    /// 按分类筛选帖子列表
-    /// - Parameter category_breeze: 目标分类；传入 .all_breeze 时返回全量列表
-    /// - Returns: 符合分类的帖子数组
-    func getPostsByCategory_Breeze(category_breeze: PostCategory_Breeze) -> [TitleModel_Breeze] {
-        guard category_breeze != .all_breeze else { return posts_Breeze }
-        return posts_Breeze.filter { $0.titleCategory_Breeze == category_breeze }
-    }
-    
-    /// 按关键词与分类双重筛选帖子列表
-    /// - Parameters:
-    ///   - keyword_breeze: 搜索关键词，同时匹配标题和内容（空串视为不过滤）
-    ///   - category_breeze: 目标分类，.all_breeze 时不过滤分类
-    /// - Returns: 同时满足分类和关键词条件的帖子数组
-    func searchPosts_Breeze(keyword_breeze: String, category_breeze: PostCategory_Breeze) -> [TitleModel_Breeze] {
-        // 先按分类筛选
-        var result_breeze = category_breeze == .all_breeze
-            ? posts_Breeze
-            : posts_Breeze.filter { $0.titleCategory_Breeze == category_breeze }
-        
-        // 关键词为空时直接返回分类结果
-        let trimmed_breeze = keyword_breeze.trimmingCharacters(in: .whitespaces)
-        guard !trimmed_breeze.isEmpty else { return result_breeze }
-        
-        // 不区分大小写匹配标题或内容
-        let lower_breeze = trimmed_breeze.lowercased()
-        result_breeze = result_breeze.filter {
-            $0.title_Breeze.lowercased().contains(lower_breeze) ||
-            $0.titleContent_Breeze.lowercased().contains(lower_breeze)
-        }
-        return result_breeze
     }
     
     /// 初始化帖子列表

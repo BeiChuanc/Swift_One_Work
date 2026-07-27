@@ -252,6 +252,31 @@ class UserViewModel_Tidy {
         return records.sorted(by: >)
     }
 
+    /// 获取历史最长连续打卡天数（跨越全部打卡记录计算，不仅是当前这一段连续记录）
+    /// - Returns: 历史最长连续打卡天数，无打卡记录时返回 0
+    func getBestCheckinStreak_Tidy() -> Int {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let records = UserDefaults.standard.stringArray(forKey: kCheckinRecords_Tidy) ?? []
+        let dates = records.compactMap { formatter.date(from: $0) }.sorted()
+        guard let first = dates.first else { return 0 }
+
+        var best = 1
+        var current = 1
+        var previous = first
+        for date in dates.dropFirst() {
+            let diff = Calendar.current.dateComponents([.day], from: previous, to: date).day ?? 0
+            if diff == 1 {
+                current += 1
+            } else if diff > 1 {
+                current = 1
+            }
+            best = max(best, current)
+            previous = date
+        }
+        return best
+    }
+
     /// 获取本周（周一至周日）每天的打卡状态
     /// - Returns: 长度为 7 的 Bool 数组，下标 0 = 周一，6 = 周日
     func getWeekCheckinRecord_Tidy() -> [Bool] {
