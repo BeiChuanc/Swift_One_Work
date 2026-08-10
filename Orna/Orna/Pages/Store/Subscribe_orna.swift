@@ -4,103 +4,147 @@ import RMStore
 // MARK: 商店数据
 
 /// 商店数据
-class Subscribe_Orna: NSObject {
+class Store_Orna: NSObject {
     
     /// 单例
-    static let shared_Orna = Subscribe_Orna()
-    
-    // 是否VIP
-    var isVIP_Orna: Bool = false
-    
-    // 是否购买一次性商品
-    var isPur_Orna: Bool = false
+    static let shared_Orna = Store_Orna()
     
     // 礼物商品列表
     var goodsList_Orna: [StoreModel_Orna] = [
         StoreModel_Orna(
-            id_Orna: 1,
-            goodsId_Orna: "praise.gift.4_9",
+            id_Orna: 0,
+            goodsId_Orna: "bermude.spe.x1.1_9",
             goodsName_Orna: "x1",
-            goodsPrice_Orna: "$4.99",
-            goodIsTop_Orna: true
+            goodsPrice_Orna: "1.99$",
+            goodIsTop_Orna: false,
+            goodIsLimit_Orna: true
+        ),
+        StoreModel_Orna(
+            id_Orna: 1,
+            goodsId_Orna: "bermude.spe.x3.3_9",
+            goodsName_Orna: "x3",
+            goodsPrice_Orna: "3.99$",
+            goodIsTop_Orna: false,
+            goodIsLimit_Orna: true
         ),
         StoreModel_Orna(
             id_Orna: 2,
-            goodsId_Orna: "praise.gift.x1.4_9",
-            goodsName_Orna: "x1",
-            goodsPrice_Orna: "$4.99",
+            goodsId_Orna: "bermude.spe.x5.4_9",
+            goodsName_Orna: "x5",
+            goodsPrice_Orna: "4.99$",
+            goodIsTop_Orna: false,
+            goodIsLimit_Orna: true
         ),
         StoreModel_Orna(
             id_Orna: 3,
-            goodsId_Orna: "praise.gift.x5.14_9",
-            goodsName_Orna: "x5",
-            goodsPrice_Orna: "$14.99",
+            goodsId_Orna: "bermude.gift.x1.1_9",
+            goodsName_Orna: "x1",
+            goodsPrice_Orna: "1.99$",
+            goodIsTop_Orna: false,
+            goodIsLimit_Orna: false
         ),
         StoreModel_Orna(
             id_Orna: 4,
-            goodsId_Orna: "praise.gift.x10.19_9",
-            goodsName_Orna: "x10",
-            goodsPrice_Orna: "$19.99",
+            goodsId_Orna: "bermude.gift.x3.2_9",
+            goodsName_Orna: "x3",
+            goodsPrice_Orna: "2.99$",
+            goodIsTop_Orna: false,
+            goodIsLimit_Orna: false
         ),
         StoreModel_Orna(
             id_Orna: 5,
-            goodsId_Orna: "praise.gift.x30.49_9",
-            goodsName_Orna: "x30",
-            goodsPrice_Orna: "$49.99",
+            goodsId_Orna: "bermude.gift.x3.3_9",
+            goodsName_Orna: "x5",
+            goodsPrice_Orna: "3.99$",
+            goodIsTop_Orna: false,
+            goodIsLimit_Orna: false
         ),
         StoreModel_Orna(
             id_Orna: 6,
-            goodsId_Orna: "praise.gift.x1.6_9",
-            goodsName_Orna: "x1",
-            goodsPrice_Orna: "$6.99",
+            goodsId_Orna: "bermude.gift.x10.4_9",
+            goodsName_Orna: "x10",
+            goodsPrice_Orna: "4.99$",
+            goodIsTop_Orna: false,
+            goodIsLimit_Orna: false
         ),
         StoreModel_Orna(
             id_Orna: 7,
-            goodsId_Orna: "praise.gift.x5.19_9",
-            goodsName_Orna: "x5",
-            goodsPrice_Orna: "$19.99",
+            goodsId_Orna: "bermude.gift.x1.6_9",
+            goodsName_Orna: "x1",
+            goodsPrice_Orna: "6.99$",
+            goodIsTop_Orna: false,
+            goodIsLimit_Orna: false
         ),
         StoreModel_Orna(
             id_Orna: 8,
-            goodsId_Orna: "praise.gift.x10.29_9",
-            goodsName_Orna: "x10",
-            goodsPrice_Orna: "$29.99",
+            goodsId_Orna: "bermude.gift.x3.9_9",
+            goodsName_Orna: "x3",
+            goodsPrice_Orna: "9.99$",
+            goodIsTop_Orna: false,
+            goodIsLimit_Orna: false
         ),
         StoreModel_Orna(
             id_Orna: 9,
-            goodsId_Orna: "praise.gift.x30.79_9",
-            goodsName_Orna: "x30",
-            goodsPrice_Orna: "$79.99",
+            goodsId_Orna: "bermude.gift.x5.19_9",
+            goodsName_Orna: "x5",
+            goodsPrice_Orna: "19.99$",
+            goodIsTop_Orna: false,
+            goodIsLimit_Orna: false
+        ),
+        StoreModel_Orna(
+            id_Orna: 10,
+            goodsId_Orna: "bermude.gift.x10.29_9",
+            goodsName_Orna: "x10",
+            goodsPrice_Orna: "29.99$",
+            goodIsTop_Orna: false,
+            goodIsLimit_Orna: false
+        ),
+        StoreModel_Orna(
+            id_Orna: 11,
+            goodsId_Orna: "bermude.gift.x1.49_9",
+            goodsName_Orna: "x1",
+            goodsPrice_Orna: "49.99$",
+            goodIsTop_Orna: false,
+            goodIsLimit_Orna: false
+        ),
+        StoreModel_Orna(
+            id_Orna: 12,
+            goodsId_Orna: "bermude.gift.x3.69_9",
+            goodsName_Orna: "x3",
+            goodsPrice_Orna: "69.99$",
+            goodIsTop_Orna: false,
+            goodIsLimit_Orna: false
+        ),
+        StoreModel_Orna(
+            id_Orna: 13,
+            goodsId_Orna: "bermude.gift.x5.99_9",
+            goodsName_Orna: "x5",
+            goodsPrice_Orna: "99.99$",
+            goodIsTop_Orna: false,
+            goodIsLimit_Orna: false
         ),
         
         // ------- VIP ------- //
         
         StoreModel_Orna(
-            id_Orna: 9,
-            goodsId_Orna: "praise.sub.1w.9_9",
-            goodsName_Orna: "Premium (1w.)",
-            goodsPrice_Orna: "$9.99",
+            id_Orna: 14,
+            goodsId_Orna: "bermude.sub.1w.6_9",
+            goodsName_Orna: "Premium(1w.)",
+            goodsPrice_Orna: "$6.99/w",
             goodIsVIP_Orna: true
         ),
         StoreModel_Orna(
-            id_Orna: 10,
-            goodsId_Orna: "praise.sub.1m.19_9",
-            goodsName_Orna: "Premium (1m.)",
-            goodsPrice_Orna: "$19.99",
+            id_Orna: 15,
+            goodsId_Orna: "bermude.sub.1m.14_9",
+            goodsName_Orna: "Premium(1m.)",
+            goodsPrice_Orna: "$14.99/m",
             goodIsVIP_Orna: true
         ),
         StoreModel_Orna(
-            id_Orna: 11,
-            goodsId_Orna: "praise.sub.3m.29_9",
-            goodsName_Orna: "Premium (3m.)",
-            goodsPrice_Orna: "$29.99",
-            goodIsVIP_Orna: true
-        ),
-        StoreModel_Orna(
-            id_Orna: 12,
-            goodsId_Orna: "praise.sub.1y.69_9",
-            goodsName_Orna: "Premium (1y.)",
-            goodsPrice_Orna: "$69.99",
+            id_Orna: 16,
+            goodsId_Orna: "bermude.sub.3m.39_9",
+            goodsName_Orna: "Premium(3m.)",
+            goodsPrice_Orna: "$39.99/3m",
             goodIsVIP_Orna: true
         )
     ]
@@ -111,7 +155,7 @@ class Subscribe_Orna: NSObject {
 }
 
 
-extension Subscribe_Orna {
+extension Store_Orna {
     
     // 内购商品
     func PurchaseStoreGift_Orna(gid_Orna: String, completion_Orna: @escaping() -> Void) {
@@ -124,10 +168,6 @@ extension Subscribe_Orna {
                 if SKPaymentTransaction?.transactionState == .purchased {
                     print("支付成功")
                     Load_Orna.showSuccess_Orna(message_Orna: "Payment successful")
-                    
-                    if (gid_Orna.contains("praise.gift.x5.3_9")) {
-                        self.isPur_Orna = true
-                    }
                     
                     NotificationCenter.default.post(name: NSNotification.Name("DazzlRefreshGifts"), object: nil)
                     completion_Orna()
@@ -145,7 +185,7 @@ extension Subscribe_Orna {
             Load_Orna.showError_Orna(message_Orna: "Invalid product information")
         }
     }
-
+    
     // 订阅VIP
     func PurchaseStoreVIP_Orna(vipId_Orna: String, completion_Orna: @escaping () -> Void) {
         Load_Orna.showLoading_Orna()
@@ -201,4 +241,5 @@ extension Subscribe_Orna {
             Load_Orna.showError_Orna(message_Orna: "Cancel restore purchase")
         })
     }
+    
 }

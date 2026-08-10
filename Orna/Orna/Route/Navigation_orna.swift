@@ -227,6 +227,31 @@ class Navigation_Orna: NSObject {
         navigate_Orna(to: Release_Orna(), style_orna: style_orna, animated_orna: animated_orna, completion_orna: completion_orna)
     }
 
+    /// 进入送礼弹层页面
+    /// 功能：以透明全屏模态方式展示 GiftPage_Orna，保留当前页面作为遮罩背景
+    /// 参数：
+    /// - from_orna: 发起展示的来源控制器，nil 时自动使用当前顶层控制器
+    /// - animated_orna: 是否使用系统展示动画
+    /// 返回值：无
+    /// 异常场景：来源控制器为空时不执行展示
+    static func toGiftPage_Orna(from_orna: UIViewController? = nil, animated_orna: Bool = true) {
+        let giftPage_orna = GiftPage_Orna()
+        giftPage_orna.modalPresentationStyle = .overFullScreen
+        giftPage_orna.modalTransitionStyle = .crossDissolve
+        present_Orna(viewController: giftPage_orna, animated: animated_orna, from: from_orna)
+    }
+
+    /// 进入 VIP 订阅页面
+    /// 功能：通过统一导航管理器展示 VIPSubscription_Orna 页面
+    /// 参数：
+    /// - style_orna: 导航方式，默认 push 进入以匹配页面内返回按钮
+    /// - animated_orna: 是否使用系统转场动画
+    /// 返回值：无
+    /// 异常场景：当前页面不存在导航控制器且使用 push 时不执行跳转
+    static func toVIPSubscription_Orna(style_orna: NavigationStyle_Orna = .push_orna, animated_orna: Bool = true) {
+        navigate_Orna(to: VIPSubscription_Orna(), style_orna: style_orna, animated_orna: animated_orna)
+    }
+
     // MARK: - 消息
 
     static func toMessageList_Orna(style_orna: NavigationStyle_Orna = .push_orna, animated_orna: Bool = true) {

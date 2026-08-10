@@ -364,6 +364,16 @@ class Detail_Orna: UIViewController, UIScrollViewDelegate, UITextFieldDelegate {
         return b
     }()
 
+    /// 送礼按钮：使用 Assets 中的 gift_btn 原图，与发送按钮保持同等尺寸
+    private let giftButton_Orna: UIButton = {
+        let b = UIButton(type: .custom)
+        b.setImage(UIImage(named: "gift_btn")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        b.imageView?.contentMode = .scaleAspectFit
+        b.contentHorizontalAlignment = .fill
+        b.contentVerticalAlignment = .fill
+        return b
+    }()
+
     private var sendButtonGradientLayer_Orna: CAGradientLayer?
 
     /// 当前状态栏是否呈浅色样式（悬浮于媒体图上时为 true，滚动至白色内容卡片后为 false）
@@ -453,6 +463,7 @@ class Detail_Orna: UIViewController, UIScrollViewDelegate, UITextFieldDelegate {
 
         view.addSubview(inputBarView_Orna)
         inputBarView_Orna.addSubview(inputField_Orna)
+        inputBarView_Orna.addSubview(giftButton_Orna)
         inputBarView_Orna.addSubview(sendButton_Orna)
         setupSendButtonGradient_Orna()
     }
@@ -661,8 +672,13 @@ class Detail_Orna: UIViewController, UIScrollViewDelegate, UITextFieldDelegate {
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-10)
             $0.height.equalTo(40)
         }
-        sendButton_Orna.snp.makeConstraints {
+        giftButton_Orna.snp.makeConstraints {
             $0.leading.equalTo(inputField_Orna.snp.trailing).offset(10)
+            $0.centerY.equalTo(inputField_Orna)
+            $0.width.height.equalTo(40)
+        }
+        sendButton_Orna.snp.makeConstraints {
+            $0.leading.equalTo(giftButton_Orna.snp.trailing).offset(10)
             $0.trailing.equalToSuperview().offset(-20)
             $0.centerY.equalTo(inputField_Orna)
             $0.width.height.equalTo(40)
@@ -678,6 +694,7 @@ class Detail_Orna: UIViewController, UIScrollViewDelegate, UITextFieldDelegate {
         backButton_Orna.addTarget(self, action: #selector(handleBackTapped_Orna), for: .touchUpInside)
         likeButton_Orna.addTarget(self, action: #selector(handleLikeTapped_Orna), for: .touchUpInside)
         followButton_Orna.addTarget(self, action: #selector(handleFollowTapped_Orna), for: .touchUpInside)
+        giftButton_Orna.addTarget(self, action: #selector(handleGiftTapped_Orna), for: .touchUpInside)
         sendButton_Orna.addTarget(self, action: #selector(handleSendCommentTapped_Orna), for: .touchUpInside)
         inputField_Orna.addTarget(self, action: #selector(handleSendCommentTapped_Orna), for: .editingDidEndOnExit)
 
@@ -870,6 +887,15 @@ class Detail_Orna: UIViewController, UIScrollViewDelegate, UITextFieldDelegate {
         player_orna.isVideo_Orna = post_orna.isVideoMedia_Orna
         player_orna.modalPresentationStyle = .overFullScreen
         present(player_orna, animated: false)
+    }
+
+    /// 点击送礼按钮，进入送礼弹层
+    /// 功能：响应底部输入栏送礼按钮点击，统一通过导航管理器展示送礼界面
+    /// 参数：无
+    /// 返回值：无
+    /// 异常场景：当前用户未登录时先进入登录页面
+    @objc private func handleGiftTapped_Orna() {
+        Navigation_Orna.toGiftPage_Orna(from_orna: self)
     }
 
     /// 发布新评论

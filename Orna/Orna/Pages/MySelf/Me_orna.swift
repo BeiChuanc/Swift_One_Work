@@ -71,11 +71,11 @@ class Me_Orna: UIViewController {
         return v
     }()
 
-    // MARK: - UI · 操作按钮组（修改资料 / 设置）
+    // MARK: - UI · 操作按钮组（修改资料 / VIP / 设置）
 
-    /// 承载"修改用户信息"与"设置"两个入口的整合卡片容器
+    /// 承载"修改用户信息"、"VIP订阅"与"设置"三个入口的整合卡片容器
     /// 设计思路：此前两按钮分别悬浮在资料卡的不同角落，彼此毫无关联，视觉上显得零散；
-    /// 现改为整合进同一张白色圆角卡片，中间以竖向分割线区隔为对等的左右两个入口，
+    /// 现改为整合进同一张白色圆角卡片，中间以竖向分割线区隔为对等的三个入口，
     /// 卡片左右边距与下方切换栏保持完全一致（均为 20，宽度对齐），上下间距同样与切换栏
     /// 保持一致（均为 10），使两组件在视觉上呈现统一的宽度与节奏感
     private let actionButtonsCardView_Orna: UIView = {
@@ -107,8 +107,26 @@ class Me_Orna: UIViewController {
         return b
     }()
 
-    /// 卡片中间的竖向分割线，用于区隔两个入口按钮
+    /// 卡片左侧竖向分割线，用于区隔修改资料与 VIP 入口按钮
     private let actionDividerView_Orna: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor(hexstring_Orna: "#F6F3FF")
+        return v
+    }()
+
+    /// VIP订阅入口按钮（整合卡片中间区，使用 vip_btn 整图展示）
+    private let vipButton_Orna: UIButton = {
+        let b = UIButton(type: .custom)
+        b.setImage(UIImage(named: "vip_btn")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        b.imageView?.contentMode = .scaleAspectFit
+        b.contentHorizontalAlignment = .fill
+        b.contentVerticalAlignment = .fill
+        b.imageEdgeInsets = UIEdgeInsets(top: 7, left: 8, bottom: 7, right: 8)
+        return b
+    }()
+
+    /// 卡片右侧竖向分割线，用于区隔 VIP 与设置入口按钮
+    private let actionSecondDividerView_Orna: UIView = {
         let v = UIView()
         v.backgroundColor = UIColor(hexstring_Orna: "#F6F3FF")
         return v
@@ -228,10 +246,12 @@ class Me_Orna: UIViewController {
         statsRow_Orna.addSubview(likeStatView_Orna)
         statsRow_Orna.addSubview(postStatView_Orna)
 
-        // 修改资料 / 设置整合卡片：悬浮于切换栏正上方
+        // 修改资料 / VIP / 设置整合卡片：悬浮于切换栏正上方
         contentView_Orna.addSubview(actionButtonsCardView_Orna)
         actionButtonsCardView_Orna.addSubview(editButton_Orna)
         actionButtonsCardView_Orna.addSubview(actionDividerView_Orna)
+        actionButtonsCardView_Orna.addSubview(vipButton_Orna)
+        actionButtonsCardView_Orna.addSubview(actionSecondDividerView_Orna)
         actionButtonsCardView_Orna.addSubview(settingsButton_Orna)
 
         contentView_Orna.addSubview(segmentControl_Orna)
@@ -309,7 +329,7 @@ class Me_Orna: UIViewController {
             $0.trailing.top.bottom.equalToSuperview()
         }
 
-        // 修改资料 / 设置整合卡片：左右边距与下方切换栏保持完全一致（均为 20，宽度对齐），
+        // 修改资料 / VIP / 设置整合卡片：左右边距与下方切换栏保持完全一致（均为 20，宽度对齐），
         // 上下间距同样与切换栏保持一致（均为 10）
         actionButtonsCardView_Orna.snp.makeConstraints {
             $0.top.equalTo(headerCardView_Orna.snp.bottom).offset(10)
@@ -319,16 +339,27 @@ class Me_Orna: UIViewController {
         editButton_Orna.snp.makeConstraints {
             $0.leading.top.bottom.equalToSuperview()
             $0.trailing.equalTo(actionDividerView_Orna.snp.leading)
+            $0.width.equalTo(vipButton_Orna)
         }
         actionDividerView_Orna.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview()
             $0.width.equalTo(1)
             $0.height.equalTo(20)
         }
-        // 分割线水平居中于卡片，左右两侧按钮由此天然获得完全对等的宽度，无需额外约束
-        settingsButton_Orna.snp.makeConstraints {
+        vipButton_Orna.snp.makeConstraints {
             $0.leading.equalTo(actionDividerView_Orna.snp.trailing)
+            $0.trailing.equalTo(actionSecondDividerView_Orna.snp.leading)
+            $0.top.bottom.equalToSuperview()
+            $0.width.equalTo(settingsButton_Orna)
+        }
+        actionSecondDividerView_Orna.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.width.equalTo(1)
+            $0.height.equalTo(20)
+        }
+        // 三个入口按钮保持等宽，两个分割线自然落在三等分之间
+        settingsButton_Orna.snp.makeConstraints {
+            $0.leading.equalTo(actionSecondDividerView_Orna.snp.trailing)
             $0.trailing.top.bottom.equalToSuperview()
         }
 
@@ -356,6 +387,7 @@ class Me_Orna: UIViewController {
     private func setupActions_Orna() {
         settingsButton_Orna.addTarget(self, action: #selector(handleSettingsTapped_Orna), for: .touchUpInside)
         editButton_Orna.addTarget(self, action: #selector(handleEditTapped_Orna), for: .touchUpInside)
+        vipButton_Orna.addTarget(self, action: #selector(handleVIPTapped_Orna), for: .touchUpInside)
         segmentControl_Orna.onSelectionChanged_Orna = { [weak self] index_orna in
             self?.selectedTab_Orna = index_orna == 0 ? .posts_Orna : .liked_Orna
             self?.refreshList_Orna()
@@ -438,6 +470,15 @@ class Me_Orna: UIViewController {
 
     @objc private func handleEditTapped_Orna() {
         handleAvatarTapped_Orna()
+    }
+
+    /// 处理 VIP 按钮点击
+    /// 功能：响应个人中心中间 VIP 入口点击，统一通过导航管理器进入 VIP 订阅页面
+    /// 参数：无
+    /// 返回值：无
+    /// 异常场景：无
+    @objc private func handleVIPTapped_Orna() {
+        Navigation_Orna.toVIPSubscription_Orna()
     }
 
     /// 处理头像/编辑点击：直接进入修改资料页，无需预先校验登录状态

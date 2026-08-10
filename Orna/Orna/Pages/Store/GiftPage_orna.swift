@@ -5,52 +5,53 @@ import SnapKit
 // MARK: - 送礼界面
 
 /// 送礼模态弹起界面
-/// 核心作用：展示礼物商品列表，用户选择后发起内购
+/// 核心作用：底部弹出礼物列表，用户点击各Item内的Buy按钮发起内购
 /// 设计思路：
-///   半透明遮罩 + gift_bg 背景卡片居中；
-///   组件1：顶级一次性礼物横向卡片（HStack）；
-///   组件2：普通礼物2行×4列网格；
-///   底部购买按钮（gift_buy 图片）；
-///   点击遮罩区域关闭，bgCard 外部区域可关闭。
-/// 关键属性/方法：
-///   - selectedGift_Orna：当前选中的礼物
-///   - refreshSelectionUI_Orna：刷新选中态背景色
+///   - 半透明遮罩 + 底部卡片（仅上方圆角），吸附屏幕底部；
+///   - 组件1：goodIsSpecial_Orna=true 的三个限定礼物横向均分（#FDFF70背景，gift_one/two/three）；
+///   - 组件2：goodIsSpecial_Orna=false 的普通礼物横向可滚动列表（白色透明背景，gift_four）；
+///   - 各Item内置Buy购买按钮，直接触发内购；
+///   - 点击遮罩或右上角关闭按钮关闭界面。
+/// 关键属性/方法：limitGifts_Orna / normalGifts_Orna / closeButton_Orna / handleBuy_Orna
 class GiftPage_Orna: UIViewController {
 
     // MARK: - 布局常量
 
     private var screenW_Orna: CGFloat { UIScreen.main.bounds.width }
     private var screenH_Orna: CGFloat { UIScreen.main.bounds.height }
-    /// bgCard 宽 = 屏幕宽 - 32
-    private var bgCardW_Orna: CGFloat { screenW_Orna - 32 }
-    /// bgCard 高 = 屏幕高 × 0.6
-    private var bgCardH_Orna: CGFloat { screenH_Orna * 0.65 }
-    /// 组件1/2 宽 = 屏幕宽 - 68，在 bgCard 内两侧对称内缩
-    private var contentW_Orna: CGFloat { screenW_Orna - 68 }
-    private var contentInset_Orna: CGFloat { (bgCardW_Orna - contentW_Orna) / 2 }
+    /// bgCard 高度 = 屏幕高度 × 0.7
+    private var bgCardH_Orna: CGFloat { screenH_Orna * 0.5 }
+    /// 内容区域左右内边距
+    private let contentPadding_Orna: CGFloat = 16
+    /// 各礼物Item之间的间距
+    private let itemSpacing_Orna: CGFloat = 7
 
     // MARK: - 数据
 
-    /// 顶级礼物（goodIsTop = true，一次性购买）
-    private var topGift_Orna: StoreModel_Orna?
-    /// 普通礼物（非顶级，非VIP），最多取 8 个
+    /// goodIsSpecial_Orna=true 的限定礼物，最多取3个，依次对应 gift_one/two/three
+    private var limitGifts_Orna: [StoreModel_Orna] = []
+    /// goodIsSpecial_Orna=false 的普通礼物，对应 gift_four
     private var normalGifts_Orna: [StoreModel_Orna] = []
-    /// 当前选中的礼物
-    private var selectedGift_Orna: StoreModel_Orna?
 
     // MARK: - UI 组件
 
-    /// 半透明遮罩（点击关闭）
+    /// 半透明黑色遮罩，点击可关闭界面
     private let dimView_Orna: UIView = {
         let v = UIView()
         v.backgroundColor = UIColor.black.withAlphaComponent(0.50)
         return v
     }()
 
-    /// 背景卡片容器（gift_bg 图片作背景）
-    private let bgCard_Orna = UIView()
+    /// 底部背景卡片（仅顶部圆角，吸附屏幕底部）
+    private let bgCard_Orna: UIView = {
+        let v = UIView()
+        v.layer.cornerRadius = 20
+        v.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        v.clipsToBounds = true
+        return v
+    }()
 
-    /// gift_bg 背景图片
+    /// gift_bg 装饰背景图（铺满 bgCard）
     private let bgImageView_Orna: UIImageView = {
         let iv = UIImageView()
         iv.image = UIImage(named: "gift_bg")?.withRenderingMode(.alwaysOriginal)
@@ -59,28 +60,37 @@ class GiftPage_Orna: UIViewController {
         return iv
     }()
 
-    /// 组件1：顶级礼物横向卡片
-    private let comp1View_Orna = UIView()
-    /// 组件1内部白色卡片（存储引用以更新选中态）
-    private weak var comp1Card_Orna: UIView?
-    private weak var comp1PriceLabel_Orna: UILabel?
-    private weak var comp1SubLabel_Orna: UILabel?
-
-    /// 组件2：普通礼物网格
-    private let comp2View_Orna = UIView()
-    /// 组件2所有 GiftItemView（存储引用以更新选中态）
-    private var comp2Items_Orna: [GiftItemView_Orna] = []
-
-    /// 购买按钮（gift_buy 图片）
-    private let buyBtn_Orna: UIButton = {
-        let btn = UIButton(type: .custom)
-        let img = UIImage(named: "gift_buy")?.withRenderingMode(.alwaysOriginal)
-        btn.setImage(img, for: .normal)
-        btn.imageView?.contentMode = .scaleAspectFill
-        btn.imageView?.clipsToBounds = true
-        btn.clipsToBounds = true
-        return btn
+    /// 关闭按钮：位于卡片右上角，提供明确的主动关闭入口
+    private let closeButton_Orna: UIButton = {
+        let b = UIButton(type: .custom)
+        let cfg_orna = UIImage.SymbolConfiguration(pointSize: 13, weight: .bold)
+        b.setImage(UIImage(systemName: "xmark", withConfiguration: cfg_orna), for: .normal)
+        b.tintColor = UIColor(hexstring_Orna: "#2D2A3D")
+        b.backgroundColor = UIColor.white.withAlphaComponent(0.72)
+        b.layer.cornerRadius = 16
+        b.layer.shadowColor = UIColor.black.cgColor
+        b.layer.shadowOpacity = 0.08
+        b.layer.shadowOffset = CGSize(width: 0, height: 2)
+        b.layer.shadowRadius = 6
+        return b
     }()
+
+    /// 组件1容器：限定礼物横向均分
+    private let comp1View_Orna = UIView()
+
+    /// 组件2横向滚动容器：普通礼物横向排列
+    private let comp2ScrollView_Orna: UIScrollView = {
+        let sv = UIScrollView()
+        sv.showsHorizontalScrollIndicator = false
+        sv.showsVerticalScrollIndicator = false
+        return sv
+    }()
+
+    /// 组件2内容视图（承载所有普通礼物Item）
+    private let comp2ContentView_Orna = UIView()
+
+    /// bgCard 高度约束引用，用于适配安全区
+    private var bgCardHeightConstraint_Orna: Constraint?
 
     // MARK: - 生命周期
 
@@ -88,211 +98,156 @@ class GiftPage_Orna: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .clear
         loadGiftData_Orna()
-        buildDimAndCard_Orna()
+        buildLayout_Orna()
         buildComp1_Orna()
         buildComp2_Orna()
-        buildBuyBtn_Orna()
         setupConstraints_Orna()
+    }
+
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        /// 屏幕方向变化时同步更新卡片高度
+        bgCardHeightConstraint_Orna?.update(offset: bgCardH_Orna)
     }
 
     // MARK: - 数据加载
 
-    /// 加载礼物数据：区分顶级礼物与普通礼物
+    /// 区分限定礼物（goodIsSpecial_Orna=true）与普通礼物（goodIsSpecial_Orna=false）
     private func loadGiftData_Orna() {
-        let all = Store_Orna.shared_Orna.goodsList_Orna
+        let all_Orna = Store_Orna.shared_Orna.goodsList_Orna
             .filter { !($0.goodIsVIP_Orna ?? false) }
-        topGift_Orna    = all.first { $0.goodIsTop_Orna ?? false }
-        normalGifts_Orna = Array(
-            all.filter { !($0.goodIsTop_Orna ?? false) }.prefix(8)
-        )
+        limitGifts_Orna  = Array(all_Orna.filter { $0.goodIsSpecial_Orna ?? false }.prefix(3))
+        normalGifts_Orna = all_Orna.filter { !($0.goodIsSpecial_Orna ?? false) }
     }
 
-    // MARK: - UI 搭建
+    // MARK: - 基础视图层级
 
-    /// 搭建遮罩与背景卡片
-    private func buildDimAndCard_Orna() {
+    /// 搭建遮罩与底部卡片的基础视图层级
+    private func buildLayout_Orna() {
         view.addSubview(dimView_Orna)
-        /// 点击遮罩区域（bgCard 之外）关闭界面
-        let dimTap = UITapGestureRecognizer(target: self, action: #selector(dimTapped_Orna))
-        dimView_Orna.addGestureRecognizer(dimTap)
+        let dimTap_Orna = UITapGestureRecognizer(target: self, action: #selector(dimTapped_Orna))
+        dimView_Orna.addGestureRecognizer(dimTap_Orna)
 
         view.addSubview(bgCard_Orna)
-        bgCard_Orna.clipsToBounds = true
         bgCard_Orna.addSubview(bgImageView_Orna)
-        /// bgCard 内容视图阻止触摸穿透到遮罩
         bgCard_Orna.addSubview(comp1View_Orna)
-        bgCard_Orna.addSubview(comp2View_Orna)
+        bgCard_Orna.addSubview(comp2ScrollView_Orna)
+        bgCard_Orna.addSubview(closeButton_Orna)
+        comp2ScrollView_Orna.addSubview(comp2ContentView_Orna)
+        closeButton_Orna.addTarget(self, action: #selector(closeTapped_Orna), for: .touchUpInside)
     }
 
-    // MARK: - 组件1：顶级礼物横向卡片
+    // MARK: - 组件1：限定礼物横向均分
 
-    /// 构建组件1（HStack：左侧价格+文字 / 右侧 gift_one 图片）
-    /// 已购时禁用点击并显示 Already Purchased
+    /// 构建组件1：三个限定礼物Item横向均分展示
+    /// 图标顺序：gift_one → gift_two → gift_three
     private func buildComp1_Orna() {
-        guard let top = topGift_Orna else { return }
+        let iconNames_Orna = ["gift_one", "gift_two", "gift_three"]
+        var itemViews_Orna: [UIView] = []
 
-        /// 白色圆角卡片背景
-        let card_Orna = UIView()
-        card_Orna.backgroundColor = UIColor(hexstring_Orna: "#2353E4")
-        card_Orna.layer.cornerRadius = 15
-        card_Orna.layer.masksToBounds = true
-        comp1View_Orna.addSubview(card_Orna)
-        card_Orna.snp.makeConstraints { make in make.edges.equalToSuperview() }
-        comp1Card_Orna = card_Orna
-
-        /// 禁用/降透
-        card_Orna.alpha = 1.0
-        card_Orna.isUserInteractionEnabled = true
-
-        /// 左侧价格文字栈
-        let priceLabel_Orna = UILabel()
-        priceLabel_Orna.text      = top.goodsPrice_Orna ?? ""
-        priceLabel_Orna.font      = UIFont.funFont_Orna(ofSize: 14, weight: .regular)
-        priceLabel_Orna.textColor = .white
-        comp1PriceLabel_Orna = priceLabel_Orna
-
-        let subLabel_Orna = UILabel()
-        subLabel_Orna.text      = "Can only be purchased once"
-        subLabel_Orna.font      = UIFont.funFont_Orna(ofSize: 10, weight: .regular)
-        subLabel_Orna.textColor = .white
-        comp1SubLabel_Orna = subLabel_Orna
-
-        let textStack_Orna = UIStackView(arrangedSubviews: [priceLabel_Orna, subLabel_Orna])
-        textStack_Orna.axis      = .vertical
-        textStack_Orna.spacing   = 5
-        textStack_Orna.alignment = .leading
-
-        /// 右侧礼物图（gift_one，72×72）
-        let giftIV_Orna = UIImageView()
-        giftIV_Orna.image       = UIImage(named: "gift_one")?.withRenderingMode(.alwaysOriginal)
-        giftIV_Orna.contentMode = .scaleAspectFit
-        giftIV_Orna.snp.makeConstraints { make in make.width.height.equalTo(72) }
-
-        /// HStack：文字 + 图片，间距 8，居中
-        let hStack_Orna = UIStackView(arrangedSubviews: [textStack_Orna, giftIV_Orna])
-        hStack_Orna.axis      = .horizontal
-        hStack_Orna.spacing   = 8
-        hStack_Orna.alignment = .center
-
-        card_Orna.addSubview(hStack_Orna)
-        hStack_Orna.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.leading.greaterThanOrEqualToSuperview().offset(16)
-            make.trailing.lessThanOrEqualToSuperview().offset(-8)
-        }
-    }
-
-    // MARK: - 组件2：普通礼物网格
-
-    /// 构建组件2（2行×4列网格，行1用 gift_two，行2用 gift_three）
-    private func buildComp2_Orna() {
-        comp2View_Orna.backgroundColor = .clear
-        comp2Items_Orna.removeAll()
-
-        let row1_Orna = Array(normalGifts_Orna.prefix(4))
-        let row2_Orna: [StoreModel_Orna] = normalGifts_Orna.count > 4
-            ? Array(normalGifts_Orna[4...].prefix(4)) : []
-
-        let rowStack1_Orna = buildGridRow_Orna(gifts: row1_Orna, iconName: "gift_two")
-        let rowStack2_Orna = buildGridRow_Orna(gifts: row2_Orna, iconName: "gift_three")
-
-        let outerStack_Orna = UIStackView(arrangedSubviews: [rowStack1_Orna, rowStack2_Orna])
-        outerStack_Orna.axis         = .vertical
-        outerStack_Orna.spacing      = 12
-        outerStack_Orna.distribution = .fillEqually
-
-        comp2View_Orna.addSubview(outerStack_Orna)
-        outerStack_Orna.snp.makeConstraints { make in make.edges.equalToSuperview() }
-    }
-
-    /// 构建网格一行（4 个 GiftItemView，左右间距 5）
-    /// - Parameters:
-    ///   - gifts: 该行礼物数据（不足4个时用透明占位）
-    ///   - iconName: 该行礼物图标名称
-    /// - Returns: 横向 UIStackView
-    private func buildGridRow_Orna(gifts: [StoreModel_Orna], iconName: String) -> UIStackView {
-        var items_Orna: [UIView] = []
-        for i in 0..<4 {
-            let gift_Orna = i < gifts.count ? gifts[i] : nil
-            let itemView_Orna = GiftItemView_Orna(iconName: iconName)
-            if let gift_Orna = gift_Orna {
-                itemView_Orna.configure_Orna(gift: gift_Orna)
-                comp2Items_Orna.append(itemView_Orna)
-                let tap_Orna = GiftItemTap_Orna(
-                    gift: gift_Orna,
-                    target: self,
-                    action: #selector(gridItemTapped_Orna(_:))
-                )
-                itemView_Orna.isUserInteractionEnabled = true
-                itemView_Orna.addGestureRecognizer(tap_Orna)
-            } else {
-                /// 空位透明占位
-                itemView_Orna.alpha = 0
-                itemView_Orna.isUserInteractionEnabled = false
+        for (idx_Orna, gift_Orna) in limitGifts_Orna.enumerated() {
+            let iconName_Orna = idx_Orna < iconNames_Orna.count
+                ? iconNames_Orna[idx_Orna] : "gift_one"
+            let item_Orna = LimitGiftItem_Orna(iconName: iconName_Orna)
+            item_Orna.configure_Orna(gift: gift_Orna)
+            item_Orna.onBuyTapped_Orna = { [weak self] gift in
+                self?.handleBuy_Orna(gift: gift)
             }
-            items_Orna.append(itemView_Orna)
+            itemViews_Orna.append(item_Orna)
         }
-        let stack_Orna = UIStackView(arrangedSubviews: items_Orna)
+
+        let stack_Orna = UIStackView(arrangedSubviews: itemViews_Orna)
         stack_Orna.axis         = .horizontal
-        stack_Orna.spacing      = 5
+        stack_Orna.spacing      = itemSpacing_Orna
         stack_Orna.distribution = .fillEqually
-        return stack_Orna
+        stack_Orna.alignment    = .fill
+
+        comp1View_Orna.addSubview(stack_Orna)
+        stack_Orna.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
 
-    // MARK: - 购买按钮
+    // MARK: - 组件2：普通礼物横向滚动
 
-    /// 搭建底部购买按钮（gift_buy 图片全宽）
-    private func buildBuyBtn_Orna() {
-        bgCard_Orna.addSubview(buyBtn_Orna)
-        buyBtn_Orna.addTarget(self, action: #selector(buyTapped_Orna), for: .touchUpInside)
+    /// 构建组件2：普通礼物横向排列，约4个可见，可横向滚动
+    /// 图标统一使用 gift_four
+    private func buildComp2_Orna() {
+        /// 约4个Item可见的单Item宽度
+        let itemW_Orna = (screenW_Orna - 2 * contentPadding_Orna - 3 * itemSpacing_Orna) / 4
+        var prevView_Orna: UIView? = nil
+
+        for gift_Orna in normalGifts_Orna {
+            let item_Orna = NormalGiftItem_Orna()
+            item_Orna.configure_Orna(gift: gift_Orna)
+            item_Orna.onBuyTapped_Orna = { [weak self] gift in
+                self?.handleBuy_Orna(gift: gift)
+            }
+            comp2ContentView_Orna.addSubview(item_Orna)
+            item_Orna.snp.makeConstraints { make in
+                make.top.bottom.equalToSuperview()
+                make.width.equalTo(itemW_Orna)
+                if let prev_Orna = prevView_Orna {
+                    make.leading.equalTo(prev_Orna.snp.trailing).offset(itemSpacing_Orna)
+                } else {
+                    make.leading.equalToSuperview()
+                }
+            }
+            prevView_Orna = item_Orna
+        }
+
+        /// 末尾Item的 trailing 决定 ScrollView 的 contentSize
+        if let last_Orna = prevView_Orna {
+            last_Orna.snp.makeConstraints { make in
+                make.trailing.equalToSuperview()
+            }
+        }
     }
 
     // MARK: - 约束布局
 
-    /// 设置所有 SnapKit 约束
+    /// 设置所有 SnapKit 约束，bgCard 吸附屏幕底部，高度为屏幕高度的 0.7
+    /// 内容区从 bgCard 底部往上30pt对齐（bottom-up布局）
     private func setupConstraints_Orna() {
-        let inset_Orna = contentInset_Orna
-        /// 组件2高度 = 2行×109 + 行间距12
-        let comp2H_Orna: CGFloat = 109 * 2 + 12
-
-        /// 全屏遮罩
         dimView_Orna.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
 
-        /// bgCard 居中
         bgCard_Orna.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.equalTo(bgCardW_Orna)
-            make.height.equalTo(bgCardH_Orna)
+            make.leading.trailing.bottom.equalToSuperview()
+            bgCardHeightConstraint_Orna = make.height.equalTo(bgCardH_Orna).constraint
         }
 
-        /// 背景图铺满 bgCard
         bgImageView_Orna.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
 
-        /// 购买按钮：全宽，高62，距 bgCard 底部 50
-        buyBtn_Orna.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.height.equalTo(62)
-            make.bottom.equalToSuperview().offset(-50)
+        closeButton_Orna.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(18)
+            make.trailing.equalToSuperview().offset(-18)
+            make.width.height.equalTo(32)
         }
 
-        /// 组件2：宽 = contentW，高 = comp2H，位于购买按钮上方 10
-        comp2View_Orna.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(inset_Orna)
-            make.trailing.equalToSuperview().offset(-inset_Orna)
-            make.height.equalTo(comp2H_Orna)
-            make.bottom.equalTo(buyBtn_Orna.snp.top).offset(-10)
+        /// 组件2：bottom 距 bgCard 安全区底部 30pt，高度105容纳图片+价格+按钮
+        comp2ScrollView_Orna.snp.makeConstraints { make in
+            make.bottom.equalTo(bgCard_Orna.safeAreaLayoutGuide.snp.bottom)
+            make.leading.equalToSuperview().offset(contentPadding_Orna)
+            make.trailing.equalToSuperview().offset(-contentPadding_Orna)
+            make.height.equalTo(105)
         }
 
-        /// 组件1：宽 = contentW，高 72，位于组件2上方 10
+        /// 组件1：紧靠组件2上方12pt，高度160（容纳69图片+价格+按钮+内边距）
         comp1View_Orna.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(inset_Orna)
-            make.trailing.equalToSuperview().offset(-inset_Orna)
-            make.height.equalTo(72)
-            make.bottom.equalTo(comp2View_Orna.snp.top).offset(-10)
+            make.bottom.equalTo(comp2ScrollView_Orna.snp.top).offset(-12)
+            make.leading.equalToSuperview().offset(contentPadding_Orna)
+            make.trailing.equalToSuperview().offset(-contentPadding_Orna)
+            make.height.equalTo(160)
+        }
+
+        /// comp2ContentView 高度与 ScrollView 一致，宽度由内部Item决定
+        comp2ContentView_Orna.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.height.equalTo(105)
         }
     }
 
@@ -303,112 +258,86 @@ class GiftPage_Orna: UIViewController {
         dismiss(animated: true)
     }
 
-    /// 点击组件1（顶级礼物）
-    @objc private func comp1Tapped_Orna() {
-        guard let top = topGift_Orna else { return }
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        selectedGift_Orna = top
-        refreshSelectionUI_Orna(selectedId: top.goodsId_Orna)
+    /// 点击关闭按钮关闭界面
+    /// 功能：响应右上角关闭按钮点击，关闭当前送礼弹层
+    /// 参数：无
+    /// 返回值：无
+    /// 异常场景：当前页面未被模态展示时 dismiss 不产生额外效果
+    @objc private func closeTapped_Orna() {
+        dismiss(animated: true)
     }
 
-    /// 点击组件2网格某个礼物
-    /// - Parameter tap: 携带礼物数据的自定义手势
-    @objc private func gridItemTapped_Orna(_ tap: GiftItemTap_Orna) {
-        guard let gift = tap.gift_Orna else { return }
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        selectedGift_Orna = gift
-        refreshSelectionUI_Orna(selectedId: gift.goodsId_Orna)
-    }
-
-    /// 点击购买按钮发起内购
-    @objc private func buyTapped_Orna() {
-        guard let gift_Orna = selectedGift_Orna,
-              let gid_Orna  = gift_Orna.goodsId_Orna else {
-            Load_Orna.showWarning_Orna(message_Orna: "Please select a gift first")
+    /// 统一处理礼物购买逻辑
+    /// - Parameter gift: 用户点击Buy的礼物模型
+    private func handleBuy_Orna(gift: StoreModel_Orna) {
+        guard let gid_Orna = gift.goodsId_Orna else {
+            Load_Orna.showWarning_Orna(message_Orna: "Gift information is invalid")
             return
         }
         Store_Orna.shared_Orna.PurchaseStoreGift_Orna(gid_Orna: gid_Orna) { [weak self] in
             self?.dismiss(animated: true)
         }
     }
-
-    // MARK: - 选中态刷新
-
-    /// 刷新所有礼物条目的选中背景色
-    /// - Parameter selectedId: 当前选中商品的 goodsId
-    private func refreshSelectionUI_Orna(selectedId: String?) {
-        let normalBgColor_Orna = UIColor(hexstring_Orna: "#2353E4")
-        let selectedBgColor_Orna = UIColor.white
-        let normalTextColor_Orna = UIColor.white
-        let selectedTextColor_Orna = UIColor.black
-
-        /// 组件1
-        let isComp1_Orna = selectedId == topGift_Orna?.goodsId_Orna
-        UIView.animate(withDuration: 0.18) {
-            self.comp1Card_Orna?.backgroundColor = isComp1_Orna ? selectedBgColor_Orna : normalBgColor_Orna
-            self.comp1PriceLabel_Orna?.textColor = isComp1_Orna ? selectedTextColor_Orna : normalTextColor_Orna
-            self.comp1SubLabel_Orna?.textColor = isComp1_Orna ? selectedTextColor_Orna : normalTextColor_Orna
-        }
-
-        /// 组件2
-        comp2Items_Orna.forEach { item_Orna in
-            let isSel_Orna = item_Orna.gift_Orna?.goodsId_Orna == selectedId
-            UIView.animate(withDuration: 0.18) {
-                item_Orna.applySelectionState_Orna(
-                    isSelected_Orna: isSel_Orna,
-                    normalBgColor_Orna: normalBgColor_Orna,
-                    selectedBgColor_Orna: selectedBgColor_Orna,
-                    normalTextColor_Orna: normalTextColor_Orna,
-                    selectedTextColor_Orna: selectedTextColor_Orna
-                )
-            }
-        }
-    }
 }
 
-// MARK: - 礼物 Item 视图
+// MARK: - 限定礼物 Item（组件1）
 
-/// 礼物商品单元视图（VStack：图标60×60 → 名称10pt → 价格14pt）
-/// 功能：用于组件2网格，支持根据选中状态切换背景与文字颜色
-/// 关键属性：gift_Orna（绑定数据，供外部判断选中态）
-class GiftItemView_Orna: UIView {
+/// 限定礼物单元视图（组件1使用）
+/// 核心作用：展示单个限定礼物，包含装饰图片、价格与购买按钮，右上角显示商品名称
+/// 设计：高度137，背景#FDFF70，圆角20；内部居中竖向：69x69图片 → 价格标签 → Buy按钮；右上角商品名
+/// 关键属性：onBuyTapped_Orna（点击Buy时的回调闭包）
+class LimitGiftItem_Orna: UIView {
 
     // MARK: - 属性
 
-    /// 绑定的礼物数据（通过 configure 注入）
-    private(set) var gift_Orna: StoreModel_Orna?
+    /// 点击Buy按钮时触发的回调，携带对应礼物模型
+    var onBuyTapped_Orna: ((StoreModel_Orna) -> Void)?
+
+    /// 绑定的礼物数据
+    private var gift_Orna: StoreModel_Orna?
 
     // MARK: - UI 组件
 
+    /// 礼物装饰图（69×69）
     private let iconIV_Orna: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFit
         return iv
     }()
 
-    /// 礼物名称：不加粗，10pt，#111111
-    private let nameLabel_Orna: UILabel = {
+    /// 商品价格标签（16pt 中等 黑色）
+    private let priceLabel_Orna: UILabel = {
         let l = UILabel()
-        l.font      = UIFont.funFont_Orna(ofSize: 10, weight: .regular)
-        l.textColor = .white
+        l.font      = UIFont.systemFont(ofSize: 16, weight: .medium)
+        l.textColor = .black
         l.textAlignment = .center
-        l.numberOfLines = 1
         return l
     }()
 
-    /// 礼物价格：14pt，#111111
-    private let priceLabel_Orna: UILabel = {
+    /// 购买按钮（86×24，背景#C197FC，文字"Buy"，14pt中等黑色）
+    private let buyBtn_Orna: UIButton = {
+        let btn = UIButton(type: .custom)
+        btn.setTitle("Buy", for: .normal)
+        btn.setTitleColor(.black, for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        btn.backgroundColor = UIColor.white
+        btn.layer.cornerRadius = 12
+        btn.layer.masksToBounds = true
+        return btn
+    }()
+
+    /// 右上角商品名标签（12pt 中等 黑色）
+    private let nameLabel_Orna: UILabel = {
         let l = UILabel()
-        l.font      = UIFont.funFont_Orna(ofSize: 14, weight: .regular)
-        l.textColor = .white
-        l.textAlignment = .center
-        l.numberOfLines = 1
+        l.font      = UIFont.systemFont(ofSize: 12, weight: .medium)
+        l.textColor = .black
+        l.textAlignment = .right
         return l
     }()
 
     // MARK: - 初始化
 
-    /// - Parameter iconName: 礼物图标 Assets 名称（gift_two / gift_three）
+    /// - Parameter iconName: 礼物图标 Assets 名称（gift_one / gift_two / gift_three）
     init(iconName: String) {
         super.init(frame: .zero)
         iconIV_Orna.image = UIImage(named: iconName)?.withRenderingMode(.alwaysOriginal)
@@ -419,72 +348,191 @@ class GiftItemView_Orna: UIView {
 
     // MARK: - UI 搭建
 
+    /// 构建内部视图层级与布局约束
     private func buildUI_Orna() {
-        backgroundColor = UIColor(hexstring_Orna: "#2353E4")
-        layer.cornerRadius = 15
+        backgroundColor = UIColor(hexstring_Orna: "#FFFFFF").withAlphaComponent(0.35)
+        layer.cornerRadius  = 20
         layer.masksToBounds = true
 
-        /// VStack：图标 → 名称（间距5）→ 价格
-        let vStack_Orna = UIStackView(arrangedSubviews: [iconIV_Orna, nameLabel_Orna, priceLabel_Orna])
-        vStack_Orna.axis         = .vertical
-        vStack_Orna.spacing      = 5
-        vStack_Orna.alignment    = .center
-        vStack_Orna.distribution = .fill
+        addSubview(iconIV_Orna)
+        addSubview(priceLabel_Orna)
+        addSubview(buyBtn_Orna)
+        addSubview(nameLabel_Orna)
 
-        addSubview(vStack_Orna)
-        vStack_Orna.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.leading.greaterThanOrEqualToSuperview().offset(4)
-            make.trailing.lessThanOrEqualToSuperview().offset(-4)
-        }
+        /// 图片居中于顶部区域
         iconIV_Orna.snp.makeConstraints { make in
-            make.width.height.equalTo(60)
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(16)
+            make.width.height.equalTo(69)
         }
+
+        /// 价格在图片下方6pt
+        priceLabel_Orna.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(iconIV_Orna.snp.bottom).offset(6)
+        }
+
+        /// 购买按钮在价格下方6pt，宽86高24
+        buyBtn_Orna.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(priceLabel_Orna.snp.bottom).offset(6)
+            make.width.equalTo(86)
+            make.height.equalTo(24)
+        }
+
+        /// 商品名显示在右上角
+        nameLabel_Orna.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(8)
+            make.trailing.equalToSuperview().offset(-8)
+        }
+
+        buyBtn_Orna.addTarget(self, action: #selector(buyTapped_Orna), for: .touchUpInside)
     }
 
     // MARK: - 数据配置
 
     /// 绑定礼物数据到视图
-    /// - Parameter gift: StoreModel_Orna 礼物模型
+    /// - Parameter gift: 礼物商品模型
     func configure_Orna(gift: StoreModel_Orna) {
-        self.gift_Orna     = gift
-        nameLabel_Orna.text  = gift.goodsName_Orna  ?? ""
+        gift_Orna          = gift
         priceLabel_Orna.text = gift.goodsPrice_Orna ?? ""
+        nameLabel_Orna.text  = gift.goodsName_Orna  ?? ""
     }
 
-    /// 应用礼物项选中态样式
-    /// 参数：
-    /// - isSelected_Orna: 当前是否选中
-    /// - normalBgColor_Orna: 未选中背景色
-    /// - selectedBgColor_Orna: 选中背景色
-    /// - normalTextColor_Orna: 未选中文字色
-    /// - selectedTextColor_Orna: 选中文字色
-    /// 返回值：无
-    func applySelectionState_Orna(isSelected_Orna: Bool,
-                                  normalBgColor_Orna: UIColor,
-                                  selectedBgColor_Orna: UIColor,
-                                  normalTextColor_Orna: UIColor,
-                                  selectedTextColor_Orna: UIColor) {
-        backgroundColor = isSelected_Orna ? selectedBgColor_Orna : normalBgColor_Orna
-        nameLabel_Orna.textColor = isSelected_Orna ? selectedTextColor_Orna : normalTextColor_Orna
-        priceLabel_Orna.textColor = isSelected_Orna ? selectedTextColor_Orna : normalTextColor_Orna
+    // MARK: - 事件
+
+    /// Buy按钮点击，回调携带礼物数据
+    @objc private func buyTapped_Orna() {
+        guard let gift = gift_Orna else { return }
+        onBuyTapped_Orna?(gift)
     }
 }
 
-// MARK: - 携带礼物数据的点击手势
+// MARK: - 普通礼物 Item（组件2）
 
-/// 携带礼物模型数据的自定义点击手势，用于网格 Item 回调
-private class GiftItemTap_Orna: UITapGestureRecognizer {
+/// 普通礼物单元视图（组件2使用）
+/// 核心作用：展示单个普通礼物，图片(gift_four)上叠加商品名，下方价格与购买按钮
+/// 设计：高度85，背景白色60%透明，圆角20；51x51图片叠加名称 → 价格标签 → Buy按钮
+/// 关键属性：onBuyTapped_Orna（点击Buy时的回调闭包）
+class NormalGiftItem_Orna: UIView {
 
-    /// 关联的礼物数据
-    var gift_Orna: StoreModel_Orna?
+    // MARK: - 属性
 
-    /// - Parameters:
-    ///   - gift: 对应的礼物模型
-    ///   - target: 响应者
-    ///   - action: 响应方法
-    convenience init(gift: StoreModel_Orna, target: Any?, action: Selector?) {
-        self.init(target: target, action: action)
-        self.gift_Orna = gift
+    /// 点击Buy按钮时触发的回调，携带对应礼物模型
+    var onBuyTapped_Orna: ((StoreModel_Orna) -> Void)?
+
+    /// 绑定的礼物数据
+    private var gift_Orna: StoreModel_Orna?
+
+    // MARK: - UI 组件
+
+    /// 礼物图标（51×51，gift_four）
+    private let iconIV_Orna: UIImageView = {
+        let iv = UIImageView()
+        iv.image = UIImage(named: "gift_four")?.withRenderingMode(.alwaysOriginal)
+        iv.contentMode = .scaleAspectFit
+        return iv
+    }()
+
+    /// 叠加在图片中心的商品名标签（12pt 中等 黑色）
+    private let overlayNameLabel_Orna: UILabel = {
+        let l = UILabel()
+        l.font      = UIFont.systemFont(ofSize: 12, weight: .medium)
+        l.textColor = .black
+        l.textAlignment = .center
+        l.numberOfLines = 1
+        return l
+    }()
+
+    /// 商品价格标签（14pt 中等 黑色）
+    private let priceLabel_Orna: UILabel = {
+        let l = UILabel()
+        l.font      = UIFont.systemFont(ofSize: 14, weight: .medium)
+        l.textColor = .black
+        l.textAlignment = .center
+        return l
+    }()
+
+    /// 购买按钮（64×24，白色背景，文字"Buy"，14pt中等黑色）
+    private let buyBtn_Orna: UIButton = {
+        let btn = UIButton(type: .custom)
+        btn.setTitle("Buy", for: .normal)
+        btn.setTitleColor(.black, for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        btn.backgroundColor = .white
+        btn.layer.cornerRadius = 12
+        btn.layer.masksToBounds = true
+        return btn
+    }()
+
+    // MARK: - 初始化
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        buildUI_Orna()
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    // MARK: - UI 搭建
+
+    /// 构建内部视图层级与布局约束
+    private func buildUI_Orna() {
+        backgroundColor = UIColor(hexstring_Orna: "#FFFFFF").withAlphaComponent(0.35)
+        layer.cornerRadius  = 20
+        layer.masksToBounds = true
+
+        addSubview(iconIV_Orna)
+        addSubview(overlayNameLabel_Orna)
+        addSubview(priceLabel_Orna)
+        addSubview(buyBtn_Orna)
+
+        /// 图片居中横向，顶部内边距4
+        iconIV_Orna.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(4)
+            make.width.height.equalTo(51)
+        }
+
+        /// 商品名叠加在图片中心
+        overlayNameLabel_Orna.snp.makeConstraints { make in
+            make.center.equalTo(iconIV_Orna)
+            make.leading.greaterThanOrEqualTo(iconIV_Orna.snp.leading)
+            make.trailing.lessThanOrEqualTo(iconIV_Orna.snp.trailing)
+        }
+
+        /// 价格在图片下方2pt
+        priceLabel_Orna.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(iconIV_Orna.snp.bottom).offset(2)
+        }
+
+        /// Buy按钮固定在底部内边距4pt
+        buyBtn_Orna.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-4)
+            make.width.equalTo(64)
+            make.height.equalTo(24)
+        }
+
+        buyBtn_Orna.addTarget(self, action: #selector(buyTapped_Orna), for: .touchUpInside)
+    }
+
+    // MARK: - 数据配置
+
+    /// 绑定礼物数据到视图
+    /// - Parameter gift: 礼物商品模型
+    func configure_Orna(gift: StoreModel_Orna) {
+        gift_Orna               = gift
+        priceLabel_Orna.text    = gift.goodsPrice_Orna ?? ""
+        overlayNameLabel_Orna.text = gift.goodsName_Orna ?? ""
+    }
+
+    // MARK: - 事件
+
+    /// Buy按钮点击，回调携带礼物数据
+    @objc private func buyTapped_Orna() {
+        guard let gift = gift_Orna else { return }
+        onBuyTapped_Orna?(gift)
     }
 }
