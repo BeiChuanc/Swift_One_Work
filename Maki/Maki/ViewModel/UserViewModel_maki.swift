@@ -80,7 +80,7 @@ class UserViewModel_Maki {
         loggedUser_Maki = LoginUserModel_Maki(
             userId_Maki: userId_maki,
             userPwd_Maki: nil,
-            userName_Maki: "Wanderer",
+            userName_Maki: "Makier",
             userIntroduce_Maki: localUser_maki?.userIntroduce_Maki ?? "Nothing yet.",
             userHead_Maki: "user_avatar",
             userPosts_Maki: [],

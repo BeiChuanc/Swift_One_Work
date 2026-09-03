@@ -226,6 +226,17 @@ class Navigation_Maki: NSObject {
         navigate_Maki(to: detailVC_maki, style_maki: style_maki, animated_maki: animated_maki)
     }
 
+    /// 以透明模态方式展示送礼界面。
+    /// - 参数：from_maki：发起展示的页面；为空时使用当前可见页面。
+    /// - 返回值：无。
+    /// - 异常场景：当前页面不可用时不执行展示。
+    static func toGiftPage_maki(from_maki: UIViewController? = nil) {
+        let giftPage_maki = GiftPage_Maki()
+        giftPage_maki.modalPresentationStyle = .overFullScreen
+        giftPage_maki.modalTransitionStyle = .crossDissolve
+        present_Maki(viewController: giftPage_maki, animated: true, from: from_maki)
+    }
+
     // MARK: - 发布
 
     static func toRelease_Maki(
@@ -251,6 +262,21 @@ class Navigation_Maki: NSObject {
         let messageUserVC_maki = MessageUser_Maki()
         messageUserVC_maki.userModel_Maki = userModel_maki
         navigate_Maki(to: messageUserVC_maki, style_maki: style_maki, animated_maki: animated_maki, completion_maki: completion_maki)
+    }
+
+    /// 全屏展示与指定用户的视频通话界面。
+    /// - 参数：userModel_maki：通话对象；from_maki：发起展示的页面；animated_maki：是否显示转场动画。
+    /// - 返回值：无。
+    /// - 异常场景：发起页面不可用时不执行展示。
+    static func toVideoChat_maki(
+        with userModel_maki: PrewUserModel_Maki,
+        from_maki: UIViewController? = nil,
+        animated_maki: Bool = true
+    ) {
+        let videoChat_maki = VideoChat_Maki()
+        videoChat_maki.userModel_Maki = userModel_maki
+        videoChat_maki.modalPresentationStyle = .fullScreen
+        present_Maki(viewController: videoChat_maki, animated: animated_maki, from: from_maki)
     }
 
     // MARK: - 个人中心
@@ -286,6 +312,17 @@ class Navigation_Maki: NSObject {
 
     static func toSetting_Maki(style_maki: NavigationStyle_Maki = .push_maki, animated_maki: Bool = true) {
         navigate_Maki(to: Setting_Maki(), style_maki: style_maki, animated_maki: animated_maki)
+    }
+
+    /// 跳转到 VIP 订阅页面。
+    /// - 参数：style_maki：页面跳转方式；animated_maki：是否显示跳转动画。
+    /// - 返回值：无。
+    /// - 异常场景：无。
+    static func toVipSubscription_maki(
+        style_maki: NavigationStyle_Maki = .push_maki,
+        animated_maki: Bool = true
+    ) {
+        navigate_Maki(to: VIPSubscription_Maki(), style_maki: style_maki, animated_maki: animated_maki)
     }
 
     // MARK: - 手作时光胶囊 / 成长阶梯

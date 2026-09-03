@@ -7,10 +7,10 @@ import SnapKit
 /// 送礼模态弹起界面
 /// 核心作用：展示礼物商品列表，用户选择后发起内购
 /// 设计思路：
-///   半透明遮罩 + gift_bg 背景卡片居中；
+///   半透明遮罩 + gift_bg 背景卡片底部展示；
 ///   组件1：顶级一次性礼物横向卡片（HStack）；
-///   组件2：普通礼物2行×4列网格；
-///   底部购买按钮（gift_buy 图片）；
+///   组件2：普通礼物单行横向滚动列表；
+///   底部 Give Away 购买按钮；
 ///   点击遮罩区域关闭，bgCard 外部区域可关闭。
 /// 关键属性/方法：
 ///   - selectedGift_Maki：当前选中的礼物
@@ -19,15 +19,8 @@ class GiftPage_Maki: UIViewController {
 
     // MARK: - 布局常量
 
-    private var screenW_Maki: CGFloat { UIScreen.main.bounds.width }
-    private var screenH_Maki: CGFloat { UIScreen.main.bounds.height }
-    /// bgCard 宽 = 屏幕宽 - 32
-    private var bgCardW_Maki: CGFloat { screenW_Maki - 32 }
-    /// bgCard 高 = 屏幕高 × 0.6
-    private var bgCardH_Maki: CGFloat { screenH_Maki * 0.65 }
-    /// 组件1/2 宽 = 屏幕宽 - 68，在 bgCard 内两侧对称内缩
-    private var contentW_Maki: CGFloat { screenW_Maki - 68 }
-    private var contentInset_Maki: CGFloat { (bgCardW_Maki - contentW_Maki) / 2 }
+    /// 内容距送礼背景左右边缘的内间距。
+    private let contentInset_maki: CGFloat = 18
 
     // MARK: - 数据
 
@@ -71,14 +64,18 @@ class GiftPage_Maki: UIViewController {
     /// 组件2所有 GiftItemView（存储引用以更新选中态）
     private var comp2Items_Maki: [GiftItemView_Maki] = []
 
-    /// 购买按钮（gift_buy 图片）
+    /// 购买按钮：资源缺失时使用文字按钮，保证送礼操作可用。
     private let buyBtn_Maki: UIButton = {
-        let btn = UIButton(type: .custom)
-        let img = UIImage(named: "gift_buy")?.withRenderingMode(.alwaysOriginal)
-        btn.setImage(img, for: .normal)
-        btn.imageView?.contentMode = .scaleAspectFill
-        btn.imageView?.clipsToBounds = true
-        btn.clipsToBounds = true
+        let btn = UIButton(type: .system)
+        btn.setTitle("Give Away", for: .normal)
+        btn.setTitleColor(UIColor(hexstring_Maki: "#5A320C"), for: .normal)
+        btn.titleLabel?.font = .systemFont(ofSize: 13, weight: .semibold)
+        btn.backgroundColor = .white
+        btn.layer.cornerRadius = 14
+        btn.layer.shadowColor = UIColor.black.withAlphaComponent(0.22).cgColor
+        btn.layer.shadowOffset = CGSize(width: 0, height: 2)
+        btn.layer.shadowOpacity = 1
+        btn.layer.shadowRadius = 3
         return btn
     }()
 
@@ -99,7 +96,7 @@ class GiftPage_Maki: UIViewController {
 
     /// 加载礼物数据：区分顶级礼物与普通礼物
     private func loadGiftData_Maki() {
-        let all = Store_Maki.shared_Maki.goodsList_Maki
+        let all = Subscribe_Maki.shared_Maki.goodsList_Maki
             .filter { !($0.goodIsVIP_Maki ?? false) }
         topGift_Maki    = all.first { $0.goodIsTop_Maki ?? false }
         normalGifts_Maki = Array(
@@ -182,66 +179,61 @@ class GiftPage_Maki: UIViewController {
         }
     }
 
-    // MARK: - 组件2：普通礼物网格
+    // MARK: - 组件2：普通礼物单行列表
 
-    /// 构建组件2（2行×4列网格，行1用 gift_two，行2用 gift_three）
+    /// 构建组件2（单行横向滚动列表，所有礼物统一使用 gift_one 图标）。
+    /// - 参数：无。
+    /// - 返回值：无。
+    /// - 异常场景：无。
     private func buildComp2_Maki() {
         comp2View_Maki.backgroundColor = .clear
         comp2Items_Maki.removeAll()
 
-        let row1_Maki = Array(normalGifts_Maki.prefix(4))
-        let row2_Maki: [StoreModel_Maki] = normalGifts_Maki.count > 4
-            ? Array(normalGifts_Maki[4...].prefix(4)) : []
+        let scrollView_maki = UIScrollView()
+        scrollView_maki.showsHorizontalScrollIndicator = false
+        scrollView_maki.alwaysBounceHorizontal = true
+        scrollView_maki.decelerationRate = .fast
 
-        let rowStack1_Maki = buildGridRow_Maki(gifts: row1_Maki, iconName: "gift_two")
-        let rowStack2_Maki = buildGridRow_Maki(gifts: row2_Maki, iconName: "gift_three")
+        let itemStack_maki = UIStackView()
+        itemStack_maki.axis = .horizontal
+        itemStack_maki.spacing = 8
+        itemStack_maki.alignment = .fill
+        itemStack_maki.distribution = .fill
 
-        let outerStack_Maki = UIStackView(arrangedSubviews: [rowStack1_Maki, rowStack2_Maki])
-        outerStack_Maki.axis         = .vertical
-        outerStack_Maki.spacing      = 12
-        outerStack_Maki.distribution = .fillEqually
-
-        comp2View_Maki.addSubview(outerStack_Maki)
-        outerStack_Maki.snp.makeConstraints { make in make.edges.equalToSuperview() }
-    }
-
-    /// 构建网格一行（4 个 GiftItemView，左右间距 5）
-    /// - Parameters:
-    ///   - gifts: 该行礼物数据（不足4个时用透明占位）
-    ///   - iconName: 该行礼物图标名称
-    /// - Returns: 横向 UIStackView
-    private func buildGridRow_Maki(gifts: [StoreModel_Maki], iconName: String) -> UIStackView {
-        var items_Maki: [UIView] = []
-        for i in 0..<4 {
-            let gift_Maki = i < gifts.count ? gifts[i] : nil
-            let itemView_Maki = GiftItemView_Maki(iconName: iconName)
-            if let gift_Maki = gift_Maki {
-                itemView_Maki.configure_Maki(gift: gift_Maki)
-                comp2Items_Maki.append(itemView_Maki)
-                let tap_Maki = GiftItemTap_Maki(
-                    gift: gift_Maki,
-                    target: self,
-                    action: #selector(gridItemTapped_Maki(_:))
-                )
-                itemView_Maki.isUserInteractionEnabled = true
-                itemView_Maki.addGestureRecognizer(tap_Maki)
-            } else {
-                /// 空位透明占位
-                itemView_Maki.alpha = 0
-                itemView_Maki.isUserInteractionEnabled = false
+        normalGifts_Maki.forEach { gift_maki in
+            let itemView_maki = GiftItemView_Maki(iconName: "gift_one")
+            itemView_maki.configure_Maki(gift: gift_maki)
+            itemView_maki.isUserInteractionEnabled = true
+            itemView_maki.snp.makeConstraints { make in
+                make.width.equalTo(84)
             }
-            items_Maki.append(itemView_Maki)
+            let tap_maki = GiftItemTap_Maki(
+                gift: gift_maki,
+                target: self,
+                action: #selector(gridItemTapped_Maki(_:))
+            )
+            itemView_maki.addGestureRecognizer(tap_maki)
+            comp2Items_Maki.append(itemView_maki)
+            itemStack_maki.addArrangedSubview(itemView_maki)
         }
-        let stack_Maki = UIStackView(arrangedSubviews: items_Maki)
-        stack_Maki.axis         = .horizontal
-        stack_Maki.spacing      = 5
-        stack_Maki.distribution = .fillEqually
-        return stack_Maki
+
+        comp2View_Maki.addSubview(scrollView_maki)
+        scrollView_maki.addSubview(itemStack_maki)
+        scrollView_maki.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        itemStack_maki.snp.makeConstraints { make in
+            make.edges.equalTo(scrollView_maki.contentLayoutGuide)
+            make.height.equalTo(scrollView_maki.frameLayoutGuide)
+        }
     }
 
     // MARK: - 购买按钮
 
-    /// 搭建底部购买按钮（gift_buy 图片全宽）
+    /// 搭建底部购买按钮。
+    /// - 参数：无。
+    /// - 返回值：无。
+    /// - 异常场景：无。
     private func buildBuyBtn_Maki() {
         bgCard_Maki.addSubview(buyBtn_Maki)
         buyBtn_Maki.addTarget(self, action: #selector(buyTapped_Maki), for: .touchUpInside)
@@ -249,50 +241,50 @@ class GiftPage_Maki: UIViewController {
 
     // MARK: - 约束布局
 
-    /// 设置所有 SnapKit 约束
+    /// 设置底部送礼面板的所有 SnapKit 约束。
+    /// - 参数：无。
+    /// - 返回值：无。
+    /// - 异常场景：无。
     private func setupConstraints_Maki() {
-        let inset_Maki = contentInset_Maki
-        /// 组件2高度 = 2行×109 + 行间距12
-        let comp2H_Maki: CGFloat = 109 * 2 + 12
+        let comp2Height_maki: CGFloat = 112
 
         /// 全屏遮罩
         dimView_Maki.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
 
-        /// bgCard 居中
+        /// 背景图贴合屏幕宽度并固定在底部，避免两侧出现缝隙。
         bgCard_Maki.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.equalTo(bgCardW_Maki)
-            make.height.equalTo(bgCardH_Maki)
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(bgCard_Maki.snp.width).multipliedBy(0.98)
         }
 
-        /// 背景图铺满 bgCard
+        /// 背景图铺满底部容器。
+        bgImageView_Maki.contentMode = .scaleToFill
         bgImageView_Maki.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
 
-        /// 购买按钮：全宽，高62，距 bgCard 底部 50
+        /// 购买按钮：宽102、高32，距送礼背景底部30pt。
         buyBtn_Maki.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.height.equalTo(62)
-            make.bottom.equalToSuperview().offset(-50)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(102)
+            make.height.equalTo(32)
+            make.bottom.equalToSuperview().offset(-30)
         }
 
-        /// 组件2：宽 = contentW，高 = comp2H，位于购买按钮上方 10
+        /// 组件2：单行横向滚动礼物卡片，完整保留每个礼物的信息层级。
         comp2View_Maki.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(inset_Maki)
-            make.trailing.equalToSuperview().offset(-inset_Maki)
-            make.height.equalTo(comp2H_Maki)
-            make.bottom.equalTo(buyBtn_Maki.snp.top).offset(-10)
+            make.leading.trailing.equalToSuperview().inset(contentInset_maki)
+            make.height.equalTo(comp2Height_maki)
+            make.bottom.equalTo(buyBtn_Maki.snp.top).offset(-6)
         }
 
-        /// 组件1：宽 = contentW，高 72，位于组件2上方 10
+        /// 组件1：有顶级礼物时显示在网格上方。
         comp1View_Maki.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(inset_Maki)
-            make.trailing.equalToSuperview().offset(-inset_Maki)
+            make.leading.trailing.equalToSuperview().inset(contentInset_maki)
             make.height.equalTo(72)
-            make.bottom.equalTo(comp2View_Maki.snp.top).offset(-10)
+            make.bottom.equalTo(comp2View_Maki.snp.top).offset(-8)
         }
     }
 
@@ -327,7 +319,7 @@ class GiftPage_Maki: UIViewController {
             Load_Maki.showWarning_Maki(message_Maki: "Please select a gift first")
             return
         }
-        Store_Maki.shared_Maki.PurchaseStoreGift_Maki(gid_Maki: gid_Maki) { [weak self] in
+        Subscribe_Maki.shared_Maki.PurchaseStoreGift_Maki(gid_Maki: gid_Maki) { [weak self] in
             self?.dismiss(animated: true)
         }
     }
@@ -337,10 +329,10 @@ class GiftPage_Maki: UIViewController {
     /// 刷新所有礼物条目的选中背景色
     /// - Parameter selectedId: 当前选中商品的 goodsId
     private func refreshSelectionUI_Maki(selectedId: String?) {
-        let normalBgColor_Maki = UIColor(hexstring_Maki: "#2353E4")
-        let selectedBgColor_Maki = UIColor.white
+        let normalBgColor_Maki = UIColor(hexstring_Maki: "#FFA11A")
+        let selectedBgColor_Maki = UIColor(hexstring_Maki: "#F58200")
         let normalTextColor_Maki = UIColor.white
-        let selectedTextColor_Maki = UIColor.black
+        let selectedTextColor_Maki = UIColor.white
 
         /// 组件1
         let isComp1_Maki = selectedId == topGift_Maki?.goodsId_Maki
@@ -368,8 +360,8 @@ class GiftPage_Maki: UIViewController {
 
 // MARK: - 礼物 Item 视图
 
-/// 礼物商品单元视图（VStack：图标60×60 → 名称10pt → 价格14pt）
-/// 功能：用于组件2网格，支持根据选中状态切换背景与文字颜色
+/// 礼物商品单元视图（垂直排列：图标50×50、名称12pt、价格18pt）
+/// 功能：用于组件2单行列表，支持根据选中状态切换背景与文字颜色
 /// 关键属性：gift_Maki（绑定数据，供外部判断选中态）
 class GiftItemView_Maki: UIView {
 
@@ -386,20 +378,20 @@ class GiftItemView_Maki: UIView {
         return iv
     }()
 
-    /// 礼物名称：不加粗，10pt，#111111
+    /// 礼物名称：白色常规字重，12pt。
     private let nameLabel_Maki: UILabel = {
         let l = UILabel()
-        l.font      = UIFont.systemFont(ofSize: 10, weight: .regular)
+        l.font      = UIFont.systemFont(ofSize: 12, weight: .regular)
         l.textColor = .white
         l.textAlignment = .center
         l.numberOfLines = 1
         return l
     }()
 
-    /// 礼物价格：14pt，#111111
+    /// 礼物价格：白色加粗字重，18pt。
     private let priceLabel_Maki: UILabel = {
         let l = UILabel()
-        l.font      = UIFont.systemFont(ofSize: 14, weight: .regular)
+        l.font      = UIFont.systemFont(ofSize: 18, weight: .bold)
         l.textColor = .white
         l.textAlignment = .center
         l.numberOfLines = 1
@@ -408,7 +400,9 @@ class GiftItemView_Maki: UIView {
 
     // MARK: - 初始化
 
-    /// - Parameter iconName: 礼物图标 Assets 名称（gift_two / gift_three）
+    /// - 参数：iconName：礼物图标资源名称，当前统一传入 gift_one。
+    /// - 返回值：已配置图标的礼物单元视图。
+    /// - 异常场景：资源缺失时仅不显示图标，单元其余内容仍可正常展示。
     init(iconName: String) {
         super.init(frame: .zero)
         iconIV_Maki.image = UIImage(named: iconName)?.withRenderingMode(.alwaysOriginal)
@@ -420,14 +414,14 @@ class GiftItemView_Maki: UIView {
     // MARK: - UI 搭建
 
     private func buildUI_Maki() {
-        backgroundColor = UIColor(hexstring_Maki: "#2353E4")
-        layer.cornerRadius = 15
+        backgroundColor = UIColor(hexstring_Maki: "#FFA11A")
+        layer.cornerRadius = 16
         layer.masksToBounds = true
 
-        /// VStack：图标 → 名称（间距5）→ 价格
+        /// 垂直排列：图标、名称与价格，匹配紧凑礼物卡样式。
         let vStack_Maki = UIStackView(arrangedSubviews: [iconIV_Maki, nameLabel_Maki, priceLabel_Maki])
         vStack_Maki.axis         = .vertical
-        vStack_Maki.spacing      = 5
+        vStack_Maki.spacing      = 2
         vStack_Maki.alignment    = .center
         vStack_Maki.distribution = .fill
 
@@ -438,7 +432,7 @@ class GiftItemView_Maki: UIView {
             make.trailing.lessThanOrEqualToSuperview().offset(-4)
         }
         iconIV_Maki.snp.makeConstraints { make in
-            make.width.height.equalTo(60)
+            make.width.height.equalTo(50)
         }
     }
 

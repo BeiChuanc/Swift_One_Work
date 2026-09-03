@@ -152,6 +152,83 @@ class ProtocolHelper_Maki {
         ))
         return label_Maki
     }
+
+    /// 创建仅包含单个可点击协议链接的下划线标签。
+    /// - 参数：protocol_maki：协议类型；content_maki：协议内容；config_maki：文本样式；viewController_maki：发起跳转的页面。
+    /// - 返回值：仅展示协议标题的可点击 UILabel。
+    /// - 异常场景：页面释放时点击不执行跳转。
+    static func createSingleProtocolTextLabel_maki(
+        protocol_maki: ProtocolType_Maki,
+        content_maki: String,
+        config_maki: ProtocolTextConfig_Maki = .light_Maki(),
+        from viewController_maki: UIViewController
+    ) -> UILabel {
+        let label_maki = UILabel()
+        label_maki.textAlignment = .center
+        label_maki.isUserInteractionEnabled = true
+
+        let font_maki = UIFont.systemFont(ofSize: config_maki.fontSize_Maki, weight: config_maki.fontWeight_Maki)
+        let attributes_maki: [NSAttributedString.Key: Any] = [
+            .font: font_maki,
+            .foregroundColor: config_maki.linkColor_Maki,
+            .underlineStyle: NSUnderlineStyle.single.rawValue,
+            .underlineColor: config_maki.linkColor_Maki
+        ]
+        label_maki.attributedText = NSAttributedString(
+            string: protocol_maki.title_Maki,
+            attributes: attributes_maki
+        )
+        label_maki.addGestureRecognizer(SingleProtocolTextTapGesture_maki(
+            protocol_maki: protocol_maki,
+            content_maki: content_maki,
+            viewController_maki: viewController_maki
+        ))
+        return label_maki
+    }
+}
+
+// MARK: - 单协议文本点击手势
+
+/// 单协议文本点击手势
+/// 核心作用：处理单个协议标签的点击并跳转至协议详情页。
+/// 设计思路：标签整体均为单一协议链接，无需计算字符点击范围。
+private class SingleProtocolTextTapGesture_maki: UITapGestureRecognizer {
+
+    /// 点击后要展示的协议类型。
+    private let protocol_maki: ProtocolHelper_Maki.ProtocolType_Maki
+    /// 协议内容路径或文本。
+    private let content_maki: String
+    /// 发起跳转的页面，使用弱引用避免循环持有。
+    private weak var viewController_maki: UIViewController?
+
+    /// 初始化单协议点击手势。
+    /// - 参数：protocol_maki：协议类型；content_maki：协议内容；viewController_maki：发起跳转的页面。
+    /// - 返回值：初始化完成的手势实例。
+    /// - 异常场景：无。
+    init(
+        protocol_maki: ProtocolHelper_Maki.ProtocolType_Maki,
+        content_maki: String,
+        viewController_maki: UIViewController
+    ) {
+        self.protocol_maki = protocol_maki
+        self.content_maki = content_maki
+        self.viewController_maki = viewController_maki
+        super.init(target: nil, action: nil)
+        addTarget(self, action: #selector(handleTap_maki))
+    }
+
+    /// 打开关联的协议详情页面。
+    /// - 参数：无。
+    /// - 返回值：无。
+    /// - 异常场景：发起页面已释放时不执行跳转。
+    @objc private func handleTap_maki() {
+        guard let viewController_maki else { return }
+        ProtocolHelper_Maki.showProtocol_Maki(
+            type_Maki: protocol_maki,
+            content_Maki: content_maki,
+            from: viewController_maki
+        )
+    }
 }
 
 // MARK: - 协议文本点击手势

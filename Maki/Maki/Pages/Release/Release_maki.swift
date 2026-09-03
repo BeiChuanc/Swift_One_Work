@@ -114,7 +114,7 @@ class Release_Maki: UIViewController {
 
     private let publishBtn_Maki: UIButton = {
         let btn_maki = UIButton(type: .system)
-        btn_maki.setTitle("  Publish Creation", for: .normal)
+        btn_maki.setTitle("Publish Creation", for: .normal)
         btn_maki.setImage(UIImage(systemName: "arrow.up.circle.fill"), for: .normal)
         btn_maki.setTitleColor(.white, for: .normal)
         btn_maki.tintColor = .white
@@ -493,12 +493,10 @@ extension Release_Maki {
         publishBtn_Maki.addTarget(self, action: #selector(onPublish_Maki), for: .touchUpInside)
 
         // EULA 协议链接
-        let eulaLb_maki = ProtocolHelper_Maki.createProtocolTextLabel_Maki(
-            firstProtocol_Maki: .eula_Maki,
-            firstContent_Maki: "terms",
-            secondProtocol_Maki: .privacy_Maki,
-            secondContent_Maki: "privacy",
-            config_Maki: .light_Maki(),
+        let eulaLb_maki = ProtocolHelper_Maki.createSingleProtocolTextLabel_maki(
+            protocol_maki: .eula_Maki,
+            content_maki: "eula.png",
+            config_maki: .light_Maki(),
             from: self
         )
         eulaLabel_Maki = eulaLb_maki
@@ -506,7 +504,7 @@ extension Release_Maki {
         eulaLb_maki.snp.makeConstraints { make in
             make.top.equalTo(publishBtn_Maki.snp.bottom).offset(12)
             make.leading.trailing.equalToSuperview().inset(30)
-            make.bottom.equalToSuperview().offset(-50)
+            make.bottom.equalToSuperview().offset(-120)
         }
     }
 }
@@ -650,7 +648,6 @@ extension Release_Maki {
 
         // 1. 验证登录状态
         guard UserViewModel_Maki.shared_Maki.isLoggedIn_Maki else {
-            Load_Maki.showWarning_Maki(message_Maki: "Please log in first")
             Navigation_Maki.toLogin_Maki(style_maki: .present_maki)
             return
         }

@@ -19,88 +19,68 @@ class Subscribe_Maki: NSObject {
     var goodsList_Maki: [StoreModel_Maki] = [
         StoreModel_Maki(
             id_Maki: 1,
-            goodsId_Maki: "praise.gift.4_9",
-            goodsName_Maki: "x1",
+            goodsId_Maki: "maki.pur.x1.1_9",
+            goodsName_Maki: "1x",
             goodsPrice_Maki: "$4.99",
-            goodIsTop_Maki: true
         ),
         StoreModel_Maki(
             id_Maki: 2,
-            goodsId_Maki: "praise.gift.x1.4_9",
-            goodsName_Maki: "x1",
-            goodsPrice_Maki: "$4.99",
+            goodsId_Maki: "maki.pur.x5.6_9",
+            goodsName_Maki: "5x",
+            goodsPrice_Maki: "$6.99",
         ),
         StoreModel_Maki(
             id_Maki: 3,
-            goodsId_Maki: "praise.gift.x5.14_9",
-            goodsName_Maki: "x5",
-            goodsPrice_Maki: "$14.99",
+            goodsId_Maki: "maki.pur.x10.9_9",
+            goodsName_Maki: "10x",
+            goodsPrice_Maki: "$9.99",
         ),
         StoreModel_Maki(
             id_Maki: 4,
-            goodsId_Maki: "praise.gift.x10.19_9",
-            goodsName_Maki: "x10",
+            goodsId_Maki: "maki.pur.x30.19_9",
+            goodsName_Maki: "30x",
             goodsPrice_Maki: "$19.99",
         ),
         StoreModel_Maki(
             id_Maki: 5,
-            goodsId_Maki: "praise.gift.x30.49_9",
-            goodsName_Maki: "x30",
-            goodsPrice_Maki: "$49.99",
-        ),
-        StoreModel_Maki(
-            id_Maki: 6,
-            goodsId_Maki: "praise.gift.x1.6_9",
-            goodsName_Maki: "x1",
-            goodsPrice_Maki: "$6.99",
-        ),
-        StoreModel_Maki(
-            id_Maki: 7,
-            goodsId_Maki: "praise.gift.x5.19_9",
-            goodsName_Maki: "x5",
-            goodsPrice_Maki: "$19.99",
-        ),
-        StoreModel_Maki(
-            id_Maki: 8,
-            goodsId_Maki: "praise.gift.x10.29_9",
-            goodsName_Maki: "x10",
+            goodsId_Maki: "maki.pur.x50.29_9",
+            goodsName_Maki: "50x",
             goodsPrice_Maki: "$29.99",
         ),
         StoreModel_Maki(
-            id_Maki: 9,
-            goodsId_Maki: "praise.gift.x30.79_9",
-            goodsName_Maki: "x30",
-            goodsPrice_Maki: "$79.99",
+            id_Maki: 6,
+            goodsId_Maki: "maki.pur.x100.49_9",
+            goodsName_Maki: "100x",
+            goodsPrice_Maki: "$49.99",
+        ),
+        StoreModel_Maki(
+            id_Maki: 7,
+            goodsId_Maki: "maki.pur.x200.99_9",
+            goodsName_Maki: "200x",
+            goodsPrice_Maki: "$99.99",
         ),
         
         // ------- VIP ------- //
         
         StoreModel_Maki(
             id_Maki: 9,
-            goodsId_Maki: "praise.sub.1w.9_9",
+            goodsId_Maki: "maki.vip.1w.6_9",
             goodsName_Maki: "Premium (1w.)",
-            goodsPrice_Maki: "$9.99",
+            goodsPrice_Maki: "$6.99",
             goodIsVIP_Maki: true
         ),
         StoreModel_Maki(
             id_Maki: 10,
-            goodsId_Maki: "praise.sub.1m.19_9",
+            goodsId_Maki: "maki.vip.1m.14_9",
             goodsName_Maki: "Premium (1m.)",
-            goodsPrice_Maki: "$19.99",
+            goodsPrice_Maki: "$14.99",
             goodIsVIP_Maki: true
         ),
         StoreModel_Maki(
             id_Maki: 11,
-            goodsId_Maki: "praise.sub.3m.29_9",
+            goodsId_Maki: "maki.vip.3m.39_9",
             goodsName_Maki: "Premium (3m.)",
-            goodsPrice_Maki: "$29.99",
-            goodIsVIP_Maki: true
-        ),
-        StoreModel_Maki(
-            id_Maki: 12,
-            goodsId_Maki: "praise.sub.1y.69_9",
-            goodsName_Maki: "Premium (1y.)",
-            goodsPrice_Maki: "$69.99",
+            goodsPrice_Maki: "$39.99",
             goodIsVIP_Maki: true
         )
     ]
@@ -124,10 +104,6 @@ extension Subscribe_Maki {
                 if SKPaymentTransaction?.transactionState == .purchased {
                     print("支付成功")
                     Load_Maki.showSuccess_Maki(message_Maki: "Payment successful")
-                    
-                    if (gid_Maki.contains("praise.gift.x5.3_9")) {
-                        self.isPur_Maki = true
-                    }
                     
                     NotificationCenter.default.post(name: NSNotification.Name("DazzlRefreshGifts"), object: nil)
                     completion_Maki()

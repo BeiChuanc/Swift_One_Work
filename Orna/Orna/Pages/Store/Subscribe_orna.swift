@@ -21,104 +21,48 @@ class Store_Orna: NSObject {
         ),
         StoreModel_Orna(
             id_Orna: 1,
-            goodsId_Orna: "bermude.spe.x3.3_9",
+            goodsId_Orna: "bermude.spe.x3.6_9",
             goodsName_Orna: "x3",
-            goodsPrice_Orna: "3.99$",
+            goodsPrice_Orna: "6.99$",
             goodIsTop_Orna: false,
             goodIsLimit_Orna: true
         ),
         StoreModel_Orna(
             id_Orna: 2,
-            goodsId_Orna: "bermude.spe.x5.4_9",
+            goodsId_Orna: "bermude.spe.x5.9_9",
             goodsName_Orna: "x5",
-            goodsPrice_Orna: "4.99$",
+            goodsPrice_Orna: "9.99$",
             goodIsTop_Orna: false,
             goodIsLimit_Orna: true
         ),
         StoreModel_Orna(
-            id_Orna: 3,
-            goodsId_Orna: "bermude.gift.x1.1_9",
-            goodsName_Orna: "x1",
-            goodsPrice_Orna: "1.99$",
-            goodIsTop_Orna: false,
-            goodIsLimit_Orna: false
-        ),
-        StoreModel_Orna(
-            id_Orna: 4,
-            goodsId_Orna: "bermude.gift.x3.2_9",
-            goodsName_Orna: "x3",
-            goodsPrice_Orna: "2.99$",
-            goodIsTop_Orna: false,
-            goodIsLimit_Orna: false
-        ),
-        StoreModel_Orna(
-            id_Orna: 5,
-            goodsId_Orna: "bermude.gift.x3.3_9",
-            goodsName_Orna: "x5",
-            goodsPrice_Orna: "3.99$",
-            goodIsTop_Orna: false,
-            goodIsLimit_Orna: false
-        ),
-        StoreModel_Orna(
-            id_Orna: 6,
-            goodsId_Orna: "bermude.gift.x10.4_9",
-            goodsName_Orna: "x10",
-            goodsPrice_Orna: "4.99$",
-            goodIsTop_Orna: false,
-            goodIsLimit_Orna: false
-        ),
-        StoreModel_Orna(
-            id_Orna: 7,
-            goodsId_Orna: "bermude.gift.x1.6_9",
-            goodsName_Orna: "x1",
-            goodsPrice_Orna: "6.99$",
-            goodIsTop_Orna: false,
-            goodIsLimit_Orna: false
-        ),
-        StoreModel_Orna(
-            id_Orna: 8,
-            goodsId_Orna: "bermude.gift.x3.9_9",
-            goodsName_Orna: "x3",
-            goodsPrice_Orna: "9.99$",
-            goodIsTop_Orna: false,
-            goodIsLimit_Orna: false
-        ),
-        StoreModel_Orna(
             id_Orna: 9,
-            goodsId_Orna: "bermude.gift.x5.19_9",
-            goodsName_Orna: "x5",
+            goodsId_Orna: "bermude.gift.x1.19_9",
+            goodsName_Orna: "x1",
             goodsPrice_Orna: "19.99$",
             goodIsTop_Orna: false,
             goodIsLimit_Orna: false
         ),
         StoreModel_Orna(
             id_Orna: 10,
-            goodsId_Orna: "bermude.gift.x10.29_9",
-            goodsName_Orna: "x10",
+            goodsId_Orna: "bermude.gift.x3.29_9",
+            goodsName_Orna: "x3",
             goodsPrice_Orna: "29.99$",
             goodIsTop_Orna: false,
             goodIsLimit_Orna: false
         ),
         StoreModel_Orna(
             id_Orna: 11,
-            goodsId_Orna: "bermude.gift.x1.49_9",
-            goodsName_Orna: "x1",
+            goodsId_Orna: "bermude.gift.x5.49_9",
+            goodsName_Orna: "x5",
             goodsPrice_Orna: "49.99$",
             goodIsTop_Orna: false,
             goodIsLimit_Orna: false
         ),
         StoreModel_Orna(
-            id_Orna: 12,
-            goodsId_Orna: "bermude.gift.x3.69_9",
-            goodsName_Orna: "x3",
-            goodsPrice_Orna: "69.99$",
-            goodIsTop_Orna: false,
-            goodIsLimit_Orna: false
-        ),
-        StoreModel_Orna(
             id_Orna: 13,
-            goodsId_Orna: "bermude.gift.x5.99_9",
-            goodsName_Orna: "x5",
+            goodsId_Orna: "bermude.gift.x10.99_9",
+            goodsName_Orna: "x10",
             goodsPrice_Orna: "99.99$",
             goodIsTop_Orna: false,
             goodIsLimit_Orna: false

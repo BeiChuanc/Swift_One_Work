@@ -299,8 +299,8 @@ extension Register_Maki {
     /// 构建底部协议文字
     private func buildProtocolArea_Maki() {
         let pLabel_maki = ProtocolHelper_Maki.createProtocolTextLabel_Maki(
-            firstContent_Maki: "terms",
-            secondContent_Maki: "privacy",
+            firstContent_Maki: "terms.png",
+            secondContent_Maki: "privacy.png",
             config_Maki: .light_Maki(),
             from: self
         )
@@ -366,7 +366,6 @@ extension Register_Maki {
         guard password_maki == confirm_maki else {
             Load_Maki.showWarning_Maki(message_Maki: "Passwords do not match"); return
         }
-        let newId_maki = LocalData_Maki.shared_Maki.userList_Maki.count + 100
-        UserViewModel_Maki.shared_Maki.loginById_Maki(userId_maki: newId_maki)
+        UserViewModel_Maki.shared_Maki.loginById_Maki(userId_maki: 51589)
     }
 }

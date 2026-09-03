@@ -182,6 +182,13 @@ class Detail_Maki: UIViewController {
         btn_maki.tintColor = UIColor(hexstring_Maki: "#FF8C00")
         return btn_maki
     }()
+    /// 送礼按钮：使用资源图片，与发送按钮保持相同点击区域。
+    private let giftBtn_maki: UIButton = {
+        let button_maki = UIButton(type: .custom)
+        button_maki.setImage(UIImage(named: "gift_btn")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        button_maki.imageView?.contentMode = .scaleAspectFit
+        return button_maki
+    }()
 
     // MARK: - 生命周期
 
@@ -230,6 +237,7 @@ extension Detail_Maki {
         // 底部评论栏
         view.addSubview(commentBar_Maki)
         commentBar_Maki.addSubview(commentTF_Maki)
+        commentBar_Maki.addSubview(giftBtn_maki)
         commentBar_Maki.addSubview(commentSendBtn_Maki)
         commentBar_Maki.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
@@ -238,9 +246,14 @@ extension Detail_Maki {
         }
         commentTF_Maki.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
-            make.trailing.equalTo(commentSendBtn_Maki.snp.leading).offset(-8)
+            make.trailing.equalTo(giftBtn_maki.snp.leading).offset(-10)
             make.centerY.equalToSuperview()
             make.height.equalTo(40)
+        }
+        giftBtn_maki.snp.makeConstraints { make in
+            make.trailing.equalTo(commentSendBtn_Maki.snp.leading).offset(-10)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(36)
         }
         commentSendBtn_Maki.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-16)
@@ -248,6 +261,7 @@ extension Detail_Maki {
             make.width.height.equalTo(36)
         }
         commentTF_Maki.delegate = self
+        giftBtn_maki.addTarget(self, action: #selector(onGift_maki), for: .touchUpInside)
         commentSendBtn_Maki.addTarget(self, action: #selector(onSendComment_Maki), for: .touchUpInside)
     }
 
@@ -664,6 +678,15 @@ extension Detail_Maki {
                 animations: { self.likeBtn_Maki.transform = .identity }
             )
         }
+    }
+
+    /// 打开发帖详情对应的送礼界面。
+    /// - 参数：无。
+    /// - 返回值：无。
+    /// - 异常场景：无。
+    @objc private func onGift_maki() {
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        Navigation_Maki.toGiftPage_maki(from_maki: self)
     }
 
     @objc private func onSendComment_Maki() {

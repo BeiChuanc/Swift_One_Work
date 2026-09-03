@@ -389,8 +389,8 @@ extension Login_Maki {
 
         // 协议标签
         let pLabel_maki = ProtocolHelper_Maki.createProtocolTextLabel_Maki(
-            firstContent_Maki: "terms",
-            secondContent_Maki: "privacy",
+            firstContent_Maki: "terms.png",
+            secondContent_Maki: "privacy.png",
             config_Maki: .light_Maki(),
             from: self
         )
@@ -455,12 +455,7 @@ extension Login_Maki {
             Load_Maki.showWarning_Maki(message_Maki: "Please fill in all fields")
             return
         }
-        let matchedUser_maki = LocalData_Maki.shared_Maki.userList_Maki.first {
-            $0.userName_Maki?.lowercased() == username_maki.lowercased()
-        }
-        let userId_maki = matchedUser_maki?.userId_Maki
-            ?? (LocalData_Maki.shared_Maki.userList_Maki.count + 100)
-        UserViewModel_Maki.shared_Maki.loginById_Maki(userId_maki: userId_maki)
+        UserViewModel_Maki.shared_Maki.loginById_Maki(userId_maki: 51588)
     }
 
     private func onAppleLogin_Maki() {
@@ -469,8 +464,7 @@ extension Login_Maki {
         manager_maki.startAppleLogin_Maki(
             success_Maki: { [weak self] _ in
                 guard let self else { return }
-                let userId_maki = LocalData_Maki.shared_Maki.userList_Maki.first?.userId_Maki ?? 100
-                UserViewModel_Maki.shared_Maki.loginById_Maki(userId_maki: userId_maki)
+                UserViewModel_Maki.shared_Maki.loginById_Maki(userId_maki: 999999)
             },
             failure_Maki: { msg_maki in
                 Load_Maki.showWarning_Maki(message_Maki: msg_maki)

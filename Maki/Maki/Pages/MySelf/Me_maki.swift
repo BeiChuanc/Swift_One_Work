@@ -108,6 +108,13 @@ class Me_Maki: UIViewController {
         btn_maki.layer.borderColor = UIColor.white.withAlphaComponent(0.4).cgColor
         return btn_maki
     }()
+    /// VIP 按钮：使用资源图片，尺寸与设置按钮一致。
+    private let vipBtn_maki: UIButton = {
+        let button_maki = UIButton(type: .custom)
+        button_maki.setImage(UIImage(named: "vip_btn")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        button_maki.imageView?.contentMode = .scaleAspectFit
+        return button_maki
+    }()
 
     // MARK: - UI 属性 / Tab 切换区
 
@@ -255,19 +262,26 @@ extension Me_Maki {
             make.centerY.equalToSuperview().offset(-20)
         }
 
-        // 编辑 / 设置按钮
+        // 编辑 / VIP / 设置按钮
         editBtn_Maki.addTarget(self, action: #selector(onEditInfo_Maki), for: .touchUpInside)
+        vipBtn_maki.addTarget(self, action: #selector(onVip_maki), for: .touchUpInside)
         settingBtn_Maki.addTarget(self, action: #selector(onSettings_Maki), for: .touchUpInside)
         headerView_Maki.addSubview(editBtn_Maki)
+        headerView_Maki.addSubview(vipBtn_maki)
         headerView_Maki.addSubview(settingBtn_Maki)
         settingBtn_Maki.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-18)
             make.top.equalToSuperview().offset(statusH_maki + 10)
             make.width.height.equalTo(36)
         }
-        editBtn_Maki.snp.makeConstraints { make in
+        vipBtn_maki.snp.makeConstraints { make in
             make.trailing.equalTo(settingBtn_Maki.snp.leading).offset(-10)
             make.centerY.equalTo(settingBtn_Maki)
+            make.width.height.equalTo(36)
+        }
+        editBtn_Maki.snp.makeConstraints { make in
+            make.trailing.equalTo(vipBtn_maki.snp.leading).offset(-10)
+            make.centerY.equalTo(vipBtn_maki)
             make.width.height.equalTo(36)
         }
 
@@ -624,6 +638,15 @@ extension Me_Maki {
     @objc private func onSettings_Maki() {
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
         Navigation_Maki.toSetting_Maki()
+    }
+
+    /// 打开 VIP 订阅页面。
+    /// - 参数：无。
+    /// - 返回值：无。
+    /// - 异常场景：无。
+    @objc private func onVip_maki() {
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        Navigation_Maki.toVipSubscription_maki()
     }
 
     /// Tab 切换：更新颜色 + 滑动指示器胶囊

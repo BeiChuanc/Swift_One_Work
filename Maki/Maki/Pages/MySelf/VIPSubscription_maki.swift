@@ -6,7 +6,7 @@ import SnapKit
 
 /// VIP 订阅页面
 /// 核心作用：展示 VIP 套餐列表，支持套餐选择、发起内购订阅及恢复购买
-/// 设计思路：全屏青紫渐变背景（左上 #00FFF0 → 右下 #A678F1）+ 顶部 vip_top 装饰图 + 纵向套餐列表 + 底部操作区
+/// 设计思路：全屏橙色渐变背景（顶部居中 #FA5A00 → 底部居中 #FF9800）+ 顶部 vip_top 装饰图 + 纵向套餐列表 + 底部操作区
 /// 关键属性：
 /// - vipItems_Maki: 从 Store_Maki 筛选出 goodIsVIP_Maki 为 true 的套餐数组
 /// - selectedItem_Maki: 当前选中的 VIP 套餐（发起购买前校验）
@@ -50,9 +50,9 @@ class VIPSubscription_Maki: UIViewController {
 
     private let navTitleLabel_Maki: UILabel = {
         let l = UILabel()
-        l.text = "Subscription"
+        l.text = "Membership"
         l.font = .systemFont(ofSize: 18, weight: .bold)
-        l.textColor = .white
+        l.textColor = .black
         return l
     }()
 
@@ -82,11 +82,11 @@ class VIPSubscription_Maki: UIViewController {
 
     // MARK: - UI · 组件2：套餐纵向列表
 
-    /// 套餐纵向 StackView，间距 12
+    /// 套餐纵向 StackView，间距14。
     private let itemsVStack_Maki: UIStackView = {
         let sv = UIStackView()
         sv.axis = .vertical
-        sv.spacing = 12
+        sv.spacing = 14
         sv.alignment = .fill
         sv.distribution = .fill
         return sv
@@ -158,7 +158,7 @@ class VIPSubscription_Maki: UIViewController {
 
     /// 从 Store_Maki 筛选 VIP 套餐
     private func loadData_Maki() {
-        vipItems_Maki = Store_Maki.shared_Maki.goodsList_Maki.filter { $0.goodIsVIP_Maki == true }
+        vipItems_Maki = Subscribe_Maki.shared_Maki.goodsList_Maki.filter { $0.goodIsVIP_Maki == true }
     }
 
     // MARK: - UI 搭建
@@ -203,12 +203,15 @@ class VIPSubscription_Maki: UIViewController {
         setupConstraints_Maki(protoLabel: proto_Maki)
     }
 
-    /// 全屏渐变背景：#7297F9（顶部居中）→ #4A8EFF（底部居中）
+    /// 全屏渐变背景：#FA5A00（顶部居中）→ #FF9800（底部居中）。
+    /// - 参数：无。
+    /// - 返回值：无。
+    /// - 异常场景：无。
     private func setupBgGradient_Maki() {
         let gl_Maki = CAGradientLayer()
         gl_Maki.colors = [
-            UIColor(hexstring_Maki: "#7297F9").cgColor,
-            UIColor(hexstring_Maki: "#4A8EFF").cgColor
+            UIColor(hexstring_Maki: "#FA5A00").cgColor,
+            UIColor(hexstring_Maki: "#FF9800").cgColor
         ]
         gl_Maki.startPoint = CGPoint(x: 0.5, y: 0.0)
         gl_Maki.endPoint   = CGPoint(x: 0.5, y: 1.0)
@@ -229,7 +232,7 @@ class VIPSubscription_Maki: UIViewController {
             }
             itemsVStack_Maki.addArrangedSubview(cell_Maki)
             cell_Maki.snp.makeConstraints {
-                $0.height.equalTo(50)
+                $0.height.equalTo(56)
             }
             itemCells_Maki.append(cell_Maki)
         }
@@ -283,11 +286,11 @@ class VIPSubscription_Maki: UIViewController {
             $0.height.equalTo(vipTopH_Maki)
         }
 
-        // 组件2：纵向套餐列表，距 vip_top 下方 20，左右内边距16
+        // 组件2：纵向套餐列表，距 vip_top 下方20，左右内边距10
         itemsVStack_Maki.snp.makeConstraints {
             $0.top.equalTo(vipTopImage_Maki.snp.bottom).offset(20)
-            $0.leading.equalToSuperview().offset(16)
-            $0.trailing.equalToSuperview().offset(-16)
+            $0.leading.equalToSuperview().offset(10)
+            $0.trailing.equalToSuperview().offset(-10)
         }
 
         // 组件4：订阅按钮，距套餐列表下方 20，屏幕宽-32，高 62
@@ -354,11 +357,11 @@ class VIPSubscription_Maki: UIViewController {
 // MARK: - VIPItemCell_Maki
 
 /// VIP 套餐单元格视图
-/// 核心作用：展示单个 VIP 套餐信息（选中图标 + 套餐名 + 价格），支持点击回调
-/// 设计思路：高度50的圆角10横向卡片，未选中白底蓝字，选中蓝底白字并显示24x24圆形状态图标
+/// 核心作用：展示单个 VIP 套餐信息（状态圆点 + 套餐名 + 价格），支持点击回调
+/// 设计思路：高度56的白色圆角横向卡片，橙色圆点作为状态标识；选中时在圆点内显示白色勾选
 /// 关键方法：
 /// - configure_Maki: 注入套餐数据（价格 + 套餐名）
-/// - setSelected_Maki: 切换选中态（背景透明度 + 套餐名颜色）
+/// - setSelected_Maki: 切换选中态（同步圆形内的勾选图标）
 private class VIPItemCell_Maki: UIView {
 
     // MARK: - 属性
@@ -371,38 +374,37 @@ private class VIPItemCell_Maki: UIView {
 
     // MARK: - UI
 
-    /// 选中状态圆形指示器
+    /// 套餐状态圆形指示器
     private let selectCircle_Maki: UIView = {
         let v = UIView()
-        v.layer.cornerRadius = 12
-        v.layer.borderWidth = 2
-        v.layer.borderColor = UIColor(hexstring_Maki: "#2353E4").cgColor
-        v.backgroundColor = .clear
-        v.isHidden = true
+        v.layer.cornerRadius = 13
+        v.backgroundColor = UIColor(hexstring_Maki: "#FFA11A")
         return v
     }()
-    private let selectInnerDot_Maki: UIView = {
-        let v = UIView()
-        v.backgroundColor = UIColor(hexstring_Maki: "#2353E4")
-        v.layer.cornerRadius = 6
-        v.isHidden = true
-        return v
+    /// 选中勾选图标：仅在当前套餐被选中时展示。
+    private let selectCheckImage_maki: UIImageView = {
+        let imageView_maki = UIImageView()
+        imageView_maki.image = UIImage(systemName: "checkmark")?.withRenderingMode(.alwaysTemplate)
+        imageView_maki.tintColor = .white
+        imageView_maki.contentMode = .scaleAspectFit
+        imageView_maki.isHidden = true
+        return imageView_maki
     }()
 
-    /// 价格文本，字号20加粗
+    /// 价格文本，橙色20pt加粗。
     private let priceLabel_Maki: UILabel = {
         let l = UILabel()
         l.font          = .systemFont(ofSize: 20, weight: .bold)
-        l.textColor     = UIColor(hexstring_Maki: "#2353E4")
+        l.textColor     = UIColor(hexstring_Maki: "#FFA11A")
         l.textAlignment = .right
         return l
     }()
 
-    /// 套餐名：默认蓝色，选中白色，字号18加粗
+    /// 套餐名：橙色18pt加粗。
     private let nameLabel_Maki: UILabel = {
         let l = UILabel()
         l.font          = .systemFont(ofSize: 18, weight: .bold)
-        l.textColor     = UIColor(hexstring_Maki: "#2353E4")
+        l.textColor     = UIColor(hexstring_Maki: "#FFA11A")
         l.textAlignment = .left
         return l
     }()
@@ -420,30 +422,30 @@ private class VIPItemCell_Maki: UIView {
 
     private func setupUI_Maki() {
         backgroundColor = UIColor.white
-        layer.cornerRadius = 10
+        layer.cornerRadius = 14
         layer.masksToBounds = true
 
         addSubview(selectCircle_Maki)
-        selectCircle_Maki.addSubview(selectInnerDot_Maki)
+        selectCircle_Maki.addSubview(selectCheckImage_maki)
         addSubview(nameLabel_Maki)
         addSubview(priceLabel_Maki)
 
         selectCircle_Maki.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(14)
+            $0.leading.equalToSuperview().offset(28)
             $0.centerY.equalToSuperview()
-            $0.width.height.equalTo(24)
+            $0.width.height.equalTo(26)
         }
-        selectInnerDot_Maki.snp.makeConstraints {
+        selectCheckImage_maki.snp.makeConstraints {
             $0.center.equalToSuperview()
-            $0.width.height.equalTo(12)
+            $0.width.height.equalTo(14)
         }
         nameLabel_Maki.snp.makeConstraints {
-            $0.leading.equalTo(selectCircle_Maki.snp.trailing).offset(12)
+            $0.leading.equalTo(selectCircle_Maki.snp.trailing).offset(14)
             $0.centerY.equalToSuperview()
             $0.trailing.lessThanOrEqualTo(priceLabel_Maki.snp.leading).offset(-12)
         }
         priceLabel_Maki.snp.makeConstraints {
-            $0.trailing.equalToSuperview().offset(-14)
+            $0.trailing.equalToSuperview().offset(-28)
             $0.centerY.equalToSuperview()
         }
 
@@ -465,16 +467,10 @@ private class VIPItemCell_Maki: UIView {
 
     // MARK: - 选中态切换
 
-    /// 切换选中状态：选中时蓝底白字，未选中时白底蓝字，并同步圆形指示器
+    /// 切换选中状态：套餐行保持白底橙字，选中时仅显示圆形内的白色勾选。
     /// - Parameter selected: true 为选中态，false 为未选中态
     func setSelected_Maki(_ selected: Bool) {
-        backgroundColor = selected ? UIColor(hexstring_Maki: "#2353E4") : UIColor.white
-        nameLabel_Maki.textColor = selected ? UIColor.white : UIColor(hexstring_Maki: "#2353E4")
-        priceLabel_Maki.textColor = selected ? UIColor.white : UIColor(hexstring_Maki: "#2353E4")
-        selectCircle_Maki.layer.borderColor = selected ? UIColor.white.cgColor : UIColor(hexstring_Maki: "#2353E4").cgColor
-        selectInnerDot_Maki.backgroundColor = selected ? UIColor.white : UIColor(hexstring_Maki: "#2353E4")
-        selectCircle_Maki.isHidden = !selected
-        selectInnerDot_Maki.isHidden = !selected
+        selectCheckImage_maki.isHidden = !selected
     }
 
     // MARK: - 点击处理

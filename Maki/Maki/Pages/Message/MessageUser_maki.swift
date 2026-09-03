@@ -154,7 +154,10 @@ extension MessageUser_Maki {
         buildMessageList_Maki()
     }
 
-    /// 构建顶部渐变用户信息卡（返回 + 头像 + 名字 + 简介 + 举报按钮）
+    /// 构建顶部渐变用户信息卡（返回、用户信息、视频通话与举报按钮）。
+    /// - 参数：无。
+    /// - 返回值：无。
+    /// - 异常场景：无。
     private func buildUserCard_Maki() {
         let statusH_maki = UIApplication.shared.windows.first?.safeAreaInsets.top ?? 44
 
@@ -216,6 +219,22 @@ extension MessageUser_Maki {
             make.width.height.equalTo(36)
         }
 
+        // 视频通话按钮
+        let videoCallBtn_maki = UIButton(type: .system)
+        videoCallBtn_maki.setImage(UIImage(systemName: "video.fill"), for: .normal)
+        videoCallBtn_maki.tintColor = .white
+        videoCallBtn_maki.backgroundColor = UIColor.white.withAlphaComponent(0.22)
+        videoCallBtn_maki.layer.cornerRadius = 18
+        videoCallBtn_maki.layer.borderWidth = 1.5
+        videoCallBtn_maki.layer.borderColor = UIColor.white.withAlphaComponent(0.4).cgColor
+        videoCallBtn_maki.addTarget(self, action: #selector(onVideoCall_maki), for: .touchUpInside)
+        userCard_Maki.addSubview(videoCallBtn_maki)
+        videoCallBtn_maki.snp.makeConstraints { make in
+            make.trailing.equalTo(reportBtn_maki.snp.leading).offset(-10)
+            make.centerY.equalTo(reportBtn_maki)
+            make.width.height.equalTo(36)
+        }
+
         // 头像光晕圈
         userCard_Maki.addSubview(cardAvatarRing_Maki)
         cardAvatarRing_Maki.snp.makeConstraints { make in
@@ -248,7 +267,7 @@ extension MessageUser_Maki {
         cardNameLb_Maki.snp.makeConstraints { make in
             make.leading.equalTo(cardAvatarRing_Maki.snp.trailing).offset(12)
             make.top.equalTo(cardAvatarRing_Maki).offset(4)
-            make.trailing.equalTo(reportBtn_maki.snp.leading).offset(-8)
+            make.trailing.equalTo(videoCallBtn_maki.snp.leading).offset(-8)
         }
         userCard_Maki.addSubview(cardBioLb_Maki)
         cardBioLb_Maki.snp.makeConstraints { make in
@@ -429,6 +448,16 @@ extension MessageUser_Maki {
             UserViewModel_Maki.shared_Maki.reportUser_Maki(user_maki: user_maki)
             Navigation_Maki.popToSafeStateAfterBlock_Maki(from: self)
         }
+    }
+
+    /// 进入与当前用户的视频通话界面。
+    /// - 参数：无。
+    /// - 返回值：无。
+    /// - 异常场景：聊天用户数据缺失时不执行跳转。
+    @objc private func onVideoCall_maki() {
+        guard let user_maki = userModel_Maki else { return }
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        Navigation_Maki.toVideoChat_maki(with: user_maki, from_maki: self)
     }
 }
 

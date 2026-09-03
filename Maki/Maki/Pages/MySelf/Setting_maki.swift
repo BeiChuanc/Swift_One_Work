@@ -92,14 +92,14 @@ extension Setting_Maki {
             iconColor: K_Maki.primary, showChevron: true
         ) { [weak self] in
             guard let self else { return }
-            ProtocolHelper_Maki.showProtocol_Maki(type_Maki: .terms_Maki, content_Maki: "terms", from: self)
+            ProtocolHelper_Maki.showProtocol_Maki(type_Maki: .terms_Maki, content_Maki: "terms.png", from: self)
         }
         let privacyRow_maki = makeRow_Maki(
             title: "Privacy Policy", icon: "lock.shield.fill",
             iconColor: UIColor(hexstring_Maki: "#2980B9"), showChevron: true
         ) { [weak self] in
             guard let self else { return }
-            ProtocolHelper_Maki.showProtocol_Maki(type_Maki: .privacy_Maki, content_Maki: "privacy", from: self)
+            ProtocolHelper_Maki.showProtocol_Maki(type_Maki: .privacy_Maki, content_Maki: "privacy.png", from: self)
         }
 
         // 账号组
