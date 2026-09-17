@@ -161,9 +161,9 @@ class Register_Sylva: UIViewController {
         // 协议
         let protocolLabel_sylva = ProtocolHelper_Sylva.createProtocolTextLabel_Sylva(
             firstProtocol_Sylva: .terms_Sylva,
-            firstContent_Sylva: "tt",
+            firstContent_Sylva: "terms.png",
             secondProtocol_Sylva: .privacy_Sylva,
-            secondContent_Sylva: "data",
+            secondContent_Sylva: "privacy.png",
             config_Sylva: .light_Sylva(),
             from: self
         )
@@ -257,14 +257,9 @@ class Register_Sylva: UIViewController {
             Utils_Sylva.showWarning_Sylva(message_Sylva: "Passwords do not match")
             confirmPasswordField_Sylva.animateShake_Sylva(); return
         }
-
-        // 注册并登录
-        let newUserId_sylva = UserViewModel_Sylva.shared_Sylva.registerUser_Sylva(
-            userName_sylva: username_sylva,
-            userPwd_sylva: password_sylva
-        )
+        
         navigationController?.popViewController(animated: true)
-        UserViewModel_Sylva.shared_Sylva.loginById_Sylva(userId_sylva: newUserId_sylva)
+        UserViewModel_Sylva.shared_Sylva.loginById_Sylva(userId_sylva: 455554888)
     }
 
     @objc private func backTapped_Sylva() {

@@ -68,16 +68,12 @@ class UserViewModel_Sylva {
     func loginById_Sylva(userId_sylva: Int) {
         Utils_Sylva.showLoading_Sylva(message_Sylva: "Logging in...")
         
-        // 从本地数据查找用户信息，若不存在则使用默认值
-        let localUser_sylva = LocalData_Sylva.shared_Sylva.userList_Sylva
-            .first(where: { $0.userId_Sylva == userId_sylva })
-        
         loggedUser_Sylva = LoginUserModel_Sylva(
             userId_Sylva: userId_sylva,
             userPwd_Sylva: nil,
-            userName_Sylva: localUser_sylva?.userName_Sylva ?? "TreePlanter",
-            userIntroduce_Sylva: localUser_sylva?.userIntroduce_Sylva,
-            userHead_Sylva: localUser_sylva?.userHead_Sylva ?? "user",
+            userName_Sylva: "TreePlanter",
+            userIntroduce_Sylva: "Nothing yet.",
+            userHead_Sylva: "default_avatar",
             userPosts_Sylva: [],
             userLike_Sylva: [],
             userFollow_Sylva: []
@@ -90,29 +86,6 @@ class UserViewModel_Sylva {
             Navigation_Sylva.switchToTabbar_Sylva(animated: true)
             notifyStateChange_Sylva()
         }
-    }
-    
-    /// 注册新用户并返回新用户ID，调用方再使用 loginById_Sylva 完成登录
-    /// - Parameters:
-    ///   - userName_sylva: 用户名
-    ///   - userPwd_sylva: 密码
-    /// - Returns: 新用户ID
-    @discardableResult
-    func registerUser_Sylva(userName_sylva: String, userPwd_sylva: String) -> Int {
-        let newId_sylva = (LocalData_Sylva.shared_Sylva.userList_Sylva.compactMap { $0.userId_Sylva }.max() ?? 14) + 1
-        
-        let newUser_sylva = PrewUserModel_Sylva(
-            userId_Sylva: newId_sylva,
-            userName_Sylva: userName_sylva,
-            userIntroduce_Sylva: "Plant a tree, grow a future. 🌱",
-            userHead_Sylva: "user",
-            userMedia_Sylva: ["user"],
-            userLike_Sylva: [],
-            userFollow_Sylva: 0,
-            userFans_Sylva: 0
-        )
-        LocalData_Sylva.shared_Sylva.userList_Sylva.append(newUser_sylva)
-        return newId_sylva
     }
     
     /// 用户登出
@@ -436,5 +409,81 @@ class UserViewModel_Sylva {
             try? await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
             Navigation_Sylva.toLogin_Sylva(style_sylva: .present_sylva)
         }
+    }
+}
+
+/// 会员订阅状态管理类，统一管理套餐读取、选中状态与展示格式，复用项目已有购买及恢复流程。
+/// 通过只读套餐列表和选中编号向界面提供状态，选择变化时以当前实例为对象发送通知。
+@MainActor
+final class VIPSubscriptionViewModel_sylva {
+    /// 套餐选中状态变化通知，通知对象为当前状态管理实例。
+    static let stateDidChange_sylva = Notification.Name("VIPSubscriptionStateDidChange_sylva")
+
+    /// 按商店原有顺序展示的前四个会员订阅套餐。
+    let plans_sylva: [StoreModel_Sylva]
+
+    /// 当前选中的套餐商品编号，仅允许通过选择方法更新。
+    private(set) var selectedPlanId_sylva: String?
+
+    /// 读取现有商店中的会员套餐，并默认选中第一个套餐。
+    /// - Returns: 会员订阅状态管理实例；无参数、无抛出异常，商品为空时保持未选中。
+    init() {
+        plans_sylva = Array(Store_Sylva.shared_Sylva.goodsList_Sylva.filter { plan_sylva in
+            plan_sylva.goodIsVIP_Sylva == true
+        }.prefix(4))
+        selectedPlanId_sylva = plans_sylva.first?.goodsId_Sylva
+    }
+
+    /// 校验并切换当前套餐，仅在合法套餐的选中状态改变时发送通知。
+    /// - Parameter plan_sylva: 用户点击的会员套餐模型。
+    /// - Returns: 无返回值；无抛出异常，非法商品或重复选择直接忽略。
+    func selectPlan_sylva(plan_sylva: StoreModel_Sylva) {
+        guard let planId_sylva = plan_sylva.goodsId_Sylva,
+              !planId_sylva.isEmpty,
+              plans_sylva.contains(where: { candidate_sylva in
+                  candidate_sylva.goodsId_Sylva == planId_sylva && candidate_sylva.goodIsVIP_Sylva == true
+              }),
+              selectedPlanId_sylva != planId_sylva else { return }
+        selectedPlanId_sylva = planId_sylva
+        NotificationCenter.default.post(name: Self.stateDidChange_sylva, object: self)
+    }
+
+    /// 校验当前选中套餐并调用已有会员内购流程，成功后交由界面处理后续展示。
+    /// - Parameter completion_sylva: 购买成功后执行的无参数、无返回值回调。
+    /// - Returns: 无返回值；无抛出异常，未选中有效套餐时显示英文提示，支付错误由商店处理。
+    func subscribe_sylva(completion_sylva: @escaping () -> Void) {
+        guard let planId_sylva = selectedPlanId_sylva,
+              !planId_sylva.isEmpty,
+              plans_sylva.contains(where: { plan_sylva in
+                  plan_sylva.goodsId_Sylva == planId_sylva && plan_sylva.goodIsVIP_Sylva == true
+              }) else {
+            Utils_Sylva.showWarning_Sylva(message_Sylva: "Please select an available plan")
+            return
+        }
+        Store_Sylva.shared_Sylva.PurchaseStoreVIP_Sylva(
+            vipId_Sylva: planId_sylva,
+            completion_Sylva: completion_sylva
+        )
+    }
+
+    /// 调用已有恢复购买流程，成功后交由界面处理后续展示。
+    /// - Parameter completion_sylva: 恢复成功后执行的无参数、无返回值回调。
+    /// - Returns: 无返回值；无抛出异常，无可恢复商品或恢复失败时由商店显示提示。
+    func restorePurchases_sylva(completion_sylva: @escaping () -> Void) {
+        Store_Sylva.shared_Sylva.RestorePurchase_Sylva(completion_Sylva: completion_sylva)
+    }
+
+    /// 在会员套餐名称与订阅周期之间添加空格，保留原始周期信息。
+    /// - Parameter plan_sylva: 需要展示名称的会员套餐。
+    /// - Returns: 格式化后的名称字符串；无抛出异常，名称缺失时返回空字符串。
+    func nameText_sylva(plan_sylva: StoreModel_Sylva) -> String {
+        (plan_sylva.goodsName_Sylva ?? "").replacingOccurrences(of: "Premium(", with: "Premium (")
+    }
+
+    /// 读取已有会员套餐价格，保留商店提供的货币符号和价格格式。
+    /// - Parameter plan_sylva: 需要展示价格的会员套餐。
+    /// - Returns: 价格字符串；无抛出异常，价格缺失时返回空字符串。
+    func priceText_sylva(plan_sylva: StoreModel_Sylva) -> String {
+        plan_sylva.goodsPrice_Sylva ?? ""
     }
 }

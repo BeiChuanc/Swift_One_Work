@@ -7,6 +7,7 @@ import SnapKit
 /// 帖子详情视图控制器
 /// 核心作用：展示帖子媒体、标题、内容、点赞/评论，支持互动操作
 /// 设计思路：全宽媒体 + 底部渐变遮罩 + 圆角浮层信息卡 + Pill 互动行 + 卡片式评论
+/// 关键方法：底部输入栏统一布局评论输入、送礼入口和发送按钮。
 class Detail_Sylva: UIViewController {
 
     // MARK: - 公开属性
@@ -377,7 +378,8 @@ class Detail_Sylva: UIViewController {
         }
     }
 
-    /// 搭建底部评论输入栏
+    /// 搭建底部评论输入栏，配置送礼入口及发送按钮的尺寸与间距。
+    /// 参数：无。返回值：Void，无返回值。异常：无。
     private func setupCommentBar_Sylva() {
         commentBar_Sylva.backgroundColor = .white
         commentBar_Sylva.layer.shadowColor  = UIColor.black.cgColor
@@ -416,15 +418,30 @@ class Detail_Sylva: UIViewController {
         submitCommentButton_Sylva.addTarget(self, action: #selector(submitCommentTapped_Sylva), for: .touchUpInside)
         commentBar_Sylva.addSubview(submitCommentButton_Sylva)
 
-        // 统一约束：输入框从左侧 16pt 开始，右侧接发送按钮
+        let giftButton_sylva = UIButton(type: .custom)
+        giftButton_sylva.setImage(UIImage(named: "gift_btn")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        giftButton_sylva.imageView?.contentMode = .scaleAspectFit
+        giftButton_sylva.accessibilityLabel = "Send gift"
+        giftButton_sylva.addAction(UIAction { [weak self] _ in
+            guard let self else { return }
+            Navigation_Sylva.toGift_sylva(from_sylva: self)
+        }, for: .touchUpInside)
+        commentBar_Sylva.addSubview(giftButton_sylva)
+
+        // 输入框、送礼按钮、发送按钮依次排列，相邻控件间距均为 10 点。
         submitCommentButton_Sylva.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-14)
             make.top.equalToSuperview().offset(14)
             make.width.height.equalTo(40)
         }
+        giftButton_sylva.snp.makeConstraints { make_sylva in
+            make_sylva.trailing.equalTo(submitCommentButton_Sylva.snp.leading).offset(-10)
+            make_sylva.centerY.equalTo(submitCommentButton_Sylva)
+            make_sylva.size.equalTo(submitCommentButton_Sylva)
+        }
         commentInput_Sylva.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
-            make.trailing.equalTo(submitCommentButton_Sylva.snp.leading).offset(-10)
+            make.trailing.equalTo(giftButton_sylva.snp.leading).offset(-10)
             make.top.equalToSuperview().offset(14)
             make.height.equalTo(44)
         }

@@ -17,6 +17,7 @@ enum NavigationStyle_Sylva {
 }
 
 /// 页面导航管理器
+/// 设计思路：集中封装页面创建与展示方式；送礼入口复用通用模态方法并保留透明遮罩。
 class Navigation_Sylva: NSObject {
     
     // MARK: - 基础导航方法
@@ -38,6 +39,18 @@ class Navigation_Sylva: NSObject {
         fromVC?.present(viewController, animated: animated, completion: completion)
     }
     
+    /// 展示已有礼物弹窗，并收起来源页面的键盘。
+    /// - Parameter from_sylva: 发起送礼操作的视图控制器。
+    /// - Returns: Void，无返回值。
+    /// 异常：无。
+    static func toGift_sylva(from_sylva: UIViewController) {
+        from_sylva.view.endEditing(true)
+        let giftPage_sylva = GiftPage_Sylva()
+        giftPage_sylva.modalPresentationStyle = .overFullScreen
+        giftPage_sylva.modalTransitionStyle = .crossDissolve
+        present_Sylva(viewController: giftPage_sylva, from: from_sylva)
+    }
+
     /// Pop返回上一页
     static func pop_Sylva(animated: Bool = true, from: UIViewController? = nil) {
         let fromVC = from ?? currentViewController_Sylva()
@@ -299,6 +312,13 @@ class Navigation_Sylva: NSObject {
     }
     
     // MARK: - 个人中心相关
+
+    /// 从个人中心打开 VIP 订阅页，使用现有导航栈以支持协议页面返回。
+    /// - Parameter from_sylva: 发起导航的页面。
+    /// - Returns: Void，无返回值；无抛出异常。
+    static func toVIPSubscription_sylva(from_sylva: UIViewController) {
+        push_Sylva(to: VIPSubscription_Sylva(), from: from_sylva)
+    }
     
     /// 跳转到个人中心（当前登录用户）
     static func toMe_Sylva(

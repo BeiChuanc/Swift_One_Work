@@ -7,6 +7,7 @@ import SnapKit
 /// 我的页视图控制器
 /// 核心作用：展示登录用户个人信息、统计数据及帖子/喜欢列表
 /// 设计思路：沉浸式渐变 Hero（渐变 mask 仅裁渐变层）+ 自定义 Pill Tab + 丰化帖子卡片
+/// 关键入口：顶部设置按钮及 VIP 按钮通过统一导航打开对应页面。
 class Me_Sylva: UIViewController {
 
     // MARK: - 公开属性
@@ -91,7 +92,8 @@ class Me_Sylva: UIViewController {
         }
     }
 
-    /// 搭建渐变 Hero 头部
+    /// 搭建渐变头部和设置、会员入口。
+    /// 参数：无。返回值：Void。异常：无。
     private func setupHeaderView_Sylva() {
         // 渐变：深绿 → 中绿
         headerGradient_Sylva.colors = [
@@ -146,6 +148,21 @@ class Me_Sylva: UIViewController {
             make.width.height.equalTo(36)
         }
 
+        let vipButton_sylva = UIButton(type: .custom)
+        vipButton_sylva.setImage(UIImage(named: "vip_btn")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        vipButton_sylva.imageView?.contentMode = .scaleAspectFit
+        vipButton_sylva.accessibilityLabel = "VIP subscription"
+        vipButton_sylva.addAction(UIAction { [weak self] _ in
+            guard let self else { return }
+            Navigation_Sylva.toVIPSubscription_sylva(from_sylva: self)
+        }, for: .touchUpInside)
+        view.addSubview(vipButton_sylva)
+        vipButton_sylva.snp.makeConstraints { make_sylva in
+            make_sylva.trailing.equalTo(settingBtn_sylva.snp.leading).offset(-10)
+            make_sylva.centerY.height.equalTo(settingBtn_sylva)
+            make_sylva.width.equalTo(vipButton_sylva.snp.height).multipliedBy(182.0 / 92.0).priority(999)
+        }
+
         // 头像（白色圆环 + 阴影）
         avatarView_Sylva.layer.cornerRadius = 46
         avatarView_Sylva.layer.masksToBounds = true
@@ -158,6 +175,10 @@ class Me_Sylva: UIViewController {
             make.top.equalToSuperview().offset(72)
             make.centerX.equalToSuperview()
             make.width.height.equalTo(92)
+        }
+        // 窄屏时优先缩小会员图标，保留头像与按钮之间的可见间隔。
+        vipButton_sylva.snp.makeConstraints { make_sylva in
+            make_sylva.leading.greaterThanOrEqualTo(avatarView_Sylva.snp.trailing).offset(8)
         }
 
         // 用户名

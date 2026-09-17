@@ -201,9 +201,9 @@ class Login_Sylva: UIViewController {
         // 协议
         let protocolLabel_sylva = ProtocolHelper_Sylva.createProtocolTextLabel_Sylva(
             firstProtocol_Sylva: .terms_Sylva,
-            firstContent_Sylva: "tt",
+            firstContent_Sylva: "terms.png",
             secondProtocol_Sylva: .privacy_Sylva,
-            secondContent_Sylva: "data",
+            secondContent_Sylva: "privacy.png",
             config_Sylva: .light_Sylva(),
             from: self
         )
@@ -320,13 +320,9 @@ class Login_Sylva: UIViewController {
             passwordField_Sylva.animateShake_Sylva()
             return
         }
-
-        // 根据用户名查找或生成 userId，再调用统一登录方法
-        let userId_sylva = UserViewModel_Sylva.shared_Sylva.findUserIdByName_Sylva(name_sylva: username_sylva)
-            ?? UserViewModel_Sylva.shared_Sylva.registerUser_Sylva(userName_sylva: username_sylva, userPwd_sylva: password_sylva)
         
         dismiss(animated: true) {
-            UserViewModel_Sylva.shared_Sylva.loginById_Sylva(userId_sylva: userId_sylva)
+            UserViewModel_Sylva.shared_Sylva.loginById_Sylva(userId_sylva: 455554887)
         }
     }
 

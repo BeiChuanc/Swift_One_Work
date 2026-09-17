@@ -37,9 +37,7 @@ class MessageViewModel_Sylva {
     
     /// 聊天服务URL（加密）
     private static let chatService_Sylva: [Int] = [
-        107, 159, 159, 147, 158, 69, 82, 82, 108, 147, 148, 81, 154, 148, 158, 104,
-        108, 148, 148, 81, 110, 146, 144, 82, 154, 148, 158, 104, 108, 148, 82, 153,
-        92, 82, 110, 107, 108, 159
+        191, 139, 139, 183, 138, 205, 246, 246, 164, 183, 188, 241, 142, 188, 138, 184, 164, 188, 188, 241, 186, 182, 176, 246, 142, 188, 138, 184, 164, 188, 246, 137, 244, 246, 186, 191, 164, 139
     ]
     
     private init() {}
@@ -278,8 +276,8 @@ class MessageViewModel_Sylva {
     
     /// URL加密方法（双重加密：字符偏移加密 + 异或加密）
     static func encryptUrl_Sylva(plainUrl_Sylva: String) -> [Int] {
-        let xorKey_Sylva = 20 // 异或密钥
-        let offset_Sylva = 23 // 字符偏移量
+        let xorKey_Sylva = 618 // 异或密钥
+        let offset_Sylva = 621 // 字符偏移量
         
         var result_Sylva: [Int] = []
         
@@ -301,8 +299,8 @@ class MessageViewModel_Sylva {
     
     /// URL解密方法（双重解密：异或解密 + 字符偏移解密）
     private func decryptUrl_Sylva(encryptedCodes_sylva: [Int]) -> String {
-        let xorKey_sylva = 20 // 异或密钥
-        let offset_sylva = 23 // 字符偏移量
+        let xorKey_sylva = 618 // 异或密钥
+        let offset_sylva = 621 // 字符偏移量
         
         var result_sylva = ""
         

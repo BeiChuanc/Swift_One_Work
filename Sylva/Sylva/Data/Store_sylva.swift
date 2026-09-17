@@ -12,139 +12,89 @@ class Store_Sylva: NSObject {
     // 礼物商品列表
     var goodsList_Sylva: [StoreModel_Sylva] = [
         StoreModel_Sylva(
-            id_Sylva: 0,
-            goodsId_Sylva: "sylva.spe.x1.1_9",
-            goodsName_Sylva: "x1",
-            goodsPrice_Sylva: "1.99$",
-            goodIsTop_Sylva: false,
-            goodIsLimit_Sylva: true
-        ),
-        StoreModel_Sylva(
             id_Sylva: 1,
-            goodsId_Sylva: "sylva.spe.x3.3_9",
-            goodsName_Sylva: "x3",
-            goodsPrice_Sylva: "3.99$",
-            goodIsTop_Sylva: false,
+            goodsId_Sylva: "sylva.spe.x1.4_9",
+            goodsName_Sylva: "x1",
+            goodsPrice_Sylva: "4.99$",
             goodIsLimit_Sylva: true
         ),
         StoreModel_Sylva(
             id_Sylva: 2,
-            goodsId_Sylva: "sylva.spe.x5.4_9",
-            goodsName_Sylva: "x5",
+            goodsId_Sylva: "sylva.gift.x1.4_9",
+            goodsName_Sylva: "x1",
             goodsPrice_Sylva: "4.99$",
-            goodIsTop_Sylva: false,
-            goodIsLimit_Sylva: true
         ),
         StoreModel_Sylva(
             id_Sylva: 3,
-            goodsId_Sylva: "sylva.gift.x1.1_9",
-            goodsName_Sylva: "x1",
-            goodsPrice_Sylva: "1.99$",
-            goodIsTop_Sylva: false,
-            goodIsLimit_Sylva: false
+            goodsId_Sylva: "sylva.gift.x5.14_9",
+            goodsName_Sylva: "x5",
+            goodsPrice_Sylva: "14.99$",
         ),
         StoreModel_Sylva(
             id_Sylva: 4,
-            goodsId_Sylva: "sylva.gift.x3.2_9",
-            goodsName_Sylva: "x3",
-            goodsPrice_Sylva: "2.99$",
-            goodIsTop_Sylva: false,
-            goodIsLimit_Sylva: false
+            goodsId_Sylva: "sylva.gift.x10.19_9",
+            goodsName_Sylva: "x10",
+            goodsPrice_Sylva: "19.99$",
         ),
         StoreModel_Sylva(
             id_Sylva: 5,
-            goodsId_Sylva: "sylva.gift.x3.3_9",
-            goodsName_Sylva: "x5",
-            goodsPrice_Sylva: "3.99$",
-            goodIsTop_Sylva: false,
-            goodIsLimit_Sylva: false
+            goodsId_Sylva: "sylva.gift.x30.49_9",
+            goodsName_Sylva: "x30",
+            goodsPrice_Sylva: "49.99$",
         ),
         StoreModel_Sylva(
             id_Sylva: 6,
-            goodsId_Sylva: "sylva.gift.x10.4_9",
-            goodsName_Sylva: "x10",
-            goodsPrice_Sylva: "4.99$",
-            goodIsTop_Sylva: false,
-            goodIsLimit_Sylva: false
-        ),
-        StoreModel_Sylva(
-            id_Sylva: 7,
             goodsId_Sylva: "sylva.gift.x1.6_9",
             goodsName_Sylva: "x1",
             goodsPrice_Sylva: "6.99$",
-            goodIsTop_Sylva: false,
-            goodIsLimit_Sylva: false
         ),
         StoreModel_Sylva(
-            id_Sylva: 8,
-            goodsId_Sylva: "sylva.gift.x3.9_9",
-            goodsName_Sylva: "x3",
-            goodsPrice_Sylva: "9.99$",
-            goodIsTop_Sylva: false,
-            goodIsLimit_Sylva: false
-        ),
-        StoreModel_Sylva(
-            id_Sylva: 9,
+            id_Sylva: 7,
             goodsId_Sylva: "sylva.gift.x5.19_9",
             goodsName_Sylva: "x5",
             goodsPrice_Sylva: "19.99$",
-            goodIsTop_Sylva: false,
-            goodIsLimit_Sylva: false
         ),
         StoreModel_Sylva(
-            id_Sylva: 10,
+            id_Sylva: 8,
             goodsId_Sylva: "sylva.gift.x10.29_9",
             goodsName_Sylva: "x10",
             goodsPrice_Sylva: "29.99$",
-            goodIsTop_Sylva: false,
-            goodIsLimit_Sylva: false
         ),
         StoreModel_Sylva(
-            id_Sylva: 11,
-            goodsId_Sylva: "sylva.gift.x1.49_9",
-            goodsName_Sylva: "x1",
-            goodsPrice_Sylva: "49.99$",
-            goodIsTop_Sylva: false,
-            goodIsLimit_Sylva: false
-        ),
-        StoreModel_Sylva(
-            id_Sylva: 12,
-            goodsId_Sylva: "sylva.gift.x3.69_9",
-            goodsName_Sylva: "x3",
-            goodsPrice_Sylva: "69.99$",
-            goodIsTop_Sylva: false,
-            goodIsLimit_Sylva: false
-        ),
-        StoreModel_Sylva(
-            id_Sylva: 13,
-            goodsId_Sylva: "sylva.gift.x5.99_9",
-            goodsName_Sylva: "x5",
-            goodsPrice_Sylva: "99.99$",
-            goodIsTop_Sylva: false,
-            goodIsLimit_Sylva: false
+            id_Sylva: 9,
+            goodsId_Sylva: "sylva.gift.x30.79_9",
+            goodsName_Sylva: "x30",
+            goodsPrice_Sylva: "79.99$",
         ),
         
         // ------- VIP ------- //
         
         StoreModel_Sylva(
-            id_Sylva: 14,
-            goodsId_Sylva: "sylva.sub.1w.6_9",
-            goodsName_Sylva: "1 Week",
-            goodsPrice_Sylva: "$6.99",
+            id_Sylva: 10,
+            goodsId_Sylva: "sylva.sub.1w.9_9",
+            goodsName_Sylva: "Premium(1w.)",
+            goodsPrice_Sylva: "$9.99",
             goodIsVIP_Sylva: true
         ),
         StoreModel_Sylva(
-            id_Sylva: 15,
-            goodsId_Sylva: "sylva.sub.1m.14_9",
-            goodsName_Sylva: "1 Month",
-            goodsPrice_Sylva: "$14.99",
+            id_Sylva: 11,
+            goodsId_Sylva: "sylva.sub.1m.19_9",
+            goodsName_Sylva: "Premium(1m.)",
+            goodsPrice_Sylva: "$19.99",
             goodIsVIP_Sylva: true
         ),
         StoreModel_Sylva(
-            id_Sylva: 16,
-            goodsId_Sylva: "sylva.sub.3m.39_9",
-            goodsName_Sylva: "3 Months",
-            goodsPrice_Sylva: "$39.99",
+            id_Sylva: 12,
+            goodsId_Sylva: "sylva.sub.3m.29_9",
+            goodsName_Sylva: "Premium(3m.)",
+            goodsPrice_Sylva: "$29.99",
+            goodIsVIP_Sylva: true
+        ),
+        StoreModel_Sylva(
+            id_Sylva: 13,
+            goodsId_Sylva: "sylva.sub.1y.69_9",
+            goodsName_Sylva: "Premium(1y.)",
+            goodsPrice_Sylva: "$69.99",
             goodIsVIP_Sylva: true
         )
     ]

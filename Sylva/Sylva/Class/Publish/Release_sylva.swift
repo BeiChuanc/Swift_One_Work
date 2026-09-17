@@ -679,7 +679,7 @@ class Release_Sylva: UIViewController {
     @objc private func eulaTapped_Sylva() {
         ProtocolHelper_Sylva.showProtocol_Sylva(
             type_Sylva: .eula_Sylva,
-            content_Sylva: "tt",
+            content_Sylva: "eula.png",
             from: self
         )
     }

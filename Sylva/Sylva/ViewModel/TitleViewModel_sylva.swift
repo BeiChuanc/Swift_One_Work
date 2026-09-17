@@ -260,3 +260,88 @@ class TitleViewModel_Sylva {
     }
 }
 
+/// 礼物选择状态管理类，复用商店商品与支付流程，将礼物筛选、选中通知和展示格式化集中在界面之外。
+/// 顶部礼物与普通礼物在初始化时读取，选中状态通过通知驱动界面更新。
+@MainActor
+final class GiftSelectionViewModel_sylva {
+    /// 礼物选中状态变更通知，通知对象为当前状态管理实例。
+    static let stateDidChange_sylva = Notification.Name("GiftSelectionStateDidChange_sylva")
+
+    /// 顶部展示的特殊或推荐礼物。
+    let topGift_sylva: StoreModel_Sylva?
+
+    /// 最多八个普通礼物，排除特殊、推荐与会员商品。
+    let normalGifts_sylva: [StoreModel_Sylva]
+
+    /// 当前选中的普通礼物商品编号。
+    private(set) var selectedGiftId_sylva: String?
+
+    /// 从现有商店读取礼物并默认选中第一个普通礼物。
+    /// - Returns: 礼物状态管理实例；无参数、无抛出异常，商品为空时保持未选中。
+    init() {
+        let gifts_sylva = Store_Sylva.shared_Sylva.goodsList_Sylva
+        topGift_sylva = gifts_sylva.first { gift_sylva in
+            !(gift_sylva.goodIsVIP_Sylva ?? false)
+                && ((gift_sylva.goodIsSpecial_Sylva ?? false) || (gift_sylva.goodIsTop_Sylva ?? false))
+        }
+        normalGifts_sylva = Array(gifts_sylva.filter { gift_sylva in
+            !(gift_sylva.goodIsSpecial_Sylva ?? false)
+                && !(gift_sylva.goodIsTop_Sylva ?? false)
+                && !(gift_sylva.goodIsVIP_Sylva ?? false)
+        }.prefix(8))
+        selectedGiftId_sylva = normalGifts_sylva.first?.goodsId_Sylva
+    }
+
+    /// 选择普通礼物，仅在合法商品的选中状态改变时发送通知。
+    /// - Parameter gift_sylva: 用户点击的普通礼物。
+    /// - Returns: 无返回值；无抛出异常，非法商品或重复选择直接忽略。
+    func selectGift_sylva(gift_sylva: StoreModel_Sylva) {
+        guard let giftId_sylva = gift_sylva.goodsId_Sylva,
+              !giftId_sylva.isEmpty,
+              normalGifts_sylva.contains(where: { $0.goodsId_Sylva == giftId_sylva }),
+              selectedGiftId_sylva != giftId_sylva else { return }
+        selectedGiftId_sylva = giftId_sylva
+        NotificationCenter.default.post(name: Self.stateDidChange_sylva, object: self)
+    }
+
+    /// 校验礼物编号并调用项目现有支付流程，成功后交由界面完成后续展示。
+    /// - Parameters:
+    ///   - gift_sylva: 待购买的顶部礼物或普通礼物。
+    ///   - completion_sylva: 支付成功后执行的无参数、无返回值回调。
+    /// - Returns: 无返回值；无抛出异常，非法商品显示英文提示，支付错误由商店处理。
+    func purchaseGift_sylva(gift_sylva: StoreModel_Sylva, completion_sylva: @escaping () -> Void) {
+        guard let giftId_sylva = gift_sylva.goodsId_Sylva,
+              !giftId_sylva.isEmpty,
+              topGift_sylva?.goodsId_Sylva == giftId_sylva
+                || normalGifts_sylva.contains(where: { $0.goodsId_Sylva == giftId_sylva }) else {
+            Utils_Sylva.showWarning_Sylva(message_Sylva: "This gift is unavailable")
+            return
+        }
+        Store_Sylva.shared_Sylva.PurchaseStoreGift_Sylva(
+            gid_Sylva: giftId_sylva,
+            completion_Sylva: completion_sylva
+        )
+    }
+
+    /// 将预制数据中的尾部美元符号移到价格前方，其余本地化价格保持原样。
+    /// - Parameter gift_sylva: 需要展示价格的礼物。
+    /// - Returns: 格式化后的价格字符串；无抛出异常，缺少价格时返回空字符串。
+    func priceText_sylva(gift_sylva: StoreModel_Sylva) -> String {
+        let price_sylva = gift_sylva.goodsPrice_Sylva ?? ""
+        guard price_sylva.range(of: #"^[0-9]+(?:\.[0-9]+)?\$$"#, options: .regularExpression) != nil else {
+            return price_sylva
+        }
+        return "$" + price_sylva.dropLast()
+    }
+
+    /// 将礼物数量的前置乘数标记转换为参考设计中的后置标记。
+    /// - Parameter gift_sylva: 需要展示数量的礼物。
+    /// - Returns: 数量字符串，例如将 x1 转换为 1x；无抛出异常，其余商品名称保持原样。
+    func quantityText_sylva(gift_sylva: StoreModel_Sylva) -> String {
+        let quantity_sylva = gift_sylva.goodsName_Sylva ?? ""
+        guard quantity_sylva.range(of: #"^[xX][0-9]+$"#, options: .regularExpression) != nil else {
+            return quantity_sylva
+        }
+        return quantity_sylva.dropFirst() + "x"
+    }
+}
