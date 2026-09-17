@@ -397,11 +397,11 @@ class Setting_Lens: UIViewController {
     // MARK: - 业务逻辑
 
     private func showTerms_Lens() {
-        ProtocolHelper_Lens.showProtocol_Lens(type_Lens: .terms_Lens, content_Lens: "txt", from: self)
+        ProtocolHelper_Lens.showProtocol_Lens(type_Lens: .terms_Lens, content_Lens: "terms.png", from: self)
     }
 
     private func showPrivacy_Lens() {
-        ProtocolHelper_Lens.showProtocol_Lens(type_Lens: .privacy_Lens, content_Lens: "data", from: self)
+        ProtocolHelper_Lens.showProtocol_Lens(type_Lens: .privacy_Lens, content_Lens: "privacy.png", from: self)
     }
 
     private func confirmLogout_Lens() {

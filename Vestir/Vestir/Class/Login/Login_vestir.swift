@@ -247,8 +247,8 @@ class Login_Vestir: UIViewController {
         cardView_Vestir.addSubview(registerLabel_Vestir)
 
         let protoLabel_Vestir = ProtocolHelper_Vestir.createProtocolTextLabel_Vestir(
-            firstContent_Vestir: "terms",
-            secondContent_Vestir: "privacy",
+            firstContent_Vestir: "terms.png",
+            secondContent_Vestir: "privacy.png",
             config_Vestir: .light_Vestir(),
             from: self
         )

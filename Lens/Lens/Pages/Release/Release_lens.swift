@@ -767,7 +767,7 @@ class Release_Lens: UIViewController {
     @objc private func handleEULA_Lens() {
         ProtocolHelper_Lens.showProtocol_Lens(
             type_Lens: .eula_Lens,
-            content_Lens: "txt",
+            content_Lens: "eula.png",
             from: self
         )
     }

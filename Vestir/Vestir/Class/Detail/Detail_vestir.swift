@@ -13,7 +13,7 @@ import SnapKit
 ///   • 渐变左装饰条 + 渐变分隔线
 ///   • 统计行：点赞胶囊 + 评论数胶囊并排
 ///   • 评论区头部带数量徽章；Cell 左侧 3pt 渐变色条
-///   • 输入栏：当前用户头像 + 暖白输入框 + 渐变发送按钮
+///   • 输入栏：暖白输入框 + 送礼按钮 + 渐变发送按钮
 class Detail_Vestir: UIViewController {
 
     // MARK: - 属性
@@ -306,6 +306,20 @@ class Detail_Vestir: UIViewController {
         return btn_Vestir
     }()
 
+    /// 送礼入口：保留资源原色，尺寸与发送按钮同步，点击交由导航管理器处理。
+    private let giftButton_vestir: UIButton = {
+        let button_vestir = UIButton(type: .custom)
+        button_vestir.setImage(UIImage(named: "gift_btn")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        button_vestir.imageView?.contentMode = .scaleAspectFit
+        button_vestir.contentHorizontalAlignment = .fill
+        button_vestir.contentVerticalAlignment = .fill
+        button_vestir.accessibilityLabel = "Send Gift"
+        button_vestir.addAction(UIAction { _ in
+            Navigation_Vestir.toGift_vestir()
+        }, for: .touchUpInside)
+        return button_vestir
+    }()
+
     // MARK: - 生命周期
 
     override func viewDidLoad() {
@@ -433,6 +447,7 @@ class Detail_Vestir: UIViewController {
         // 评论输入栏
         view.addSubview(commentBar_Vestir)
         commentBar_Vestir.addSubview(commentInputField_Vestir)
+        commentBar_Vestir.addSubview(giftButton_vestir)
         commentBar_Vestir.addSubview(sendBtnView_Vestir)
         sendBtnView_Vestir.layer.insertSublayer(sendGradLayer_Vestir, at: 0)
         sendBtnView_Vestir.addSubview(sendCommentBtn_Vestir)
@@ -599,9 +614,14 @@ class Detail_Vestir: UIViewController {
         }
         commentInputField_Vestir.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
-            make.trailing.equalTo(sendBtnView_Vestir.snp.leading).offset(-8)
+            make.trailing.equalTo(giftButton_vestir.snp.leading).offset(-8)
             make.top.equalToSuperview().offset(12)
             make.height.equalTo(44)
+        }
+        giftButton_vestir.snp.makeConstraints { make_vestir in
+            make_vestir.trailing.equalTo(sendBtnView_Vestir.snp.leading).offset(-10)
+            make_vestir.centerY.equalTo(sendBtnView_Vestir)
+            make_vestir.size.equalTo(sendBtnView_Vestir)
         }
         sendBtnView_Vestir.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-14)

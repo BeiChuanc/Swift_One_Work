@@ -249,6 +249,25 @@ class Navigation_Lens: NSObject {
         navigate_Lens(to: detailVC_lens, style_lens: style_lens, animated_lens: animated_lens)
     }
 
+    /// 展示送礼页面
+    /// - Parameters:
+    ///   - animated_lens: 是否使用模态转场动画
+    ///   - from_lens: 发起展示的页面，未传入时使用当前页面
+    /// - 无返回值；来源页面不可用时不会执行展示
+    static func toGiftPage_Lens(
+        animated_lens: Bool = true,
+        from from_lens: UIViewController? = nil
+    ) {
+        let giftPage_Lens = GiftPage_Lens()
+        giftPage_Lens.modalPresentationStyle = .overFullScreen
+        giftPage_Lens.modalTransitionStyle = .crossDissolve
+        present_Lens(
+            viewController: giftPage_Lens,
+            animated: animated_lens,
+            from: from_lens
+        )
+    }
+
     // MARK: - 发布
 
     static func toRelease_Lens(
@@ -316,6 +335,13 @@ class Navigation_Lens: NSObject {
 
     static func toSetting_Lens(style_lens: NavigationStyle_Lens = .push_lens, animated_lens: Bool = true) {
         navigate_Lens(to: Setting_Lens(), style_lens: style_lens, animated_lens: animated_lens)
+    }
+
+    /// 将 VIP 订阅页面推入导航栈，使页面返回和购买成功后均可回到来源页面
+    /// 参数：animated_lens 表示是否启用转场动画，默认启用。
+    /// 返回值：无（Void）；当前无可用导航控制器时不执行跳转，无抛出异常。
+    static func toVIPSubscription_lens(animated_lens: Bool = true) {
+        navigate_Lens(to: VIPSubscription_Lens(), style_lens: .push_lens, animated_lens: animated_lens)
     }
 }
 

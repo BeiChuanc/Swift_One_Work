@@ -52,6 +52,27 @@ class UserViewModel_Lens {
         loggedUser_Lens?.userId_Lens != 0
     }
 
+    /// 当前可展示的 VIP 套餐，复用商店数据源
+    var vipProducts_lens: [StoreModel_Lens] {
+        Subscribe_Lens.shared_Lens.goodsList_Lens.filter { $0.goodIsVIP_Lens == true }
+    }
+
+    /// 订阅指定 VIP 商品，购买结果提示和状态通知由商店统一处理
+    /// 参数：product_lens 为待订阅商品，completion_lens 为购买成功后的回调。
+    /// 返回值：无（Void）；商品不是 VIP 或缺少标识时显示提示，不发起购买，无抛出异常。
+    func subscribeToVIP_lens(product_lens: StoreModel_Lens, completion_lens: @escaping () -> Void) {
+        guard product_lens.goodIsVIP_Lens == true,
+              let productID_lens = product_lens.goodsId_Lens,
+              !productID_lens.isEmpty else {
+            Load_Lens.showWarning_Lens(message_Lens: "Please select a subscription plan.")
+            return
+        }
+        Subscribe_Lens.shared_Lens.PurchaseStoreVIP_Lens(
+            vipId_Lens: productID_lens,
+            completion_Lens: completion_lens
+        )
+    }
+
     /// 获取当前用户（未登录时返回游客）
     func getCurrentUser_Lens() -> LoginUserModel_Lens {
         loggedUser_Lens ?? defaultUser_Lens

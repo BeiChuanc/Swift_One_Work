@@ -436,11 +436,11 @@ class Setting_Vestir: UIViewController {
         switch (view_Vestir.tag / 10, view_Vestir.tag % 10) {
         case (0, 0):
             ProtocolHelper_Vestir.showProtocol_Vestir(
-                type_Vestir: .terms_Vestir, content_Vestir: "terms", from: self
+                type_Vestir: .terms_Vestir, content_Vestir: "terms.png", from: self
             )
         case (0, 1):
             ProtocolHelper_Vestir.showProtocol_Vestir(
-                type_Vestir: .privacy_Vestir, content_Vestir: "privacy", from: self
+                type_Vestir: .privacy_Vestir, content_Vestir: "privacy.png", from: self
             )
         case (1, 0):
             UIAlertController.logout_Vestir {

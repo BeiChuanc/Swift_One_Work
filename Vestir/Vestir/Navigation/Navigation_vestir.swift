@@ -17,6 +17,7 @@ enum NavigationStyle_Vestir {
 }
 
 /// 页面导航管理器
+/// 核心作用：集中管理页面跳转；通过基础导航方法复用展示方式，并由专用入口配置目标页面。
 class Navigation_Vestir: NSObject {
     
     // MARK: - 基础导航方法
@@ -253,6 +254,19 @@ class Navigation_Vestir: NSObject {
         navigate_Vestir(to: detailVC_vestir, style_vestir: style_vestir, animated_vestir: animated_vestir)
     }
     
+    /// 模态展示现有送礼页，保留底层页面并收起键盘。
+    /// 参数：无。
+    /// 返回值：无（Void）。
+    /// 异常场景：未找到当前页面时不执行跳转，不抛出异常。
+    static func toGift_vestir() {
+        guard let sourceViewController_vestir = currentViewController_Vestir() else { return }
+        sourceViewController_vestir.view.endEditing(true)
+        let giftViewController_vestir = GiftPage_Vestir()
+        giftViewController_vestir.modalPresentationStyle = .overFullScreen
+        giftViewController_vestir.modalTransitionStyle = .crossDissolve
+        present_Vestir(viewController: giftViewController_vestir, from: sourceViewController_vestir)
+    }
+
     // MARK: - 发布相关
     
     /// 跳转到发布页
@@ -342,6 +356,14 @@ class Navigation_Vestir: NSObject {
         navigate_Vestir(to: EditInfo_Vestir(), style_vestir: style_vestir, animated_vestir: animated_vestir)
     }
     
+    /// 将现有会员订阅页推入导航栈，复用该页面的返回与订阅流程。
+    /// 参数：无。
+    /// 返回值：无（Void）。
+    /// 异常场景：当前页面不存在或没有导航控制器时不执行跳转，不抛出异常。
+    static func toVIPSubscription_vestir() {
+        navigate_Vestir(to: VIPSubscription_Vestir(), style_vestir: .push_vestir)
+    }
+
     /// 跳转到设置页
     static func toSetting_Vestir(
         style_vestir: NavigationStyle_Vestir = .push_vestir,

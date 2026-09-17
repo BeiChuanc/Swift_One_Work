@@ -265,6 +265,36 @@ class StoreModel_Lens: NSObject {
     }
 }
 
+/// VIP 商品展示适配，沿用商品原始价格和名称，集中处理卡片所需的周期及金额格式
+extension StoreModel_Lens {
+
+    /// 订阅周期的英文展示名称，未知套餐保留原商品名称
+    var subscriptionPeriodTitle_lens: String {
+        switch goodsName_Lens {
+        case "Premium (1w.)": return "One Week"
+        case "Premium (1m.)": return "One Month"
+        case "Premium (3m.)": return "Three Months"
+        default: return goodsName_Lens ?? "Premium"
+        }
+    }
+
+    /// 解析当前美元商品价格以分别展示金额与币种；格式不匹配时完整保留原价格
+    var subscriptionPriceParts_lens: (amount_lens: String, currency_lens: String) {
+        let price_lens = goodsPrice_Lens ?? ""
+        let formatter_lens = NumberFormatter()
+        formatter_lens.locale = Locale(identifier: "en_US")
+        formatter_lens.numberStyle = .currency
+        formatter_lens.currencyCode = "USD"
+        guard let amount_lens = formatter_lens.number(from: price_lens) else {
+            return (price_lens, "")
+        }
+        formatter_lens.numberStyle = .decimal
+        formatter_lens.minimumFractionDigits = 2
+        formatter_lens.maximumFractionDigits = 2
+        return (formatter_lens.string(from: amount_lens) ?? price_lens, "$")
+    }
+}
+
 // MARK: - 调制画盘数据模型
 
 /// 光源模式枚举（12 种真实光源 + 专属光影）

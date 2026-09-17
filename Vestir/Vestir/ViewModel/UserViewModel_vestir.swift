@@ -12,7 +12,9 @@ enum LogOutType_Vestir {
     case logout_vestir
 }
 
-/// 用户状态管理类
+/// 用户状态管理类：集中管理登录用户、用户互动和会员套餐选择，并通过通知同步界面。
+/// 设计思路：界面仅转发用户操作，用户相关状态由单例维护，支付流程复用现有订阅服务。
+/// 关键属性和方法：登录用户保存账户状态，会员套餐列表和选中套餐支持加载、选择、订阅及恢复购买。
 @MainActor
 class UserViewModel_Vestir {
     
@@ -23,6 +25,15 @@ class UserViewModel_Vestir {
     
     /// 用户状态更新通知
     static let userStateDidChangeNotification_Vestir = Notification.Name("UserStateDidChange_Vestir")
+
+    /// 会员套餐加载或选择更新通知，通知对象为当前用户状态管理实例。
+    static let vipSelectionDidChangeNotification_vestir = Notification.Name("VIPSelectionDidChange_vestir")
+
+    /// 当前可展示的会员套餐，由加载方法从现有订阅商品中筛选。
+    private(set) var vipPlans_vestir: [StoreModel_Vestir] = []
+
+    /// 当前选中的会员套餐，界面通过选择方法更新。
+    private(set) var selectedVIPPlan_vestir: StoreModel_Vestir?
     
     // MARK: - 私有属性
     
@@ -60,6 +71,50 @@ class UserViewModel_Vestir {
     func initUser_Vestir() {
         loggedUser_Vestir = defaultUser_Vestir
         notifyStateChange_Vestir()
+    }
+
+    // MARK: - 会员订阅
+
+    /// 加载现有会员商品并默认选中第一个套餐，发送通知供界面刷新。
+    /// 参数：无；返回值：无（Void）。
+    /// 异常场景：商品列表为空时选中套餐为空，不抛出异常。
+    func loadVIPPlans_vestir() {
+        vipPlans_vestir = Subscribe_Vestir.shared_Vestir.goodsList_Vestir.filter {
+            $0.goodIsVIP_Vestir == true
+        }
+        selectedVIPPlan_vestir = vipPlans_vestir.first
+        notifyVIPSelectionChange_vestir()
+    }
+
+    /// 更新选中的会员套餐并发送状态通知。
+    /// 参数：plan_vestir 为用户点击的会员套餐模型。
+    /// 返回值：无（Void）；异常：无。
+    func selectVIPPlan_vestir(plan_vestir: StoreModel_Vestir) {
+        selectedVIPPlan_vestir = plan_vestir
+        notifyVIPSelectionChange_vestir()
+    }
+
+    /// 校验选中套餐并通过现有订阅服务发起会员购买。
+    /// 参数：completion_vestir 为支付成功后的回调，无参数、无返回值。
+    /// 返回值：无（Void）。
+    /// 异常场景：未选中套餐或缺少商品标识时显示提示；支付失败由订阅服务提示，不抛出异常。
+    func subscribeSelectedVIPPlan_vestir(completion_vestir: @escaping () -> Void) {
+        guard let plan_vestir = selectedVIPPlan_vestir,
+              let goodsId_vestir = plan_vestir.goodsId_Vestir else {
+            Utils_Vestir.showWarning_Vestir(message_Vestir: "Please select a subscription plan.")
+            return
+        }
+        Subscribe_Vestir.shared_Vestir.PurchaseStoreVIP_Vestir(
+            vipId_Vestir: goodsId_vestir,
+            completion_Vestir: completion_vestir
+        )
+    }
+
+    /// 通过现有订阅服务恢复已购买的会员权益。
+    /// 参数：无；返回值：无（Void）。
+    /// 异常场景：恢复结果提示及权益刷新通知由订阅服务处理，不抛出异常。
+    func restoreVIPPurchases_vestir() {
+        Subscribe_Vestir.shared_Vestir.RestorePurchase_Vestir {}
     }
     
     // MARK: - 登录/登出
@@ -326,6 +381,15 @@ class UserViewModel_Vestir {
     }
     
     // MARK: - 私有方法 - 工具方法
+
+    /// 发布会员套餐状态更新通知，供订阅界面读取最新选择并刷新展示。
+    /// 参数：无；返回值：无（Void）；异常：无。
+    private func notifyVIPSelectionChange_vestir() {
+        NotificationCenter.default.post(
+            name: UserViewModel_Vestir.vipSelectionDidChangeNotification_vestir,
+            object: self
+        )
+    }
     
     /// 发送状态更新通知
     private func notifyStateChange_Vestir() {

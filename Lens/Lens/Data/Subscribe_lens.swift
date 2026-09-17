@@ -19,88 +19,68 @@ class Subscribe_Lens: NSObject {
     var goodsList_Lens: [StoreModel_Lens] = [
         StoreModel_Lens(
             id_Lens: 1,
-            goodsId_Lens: "praise.gift.4_9",
+            goodsId_Lens: "lens.gift.1_9",
             goodsName_Lens: "x1",
-            goodsPrice_Lens: "$4.99",
-            goodIsTop_Lens: true
+            goodsPrice_Lens: "$1.99",
         ),
         StoreModel_Lens(
             id_Lens: 2,
-            goodsId_Lens: "praise.gift.x1.4_9",
-            goodsName_Lens: "x1",
-            goodsPrice_Lens: "$4.99",
+            goodsId_Lens: "lens.gift.x5.6_9",
+            goodsName_Lens: "x5",
+            goodsPrice_Lens: "$6.99",
         ),
         StoreModel_Lens(
             id_Lens: 3,
-            goodsId_Lens: "praise.gift.x5.14_9",
-            goodsName_Lens: "x5",
-            goodsPrice_Lens: "$14.99",
+            goodsId_Lens: "lens.gift.x10.9_9",
+            goodsName_Lens: "x10",
+            goodsPrice_Lens: "$9.99",
         ),
         StoreModel_Lens(
             id_Lens: 4,
-            goodsId_Lens: "praise.gift.x10.19_9",
-            goodsName_Lens: "x10",
+            goodsId_Lens: "lens.gift.x20.19_9",
+            goodsName_Lens: "x20",
             goodsPrice_Lens: "$19.99",
         ),
         StoreModel_Lens(
             id_Lens: 5,
-            goodsId_Lens: "praise.gift.x30.49_9",
-            goodsName_Lens: "x30",
-            goodsPrice_Lens: "$49.99",
-        ),
-        StoreModel_Lens(
-            id_Lens: 6,
-            goodsId_Lens: "praise.gift.x1.6_9",
+            goodsId_Lens: "lens.gift.x1.29_9",
             goodsName_Lens: "x1",
-            goodsPrice_Lens: "$6.99",
-        ),
-        StoreModel_Lens(
-            id_Lens: 7,
-            goodsId_Lens: "praise.gift.x5.19_9",
-            goodsName_Lens: "x5",
-            goodsPrice_Lens: "$19.99",
-        ),
-        StoreModel_Lens(
-            id_Lens: 8,
-            goodsId_Lens: "praise.gift.x10.29_9",
-            goodsName_Lens: "x10",
             goodsPrice_Lens: "$29.99",
         ),
         StoreModel_Lens(
-            id_Lens: 9,
-            goodsId_Lens: "praise.gift.x30.79_9",
-            goodsName_Lens: "x30",
-            goodsPrice_Lens: "$79.99",
+            id_Lens: 6,
+            goodsId_Lens: "lens.gift.x5.49_9",
+            goodsName_Lens: "x5",
+            goodsPrice_Lens: "$49.99",
+        ),
+        StoreModel_Lens(
+            id_Lens: 7,
+            goodsId_Lens: "lens.gift.x10.99_9",
+            goodsName_Lens: "x10",
+            goodsPrice_Lens: "$99.99",
         ),
         
         // ------- VIP ------- //
         
         StoreModel_Lens(
             id_Lens: 9,
-            goodsId_Lens: "praise.sub.1w.9_9",
+            goodsId_Lens: "lens.sub.1w.6_9",
             goodsName_Lens: "Premium (1w.)",
-            goodsPrice_Lens: "$9.99",
+            goodsPrice_Lens: "$6.99",
             goodIsVIP_Lens: true
         ),
         StoreModel_Lens(
             id_Lens: 10,
-            goodsId_Lens: "praise.sub.1m.19_9",
+            goodsId_Lens: "lens.sub.1m.14_9",
             goodsName_Lens: "Premium (1m.)",
-            goodsPrice_Lens: "$19.99",
+            goodsPrice_Lens: "$14.99",
             goodIsVIP_Lens: true
         ),
         StoreModel_Lens(
             id_Lens: 11,
-            goodsId_Lens: "praise.sub.3m.29_9",
+            goodsId_Lens: "lens.sub.3m.39_9",
             goodsName_Lens: "Premium (3m.)",
-            goodsPrice_Lens: "$29.99",
-            goodIsVIP_Lens: true
-        ),
-        StoreModel_Lens(
-            id_Lens: 12,
-            goodsId_Lens: "praise.sub.1y.69_9",
-            goodsName_Lens: "Premium (1y.)",
-            goodsPrice_Lens: "$69.99",
+            goodsPrice_Lens: "$39.99",
             goodIsVIP_Lens: true
         )
     ]
@@ -125,7 +105,7 @@ extension Subscribe_Lens {
                     print("支付成功")
                     Load_Lens.showSuccess_Lens(message_Lens: "Payment successful")
                     
-                    if (gid_Lens.contains("praise.gift.x5.3_9")) {
+                    if (gid_Lens.contains("lens.gift.x5.3_9")) {
                         self.isPur_Lens = true
                     }
                     

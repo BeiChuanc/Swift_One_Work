@@ -12,6 +12,7 @@ import SnapKit
 ///   • 个人信息卡内：用户名 + 时尚标签 + 统计数值双列
 ///   • 自定义胶囊 Tab（玫瑰色激活态 / 透明未激活态）
 ///   • 紫调阴影网格 + 8 色渐变占位
+/// 关键入口：顶部会员按钮与设置按钮并排显示，通过导航管理器进入对应页面。
 class Me_Vestir: UIViewController {
 
     // MARK: - 属性
@@ -67,6 +68,18 @@ class Me_Vestir: UIViewController {
         btn_Vestir.layer.cornerRadius = 16
         btn_Vestir.clipsToBounds = true
         return btn_Vestir
+    }()
+
+    /// 会员入口按钮：保留横向资源原色并等比显示，高度与设置按钮保持一致。
+    private let vipButton_vestir: UIButton = {
+        let button_vestir = UIButton(type: .custom)
+        button_vestir.setImage(
+            UIImage(named: "vip_btn")?.withRenderingMode(.alwaysOriginal),
+            for: .normal
+        )
+        button_vestir.imageView?.contentMode = .scaleAspectFit
+        button_vestir.accessibilityLabel = "VIP"
+        return button_vestir
     }()
 
     // MARK: - 悬浮头像（中心跨越头部与信息卡边界）
@@ -329,6 +342,7 @@ class Me_Vestir: UIViewController {
 
     // MARK: - UI 搭建
 
+    /// 搭建个人中心视图并绑定导航入口；无参数，返回无（Void），不抛出异常。
     private func setupUI_Vestir() {
         view.backgroundColor = ColorConfig_Vestir.backgroundPrimary_Vestir
 
@@ -341,6 +355,7 @@ class Me_Vestir: UIViewController {
         headerCard_Vestir.addSubview(decoCircle1_Vestir)
         headerCard_Vestir.addSubview(decoCircle2_Vestir)
         headerCard_Vestir.addSubview(settingBtn_Vestir)
+        headerCard_Vestir.addSubview(vipButton_vestir)
 
         // 个人信息卡（先加入，z 轴低于头像）
         contentView_Vestir.addSubview(profileCardShadow_Vestir)
@@ -372,12 +387,16 @@ class Me_Vestir: UIViewController {
         contentView_Vestir.addSubview(postsGrid_Vestir)
 
         settingBtn_Vestir.addTarget(self, action: #selector(settingTapped_Vestir), for: .touchUpInside)
+        vipButton_vestir.addAction(UIAction { _ in
+            Navigation_Vestir.toVIPSubscription_vestir()
+        }, for: .touchUpInside)
 
         avatarView_Vestir.onTapped_Vestir = {
             Navigation_Vestir.toEditInfo_Vestir(style_vestir: .push_vestir)
         }
     }
 
+    /// 设置个人中心布局及顶部按钮间距；无参数，返回无（Void），不抛出异常。
     private func setupConstraints_Vestir() {
         scrollView_Vestir.snp.makeConstraints { make in make.edges.equalToSuperview() }
         contentView_Vestir.snp.makeConstraints { make in
@@ -407,6 +426,12 @@ class Me_Vestir: UIViewController {
             make.trailing.equalToSuperview().offset(-16)
             make.bottom.equalToSuperview().offset(-14)
             make.width.height.equalTo(32)
+        }
+        vipButton_vestir.snp.makeConstraints { make_vestir in
+            make_vestir.trailing.equalTo(settingBtn_Vestir.snp.leading).offset(-10)
+            make_vestir.centerY.equalTo(settingBtn_Vestir)
+            make_vestir.width.equalTo(46)
+            make_vestir.height.equalTo(settingBtn_Vestir.snp.height)
         }
 
         // 悬浮头像（中心与 headerShadow 底边对齐，形成"悬浮"效果）

@@ -9,7 +9,7 @@ import SnapKit
 /// 设计思路：
 ///   半透明遮罩 + gift_bg 背景卡片居中；
 ///   组件1：顶级一次性礼物横向卡片（HStack）；
-///   组件2：普通礼物2行×4列网格；
+///   组件2：普通礼物三列自适应网格，所有礼物统一使用 gift_one 图标；
 ///   底部购买按钮（gift_buy 图片）；
 ///   点击遮罩区域关闭，bgCard 外部区域可关闭。
 /// 关键属性/方法：
@@ -23,11 +23,21 @@ class GiftPage_Lens: UIViewController {
     private var screenH_Lens: CGFloat { UIScreen.main.bounds.height }
     /// bgCard 宽 = 屏幕宽 - 32
     private var bgCardW_Lens: CGFloat { screenW_Lens - 32 }
-    /// bgCard 高 = 屏幕高 × 0.6
-    private var bgCardH_Lens: CGFloat { screenH_Lens * 0.65 }
+    /// bgCard 高按三行礼物网格计算，确保礼物单元完整显示
+    private var bgCardH_Lens: CGFloat { max(screenH_Lens * 0.65, 543) }
     /// 组件1/2 宽 = 屏幕宽 - 68，在 bgCard 内两侧对称内缩
     private var contentW_Lens: CGFloat { screenW_Lens - 68 }
     private var contentInset_Lens: CGFloat { (bgCardW_Lens - contentW_Lens) / 2 }
+    /// 普通礼物网格列数
+    private let gridColumnCount_Lens: Int = 3
+    /// 普通礼物网格单元宽度
+    private let gridItemWidth_Lens: CGFloat = 94
+    /// 普通礼物网格单元高度
+    private let gridItemHeight_Lens: CGFloat = 109
+    /// 普通礼物网格列间距
+    private let gridColumnSpacing_Lens: CGFloat = 12
+    /// 普通礼物网格行间距
+    private let gridRowSpacing_Lens: CGFloat = 6
 
     // MARK: - 数据
 
@@ -35,6 +45,10 @@ class GiftPage_Lens: UIViewController {
     private var topGift_Lens: StoreModel_Lens?
     /// 普通礼物（非顶级，非VIP），最多取 8 个
     private var normalGifts_Lens: [StoreModel_Lens] = []
+    /// 普通礼物网格需要展示的行数
+    private var normalGiftRowCount_Lens: Int {
+        max(1, (normalGifts_Lens.count + gridColumnCount_Lens - 1) / gridColumnCount_Lens)
+    }
     /// 当前选中的礼物
     private var selectedGift_Lens: StoreModel_Lens?
 
@@ -99,7 +113,7 @@ class GiftPage_Lens: UIViewController {
 
     /// 加载礼物数据：区分顶级礼物与普通礼物
     private func loadGiftData_Lens() {
-        let all = Store_Lens.shared_Lens.goodsList_Lens
+        let all = Subscribe_Lens.shared_Lens.goodsList_Lens
             .filter { !($0.goodIsVIP_Lens ?? false) }
         topGift_Lens    = all.first { $0.goodIsTop_Lens ?? false }
         normalGifts_Lens = Array(
@@ -184,35 +198,40 @@ class GiftPage_Lens: UIViewController {
 
     // MARK: - 组件2：普通礼物网格
 
-    /// 构建组件2（2行×4列网格，行1用 gift_two，行2用 gift_three）
+    /// 构建组件2（三列自适应网格，所有行统一使用 gift_one）
     private func buildComp2_Lens() {
         comp2View_Lens.backgroundColor = .clear
         comp2Items_Lens.removeAll()
 
-        let row1_Lens = Array(normalGifts_Lens.prefix(4))
-        let row2_Lens: [StoreModel_Lens] = normalGifts_Lens.count > 4
-            ? Array(normalGifts_Lens[4...].prefix(4)) : []
+        var rowStacks_Lens: [UIStackView] = []
+        for startIndex_Lens in stride(from: 0, to: normalGifts_Lens.count, by: gridColumnCount_Lens) {
+            let endIndex_Lens = min(startIndex_Lens + gridColumnCount_Lens, normalGifts_Lens.count)
+            let gifts_Lens = Array(normalGifts_Lens[startIndex_Lens..<endIndex_Lens])
+            rowStacks_Lens.append(
+                buildGridRow_Lens(gifts: gifts_Lens, iconName: "gift_one")
+            )
+        }
+        if rowStacks_Lens.isEmpty {
+            rowStacks_Lens.append(buildGridRow_Lens(gifts: [], iconName: "gift_one"))
+        }
 
-        let rowStack1_Lens = buildGridRow_Lens(gifts: row1_Lens, iconName: "gift_two")
-        let rowStack2_Lens = buildGridRow_Lens(gifts: row2_Lens, iconName: "gift_three")
-
-        let outerStack_Lens = UIStackView(arrangedSubviews: [rowStack1_Lens, rowStack2_Lens])
+        let outerStack_Lens = UIStackView(arrangedSubviews: rowStacks_Lens)
         outerStack_Lens.axis         = .vertical
-        outerStack_Lens.spacing      = 12
+        outerStack_Lens.spacing      = gridRowSpacing_Lens
         outerStack_Lens.distribution = .fillEqually
 
         comp2View_Lens.addSubview(outerStack_Lens)
         outerStack_Lens.snp.makeConstraints { make in make.edges.equalToSuperview() }
     }
 
-    /// 构建网格一行（4 个 GiftItemView，左右间距 5）
+    /// 构建网格一行（3 个 GiftItemView，左右间距 6）
     /// - Parameters:
-    ///   - gifts: 该行礼物数据（不足4个时用透明占位）
-    ///   - iconName: 该行礼物图标名称
+    ///   - gifts: 该行礼物数据（不足3个时用透明占位）
+    ///   - iconName: 该行统一使用的礼物图标名称
     /// - Returns: 横向 UIStackView
     private func buildGridRow_Lens(gifts: [StoreModel_Lens], iconName: String) -> UIStackView {
         var items_Lens: [UIView] = []
-        for i in 0..<4 {
+        for i in 0..<gridColumnCount_Lens {
             let gift_Lens = i < gifts.count ? gifts[i] : nil
             let itemView_Lens = GiftItemView_Lens(iconName: iconName)
             if let gift_Lens = gift_Lens {
@@ -234,8 +253,13 @@ class GiftPage_Lens: UIViewController {
         }
         let stack_Lens = UIStackView(arrangedSubviews: items_Lens)
         stack_Lens.axis         = .horizontal
-        stack_Lens.spacing      = 5
-        stack_Lens.distribution = .fillEqually
+        stack_Lens.spacing      = gridColumnSpacing_Lens
+        stack_Lens.distribution = .equalSpacing
+        items_Lens.forEach { item_Lens in
+            item_Lens.snp.makeConstraints { make in
+                make.width.equalTo(gridItemWidth_Lens)
+            }
+        }
         return stack_Lens
     }
 
@@ -252,8 +276,10 @@ class GiftPage_Lens: UIViewController {
     /// 设置所有 SnapKit 约束
     private func setupConstraints_Lens() {
         let inset_Lens = contentInset_Lens
-        /// 组件2高度 = 2行×109 + 行间距12
-        let comp2H_Lens: CGFloat = 109 * 2 + 12
+        /// 组件2高度按三列网格的实际行数计算
+        let rowCount_Lens = normalGiftRowCount_Lens
+        let comp2H_Lens = CGFloat(rowCount_Lens) * gridItemHeight_Lens
+            + CGFloat(max(0, rowCount_Lens - 1)) * gridRowSpacing_Lens
 
         /// 全屏遮罩
         dimView_Lens.snp.makeConstraints { make in
@@ -272,11 +298,11 @@ class GiftPage_Lens: UIViewController {
             make.edges.equalToSuperview()
         }
 
-        /// 购买按钮：全宽，高62，距 bgCard 底部 50
+        /// 购买按钮：全宽，高62，距背景卡片底部25，联动礼物列表整体下移25
         buyBtn_Lens.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(62)
-            make.bottom.equalToSuperview().offset(-50)
+            make.bottom.equalToSuperview().offset(-25)
         }
 
         /// 组件2：宽 = contentW，高 = comp2H，位于购买按钮上方 10
@@ -327,7 +353,7 @@ class GiftPage_Lens: UIViewController {
             Load_Lens.showWarning_Lens(message_Lens: "Please select a gift first")
             return
         }
-        Store_Lens.shared_Lens.PurchaseStoreGift_Lens(gid_Lens: gid_Lens) { [weak self] in
+        Subscribe_Lens.shared_Lens.PurchaseStoreGift_Lens(gid_Lens: gid_Lens) { [weak self] in
             self?.dismiss(animated: true)
         }
     }
@@ -368,7 +394,7 @@ class GiftPage_Lens: UIViewController {
 
 // MARK: - 礼物 Item 视图
 
-/// 礼物商品单元视图（VStack：图标60×60 → 名称10pt → 价格14pt）
+/// 礼物商品单元视图（94×109，VStack：gift_one 图标60×60 → 名称10pt → 价格14pt）
 /// 功能：用于组件2网格，支持根据选中状态切换背景与文字颜色
 /// 关键属性：gift_Lens（绑定数据，供外部判断选中态）
 class GiftItemView_Lens: UIView {
@@ -408,7 +434,7 @@ class GiftItemView_Lens: UIView {
 
     // MARK: - 初始化
 
-    /// - Parameter iconName: 礼物图标 Assets 名称（gift_two / gift_three）
+    /// - Parameter iconName: 礼物图标 Assets 名称，当前页面统一传入 gift_one
     init(iconName: String) {
         super.init(frame: .zero)
         iconIV_Lens.image = UIImage(named: iconName)?.withRenderingMode(.alwaysOriginal)

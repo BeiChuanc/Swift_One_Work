@@ -427,9 +427,9 @@ class Register_Lens: UIViewController {
     private func buildProtocolLabel_Lens() {
         let label_lens = ProtocolHelper_Lens.createProtocolTextLabel_Lens(
             firstProtocol_Lens: .terms_Lens,
-            firstContent_Lens: "https://www.apple.com/legal/internet-services/terms/site.html",
+            firstContent_Lens: "terms.png",
             secondProtocol_Lens: .privacy_Lens,
-            secondContent_Lens: "https://www.apple.com/privacy/",
+            secondContent_Lens: "privacy.png",
             config_Lens: ProtocolHelper_Lens.ProtocolTextConfig_Lens.dark_Lens(),
             from: self
         )

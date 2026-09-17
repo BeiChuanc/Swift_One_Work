@@ -7,6 +7,7 @@ import SnapKit
 /// 核心作用：展示当前用户的个人信息、发布帖子和喜欢帖子列表
 /// 设计思路：
 ///   - 头部区域使用多层径向光晕背景 + 彩虹渐变头像光圈 + "Edit Profile" 入口按钮
+///   - 顶部通过设置按钮和 VIP 按钮提供设置及订阅入口，跳转由导航管理器处理
 ///   - 统计区三列数据采用紫色数字高亮，列间渐变竖条分隔
 ///   - 自定义分段（Posts/Liked）带紫蓝渐变滑动指示条，替代系统 UISegmentedControl
 ///   - 帖子卡片带外投影增强层次感
@@ -83,6 +84,20 @@ class Me_Lens: UIViewController {
         b.layer.borderWidth = 1
         b.layer.borderColor = UIColor(hexstring_Lens: "#FFFFFF", alpha_Lens: 0.18).cgColor
         return b
+    }()
+
+    /// 顶部 VIP 入口，放大至60×34并保持原图比例，与设置按钮垂直居中
+    private let vipHeaderButton_lens: UIButton = {
+        let button_lens = UIButton(type: .custom)
+        button_lens.setImage(
+            UIImage(named: "vip_btn")?.withRenderingMode(.alwaysOriginal),
+            for: .normal
+        )
+        button_lens.contentHorizontalAlignment = .fill
+        button_lens.contentVerticalAlignment = .fill
+        button_lens.imageView?.contentMode = .scaleAspectFit
+        button_lens.accessibilityLabel = "VIP"
+        return button_lens
     }()
 
     /// 编辑资料入口按钮（胶囊样式）
@@ -356,6 +371,15 @@ class Me_Lens: UIViewController {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(10)
             $0.trailing.equalToSuperview().inset(20)
             $0.width.height.equalTo(34)
+        }
+
+        headerView_Lens.addSubview(vipHeaderButton_lens)
+        vipHeaderButton_lens.addTarget(self, action: #selector(onVIPTap_lens), for: .touchUpInside)
+        vipHeaderButton_lens.snp.makeConstraints { make_lens in
+            make_lens.trailing.equalTo(settingHeaderBtn_Lens.snp.leading).offset(-10)
+            make_lens.centerY.equalTo(settingHeaderBtn_Lens)
+            make_lens.width.equalTo(60)
+            make_lens.height.equalTo(settingHeaderBtn_Lens)
         }
 
         headerView_Lens.addSubview(avatarRingView_Lens)
@@ -633,6 +657,13 @@ class Me_Lens: UIViewController {
 
     @objc private func onSettingTap_Lens() {
         Navigation_Lens.toSetting_Lens()
+    }
+
+    /// 响应 VIP 按钮点击，由导航管理器打开订阅页面
+    /// 参数：无。
+    /// 返回值：无（Void）；无抛出异常。
+    @objc private func onVIPTap_lens() {
+        Navigation_Lens.toVIPSubscription_lens()
     }
 
     @objc private func onEditProfileTap_Lens() {

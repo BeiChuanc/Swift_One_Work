@@ -386,6 +386,18 @@ class Detail_Lens: UIViewController {
         return b
     }()
 
+    /// 送礼按钮，使用 Assets 中的 gift_btn 图片并与发送按钮保持相同尺寸
+    private let giftButton_Lens: UIButton = {
+        let b = UIButton(type: .custom)
+        b.setImage(
+            UIImage(named: "gift_btn")?.withRenderingMode(.alwaysOriginal),
+            for: .normal
+        )
+        b.imageView?.contentMode = .scaleAspectFit
+        b.adjustsImageWhenHighlighted = true
+        return b
+    }()
+
     // MARK: - 生命周期
 
     override func viewWillAppear(_ animated: Bool) {
@@ -545,6 +557,7 @@ class Detail_Lens: UIViewController {
         sendBgView_Lens.layer.insertSublayer(sendGradientLayer_Lens, at: 0)
         sendBgView_Lens.addSubview(sendIconView_Lens)
         commentInputBar_Lens.addSubview(sendButton_Lens)
+        commentInputBar_Lens.addSubview(giftButton_Lens)
         commentBarBlur_Lens.snp.makeConstraints { $0.edges.equalToSuperview() }
 
         let authorTap_Lens = UITapGestureRecognizer(target: self, action: #selector(handleAuthorTap_Lens))
@@ -640,9 +653,14 @@ class Detail_Lens: UIViewController {
         sendButton_Lens.snp.makeConstraints {
             $0.edges.equalTo(sendBgView_Lens)
         }
+        giftButton_Lens.snp.makeConstraints {
+            $0.trailing.equalTo(sendBgView_Lens.snp.leading).offset(-10)
+            $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(52)
+        }
         inputCapsuleView_Lens.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(12)
-            $0.trailing.equalTo(sendBgView_Lens.snp.leading).offset(-10)
+            $0.trailing.equalTo(giftButton_Lens.snp.leading).offset(-10)
             $0.centerY.equalToSuperview()
             $0.height.equalTo(52)
         }
@@ -783,6 +801,7 @@ class Detail_Lens: UIViewController {
         backButton_Lens.addTarget(self, action: #selector(handleBack_Lens), for: .touchUpInside)
         likeButton_Lens.addTarget(self, action: #selector(handleLike_Lens), for: .touchUpInside)
         sendButton_Lens.addTarget(self, action: #selector(handleSendComment_Lens), for: .touchUpInside)
+        giftButton_Lens.addTarget(self, action: #selector(handleGift_Lens), for: .touchUpInside)
 
         NotificationCenter.default.addObserver(
             self,
@@ -1062,6 +1081,13 @@ class Detail_Lens: UIViewController {
         TitleViewModel_Lens.shared_Lens.releaseComment_Lens(post_lens: post_Lens, content_lens: text_Lens)
         commentTextField_Lens.text = nil
         view.endEditing(true)
+    }
+
+    /// 点击送礼按钮展示送礼页面
+    /// - 无参数
+    /// - 无返回值；页面展示由导航管理器统一处理
+    @objc private func handleGift_Lens() {
+        Navigation_Lens.toGiftPage_Lens(from: self)
     }
 
     /// 帖子状态通知回调：从 ViewModel 重新拉取最新帖子数据并刷新
